@@ -6,22 +6,32 @@ insights and table. The template is shared so all 12 dashboards look like
 one coherent product line instead of 12 one-off pages — same reasoning a
 client would want from a real "Micro Data Office" engagement.
 
-Design: validated categorical/status palette from the dataviz skill
-(references/palette.md), fixed hue order, light + dark mode via CSS
+Design: the XIA brand palette (Teal / Dark Teal / Gold / Light Teal / Cream —
+visualization-builder skill), fixed hue order, light + dark mode via CSS
 variables, Chart.js (pinned, cdnjs) for the interactive charts, a plain
-HTML table under each chart so the data is never color-only.
+HTML table under each chart so the data is never color-only. Gold is
+reserved for one-per-view emphasis (see the `hero` KPI flag below) — never
+Anthropic's "Claude clay" orange.
 """
 
 import json
 from pathlib import Path
 
-CATEGORICAL_LIGHT = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948"]
-CATEGORICAL_DARK = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"]
+# Base teal + gold accent + grays desaturated from teal — same order as
+# xia_style.CATEGORICAL, with a brightened variant for dark backgrounds.
+CATEGORICAL_LIGHT = ["#71A8A3", "#B8842C", "#163832", "#9CB8B4", "#D4A94F", "#4F6360", "#C7D6D3", "#8C6220"]
+CATEGORICAL_DARK = ["#8FC2BC", "#D4A94F", "#DCEAE7", "#A9C7C2", "#E8C878", "#6E8B86", "#C79A52", "#557D77"]
+
+# Sequential teal used for funnel-chart stages (big -> small stage).
+# Dark-mode stops stay lighter than the dark-teal card surface so stages
+# never blend into the background.
+FUNNEL_LIGHT = ["#DCEAE7", "#BFDAD5", "#9FC7C0", "#71A8A3", "#4F8880", "#163832"]
+FUNNEL_DARK = ["#2F5850", "#3D7268", "#4F9285", "#63AC9E", "#84C9BB", "#B3E2D6"]
 
 STATUS = {
-    "good": ("#0ca30c", "#0ca30c"),
-    "warning": ("#fab219", "#fab219"),
-    "serious": ("#ec835a", "#ec835a"),
+    "good": ("#3E8F72", "#3E8F72"),
+    "warning": ("#B8842C", "#B8842C"),
+    "serious": ("#8C5A1E", "#8C5A1E"),
     "critical": ("#d03b3b", "#d03b3b"),
 }
 
@@ -41,8 +51,11 @@ def _kpi_html(kpis):
             arrow = "&uarr;" if direction == "up" else "&darr;"
             sign_class = "delta-up" if direction == "up" else "delta-down"
             delta_html = f'<div class="kpi-delta {sign_class}">{arrow} {k["delta"]}</div>'
+        # "hero" is gold, one-per-dashboard emphasis for the single number
+        # that carries the message — never set it on more than one KPI.
+        card_class = "kpi-card kpi-hero" if k.get("hero") else "kpi-card"
         cards.append(f"""
-        <div class="kpi-card">
+        <div class="{card_class}">
           <div class="kpi-label">{k['label']}</div>
           <div class="kpi-value">{k['value']}</div>
           {delta_html}
@@ -92,7 +105,101 @@ def _chart_block(chart, idx):
     """
 
 
+def _funnel_js(chart):
+    """Draws a true funnel (trapezoid stages, tapering to the next stage's
+    count) directly on the canvas — Chart.js has no native funnel type.
+    Auto-highlights the weakest step-to-step conversion so the chart points
+    at the leak instead of just showing volume."""
+    cid = chart["id"]
+    labels = json.dumps(chart["labels"], ensure_ascii=False)
+    values = json.dumps(chart["datasets"][0]["data"])
+    colors_light = json.dumps(FUNNEL_LIGHT)
+    colors_dark = json.dumps(FUNNEL_DARK)
+    return f"""
+    (function() {{
+      const canvas = document.getElementById('{cid}');
+      const wrap = canvas.parentElement;
+      const labels = {labels};
+      const values = {values};
+      const colorsLight = {colors_light};
+      const colorsDark = {colors_dark};
+
+      function draw() {{
+        const dpr = window.devicePixelRatio || 1;
+        const w = wrap.clientWidth, h = wrap.clientHeight;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+
+        const n = values.length;
+        const maxVal = values[0];
+        const colors = isDark() ? colorsDark : colorsLight;
+        const padY = 8;
+        // Fixed label columns (not sized off the shape) so text never
+        // overflows a narrow late-stage trapezoid when values span a wide range.
+        const padLeft = Math.min(140, w * 0.34);
+        const padRight = Math.min(90, w * 0.24);
+        const bandW = Math.max(w - padLeft - padRight, 20);
+        const bandCx = padLeft + bandW / 2;
+        const rowH = (h - padY * 2) / n;
+
+        let weakestIdx = 0, weakestRate = 100;
+        for (let i = 0; i < n - 1; i++) {{
+          const r = values[i + 1] / values[i] * 100;
+          if (r < weakestRate) {{ weakestRate = r; weakestIdx = i; }}
+        }}
+
+        for (let i = 0; i < n; i++) {{
+          const topW = Math.max((values[i] / maxVal) * bandW, 4);
+          const botW = Math.max((i + 1 < n ? values[i + 1] / maxVal : values[i] / maxVal) * bandW, 4);
+          const yTop = padY + i * rowH;
+          const yBot = yTop + rowH;
+
+          ctx.beginPath();
+          ctx.moveTo(bandCx - topW / 2, yTop);
+          ctx.lineTo(bandCx + topW / 2, yTop);
+          ctx.lineTo(bandCx + botW / 2, yBot);
+          ctx.lineTo(bandCx - botW / 2, yBot);
+          ctx.closePath();
+          ctx.fillStyle = colors[i % colors.length];
+          ctx.fill();
+          ctx.strokeStyle = surfaceColor();
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.textBaseline = 'middle';
+          ctx.textAlign = 'right';
+          ctx.fillStyle = inkColor('primary');
+          ctx.font = '600 12px -apple-system, sans-serif';
+          ctx.fillText(labels[i], padLeft - 12, yTop + rowH / 2 - 8);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '700 12.5px -apple-system, sans-serif';
+          ctx.fillText(values[i].toLocaleString('es-MX'), padLeft - 12, yTop + rowH / 2 + 9);
+
+          if (i + 1 < n) {{
+            const rate = values[i + 1] / values[i] * 100;
+            const isWeak = i === weakestIdx;
+            ctx.fillStyle = isWeak ? '#d03b3b' : inkColor('muted');
+            ctx.font = (isWeak ? '700 12px' : '600 11.5px') + ' -apple-system, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${{rate.toFixed(0)}}% ${{isWeak ? '\\u26A0' : '\\u2192'}}`, padLeft + bandW + 12, yBot);
+          }}
+        }}
+      }}
+
+      draw();
+      window.addEventListener('resize', draw);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+      new ResizeObserver(draw).observe(wrap);
+    }})();
+    """
+
+
 def _chart_js(chart):
+    if chart["type"] == "funnel":
+        return _funnel_js(chart)
     cid = chart["id"]
     ctype = chart["type"]
     horizontal = bool(chart.get("horizontal"))
@@ -278,38 +385,41 @@ TEMPLATE = """<!doctype html>
 <style>
   :root {{
     color-scheme: light;
-    --surface: #fcfcfb;
-    --page: #f9f9f7;
-    --text-primary: #0b0b0b;
-    --text-secondary: #52514e;
-    --text-muted: #898781;
-    --grid: #e1e0d9;
-    --border: rgba(11,11,11,0.10);
-    --accent: #2a78d6;
+    --brand-ink: #163832;
+    --brand-cream: #F6EFE1;
+    --gold: #B8842C;
+    --surface: #FFFFFF;
+    --page: #F6EFE1;
+    --text-primary: #163832;
+    --text-secondary: #4A625D;
+    --text-muted: #7E948F;
+    --grid: rgba(22,56,50,0.15);
+    --border: rgba(22,56,50,0.12);
+    --accent: #71A8A3;
   }}
   @media (prefers-color-scheme: dark) {{
     :root:not([data-theme="light"]) {{
       color-scheme: dark;
-      --surface: #1a1a19;
-      --page: #0d0d0d;
-      --text-primary: #ffffff;
-      --text-secondary: #c3c2b7;
-      --text-muted: #898781;
-      --grid: #2c2c2a;
-      --border: rgba(255,255,255,0.10);
-      --accent: #3987e5;
+      --surface: #163832;
+      --page: #0E1F1B;
+      --text-primary: #F6EFE1;
+      --text-secondary: #C7D9D5;
+      --text-muted: #8FA8A3;
+      --grid: rgba(246,239,225,0.14);
+      --border: rgba(246,239,225,0.12);
+      --accent: #8FC2BC;
     }}
   }}
   :root[data-theme="dark"] {{
     color-scheme: dark;
-    --surface: #1a1a19;
-    --page: #0d0d0d;
-    --text-primary: #ffffff;
-    --text-secondary: #c3c2b7;
-    --text-muted: #898781;
-    --grid: #2c2c2a;
-    --border: rgba(255,255,255,0.10);
-    --accent: #3987e5;
+    --surface: #163832;
+    --page: #0E1F1B;
+    --text-primary: #F6EFE1;
+    --text-secondary: #C7D9D5;
+    --text-muted: #8FA8A3;
+    --grid: rgba(246,239,225,0.14);
+    --border: rgba(246,239,225,0.12);
+    --accent: #8FC2BC;
   }}
   * {{ box-sizing: border-box; }}
   body {{
@@ -319,8 +429,8 @@ TEMPLATE = """<!doctype html>
   }}
   .wrap {{ max-width: 1080px; margin: 0 auto; }}
   .brand {{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }}
-  .brand .mark {{ width:28px; height:28px; border-radius:7px; background: var(--accent);
-                  display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:13px; }}
+  .brand .mark {{ width:28px; height:28px; border-radius:7px; background: var(--brand-ink);
+                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px; }}
   .brand span {{ color: var(--text-muted); font-size:13px; letter-spacing: .04em; text-transform: uppercase; }}
   header.page-head {{ margin-bottom: 28px; }}
   header.page-head .tag {{ color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }}
@@ -328,16 +438,18 @@ TEMPLATE = """<!doctype html>
   header.page-head p.tagline {{ color: var(--text-secondary); font-size: 15px; max-width: 720px; margin: 0; line-height:1.5; }}
   .kpi-row {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }}
   .kpi-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; position: relative; }}
+  .kpi-hero {{ border: 1px solid var(--gold); }}
+  .kpi-hero .kpi-value {{ color: var(--gold); }}
   .kpi-label {{ color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }}
   .kpi-value {{ font-size: 26px; font-weight: 600; }}
   .kpi-delta {{ font-size: 13px; margin-top: 4px; font-weight: 600; }}
-  .delta-up {{ color: #0ca30c; }}
+  .delta-up {{ color: #2f6e57; }}
   .delta-down {{ color: #d03b3b; }}
   .kpi-badge {{ display:inline-block; margin-top:8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
                 letter-spacing: .03em; padding: 3px 8px; border-radius: 999px; }}
-  .kpi-good {{ background: rgba(12,163,12,0.14); color: #0ca30c; }}
-  .kpi-warning {{ background: rgba(250,178,25,0.18); color: #9a6a00; }}
-  .kpi-serious {{ background: rgba(236,131,90,0.16); color: #b1481f; }}
+  .kpi-good {{ background: rgba(62,143,114,0.16); color: #2f6e57; }}
+  .kpi-warning {{ background: rgba(184,132,44,0.18); color: #8c6220; }}
+  .kpi-serious {{ background: rgba(140,90,30,0.18); color: #6b4517; }}
   .kpi-critical {{ background: rgba(208,59,59,0.14); color: #d03b3b; }}
   .charts-grid {{ display: grid; grid-template-columns: {chart_grid_cols}; gap: 18px; margin-bottom: 26px; }}
   .chart-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }}
@@ -354,7 +466,7 @@ TEMPLATE = """<!doctype html>
   th, td {{ text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }}
   th {{ color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }}
   footer {{ color: var(--text-muted); font-size: 12px; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 16px; }}
-  footer a {{ color: var(--accent); text-decoration: none; }}
+  footer a {{ color: var(--text-primary); text-decoration: underline; }}
 </style>
 </head>
 <body>

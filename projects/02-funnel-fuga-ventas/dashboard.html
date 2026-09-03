@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>XIA · Ventas por Equipo en Tiempo Real</title>
+<title>XIA · Funnel de Ventas con Alertas de Fuga</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -96,39 +96,46 @@
 <div class="wrap">
   <div class="brand"><div class="mark">X</div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
   <header class="page-head">
-    <div class="tag">Proyecto 01 · Portafolio de demostración</div>
-    <h1>Ventas por Equipo en Tiempo Real</h1>
-    <p class="tagline">Occidente viene en 46% de su meta este mes — y la tendencia ya lo mostraba desde 2026-06. Así se ve la alerta antes del cierre, no después.</p>
+    <div class="tag">Proyecto 02 · Portafolio de demostración</div>
+    <h1>Funnel de Ventas con Alertas de Fuga</h1>
+    <p class="tagline">Te enteras de la fuga en el funnel cuando todavía puedes corregirla, no cuando ya se perdió el trimestre.</p>
   </header>
 
   <div class="kpi-row">
     
         <div class="kpi-card">
-          <div class="kpi-label">Ventas totales (2026-08)</div>
-          <div class="kpi-value">$3,772,904</div>
+          <div class="kpi-label">Leads esta semana</div>
+          <div class="kpi-value">511</div>
           
           
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Cumplimiento vs. meta</div>
-          <div class="kpi-value">87.5%</div>
-          
-          <span class="kpi-badge kpi-warning">cerca de meta</span>
+          <div class="kpi-label">Tasa Calif. → Propuesta</div>
+          <div class="kpi-value">27.1%</div>
+          <div class="kpi-delta delta-down">&darr; vs. 56.7% histórico</div>
+          <span class="kpi-badge kpi-critical">fuga activa</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Equipo líder</div>
-          <div class="kpi-value">Norte</div>
-          <div class="kpi-delta delta-up">&uarr; 113.4% de meta</div>
+          <div class="kpi-label">Semanas en alerta</div>
+          <div class="kpi-value">3</div>
+          
           
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Equipo en riesgo</div>
-          <div class="kpi-value">Occidente</div>
-          <div class="kpi-delta delta-down">&darr; 46.4% de meta</div>
+          <div class="kpi-label">Conversión total del funnel</div>
+          <div class="kpi-value">3.1%</div>
           
+          
+        </div>
+
+        <div class="kpi-card kpi-hero">
+          <div class="kpi-label">Propuestas perdidas desde S10</div>
+          <div class="kpi-value">248</div>
+          <div class="kpi-delta delta-down">&darr; prospectos calificados vs. ritmo histórico</div>
+          <span class="kpi-badge kpi-critical">fuga activa</span>
         </div>
   </div>
 
@@ -136,22 +143,22 @@
     
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Occidente va en 46% de meta — el único equipo en riesgo</h3>
-        <p>Verde = en meta (≥95%) · Amarillo = cerca (80–94%) · Rojo = en riesgo (<80%). Ordenado de menor a mayor cumplimiento.</p>
+        <h3>Funnel — semana 16</h3>
+        <p>De 511 leads a 16 cierres · ⚠ marca la transición con mayor fuga</p>
       </div>
       <div class="chart-canvas-wrap">
-        <canvas id="chart_current"></canvas>
+        <canvas id="chart_funnel"></canvas>
       </div>
     </div>
     
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Occidente cae 64% en 2 meses tras tocar su punto más alto en 2026-06</h3>
-        <p>Tendencia mensual por equipo · Occidente resaltado en rojo, el resto en gris para no distraer.</p>
+        <h3>Calificados → Propuesta: 57% → 27.1%</h3>
+        <p>Umbral de alerta: 40.0% · fuga activa desde la semana 10</p>
       </div>
       <div class="chart-canvas-wrap">
-        <canvas id="chart_trend"></canvas>
+        <canvas id="chart_leak"></canvas>
       </div>
     </div>
     
@@ -159,21 +166,34 @@
 
   <div class="insights-card">
     <h3>Lo que dice el dato</h3>
-    <ul class="insights"><li><b>Occidente</b> cayó 64% en 2 meses (de $1,450,572 en 2026-06 a $519,900 en 2026-08) — no es ruido, es una caída sostenida.</li>
-<li>El quiebre ya era visible en la tendencia mensual desde 2026-06, semanas antes de que el reporte de cierre lo hubiera mostrado.</li>
-<li><b>Norte</b> compensa parte del boquete (va en 113.4% de su meta), pero no alcanza: el cumplimiento consolidado de la organización es <b>87.5%</b> ($3,772,904 de $4,310,000 MXN).</li>
-<li>Acción esta semana: revisar con el gerente de <b>Occidente</b> qué cambió — antes de que sea un problema de cierre de trimestre, no después.</li></ul>
+    <ul class="insights"><li>Desde que arrancó la fuga en la semana 10, se perdieron <b>248 propuestas</b> frente al ritmo histórico — esas son conversaciones de cierre que nunca se iniciaron.</li>
+<li>La conversión Calificados → Propuesta cayó de ~57% a <b>27.1%</b>, 3 semanas por debajo del umbral de 40.0%.</li>
+<li>La fuga está aislada en la etapa de propuesta: el volumen de leads y la tasa de calificación se mantienen estables, así que no es un problema de generación de demanda.</li>
+<li>Un reporte mensual detecta esto 4-6 semanas tarde; con la alerta activa desde la semana 10, ya van 3 semanas de ventana para corregir antes del cierre de trimestre.</li>
+<li>Acción sugerida: auditar el proceso de armado de propuestas y el tiempo de respuesta a prospectos calificados de las últimas 3 semanas.</li></ul>
   </div>
 
   
     <details class="table-wrap">
       <summary>Ver tabla de datos</summary>
       <table>
-        <thead><tr><th>Equipo</th><th>Ventas 2026-08 (MXN)</th><th>Meta mensual (MXN)</th><th>% Cumplimiento</th></tr></thead>
-        <tbody><tr><td>Norte</td><td>$1,111,585</td><td>$980,000</td><td>113.4%</td></tr>
-<tr><td>Centro</td><td>$1,444,994</td><td>$1,450,000</td><td>99.7%</td></tr>
-<tr><td>Sureste</td><td>$696,426</td><td>$760,000</td><td>91.6%</td></tr>
-<tr><td>Occidente</td><td>$519,900</td><td>$1,120,000</td><td>46.4%</td></tr>
+        <thead><tr><th>Semana</th><th>Leads</th><th>Contactados</th><th>Calificados</th><th>Propuestas</th><th>Cierres</th><th>% Calif.→Prop.</th></tr></thead>
+        <tbody><tr><td>1</td><td>587</td><td>426</td><td>221</td><td>124</td><td>39</td><td>56.1%</td></tr>
+<tr><td>2</td><td>520</td><td>384</td><td>179</td><td>103</td><td>36</td><td>57.5%</td></tr>
+<tr><td>3</td><td>494</td><td>363</td><td>194</td><td>105</td><td>34</td><td>54.1%</td></tr>
+<tr><td>4</td><td>461</td><td>348</td><td>182</td><td>101</td><td>29</td><td>55.5%</td></tr>
+<tr><td>5</td><td>586</td><td>436</td><td>221</td><td>135</td><td>45</td><td>61.1%</td></tr>
+<tr><td>6</td><td>461</td><td>335</td><td>151</td><td>87</td><td>28</td><td>57.6%</td></tr>
+<tr><td>7</td><td>490</td><td>378</td><td>177</td><td>100</td><td>27</td><td>56.5%</td></tr>
+<tr><td>8</td><td>493</td><td>347</td><td>195</td><td>117</td><td>38</td><td>60.0%</td></tr>
+<tr><td>9</td><td>553</td><td>406</td><td>218</td><td>114</td><td>32</td><td>52.3%</td></tr>
+<tr><td>10</td><td>447</td><td>335</td><td>196</td><td>100</td><td>32</td><td>51.0%</td></tr>
+<tr><td>11</td><td>596</td><td>445</td><td>232</td><td>108</td><td>36</td><td>46.6%</td></tr>
+<tr><td>12</td><td>507</td><td>353</td><td>188</td><td>77</td><td>28</td><td>41.0%</td></tr>
+<tr><td>13</td><td>505</td><td>344</td><td>177</td><td>74</td><td>24</td><td>41.8%</td></tr>
+<tr><td>14</td><td>484</td><td>340</td><td>166</td><td>52</td><td>15</td><td>31.3%</td></tr>
+<tr><td>15</td><td>579</td><td>423</td><td>221</td><td>71</td><td>27</td><td>32.1%</td></tr>
+<tr><td>16</td><td>511</td><td>383</td><td>207</td><td>56</td><td>16</td><td>27.1%</td></tr>
 </tbody>
       </table>
     </details>
@@ -209,174 +229,127 @@ function inkColor(role) {
 function surfaceColor() { return cssVar('--surface'); }
 
 
-    new Chart(document.getElementById('chart_current').getContext('2d'), {
-      type: "bar",
-      data: {
-        labels: ["Occidente", "Sureste", "Centro", "Norte"],
-        datasets: [{
-            label: "% de meta",
-            data: [46.4, 91.6, 99.7, 113.4],
-            valueLabels: ["46%", "92%", "100%", "113%"],
-            backgroundColor: ["#d03b3b", "#B8842C", "#3E8F72", "#3E8F72"],
-            borderColor: ["#d03b3b", "#B8842C", "#3E8F72", "#3E8F72"],
-            borderWidth: 1,
-            borderDash: [],
-            borderRadius: 4,
-            fill: false,
-            tension: 0,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        }]
-      },
-      plugins: [{
-        id: 'xiaAnnotate_chart_current',
-        afterDatasetsDraw(chart) {
-          const { ctx, chartArea, scales } = chart;
-          ctx.save();
-          
-      chart.data.datasets.forEach((dataset, di) => {
-        if (!dataset.valueLabels) return;
-        const meta = chart.getDatasetMeta(di);
-        const horiz = chart.options.indexAxis === 'y';
-        meta.data.forEach((el, i) => {
-          const vl = dataset.valueLabels[i];
-          if (vl === undefined) return;
+    (function() {
+      const canvas = document.getElementById('chart_funnel');
+      const wrap = canvas.parentElement;
+      const labels = ["Leads", "Contactados", "Calificados", "Propuestas", "Cierres"];
+      const values = [511, 383, 207, 56, 16];
+      const colorsLight = ["#DCEAE7", "#BFDAD5", "#9FC7C0", "#71A8A3", "#4F8880", "#163832"];
+      const colorsDark = ["#2F5850", "#3D7268", "#4F9285", "#63AC9E", "#84C9BB", "#B3E2D6"];
+
+      function draw() {
+        const dpr = window.devicePixelRatio || 1;
+        const w = wrap.clientWidth, h = wrap.clientHeight;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+
+        const n = values.length;
+        const maxVal = values[0];
+        const colors = isDark() ? colorsDark : colorsLight;
+        const padY = 8;
+        // Fixed label columns (not sized off the shape) so text never
+        // overflows a narrow late-stage trapezoid when values span a wide range.
+        const padLeft = Math.min(140, w * 0.34);
+        const padRight = Math.min(90, w * 0.24);
+        const bandW = Math.max(w - padLeft - padRight, 20);
+        const bandCx = padLeft + bandW / 2;
+        const rowH = (h - padY * 2) / n;
+
+        let weakestIdx = 0, weakestRate = 100;
+        for (let i = 0; i < n - 1; i++) {
+          const r = values[i + 1] / values[i] * 100;
+          if (r < weakestRate) { weakestRate = r; weakestIdx = i; }
+        }
+
+        for (let i = 0; i < n; i++) {
+          const topW = Math.max((values[i] / maxVal) * bandW, 4);
+          const botW = Math.max((i + 1 < n ? values[i + 1] / maxVal : values[i] / maxVal) * bandW, 4);
+          const yTop = padY + i * rowH;
+          const yBot = yTop + rowH;
+
+          ctx.beginPath();
+          ctx.moveTo(bandCx - topW / 2, yTop);
+          ctx.lineTo(bandCx + topW / 2, yTop);
+          ctx.lineTo(bandCx + botW / 2, yBot);
+          ctx.lineTo(bandCx - botW / 2, yBot);
+          ctx.closePath();
+          ctx.fillStyle = colors[i % colors.length];
+          ctx.fill();
+          ctx.strokeStyle = surfaceColor();
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.textBaseline = 'middle';
+          ctx.textAlign = 'right';
           ctx.fillStyle = inkColor('primary');
           ctx.font = '600 12px -apple-system, sans-serif';
-          if (horiz) {
-            ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-            ctx.fillText(vl, el.x + 8, el.y);
-          } else {
-            ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-            ctx.fillText(vl, el.x, el.y - 6);
-          }
-        });
-      });
-      {
-        const val = 100;
-        const horiz = chart.options.indexAxis === 'y';
-        const axisScale = horiz ? scales.x : scales.y;
-        ctx.strokeStyle = inkColor('muted');
-        ctx.setLineDash([5, 4]);
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        if (horiz) {
-          const px = axisScale.getPixelForValue(val);
-          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
-          ctx.stroke();
-          ctx.setLineDash([]);
+          ctx.fillText(labels[i], padLeft - 12, yTop + rowH / 2 - 8);
           ctx.fillStyle = inkColor('secondary');
-          ctx.font = '600 11px -apple-system, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText("Meta (100%)", px, chartArea.top - 8);
-        } else {
-          const py = axisScale.getPixelForValue(val);
-          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
-          ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.fillStyle = inkColor('secondary');
-          ctx.font = '600 11px -apple-system, sans-serif';
-          ctx.textAlign = 'left';
-          ctx.fillText("Meta (100%)", chartArea.left + 4, py - 6);
-        }
-      }
-          ctx.restore();
-        }
-      }],
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { display: false, position: 'top', align: 'start',
-                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
-          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
-                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-                      callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}%` } }
-        },
-        scales: {
-          y: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
-          x: {
-            stacked: false,
-            grid: { color: inkColor('grid') },
-            ticks: { color: inkColor('muted') }, callback: (v) => v + '%',
-            title: { display: false, text: "", color: inkColor('secondary') }, suggestedMax: 120
+          ctx.font = '700 12.5px -apple-system, sans-serif';
+          ctx.fillText(values[i].toLocaleString('es-MX'), padLeft - 12, yTop + rowH / 2 + 9);
+
+          if (i + 1 < n) {
+            const rate = values[i + 1] / values[i] * 100;
+            const isWeak = i === weakestIdx;
+            ctx.fillStyle = isWeak ? '#d03b3b' : inkColor('muted');
+            ctx.font = (isWeak ? '700 12px' : '600 11.5px') + ' -apple-system, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${rate.toFixed(0)}% ${isWeak ? '\u26A0' : '\u2192'}`, padLeft + bandW + 12, yBot);
           }
         }
       }
-    });
+
+      draw();
+      window.addEventListener('resize', draw);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+      new ResizeObserver(draw).observe(wrap);
+    })();
     
 
-    new Chart(document.getElementById('chart_trend').getContext('2d'), {
+    new Chart(document.getElementById('chart_leak').getContext('2d'), {
       type: "line",
       data: {
-        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
+        labels: ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S12", "S13", "S14", "S15", "S16"],
         datasets: [{
-            label: "Centro",
-            data: [1296235.0, 942973.0, 1577762.0, 1607857.0, 1482574.0, 1900637.0, 1511140.0, 1444994.0],
+            label: "Tasa real",
+            data: [56.1, 57.5, 54.1, 55.5, 61.1, 57.6, 56.5, 60.0, 52.3, 51.0, 46.6, 41.0, 41.8, 31.3, 32.1, 27.1],
             valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        },
-{
-            label: "Norte",
-            data: [1003669.0, 1008575.0, 818166.0, 945645.0, 985588.0, 844516.0, 817923.0, 1111585.0],
-            valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        },
-{
-            label: "Occidente",
-            data: [1078484.0, 1180978.0, 1266093.0, 1343822.0, 1038066.0, 1450572.0, 741438.0, 519900.0],
-            valueLabels: null,
-            backgroundColor: "#d03b3b",
-            borderColor: "#d03b3b",
-            borderWidth: 3,
+            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
+            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
+            borderWidth: 2,
             borderDash: [],
             borderRadius: 0,
             fill: false,
             tension: 0.3,
-            pointRadius: 4,
+            pointRadius: 3,
             pointHoverRadius: 5,
         },
 {
-            label: "Sureste",
-            data: [781698.0, 666576.0, 814661.0, 752489.0, 714554.0, 687997.0, 689517.0, 696426.0],
+            label: "Umbral de alerta",
+            data: [40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0],
             valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
+            backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
+            borderColor: seriesColor(1, "#B8842C", "#D4A94F", 1),
+            borderWidth: 2,
+            borderDash: [],
             borderRadius: 0,
             fill: false,
             tension: 0.3,
-            pointRadius: 0,
+            pointRadius: 3,
             pointHoverRadius: 5,
         }]
       },
       plugins: [{
-        id: 'xiaAnnotate_chart_trend',
+        id: 'xiaAnnotate_chart_leak',
         afterDatasetsDraw(chart) {
           const { ctx, chartArea, scales } = chart;
           ctx.save();
           
       {
-        const px = scales.x.getPixelForValue(5);
+        const px = scales.x.getPixelForValue(9);
         ctx.strokeStyle = withAlpha(inkColor('muted'), 0.7);
         ctx.setLineDash([3, 3]);
         ctx.lineWidth = 1;
@@ -387,7 +360,7 @@ function surfaceColor() { return cssVar('--surface'); }
         ctx.fillStyle = inkColor('secondary');
         ctx.font = '600 11px -apple-system, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText("Pico: 2026-06", px, chartArea.top + 12);
+        ctx.fillText("Inicio de fuga (S10)", px, chartArea.top + 12);
       }
           ctx.restore();
         }
@@ -401,8 +374,7 @@ function surfaceColor() { return cssVar('--surface'); }
           legend: { display: true, position: 'top', align: 'start',
                      labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
           tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
-                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('es-MX')}` } }
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
         },
         scales: {
           x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
@@ -410,7 +382,7 @@ function surfaceColor() { return cssVar('--surface'); }
             stacked: false,
             grid: { color: inkColor('grid') },
             ticks: { color: inkColor('muted') },
-            title: { display: true, text: "MXN", color: inkColor('secondary') }
+            title: { display: true, text: "%", color: inkColor('secondary') }
           }
         }
       }
