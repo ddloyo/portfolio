@@ -24,9 +24,9 @@ Un equipo comercial con 4 regiones descubre que una de ellas viene por debajo de
 
 ## Cómo se ve
 
-![Ventas vs meta por equipo](assets/chart_overview.png)
+![Dashboard de ventas por equipo en tiempo real](assets/dashboard_preview.png)
 
-Abre `dashboard.html` en el navegador para la versión interactiva (con tooltips y tabla de datos).
+Captura del dashboard completo — KPIs, las dos gráficas y la narrativa de insights. Abre `dashboard.html` en el navegador para la versión interactiva (con tooltips y tabla de datos).
 
 ## Datos
 
@@ -34,7 +34,7 @@ Abre `dashboard.html` en el navegador para la versión interactiva (con tooltips
 
 ## Stack
 
-Python (pandas, numpy, matplotlib) para el procesamiento y el gráfico estático · HTML + Chart.js para el dashboard interactivo — sin instalar nada del lado del cliente, se abre en cualquier navegador.
+Python (pandas, numpy) para el procesamiento y el análisis de tendencia · HTML + Chart.js para el dashboard interactivo — sin instalar nada del lado del cliente, se abre en cualquier navegador. La captura en `assets/dashboard_preview.png` es manual (screenshot del propio `dashboard.html`), para tener una vista previa en el README sin depender de JS.
 
 ## Cómo correrlo
 
