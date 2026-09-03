@@ -1,7 +1,11 @@
 """
-Analiza las ventas diarias, calcula cumplimiento de meta por equipo y genera:
-  1. assets/chart_overview.png   -> gráfico estático para el README / reporte ejecutivo
-  2. dashboard.html              -> dashboard interactivo (Micro Data Office)
+Analiza las ventas diarias, calcula cumplimiento de meta por equipo y genera
+dashboard.html (dashboard interactivo, Micro Data Office).
+
+assets/dashboard_preview.png es una captura manual de dashboard.html (no la
+genera este script) — se usa como vista previa del dashboard completo en el
+README. Para regenerarla tras un cambio visual: abre dashboard.html en el
+navegador y toma un screenshot de la página completa.
 
 Uso:
     python data/generate_data.py
@@ -16,11 +20,8 @@ REPO_ROOT = ROOT.parents[1]
 sys.path.insert(0, str(REPO_ROOT / "_lib"))
 
 import pandas as pd
-import matplotlib.pyplot as plt
-from xia_style import apply_style, STATUS
+from xia_style import STATUS
 import dashboard as dash
-
-apply_style()
 
 df = pd.read_csv(ROOT / "data" / "ventas_diarias.csv", parse_dates=["fecha"])
 goals = pd.read_csv(ROOT / "data" / "metas_mensuales.csv").set_index("equipo")["meta_mensual_mxn"]
@@ -53,35 +54,11 @@ last_value = lagging_series[last_month]
 drop_pct = round((1 - last_value / peak_value) * 100, 1) if peak_month != last_month else 0
 months_since_peak = len(months) - 1 - peak_idx
 
-# ---- static chart for README / executive report ---------------------------
-# Comparison message -> one bar per team = % of goal reached, sorted worst-to-best
-# so the reader's eye lands on the risk first, colored by status, labeled directly,
-# with a dashed reference line at 100% instead of a second "goal" bar to compare against.
-sorted_teams = attainment.sort_values(ascending=True).index.tolist()
-bar_colors = [STATUS[status_of(attainment[t])] for t in sorted_teams]
-
-fig, ax = plt.subplots(figsize=(9, 5))
-y = range(len(sorted_teams))
-bars = ax.barh(list(y), [attainment[t] for t in sorted_teams], color=bar_colors, height=0.6)
-ax.set_yticks(list(y))
-ax.set_yticklabels(sorted_teams)
-ax.axvline(100, color="#898781", linestyle="--", linewidth=1.2)
-ax.text(100, len(sorted_teams) - 0.3, " Meta (100%)", color="#52514e", fontsize=10, va="bottom")
-for bar, team in zip(bars, sorted_teams):
-    ax.text(bar.get_width() + 2, bar.get_y() + bar.get_height() / 2, f"{attainment[team]:.0f}%",
-            va="center", fontsize=10, fontweight="bold", color="#0b0b0b")
-ax.set_xlim(0, max(120, attainment.max() + 15))
-ax.set_xlabel("% de meta mensual alcanzado")
-ax.set_title(f"{lagging_team} va en {attainment[lagging_team]:.0f}% de meta — el único equipo en riesgo este mes")
-fig.tight_layout()
-(ROOT / "assets").mkdir(exist_ok=True)
-fig.savefig(ROOT / "assets" / "chart_overview.png")
-plt.close(fig)
-
 # ---- interactive dashboard --------------------------------------------------
 # Chart 1 — comparison message: % of goal reached, sorted worst-to-best so the
 # risk lands first, colored by status, direct value labels, one reference line
 # at 100% instead of a second "goal" bar the reader has to subtract mentally.
+sorted_teams = attainment.sort_values(ascending=True).index.tolist()
 def _trend_dataset(team):
     ds = {
         "label": team,
@@ -161,4 +138,4 @@ dash.render(
 )
 
 print(f"Cumplimiento total: {total_attainment}% | Líder: {leading_team} | Riesgo: {lagging_team}")
-print("OK -> assets/chart_overview.png, dashboard.html")
+print("OK -> dashboard.html")
