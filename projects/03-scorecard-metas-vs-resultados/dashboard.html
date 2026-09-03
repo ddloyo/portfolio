@@ -1,0 +1,1404 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XIA · Scorecard Ejecutivo: Metas vs. Resultados</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --brand-ink: #163832;
+    --brand-cream: #F6EFE1;
+    --gold: #B8842C;
+    --surface: #FFFFFF;
+    --page: #F6EFE1;
+    --text-primary: #163832;
+    --text-secondary: #4A625D;
+    --text-muted: #7E948F;
+    --grid: rgba(22,56,50,0.15);
+    --border: rgba(22,56,50,0.12);
+    --accent: #71A8A3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface: #163832;
+      --page: #0E1F1B;
+      --text-primary: #F6EFE1;
+      --text-secondary: #C7D9D5;
+      --text-muted: #8FA8A3;
+      --grid: rgba(246,239,225,0.14);
+      --border: rgba(246,239,225,0.12);
+      --accent: #8FC2BC;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #163832;
+    --page: #0E1F1B;
+    --text-primary: #F6EFE1;
+    --text-secondary: #C7D9D5;
+    --text-muted: #8FA8A3;
+    --grid: rgba(246,239,225,0.14);
+    --border: rgba(246,239,225,0.12);
+    --accent: #8FC2BC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--text-primary);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    padding: 32px 20px 60px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brand .mark { width:28px; height:28px; border-radius:7px; background: var(--brand-ink);
+                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px; }
+  .brand span { color: var(--text-muted); font-size:13px; letter-spacing: .04em; text-transform: uppercase; }
+  header.page-head { margin-bottom: 28px; }
+  header.page-head .tag { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  header.page-head h1 { font-size: 26px; margin: 0 0 8px; }
+  header.page-head p.tagline { color: var(--text-secondary); font-size: 15px; max-width: 720px; margin: 0; line-height:1.5; }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .top-row { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 14px; margin-bottom: 28px; align-items: stretch; }
+  .hero-widget { background: var(--surface); border: 1px solid var(--gold); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; }
+  .hero-widget .hero-value { color: var(--gold); }
+  .hero-chart-wrap { position: relative; flex: 1; min-height: 130px; margin-top: 12px; }
+  .kpi-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 1fr; gap: 14px; }
+  .kpi-grid-5 .kpi-card { padding: 12px 14px; }
+  .kpi-grid-5 .kpi-label { font-size: 10.5px; }
+  .kpi-grid-5 .kpi-value { font-size: 18px; }
+  @media (max-width: 860px) {
+    .top-row { grid-template-columns: 1fr; }
+    .kpi-grid-5 { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .kpi-grid-5 { grid-template-columns: repeat(2, 1fr); }
+    .drilldown-grid { grid-template-columns: 1fr !important; }
+  }
+  .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; position: relative; }
+  .kpi-hero { border: 1px solid var(--gold); }
+  .kpi-hero .kpi-value { color: var(--gold); }
+  .kpi-label { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 600; }
+  .kpi-delta { font-size: 13px; margin-top: 4px; font-weight: 600; }
+  .delta-up { color: #2f6e57; }
+  .delta-down { color: #d03b3b; }
+  .kpi-badge { display:inline-block; margin-top:8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+                letter-spacing: .03em; padding: 3px 8px; border-radius: 999px; }
+  .kpi-good { background: rgba(62,143,114,0.16); color: #2f6e57; }
+  .kpi-warning { background: rgba(184,132,44,0.18); color: #8c6220; }
+  .kpi-serious { background: rgba(140,90,30,0.18); color: #6b4517; }
+  .kpi-critical { background: rgba(208,59,59,0.14); color: #d03b3b; }
+  .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 26px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .chart-card-wide { grid-column: 1 / -1; }
+  .chart-head h3 { margin: 0 0 2px; font-size: 15px; }
+  .chart-head p { margin: 0 0 12px; color: var(--text-muted); font-size: 12.5px; }
+  .chart-canvas-wrap { position: relative; height: 280px; }
+  .section-label { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; }
+  .drilldown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 26px; }
+  .drilldown-grid .chart-card { padding: 14px 16px; }
+  .drilldown-grid .chart-head h3 { font-size: 13.5px; }
+  .drilldown-grid .chart-head p { margin: 0 0 8px; font-size: 11.5px; }
+  .drilldown-grid .chart-canvas-wrap { height: 190px; }
+  .insights-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 22px; }
+  .insights-card h3 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+  ul.insights { margin: 0; padding-left: 18px; color: var(--text-secondary); line-height: 1.65; font-size: 14.5px; }
+  ul.insights li::marker { color: var(--accent); }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 22px; }
+  .table-wrap summary { cursor: pointer; color: var(--text-secondary); font-size: 13.5px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  footer { color: var(--text-muted); font-size: 12px; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 16px; }
+  footer a { color: var(--text-primary); text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="mark">X</div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
+  <header class="page-head">
+    <div class="tag">Proyecto 03 · Portafolio de demostración</div>
+    <h1>Scorecard Ejecutivo: Metas vs. Resultados</h1>
+    <p class="tagline">El estatus, la tendencia y el detalle de los 10 indicadores que le importan a dirección — en una sola pantalla.</p>
+  </header>
+
+  <div class="top-row">
+    
+    <div class="hero-widget">
+      <div class="kpi-label">Score consolidado</div>
+      <div class="kpi-value hero-value">94.9%</div>
+      <span class="kpi-badge kpi-warning">cerca de meta</span>
+      <div class="hero-chart-wrap">
+        <canvas id="chart_score_trend"></canvas>
+      </div>
+    </div>
+    <div class="kpi-grid-5">
+      
+        <div class="kpi-card">
+          <div class="kpi-label">Ingresos mensuales</div>
+          <div class="kpi-value">$3,311,158 MXN</div>
+          <div class="kpi-delta delta-up">&uarr; +0.6 pts</div>
+          <span class="kpi-badge kpi-good">en meta</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Nuevos clientes</div>
+          <div class="kpi-value">44 clientes</div>
+          <div class="kpi-delta delta-up">&uarr; +2.2 pts</div>
+          <span class="kpi-badge kpi-warning">cerca de meta</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Costo de adquisición (CAC)</div>
+          <div class="kpi-value">$2,062 MXN</div>
+          <div class="kpi-delta delta-down">&darr; -2.7 pts</div>
+          <span class="kpi-badge kpi-critical">en riesgo</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Leads calificados</div>
+          <div class="kpi-value">400 leads</div>
+          <div class="kpi-delta delta-up">&uarr; +0.4 pts</div>
+          <span class="kpi-badge kpi-good">en meta</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Entregas a tiempo</div>
+          <div class="kpi-value">96.7%</div>
+          <div class="kpi-delta delta-up">&uarr; +3.1 pts</div>
+          <span class="kpi-badge kpi-good">en meta</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Costo operativo por unidad</div>
+          <div class="kpi-value">$222 MXN</div>
+          <div class="kpi-delta delta-up">&uarr; +1.4 pts</div>
+          <span class="kpi-badge kpi-warning">cerca de meta</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Cobranza a 30 días</div>
+          <div class="kpi-value">77.6%</div>
+          <div class="kpi-delta delta-down">&darr; -8.4 pts</div>
+          <span class="kpi-badge kpi-critical">en riesgo</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Cartera vencida</div>
+          <div class="kpi-value">6.8%</div>
+          <div class="kpi-delta delta-down">&darr; -1.7 pts</div>
+          <span class="kpi-badge kpi-critical">en riesgo</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">CSAT (satisfacción)</div>
+          <div class="kpi-value">4.52/5</div>
+          <div class="kpi-delta delta-up">&uarr; +8.8 pts</div>
+          <span class="kpi-badge kpi-good">en meta</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Tickets resueltos < 24h</div>
+          <div class="kpi-value">85.5%</div>
+          <div class="kpi-delta delta-up">&uarr; +2.6 pts</div>
+          <span class="kpi-badge kpi-good">en meta</span>
+        </div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Cumplimiento por área — tendencia</h3>
+        <p>Promedio mensual de cumplimiento por área, 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_area_trend"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Cumplimiento vs. volatilidad</h3>
+        <p>Cada punto es un indicador — arriba a la izquierda es el mayor riesgo</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_dispersion"></canvas>
+      </div>
+    </div>
+    
+  </div>
+
+  <div>
+    <p class="section-label">Detalle por indicador — tendencia vs. meta</p>
+    <div class="drilldown-grid">
+      
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Cobranza a 30 días (Finanzas)</h3>
+        <p>Resultado vs. meta (%), 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_drill_0"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Cartera vencida (Finanzas)</h3>
+        <p>Resultado vs. meta (%), 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_drill_1"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Costo de adquisición (CAC) (Marketing)</h3>
+        <p>Resultado vs. meta (MXN), 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_drill_2"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Leads calificados (Marketing)</h3>
+        <p>Resultado vs. meta (leads), 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_drill_3"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Entregas a tiempo (Operaciones)</h3>
+        <p>Resultado vs. meta (%), 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_drill_4"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Costo operativo por unidad (Operaciones)</h3>
+        <p>Resultado vs. meta (MXN), 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_drill_5"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>CSAT (satisfacción) (Servicio)</h3>
+        <p>Resultado vs. meta (/5), 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_drill_6"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Tickets resueltos < 24h (Servicio)</h3>
+        <p>Resultado vs. meta (%), 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_drill_7"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Ingresos mensuales (Ventas)</h3>
+        <p>Resultado vs. meta (MXN), 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_drill_8"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Nuevos clientes (Ventas)</h3>
+        <p>Resultado vs. meta (clientes), 9 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_drill_9"></canvas>
+      </div>
+    </div>
+    
+    </div>
+  </div>
+
+  <div class="insights-card">
+    <h3>Lo que dice el dato</h3>
+    <ul class="insights"><li>El score consolidado de la organización es <b>94.9%</b>: 5 de 10 indicadores están en meta, 3 en riesgo.</li>
+<li><b>Cartera vencida</b> (Finanzas, responsable: Gerente de Finanzas) es el que más arrastra el consolidado, en 73.2%.</li>
+<li><b>Cartera vencida</b> es el indicador más volátil de los últimos 9 meses (desv. estándar de 6.3 pts) — antes de mover la meta, vale la pena revisar el proceso.</li>
+<li><b>Servicio</b> es el área que más mejoró en el periodo (+2.6 pts vs. el primer mes), mientras <b>Finanzas</b> es la que más retrocedió (-15.7 pts).</li></ul>
+  </div>
+
+  
+    <details class="table-wrap">
+      <summary>Ver tabla de datos</summary>
+      <table>
+        <thead><tr><th>Indicador</th><th>Área</th><th>Responsable</th><th>Meta</th><th>Resultado</th><th>% Cumplimiento</th><th>Estatus</th></tr></thead>
+        <tbody><tr><td>Ingresos mensuales</td><td>Ventas</td><td>Dir. Comercial</td><td>$3,200,000 MXN</td><td>$3,311,158 MXN</td><td>103.5%</td><td>en meta</td></tr>
+<tr><td>Nuevos clientes</td><td>Ventas</td><td>Dir. Comercial</td><td>45 clientes</td><td>44 clientes</td><td>97.5%</td><td>cerca de meta</td></tr>
+<tr><td>Costo de adquisición (CAC)</td><td>Marketing</td><td>Gerente de Marketing</td><td>$1,800 MXN</td><td>$2,062 MXN</td><td>87.3%</td><td>en riesgo</td></tr>
+<tr><td>Leads calificados</td><td>Marketing</td><td>Gerente de Marketing</td><td>380 leads</td><td>400 leads</td><td>105.2%</td><td>en meta</td></tr>
+<tr><td>Entregas a tiempo</td><td>Operaciones</td><td>Gerente de Operaciones</td><td>96.0%</td><td>96.7%</td><td>100.7%</td><td>en meta</td></tr>
+<tr><td>Costo operativo por unidad</td><td>Operaciones</td><td>Gerente de Operaciones</td><td>$210 MXN</td><td>$222 MXN</td><td>94.5%</td><td>cerca de meta</td></tr>
+<tr><td>Cobranza a 30 días</td><td>Finanzas</td><td>Gerente de Finanzas</td><td>90.0%</td><td>77.6%</td><td>86.2%</td><td>en riesgo</td></tr>
+<tr><td>Cartera vencida</td><td>Finanzas</td><td>Gerente de Finanzas</td><td>5.0%</td><td>6.8%</td><td>73.2%</td><td>en riesgo</td></tr>
+<tr><td>CSAT (satisfacción)</td><td>Servicio</td><td>Gerente de Servicio</td><td>4.50/5</td><td>4.52/5</td><td>100.4%</td><td>en meta</td></tr>
+<tr><td>Tickets resueltos < 24h</td><td>Servicio</td><td>Gerente de Servicio</td><td>85.0%</td><td>85.5%</td><td>100.5%</td><td>en meta</td></tr>
+</tbody>
+      </table>
+    </details>
+    
+
+  <footer>
+    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
+  </footer>
+</div>
+
+<script>
+function isDark() {
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t === 'dark') return true;
+  if (t === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function withAlpha(hex, alpha) {
+  if (alpha >= 1) return hex;
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function seriesColor(i, light, dark, alpha) {
+  const hex = isDark() ? dark : light;
+  return withAlpha(hex, alpha);
+}
+function seriesColorHex(light, dark) { return isDark() ? dark : light; }
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function inkColor(role) {
+  return { primary: cssVar('--text-primary'), secondary: cssVar('--text-secondary'),
+            muted: cssVar('--text-muted'), grid: cssVar('--grid') }[role];
+}
+function surfaceColor() { return cssVar('--surface'); }
+
+
+    new Chart(document.getElementById('chart_score_trend').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Score promedio",
+            data: [98.7, 97.9, 97.6, 97.0, 96.0, 94.0, 93.7, 94.3, 94.9],
+            valueLabels: null,
+            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
+            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_area_trend').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Finanzas",
+            data: [95.4, 90.1, 94.2, 88.4, 85.6, 87.9, 82.1, 84.8, 79.7],
+            valueLabels: null,
+            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
+            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Marketing",
+            data: [98.1, 99.7, 96.0, 98.4, 96.2, 95.3, 96.0, 97.4, 96.2],
+            valueLabels: null,
+            backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
+            borderColor: seriesColor(1, "#B8842C", "#D4A94F", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Operaciones",
+            data: [101.6, 100.9, 95.6, 103.4, 99.5, 94.4, 95.8, 95.4, 97.6],
+            valueLabels: null,
+            backgroundColor: seriesColor(2, "#163832", "#DCEAE7", 0.12),
+            borderColor: seriesColor(2, "#163832", "#DCEAE7", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Servicio",
+            data: [97.8, 102.1, 105.4, 99.6, 99.6, 97.6, 99.8, 94.8, 100.4],
+            valueLabels: null,
+            backgroundColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 0.12),
+            borderColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Ventas",
+            data: [100.4, 97.0, 97.0, 95.0, 99.1, 95.0, 94.6, 99.1, 100.5],
+            valueLabels: null,
+            backgroundColor: seriesColor(4, "#D4A94F", "#E8C878", 0.12),
+            borderColor: seriesColor(4, "#D4A94F", "#E8C878", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "%", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_dispersion').getContext('2d'), {
+      type: 'scatter',
+      data: { datasets: [{
+            label: "En meta",
+            data: [{"x": 103.5, "y": 4.0, "label": "Ingresos mensuales"}, {"x": 105.2, "y": 2.0, "label": "Leads calificados"}, {"x": 100.7, "y": 3.8, "label": "Entregas a tiempo"}, {"x": 100.4, "y": 3.9, "label": "CSAT (satisfacción)"}, {"x": 100.5, "y": 4.0, "label": "Tickets resueltos < 24h"}],
+            backgroundColor: seriesColorHex("#3E8F72", "#3E8F72"),
+            borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
+            pointRadius: 6,
+            pointHoverRadius: 8,
+        },
+{
+            label: "Cerca de meta",
+            data: [{"x": 97.5, "y": 3.1, "label": "Nuevos clientes"}, {"x": 94.5, "y": 4.0, "label": "Costo operativo por unidad"}],
+            backgroundColor: seriesColorHex("#B8842C", "#B8842C"),
+            borderColor: seriesColorHex("#B8842C", "#B8842C"),
+            pointRadius: 6,
+            pointHoverRadius: 8,
+        },
+{
+            label: "En riesgo",
+            data: [{"x": 87.3, "y": 4.0, "label": "Costo de adquisición (CAC)"}, {"x": 86.2, "y": 4.9, "label": "Cobranza a 30 días"}, {"x": 73.2, "y": 6.3, "label": "Cartera vencida"}],
+            backgroundColor: seriesColorHex("#d03b3b", "#d03b3b"),
+            borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
+            pointRadius: 6,
+            pointHoverRadius: 8,
+        }] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: {
+            backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+            borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+            callbacks: {
+              label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)}%, ${ctx.parsed.y.toFixed(1)} pts`
+            }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: "% cumplimiento actual", color: inkColor('secondary') },
+                grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
+          y: { title: { display: true, text: "Volatilidad histórica (desv. estándar, pts)", color: inkColor('secondary') },
+                grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_drill_0').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Resultado",
+            data: [88.77, 86.98, 89.48, 82.08, 83.37, 84.1, 76.99, 85.16, 77.6],
+            valueLabels: null,
+            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
+            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_drill_0',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          
+      {
+        const val = 90.0;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Meta", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Meta", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_drill_1').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Resultado",
+            data: [5.42, 5.98, 5.62, 5.84, 6.37, 6.07, 6.35, 6.68, 6.83],
+            valueLabels: null,
+            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
+            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_drill_1',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          
+      {
+        const val = 5.0;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Meta", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Meta", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_drill_2').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Resultado",
+            data: [1852.04, 1831.19, 1963.52, 1895.25, 1980.72, 2052.84, 2015.2, 2000.38, 2062.13],
+            valueLabels: null,
+            backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
+            borderColor: seriesColor(1, "#B8842C", "#D4A94F", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_drill_2',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          
+      {
+        const val = 1800.0;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Meta", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Meta", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_drill_3').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Resultado",
+            data: [376.2, 384.16, 380.68, 387.38, 385.4, 391.19, 390.38, 398.4, 399.85],
+            valueLabels: null,
+            backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
+            borderColor: seriesColor(1, "#B8842C", "#D4A94F", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_drill_3',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          
+      {
+        const val = 380.0;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Meta", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Meta", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_drill_4').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Resultado",
+            data: [96.28, 99.72, 89.54, 98.82, 93.4, 89.79, 93.08, 93.7, 96.71],
+            valueLabels: null,
+            backgroundColor: seriesColor(2, "#163832", "#DCEAE7", 0.12),
+            borderColor: seriesColor(2, "#163832", "#DCEAE7", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_drill_4',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          
+      {
+        const val = 96.0;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Meta", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Meta", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_drill_5').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Resultado",
+            data: [204.3, 214.49, 214.54, 202.08, 206.53, 220.45, 221.94, 225.61, 222.32],
+            valueLabels: null,
+            backgroundColor: seriesColor(2, "#163832", "#DCEAE7", 0.12),
+            borderColor: seriesColor(2, "#163832", "#DCEAE7", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_drill_5',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          
+      {
+        const val = 210.0;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Meta", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Meta", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_drill_6').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Resultado",
+            data: [4.57, 4.53, 4.67, 4.61, 4.54, 4.33, 4.31, 4.12, 4.52],
+            valueLabels: null,
+            backgroundColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 0.12),
+            borderColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_drill_6',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          
+      {
+        const val = 4.5;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Meta", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Meta", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_drill_7').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Resultado",
+            data: [79.79, 87.91, 90.86, 82.29, 83.49, 84.19, 88.16, 83.2, 85.46],
+            valueLabels: null,
+            backgroundColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 0.12),
+            borderColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_drill_7',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          
+      {
+        const val = 85.0;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Meta", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Meta", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_drill_8').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Resultado",
+            data: [3411938.93, 3189959.82, 3173728.71, 2936828.32, 3239072.12, 3210201.29, 3191897.51, 3293325.1, 3311157.68],
+            valueLabels: null,
+            backgroundColor: seriesColor(4, "#D4A94F", "#E8C878", 0.12),
+            borderColor: seriesColor(4, "#D4A94F", "#E8C878", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_drill_8',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          
+      {
+        const val = 3200000.0;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Meta", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Meta", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_drill_9').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        datasets: [{
+            label: "Resultado",
+            data: [42.42, 42.37, 42.68, 44.17, 43.63, 40.36, 40.31, 42.9, 43.88],
+            valueLabels: null,
+            backgroundColor: seriesColor(4, "#D4A94F", "#E8C878", 0.12),
+            borderColor: seriesColor(4, "#D4A94F", "#E8C878", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_drill_9',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          
+      {
+        const val = 45.0;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Meta", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Meta", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+</script>
+</body>
+</html>

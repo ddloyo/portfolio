@@ -64,6 +64,25 @@ def _kpi_html(kpis):
     return "\n".join(cards)
 
 
+def _hero_widget_html(kpi, chart_id):
+    """Gold-bordered score tile with its own trend chart embedded below the
+    number, meant to sit to the left of the per-metric kpi-grid-5 — one
+    combined 'headline + trend' widget instead of two separate cards."""
+    status = kpi.get("status")
+    badge = ""
+    if status:
+        badge = f'<span class="kpi-badge kpi-{status}">{kpi.get("status_label", status)}</span>'
+    return f"""
+    <div class="hero-widget">
+      <div class="kpi-label">{kpi['label']}</div>
+      <div class="kpi-value hero-value">{kpi['value']}</div>
+      {badge}
+      <div class="hero-chart-wrap">
+        <canvas id="{chart_id}"></canvas>
+      </div>
+    </div>"""
+
+
 def _insights_html(insights):
     items = "\n".join(f"<li>{i}</li>" for i in insights)
     return f'<ul class="insights">{items}</ul>'
@@ -92,8 +111,9 @@ def _chart_block(chart, idx):
     cid = chart["id"]
     title = chart["title"]
     subtitle = chart.get("subtitle", "")
+    card_class = "chart-card chart-card-wide" if chart.get("full_width") else "chart-card"
     return f"""
-    <div class="chart-card">
+    <div class="{card_class}">
       <div class="chart-head">
         <h3>{title}</h3>
         <p>{subtitle}</p>
@@ -197,9 +217,152 @@ def _funnel_js(chart):
     """
 
 
+def _scatter_js(chart):
+    """Chart.js native scatter — one dataset per status so the legend reads
+    as good/warning/critical instead of one undifferentiated point cloud.
+    Points carry a `label` (the KPI/entity name) for the tooltip."""
+    cid = chart["id"]
+    points = chart["points"]
+    x_label = chart.get("x_label", "")
+    y_label = chart.get("y_label", "")
+    x_unit = chart.get("x_unit", "")
+    y_unit = chart.get("y_unit", "")
+    status_labels = {"good": "En meta", "warning": "Cerca de meta", "critical": "En riesgo"}
+
+    groups = {}
+    order = []
+    for p in points:
+        status = p.get("status", "default")
+        if status not in groups:
+            groups[status] = []
+            order.append(status)
+        groups[status].append(p)
+
+    datasets_js = []
+    for status in order:
+        pts = groups[status]
+        color_l, color_d = STATUS.get(status, (CATEGORICAL_LIGHT[0], CATEGORICAL_DARK[0]))
+        data = json.dumps([{"x": p["x"], "y": p["y"], "label": p.get("label", "")} for p in pts], ensure_ascii=False)
+        label = json.dumps(status_labels.get(status, status), ensure_ascii=False)
+        datasets_js.append(f"""{{
+            label: {label},
+            data: {data},
+            backgroundColor: seriesColorHex({json.dumps(color_l)}, {json.dumps(color_d)}),
+            borderColor: seriesColorHex({json.dumps(color_l)}, {json.dumps(color_d)}),
+            pointRadius: 6,
+            pointHoverRadius: 8,
+        }}""")
+    datasets_str = ",\n".join(datasets_js)
+
+    return f"""
+    new Chart(document.getElementById('{cid}').getContext('2d'), {{
+      type: 'scatter',
+      data: {{ datasets: [{datasets_str}] }},
+      options: {{
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {{
+          legend: {{ display: true, position: 'top', align: 'start',
+                     labels: {{ color: inkColor('secondary'), boxWidth: 12, usePointStyle: true }} }},
+          tooltip: {{
+            backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+            borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+            callbacks: {{
+              label: (ctx) => `${{ctx.raw.label}}: ${{ctx.parsed.x.toFixed(1)}}{x_unit}, ${{ctx.parsed.y.toFixed(1)}}{y_unit}`
+            }}
+          }}
+        }},
+        scales: {{
+          x: {{ title: {{ display: {str(bool(x_label)).lower()}, text: {json.dumps(x_label, ensure_ascii=False)}, color: inkColor('secondary') }},
+                grid: {{ color: inkColor('grid') }}, ticks: {{ color: inkColor('muted') }} }},
+          y: {{ title: {{ display: {str(bool(y_label)).lower()}, text: {json.dumps(y_label, ensure_ascii=False)}, color: inkColor('secondary') }},
+                grid: {{ color: inkColor('grid') }}, ticks: {{ color: inkColor('muted') }} }}
+        }}
+      }}
+    }});
+    """
+
+
+def _heatmap_js(chart):
+    """No native Chart.js heatmap — drawn on canvas like the funnel chart.
+    Diverging fill within the XIA palette only: teal for positive
+    correlation, gold for negative, alpha scaled by magnitude."""
+    cid = chart["id"]
+    labels = json.dumps(chart["labels"], ensure_ascii=False)
+    matrix = json.dumps(chart["matrix"])
+    return f"""
+    (function() {{
+      const canvas = document.getElementById('{cid}');
+      const wrap = canvas.parentElement;
+      const labels = {labels};
+      const matrix = {matrix};
+      const n = labels.length;
+
+      function cellColor(v) {{
+        const alpha = Math.min(Math.abs(v), 1);
+        const teal = isDark() ? [143, 194, 188] : [113, 168, 163];
+        const gold = isDark() ? [212, 169, 79] : [184, 132, 44];
+        const [r, g, b] = v >= 0 ? teal : gold;
+        return `rgba(${{r}},${{g}},${{b}},${{(0.12 + alpha * 0.78).toFixed(2)}})`;
+      }}
+
+      function draw() {{
+        const dpr = window.devicePixelRatio || 1;
+        const w = wrap.clientWidth, h = wrap.clientHeight;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+
+        const padLeft = Math.min(120, w * 0.24);
+        const padTop = 8;
+        const padBottom = 34;
+        const gridW = w - padLeft - 12;
+        const gridH = h - padTop - padBottom;
+        const cell = Math.min(gridW / n, gridH / n);
+        const gap = 3;
+
+        for (let i = 0; i < n; i++) {{
+          for (let j = 0; j < n; j++) {{
+            const x = padLeft + j * cell, y = padTop + i * cell;
+            ctx.fillStyle = cellColor(matrix[i][j]);
+            ctx.fillRect(x, y, cell - gap, cell - gap);
+            ctx.fillStyle = inkColor('primary');
+            ctx.font = '600 11px -apple-system, sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(matrix[i][j].toFixed(2), x + (cell - gap) / 2, y + (cell - gap) / 2);
+          }}
+        }}
+
+        ctx.fillStyle = inkColor('secondary');
+        ctx.font = '600 11px -apple-system, sans-serif';
+        for (let i = 0; i < n; i++) {{
+          ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+          ctx.fillText(labels[i], padLeft - 10, padTop + i * cell + (cell - gap) / 2);
+          ctx.save();
+          ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+          ctx.translate(padLeft + i * cell + (cell - gap) / 2, padTop + n * cell + 6);
+          ctx.fillText(labels[i], 0, 0);
+          ctx.restore();
+        }}
+      }}
+
+      draw();
+      window.addEventListener('resize', draw);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+      new ResizeObserver(draw).observe(wrap);
+    }})();
+    """
+
+
 def _chart_js(chart):
     if chart["type"] == "funnel":
         return _funnel_js(chart)
+    if chart["type"] == "scatter":
+        return _scatter_js(chart)
+    if chart["type"] == "heatmap":
+        return _heatmap_js(chart)
     cid = chart["id"]
     ctype = chart["type"]
     horizontal = bool(chart.get("horizontal"))
@@ -207,8 +370,13 @@ def _chart_js(chart):
     labels = json.dumps(chart["labels"], ensure_ascii=False)
     datasets_js = []
     for i, ds in enumerate(chart["datasets"]):
-        color_l = CATEGORICAL_LIGHT[i % len(CATEGORICAL_LIGHT)]
-        color_d = CATEGORICAL_DARK[i % len(CATEGORICAL_DARK)]
+        # color_index lets a single-dataset chart (e.g. a per-KPI drill-down)
+        # borrow the same palette slot another chart uses for that series
+        # (e.g. its area's line in the "cumplimiento por área" chart),
+        # instead of always defaulting to slot 0.
+        color_idx = ds.get("color_index", i)
+        color_l = CATEGORICAL_LIGHT[color_idx % len(CATEGORICAL_LIGHT)]
+        color_d = CATEGORICAL_DARK[color_idx % len(CATEGORICAL_DARK)]
         data = json.dumps(ds["data"])
         label = json.dumps(ds["label"], ensure_ascii=False)
         fill = "true" if ctype == "line" and ds.get("fill") else "false"
@@ -223,8 +391,8 @@ def _chart_js(chart):
             bg = "withAlpha(inkColor('muted'), 0.12)"
             border = "withAlpha(inkColor('muted'), 0.75)"
         else:
-            bg = f"seriesColor({i}, {json.dumps(color_l)}, {json.dumps(color_d)}, {0.85 if ctype != 'line' else 0.12})"
-            border = f"seriesColor({i}, {json.dumps(color_l)}, {json.dumps(color_d)}, 1)"
+            bg = f"seriesColor({color_idx}, {json.dumps(color_l)}, {json.dumps(color_d)}, {0.85 if ctype != 'line' else 0.12})"
+            border = f"seriesColor({color_idx}, {json.dumps(color_l)}, {json.dumps(color_d)}, 1)"
 
         border_width = 3 if emphasis else (1.5 if muted else (2 if ctype == "line" else 1))
         point_radius = (0 if ctype != "line" else (4 if emphasis else (0 if muted else 3)))
@@ -437,6 +605,22 @@ TEMPLATE = """<!doctype html>
   header.page-head h1 {{ font-size: 26px; margin: 0 0 8px; }}
   header.page-head p.tagline {{ color: var(--text-secondary); font-size: 15px; max-width: 720px; margin: 0; line-height:1.5; }}
   .kpi-row {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }}
+  .top-row {{ display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 14px; margin-bottom: 28px; align-items: stretch; }}
+  .hero-widget {{ background: var(--surface); border: 1px solid var(--gold); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; }}
+  .hero-widget .hero-value {{ color: var(--gold); }}
+  .hero-chart-wrap {{ position: relative; flex: 1; min-height: 130px; margin-top: 12px; }}
+  .kpi-grid-5 {{ display: grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 1fr; gap: 14px; }}
+  .kpi-grid-5 .kpi-card {{ padding: 12px 14px; }}
+  .kpi-grid-5 .kpi-label {{ font-size: 10.5px; }}
+  .kpi-grid-5 .kpi-value {{ font-size: 18px; }}
+  @media (max-width: 860px) {{
+    .top-row {{ grid-template-columns: 1fr; }}
+    .kpi-grid-5 {{ grid-template-columns: repeat(3, 1fr); }}
+  }}
+  @media (max-width: 520px) {{
+    .kpi-grid-5 {{ grid-template-columns: repeat(2, 1fr); }}
+    .drilldown-grid {{ grid-template-columns: 1fr !important; }}
+  }}
   .kpi-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; position: relative; }}
   .kpi-hero {{ border: 1px solid var(--gold); }}
   .kpi-hero .kpi-value {{ color: var(--gold); }}
@@ -453,9 +637,16 @@ TEMPLATE = """<!doctype html>
   .kpi-critical {{ background: rgba(208,59,59,0.14); color: #d03b3b; }}
   .charts-grid {{ display: grid; grid-template-columns: {chart_grid_cols}; gap: 18px; margin-bottom: 26px; }}
   .chart-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }}
+  .chart-card-wide {{ grid-column: 1 / -1; }}
   .chart-head h3 {{ margin: 0 0 2px; font-size: 15px; }}
   .chart-head p {{ margin: 0 0 12px; color: var(--text-muted); font-size: 12.5px; }}
   .chart-canvas-wrap {{ position: relative; height: 280px; }}
+  .section-label {{ color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; }}
+  .drilldown-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 26px; }}
+  .drilldown-grid .chart-card {{ padding: 14px 16px; }}
+  .drilldown-grid .chart-head h3 {{ font-size: 13.5px; }}
+  .drilldown-grid .chart-head p {{ margin: 0 0 8px; font-size: 11.5px; }}
+  .drilldown-grid .chart-canvas-wrap {{ height: 190px; }}
   .insights-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 22px; }}
   .insights-card h3 {{ margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }}
   ul.insights {{ margin: 0; padding-left: 18px; color: var(--text-secondary); line-height: 1.65; font-size: 14.5px; }}
@@ -478,13 +669,13 @@ TEMPLATE = """<!doctype html>
     <p class="tagline">{tagline}</p>
   </header>
 
-  <div class="kpi-row">
-    {kpi_html}
-  </div>
+  {top_html}
 
   <div class="charts-grid">
     {chart_blocks}
   </div>
+
+  {drilldown_html}
 
   <div class="insights-card">
     <h3>Lo que dice el dato</h3>
@@ -515,6 +706,7 @@ function seriesColor(i, light, dark, alpha) {{
   const hex = isDark() ? dark : light;
   return withAlpha(hex, alpha);
 }}
+function seriesColorHex(light, dark) {{ return isDark() ? dark : light; }}
 function cssVar(name) {{ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }}
 function inkColor(role) {{
   return {{ primary: cssVar('--text-primary'), secondary: cssVar('--text-secondary'),
@@ -529,11 +721,33 @@ function surfaceColor() {{ return cssVar('--surface'); }}
 """
 
 
-def render(filename, project_no, title, tagline, kpis, charts, insights, table=None, chart_cols=2):
+def render(filename, project_no, title, tagline, kpis, charts, insights, table=None, chart_cols=2,
+           hero_kpi=None, hero_chart=None, drilldown_charts=None, drilldown_title=None):
     tag = f"Proyecto {project_no:02d} · Portafolio de demostración"
-    kpi_html = _kpi_html(kpis)
+
+    extra_charts_js = []
+    if hero_kpi and hero_chart:
+        top_html = f"""<div class="top-row">
+    {_hero_widget_html(hero_kpi, hero_chart["id"])}
+    <div class="kpi-grid-5">
+      {_kpi_html(kpis)}
+    </div>
+  </div>"""
+        extra_charts_js.append(_chart_js(hero_chart))
+    else:
+        top_html = f'<div class="kpi-row">\n    {_kpi_html(kpis)}\n  </div>'
+
     chart_blocks = "\n".join(_chart_block(c, i) for i, c in enumerate(charts))
-    charts_js = "\n".join(_chart_js(c) for c in charts)
+    charts_js_parts = extra_charts_js + [_chart_js(c) for c in charts]
+
+    drilldown_html = ""
+    if drilldown_charts:
+        heading = f'<p class="section-label">{drilldown_title}</p>' if drilldown_title else ""
+        blocks = "\n".join(_chart_block(c, i) for i, c in enumerate(drilldown_charts))
+        drilldown_html = f'<div>\n    {heading}\n    <div class="drilldown-grid">\n      {blocks}\n    </div>\n  </div>'
+        charts_js_parts += [_chart_js(c) for c in drilldown_charts]
+
+    charts_js = "\n".join(charts_js_parts)
     insights_html = _insights_html(insights)
     table_html = _table_html(table) if table else ""
     grid_cols = "1fr" if chart_cols == 1 or len(charts) == 1 else "repeat(2, 1fr)"
@@ -544,9 +758,10 @@ def render(filename, project_no, title, tagline, kpis, charts, insights, table=N
         tag=tag,
         title=title,
         tagline=tagline,
-        kpi_html=kpi_html,
+        top_html=top_html,
         chart_blocks=chart_blocks,
         chart_grid_cols=grid_cols,
+        drilldown_html=drilldown_html,
         insights_html=insights_html,
         table_html=table_html,
         charts_js=charts_js,
