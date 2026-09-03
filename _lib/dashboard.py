@@ -25,7 +25,7 @@ STATUS = {
     "critical": ("#d03b3b", "#d03b3b"),
 }
 
-CHARTJS_URL = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"
+CHARTJS_URL = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"
 
 
 def _kpi_html(kpis):
@@ -95,6 +95,8 @@ def _chart_block(chart, idx):
 def _chart_js(chart):
     cid = chart["id"]
     ctype = chart["type"]
+    horizontal = bool(chart.get("horizontal"))
+    value_format = chart.get("value_format")
     labels = json.dumps(chart["labels"], ensure_ascii=False)
     datasets_js = []
     for i, ds in enumerate(chart["datasets"]):
@@ -104,29 +106,145 @@ def _chart_js(chart):
         label = json.dumps(ds["label"], ensure_ascii=False)
         fill = "true" if ctype == "line" and ds.get("fill") else "false"
         tension = ds.get("tension", 0.3 if ctype == "line" else 0)
+        muted = bool(ds.get("muted"))
+        emphasis = bool(ds.get("emphasis"))
+
+        if ds.get("colors"):
+            bg = json.dumps(ds["colors"])
+            border = json.dumps(ds["colors"])
+        elif muted:
+            bg = "withAlpha(inkColor('muted'), 0.12)"
+            border = "withAlpha(inkColor('muted'), 0.75)"
+        else:
+            bg = f"seriesColor({i}, {json.dumps(color_l)}, {json.dumps(color_d)}, {0.85 if ctype != 'line' else 0.12})"
+            border = f"seriesColor({i}, {json.dumps(color_l)}, {json.dumps(color_d)}, 1)"
+
+        border_width = 3 if emphasis else (1.5 if muted else (2 if ctype == "line" else 1))
+        point_radius = (0 if ctype != "line" else (4 if emphasis else (0 if muted else 3)))
+        border_dash = "[3, 3]" if (muted and ctype == "line") else "[]"
+        value_labels = json.dumps(ds["value_labels"], ensure_ascii=False) if ds.get("value_labels") else "null"
+
         datasets_js.append(f"""{{
             label: {label},
             data: {data},
-            backgroundColor: seriesColor({i}, {json.dumps(color_l)}, {json.dumps(color_d)}, {0.85 if ctype != 'line' else 0.15}),
-            borderColor: seriesColor({i}, {json.dumps(color_l)}, {json.dumps(color_d)}, 1),
-            borderWidth: {2 if ctype == 'line' else 1},
+            valueLabels: {value_labels},
+            backgroundColor: {bg},
+            borderColor: {border},
+            borderWidth: {border_width},
+            borderDash: {border_dash},
             borderRadius: {4 if ctype == 'bar' else 0},
             fill: {fill},
             tension: {tension},
-            pointRadius: {3 if ctype == 'line' else 0},
+            pointRadius: {point_radius},
             pointHoverRadius: 5,
         }}""")
     datasets_str = ",\n".join(datasets_js)
     y_label = chart.get("y_label", "")
     stacked = "true" if chart.get("stacked") else "false"
+    value_max = chart.get("value_max")
+    tick_callback = ", callback: (v) => v + '%'" if value_format == "percent" else ""
+    tooltip_callback = (
+        "label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}%`" if value_format == "percent" else
+        "label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('es-MX')}`" if value_format == "currency" else
+        ""
+    )
+    value_axis = "x" if horizontal else "y"
+    category_axis = "y" if horizontal else "x"
+    index_axis_opt = "indexAxis: 'y'," if horizontal else ""
+    tooltip_callbacks_js = f",\n                      callbacks: {{ {tooltip_callback} }}" if tooltip_callback else ""
+    suggested_max_js = f", suggestedMax: {json.dumps(value_max)}" if value_max is not None else ""
+
+    annotate_parts = []
+    if chart.get("value_labels"):
+        annotate_parts.append("""
+      chart.data.datasets.forEach((dataset, di) => {
+        if (!dataset.valueLabels) return;
+        const meta = chart.getDatasetMeta(di);
+        const horiz = chart.options.indexAxis === 'y';
+        meta.data.forEach((el, i) => {
+          const vl = dataset.valueLabels[i];
+          if (vl === undefined) return;
+          ctx.fillStyle = inkColor('primary');
+          ctx.font = '600 12px -apple-system, sans-serif';
+          if (horiz) {
+            ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            ctx.fillText(vl, el.x + 8, el.y);
+          } else {
+            ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+            ctx.fillText(vl, el.x, el.y - 6);
+          }
+        });
+      });""")
+    if chart.get("reference_line"):
+        ref = chart["reference_line"]
+        annotate_parts.append(f"""
+      {{
+        const val = {json.dumps(ref["value"])};
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {{
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText({json.dumps(ref["label"], ensure_ascii=False)}, px, chartArea.top - 8);
+        }} else {{
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText({json.dumps(ref["label"], ensure_ascii=False)}, chartArea.left + 4, py - 6);
+        }}
+      }}""")
+    if chart.get("marker"):
+        mk = chart["marker"]
+        annotate_parts.append(f"""
+      {{
+        const px = scales.x.getPixelForValue({json.dumps(mk["index"])});
+        ctx.strokeStyle = withAlpha(inkColor('muted'), 0.7);
+        ctx.setLineDash([3, 3]);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = inkColor('secondary');
+        ctx.font = '600 11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText({json.dumps(mk["label"], ensure_ascii=False)}, px, chartArea.top + 12);
+      }}""")
+    annotate_plugin = ""
+    if annotate_parts:
+        annotate_plugin = f"""
+      plugins: [{{
+        id: 'xiaAnnotate_{cid}',
+        afterDatasetsDraw(chart) {{
+          const {{ ctx, chartArea, scales }} = chart;
+          ctx.save();
+          {"".join(annotate_parts)}
+          ctx.restore();
+        }}
+      }}],"""
+
     return f"""
     new Chart(document.getElementById('{cid}').getContext('2d'), {{
       type: {json.dumps('bar' if ctype == 'stacked-bar' else ctype)},
       data: {{
         labels: {labels},
         datasets: [{datasets_str}]
-      }},
+      }},{annotate_plugin}
       options: {{
+        {index_axis_opt}
         responsive: true,
         maintainAspectRatio: false,
         interaction: {{ mode: 'index', intersect: false }},
@@ -134,12 +252,16 @@ def _chart_js(chart):
           legend: {{ display: {str(len(chart["datasets"]) > 1).lower()}, position: 'top', align: 'start',
                      labels: {{ color: inkColor('secondary'), boxWidth: 12, usePointStyle: true }} }},
           tooltip: {{ backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
-                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }}
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10{tooltip_callbacks_js} }}
         }},
         scales: {{
-          x: {{ stacked: {stacked}, grid: {{ display: false }}, ticks: {{ color: inkColor('muted') }} }},
-          y: {{ stacked: {stacked}, grid: {{ color: inkColor('grid') }}, ticks: {{ color: inkColor('muted') }},
-                title: {{ display: {str(bool(y_label)).lower()}, text: {json.dumps(y_label, ensure_ascii=False)}, color: inkColor('secondary') }} }}
+          {category_axis}: {{ stacked: {stacked}, grid: {{ display: false }}, ticks: {{ color: inkColor('muted') }} }},
+          {value_axis}: {{
+            stacked: {stacked},
+            grid: {{ color: inkColor('grid') }},
+            ticks: {{ color: inkColor('muted') }}{tick_callback},
+            title: {{ display: {str(bool(y_label)).lower()}, text: {json.dumps(y_label, ensure_ascii=False)}, color: inkColor('secondary') }}{suggested_max_js}
+          }}
         }}
       }}
     }});
@@ -272,11 +394,14 @@ function isDark() {{
   if (t === 'light') return false;
   return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }}
-function seriesColor(i, light, dark, alpha) {{
-  const hex = isDark() ? dark : light;
+function withAlpha(hex, alpha) {{
   if (alpha >= 1) return hex;
   const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
   return `rgba(${{r}},${{g}},${{b}},${{alpha}})`;
+}}
+function seriesColor(i, light, dark, alpha) {{
+  const hex = isDark() ? dark : light;
+  return withAlpha(hex, alpha);
 }}
 function cssVar(name) {{ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }}
 function inkColor(role) {{
