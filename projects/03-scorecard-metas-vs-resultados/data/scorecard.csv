@@ -1,0 +1,11 @@
+kpi,area,responsable,meta,resultado,unidad,menor_es_mejor
+Ingresos mensuales,Ventas,Dir. Comercial,3200000.0,3311157.68,MXN,False
+Nuevos clientes,Ventas,Dir. Comercial,45.0,43.88,clientes,False
+Costo de adquisición (CAC),Marketing,Gerente de Marketing,1800.0,2062.13,MXN,True
+Leads calificados,Marketing,Gerente de Marketing,380.0,399.85,leads,False
+Entregas a tiempo,Operaciones,Gerente de Operaciones,96.0,96.71,%,False
+Costo operativo por unidad,Operaciones,Gerente de Operaciones,210.0,222.32,MXN,True
+Cobranza a 30 días,Finanzas,Gerente de Finanzas,90.0,77.6,%,False
+Cartera vencida,Finanzas,Gerente de Finanzas,5.0,6.83,%,True
+CSAT (satisfacción),Servicio,Gerente de Servicio,4.5,4.52,/5,False
+Tickets resueltos < 24h,Servicio,Gerente de Servicio,85.0,85.46,%,False
