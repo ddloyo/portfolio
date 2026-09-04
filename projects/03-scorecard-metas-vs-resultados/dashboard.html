@@ -90,6 +90,28 @@
   .kpi-warning { background: rgba(184,132,44,0.18); color: #8c6220; }
   .kpi-serious { background: rgba(140,90,30,0.18); color: #6b4517; }
   .kpi-critical { background: rgba(208,59,59,0.14); color: #d03b3b; }
+  .minto-banner { background: var(--surface); border: 1px solid var(--border); border-left: 5px solid var(--gold);
+                   border-radius: 10px; padding: 18px 22px; margin-bottom: 22px; }
+  .minto-banner .minto-label { margin: 0 0 6px; color: var(--gold); font-size: 12px; font-weight: 700;
+                                 text-transform: uppercase; letter-spacing: .06em; }
+  .minto-banner h2 { margin: 0 0 8px; font-size: 21px; line-height: 1.35; color: var(--text-primary); }
+  .minto-banner p.minto-sub { margin: 0; color: var(--text-secondary); font-size: 14px; line-height: 1.55; max-width: 780px; }
+  .checklist-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+                      padding: 18px 22px; margin-bottom: 22px; }
+  .checklist-card h3 { margin: 0 0 2px; font-size: 16px; }
+  .checklist-card p.checklist-sub { margin: 0 0 14px; color: var(--text-muted); font-size: 13px; }
+  .checklist-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .progress-bar { flex: 1; max-width: 320px; height: 8px; border-radius: 999px; background: var(--grid); overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .2s ease; }
+  .checklist-progress span { color: var(--text-secondary); font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .checklist-table-wrap { overflow-x: auto; }
+  table.checklist-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.checklist-table th, table.checklist-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  table.checklist-table th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  table.checklist-table td.check-col { width: 30px; }
+  table.checklist-table input.xia-check { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+  table.checklist-table tr.done td { color: var(--text-muted); text-decoration: line-through; opacity: .7; }
+  table.checklist-table tr.done td.check-col { text-decoration: none; }
   .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 26px; }
   .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
   .chart-card-wide { grid-column: 1 / -1; }
@@ -123,6 +145,8 @@
     <h1>Scorecard Ejecutivo: Metas vs. Resultados</h1>
     <p class="tagline">El estatus, la tendencia y el detalle de los 10 indicadores que le importan a dirección — en una sola pantalla.</p>
   </header>
+
+  
 
   <div class="top-row">
     
@@ -207,6 +231,8 @@
         </div>
     </div>
   </div>
+
+  
 
   <div class="charts-grid">
     
@@ -550,12 +576,15 @@ function surfaceColor() { return cssVar('--surface'); }
     });
     
 
-    new Chart(document.getElementById('chart_dispersion').getContext('2d'), {
-      type: 'scatter',
-      data: { datasets: [{
+    (function() {
+      const quadrantLines_chart_dispersion = null;
+      const quadrantLabels_chart_dispersion = [];
+      new Chart(document.getElementById('chart_dispersion').getContext('2d'), {
+        type: 'scatter',
+        data: { datasets: [{
             label: "En meta",
             data: [{"x": 103.5, "y": 4.0, "label": "Ingresos mensuales"}, {"x": 105.2, "y": 2.0, "label": "Leads calificados"}, {"x": 100.7, "y": 3.8, "label": "Entregas a tiempo"}, {"x": 100.4, "y": 3.9, "label": "CSAT (satisfacción)"}, {"x": 100.5, "y": 4.0, "label": "Tickets resueltos < 24h"}],
-            backgroundColor: seriesColorHex("#3E8F72", "#3E8F72"),
+            backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 1),
             borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
             pointRadius: 6,
             pointHoverRadius: 8,
@@ -563,7 +592,7 @@ function surfaceColor() { return cssVar('--surface'); }
 {
             label: "Cerca de meta",
             data: [{"x": 97.5, "y": 3.1, "label": "Nuevos clientes"}, {"x": 94.5, "y": 4.0, "label": "Costo operativo por unidad"}],
-            backgroundColor: seriesColorHex("#B8842C", "#B8842C"),
+            backgroundColor: withAlpha(seriesColorHex("#B8842C", "#B8842C"), 1),
             borderColor: seriesColorHex("#B8842C", "#B8842C"),
             pointRadius: 6,
             pointHoverRadius: 8,
@@ -571,33 +600,73 @@ function surfaceColor() { return cssVar('--surface'); }
 {
             label: "En riesgo",
             data: [{"x": 87.3, "y": 4.0, "label": "Costo de adquisición (CAC)"}, {"x": 86.2, "y": 4.9, "label": "Cobranza a 30 días"}, {"x": 73.2, "y": 6.3, "label": "Cartera vencida"}],
-            backgroundColor: seriesColorHex("#d03b3b", "#d03b3b"),
+            backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 1),
             borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
             pointRadius: 6,
             pointHoverRadius: 8,
         }] },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: true, position: 'top', align: 'start',
-                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
-          tooltip: {
-            backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
-            borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-            callbacks: {
-              label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)}%, ${ctx.parsed.y.toFixed(1)} pts`
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', align: 'start',
+                       labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+            tooltip: {
+              backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+              borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+              callbacks: {
+                label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)}%, ${ctx.parsed.y.toFixed(1)} pts`
+              }
             }
+          },
+          scales: {
+            x: { title: { display: true, text: "% cumplimiento actual", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
+            y: { title: { display: true, text: "Volatilidad histórica (desv. estándar, pts)", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
           }
         },
-        scales: {
-          x: { title: { display: true, text: "% cumplimiento actual", color: inkColor('secondary') },
-                grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
-          y: { title: { display: true, text: "Volatilidad histórica (desv. estándar, pts)", color: inkColor('secondary') },
-                grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
-        }
-      }
-    });
+        plugins: [{
+          id: 'quadrantOverlay_chart_dispersion',
+          afterDraw: (chartInstance) => {
+            const { ctx, chartArea } = chartInstance;
+            if (!chartArea) return;
+            const { left, right, top, bottom } = chartArea;
+            const scales = chartInstance.scales;
+            ctx.save();
+            if (quadrantLines_chart_dispersion) {
+              ctx.strokeStyle = withAlpha(inkColor('grid'), 0.55);
+              ctx.setLineDash([4, 4]);
+              ctx.lineWidth = 1;
+              if (quadrantLines_chart_dispersion.x !== undefined && quadrantLines_chart_dispersion.x !== null) {
+                const xPix = scales.x.getPixelForValue(quadrantLines_chart_dispersion.x);
+                ctx.beginPath(); ctx.moveTo(xPix, top); ctx.lineTo(xPix, bottom); ctx.stroke();
+              }
+              if (quadrantLines_chart_dispersion.y !== undefined && quadrantLines_chart_dispersion.y !== null) {
+                const yPix = scales.y.getPixelForValue(quadrantLines_chart_dispersion.y);
+                ctx.beginPath(); ctx.moveTo(left, yPix); ctx.lineTo(right, yPix); ctx.stroke();
+              }
+              ctx.setLineDash([]);
+            }
+            if (quadrantLabels_chart_dispersion.length) {
+              ctx.font = '700 10px -apple-system, sans-serif';
+              ctx.fillStyle = withAlpha(inkColor('muted'), 0.95);
+              const pad = 10;
+              quadrantLabels_chart_dispersion.forEach((q) => {
+                let x, y, align;
+                if (q.corner === 'top-left') { x = left + pad; y = top + pad + 9; align = 'left'; }
+                else if (q.corner === 'top-right') { x = right - pad; y = top + pad + 9; align = 'right'; }
+                else if (q.corner === 'bottom-left') { x = left + pad; y = bottom - pad; align = 'left'; }
+                else { x = right - pad; y = bottom - pad; align = 'right'; }
+                ctx.textAlign = align;
+                ctx.fillText(q.text, x, y);
+              });
+            }
+            ctx.restore();
+          }
+        }]
+      });
+    })();
     
 
     new Chart(document.getElementById('chart_drill_0').getContext('2d'), {
