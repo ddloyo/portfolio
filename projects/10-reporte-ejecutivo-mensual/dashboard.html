@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XIA · Reporte Ejecutivo Mensual</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --surface: #fcfcfb;
+    --page: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface: #1a1a19;
+      --page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --grid: #2c2c2a;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #1a1a19;
+    --page: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --grid: #2c2c2a;
+    --border: rgba(255,255,255,0.10);
+    --accent: #3987e5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--text-primary);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    padding: 32px 20px 60px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brand .mark { width:28px; height:28px; border-radius:7px; background: var(--accent);
+                  display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:13px; }
+  .brand span { color: var(--text-muted); font-size:13px; letter-spacing: .04em; text-transform: uppercase; }
+  header.page-head { margin-bottom: 28px; }
+  header.page-head .tag { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  header.page-head h1 { font-size: 26px; margin: 0 0 8px; }
+  header.page-head p.tagline { color: var(--text-secondary); font-size: 15px; max-width: 720px; margin: 0; line-height:1.5; }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; position: relative; }
+  .kpi-label { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 600; }
+  .kpi-delta { font-size: 13px; margin-top: 4px; font-weight: 600; }
+  .delta-up { color: #0ca30c; }
+  .delta-down { color: #d03b3b; }
+  .kpi-badge { display:inline-block; margin-top:8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+                letter-spacing: .03em; padding: 3px 8px; border-radius: 999px; }
+  .kpi-good { background: rgba(12,163,12,0.14); color: #0ca30c; }
+  .kpi-warning { background: rgba(250,178,25,0.18); color: #9a6a00; }
+  .kpi-serious { background: rgba(236,131,90,0.16); color: #b1481f; }
+  .kpi-critical { background: rgba(208,59,59,0.14); color: #d03b3b; }
+  .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 26px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .chart-head h3 { margin: 0 0 2px; font-size: 15px; }
+  .chart-head p { margin: 0 0 12px; color: var(--text-muted); font-size: 12.5px; }
+  .chart-canvas-wrap { position: relative; height: 280px; }
+  .insights-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 22px; }
+  .insights-card h3 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+  ul.insights { margin: 0; padding-left: 18px; color: var(--text-secondary); line-height: 1.65; font-size: 14.5px; }
+  ul.insights li::marker { color: var(--accent); }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 22px; }
+  .table-wrap summary { cursor: pointer; color: var(--text-secondary); font-size: 13.5px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  footer { color: var(--text-muted); font-size: 12px; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 16px; }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="mark">X</div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
+  <header class="page-head">
+    <div class="tag">Proyecto 10 · Portafolio de demostración</div>
+    <h1>Reporte Ejecutivo Mensual</h1>
+    <p class="tagline">Tu reporte, convertido en la decisión — qué pasó, por qué, y qué hacer, listo para la reunión de dirección.</p>
+  </header>
+
+  <div class="kpi-row">
+    
+        <div class="kpi-card">
+          <div class="kpi-label">Ingreso 2026-08</div>
+          <div class="kpi-value">$1,506,608 MXN</div>
+          
+          
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Variación vs. mes anterior</div>
+          <div class="kpi-value">-9.1%</div>
+          
+          <span class="kpi-badge kpi-critical">critical</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Categoría causante</div>
+          <div class="kpi-value">Línea Estándar</div>
+          <div class="kpi-delta delta-down">&darr; -32.1%</div>
+          
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">% de la caída explicado por esa categoría</div>
+          <div class="kpi-value">101%</div>
+          
+          
+        </div>
+  </div>
+
+  <div class="charts-grid">
+    
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Ingreso total — últimos 12 meses</h3>
+        <p>Consolidado, todas las categorías</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_trend"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Variación por categoría — 2026-08 vs 2026-07</h3>
+        <p>Quién explica el cambio del mes</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_cause"></canvas>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="insights-card">
+    <h3>Lo que dice el dato</h3>
+    <ul class="insights"><li><b>Qué pasó:</b> el ingreso total de 2026-08 fue $1,506,608 MXN, 9.1% por debajo de 2026-07.</li>
+<li><b>Por qué:</b> <b>Línea Estándar</b> cayó 32.1% mes contra mes y explica aproximadamente el 101% de la variación total — las demás categorías se mantuvieron estables o crecieron.</li>
+<li><b>Qué hacer:</b> antes de ajustar metas generales o el forecast del trimestre, validar con el equipo comercial si la caída en esa categoría es un cliente puntual que pausó pedidos o una tendencia de mercado — son dos decisiones distintas.</li>
+<li>Este es el formato de entrega del diagnóstico inicial: una narrativa corta (qué, por qué, qué hacer) respaldada por el dato, lista para la reunión ejecutiva — no una hoja de cálculo para interpretar en vivo.</li></ul>
+  </div>
+
+  
+    <details class="table-wrap">
+      <summary>Ver tabla de datos</summary>
+      <table>
+        <thead><tr><th>Categoría</th><th>2026-07</th><th>2026-08</th><th>Cambio (MXN)</th><th>Cambio (%)</th></tr></thead>
+        <tbody><tr><td>Línea Premium</td><td>$706,346</td><td>$682,172</td><td>$-24,174</td><td>-3.4%</td></tr>
+<tr><td>Línea Estándar</td><td>$472,466</td><td>$320,745</td><td>$-151,721</td><td>-32.1%</td></tr>
+<tr><td>Línea Económica</td><td>$291,804</td><td>$308,510</td><td>$16,705</td><td>5.7%</td></tr>
+<tr><td>Servicios postventa</td><td>$186,271</td><td>$195,181</td><td>$8,911</td><td>4.8%</td></tr>
+</tbody>
+      </table>
+    </details>
+    
+
+  <footer>
+    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
+  </footer>
+</div>
+
+<script>
+function isDark() {
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t === 'dark') return true;
+  if (t === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function seriesColor(i, light, dark, alpha) {
+  const hex = isDark() ? dark : light;
+  if (alpha >= 1) return hex;
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function inkColor(role) {
+  return { primary: cssVar('--text-primary'), secondary: cssVar('--text-secondary'),
+            muted: cssVar('--text-muted'), grid: cssVar('--grid') }[role];
+}
+function surfaceColor() { return cssVar('--surface'); }
+
+
+    new Chart(document.getElementById('chart_trend').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
+        datasets: [{
+            label: "Ingreso total",
+            data: [1640039.0, 1599964.0, 1601933.0, 1651685.0, 1640334.0, 1660910.0, 1669006.0, 1685690.0, 1616492.0, 1720265.0, 1656887.0, 1506608.0],
+            backgroundColor: seriesColor(0, "#2a78d6", "#3987e5", 0.15),
+            borderColor: seriesColor(0, "#2a78d6", "#3987e5", 1),
+            borderWidth: 2,
+            borderRadius: 0,
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: { stacked: false, grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') },
+                title: { display: true, text: "MXN", color: inkColor('secondary') } }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_cause').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["Línea Estándar", "Línea Premium", "Servicios postventa", "Línea Económica"],
+        datasets: [{
+            label: "Cambio en MXN",
+            data: [-151721.0, -24174.0, 8911.0, 16705.0],
+            backgroundColor: seriesColor(0, "#2a78d6", "#3987e5", 0.85),
+            borderColor: seriesColor(0, "#2a78d6", "#3987e5", 1),
+            borderWidth: 1,
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: { stacked: false, grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') },
+                title: { display: true, text: "MXN", color: inkColor('secondary') } }
+        }
+      }
+    });
+    
+</script>
+</body>
+</html>
