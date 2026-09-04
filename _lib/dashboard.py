@@ -121,99 +121,6 @@ def _table_html(table, open=False):
     """
 
 
-def _banner_html(banner):
-    """Banner de 'la respuesta primero' (principio de la pirámide de Minto):
-    va arriba de todo, antes incluso de los KPIs, para que la conclusión
-    accionable de la semana se lea sin tener que interpretar ningún gráfico."""
-    if not banner:
-        return ""
-    label = banner.get("label", "Esta semana")
-    return f"""
-    <div class="minto-banner">
-      <p class="minto-label">{label}</p>
-      <h2>{banner["headline"]}</h2>
-      <p class="minto-sub">{banner.get("subtext", "")}</p>
-    </div>
-    """
-
-
-def _checklist_html(checklist):
-    """Lista de tareas con checkboxes persistidos en localStorage (por
-    navegador, sin backend) -- convierte la tabla estática de 'top clientes'
-    en una herramienta de seguimiento diario real: marcar, ver progreso,
-    y que quede marcado la próxima vez que se abra el dashboard."""
-    if not checklist:
-        return ""
-    cid = checklist["id"]
-    headers = "".join(f"<th>{h}</th>" for h in checklist["headers"])
-    rows_html = []
-    for row in checklist["rows"]:
-        cells = "".join(f"<td>{c}</td>" for c in row["cells"])
-        rows_html.append(
-            f'<tr data-row="{row["id"]}">'
-            f'<td class="check-col"><input type="checkbox" class="xia-check" data-scope="{cid}" data-row="{row["id"]}"></td>'
-            f'{cells}</tr>'
-        )
-    total = len(checklist["rows"])
-    return f"""
-    <div class="checklist-card">
-      <h3>{checklist["title"]}</h3>
-      <p class="checklist-sub">{checklist.get("subtitle", "")}</p>
-      <div class="checklist-progress">
-        <div class="progress-bar"><div class="progress-fill" id="{cid}-fill" style="width:0%"></div></div>
-        <span id="{cid}-count">0 / {total} {checklist.get("progress_noun", "contactados")}</span>
-      </div>
-      <div class="checklist-table-wrap">
-        <table class="checklist-table">
-          <thead><tr><th></th>{headers}</tr></thead>
-          <tbody>{"".join(rows_html)}</tbody>
-        </table>
-      </div>
-    </div>
-    """
-
-
-def _checklist_js(checklist):
-    if not checklist:
-        return ""
-    cid = checklist["id"]
-    total = len(checklist["rows"])
-    noun = json.dumps(checklist.get("progress_noun", "contactados"), ensure_ascii=False)
-    return f"""
-    (function() {{
-      const scopeId = {json.dumps(cid)};
-      const total = {total};
-      const storageKey = 'xia_checklist_' + scopeId;
-      let state = {{}};
-      try {{ state = JSON.parse(localStorage.getItem(storageKey) || '{{}}'); }} catch (e) {{}}
-      const boxes = document.querySelectorAll(`input.xia-check[data-scope="${{scopeId}}"]`);
-      function updateProgress() {{
-        const checked = document.querySelectorAll(`input.xia-check[data-scope="${{scopeId}}"]:checked`).length;
-        const fill = document.getElementById(scopeId + '-fill');
-        const count = document.getElementById(scopeId + '-count');
-        if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
-        if (count) count.textContent = `${{checked}} / ${{total}} ${{{noun}}}`;
-      }}
-      boxes.forEach((b) => {{
-        const rowId = b.dataset.row;
-        if (state[rowId]) {{
-          b.checked = true;
-          const tr = b.closest('tr');
-          if (tr) tr.classList.add('done');
-        }}
-        b.addEventListener('change', () => {{
-          state[rowId] = b.checked;
-          try {{ localStorage.setItem(storageKey, JSON.stringify(state)); }} catch (e) {{}}
-          const tr = b.closest('tr');
-          if (tr) tr.classList.toggle('done', b.checked);
-          updateProgress();
-        }});
-      }});
-      updateProgress();
-    }})();
-    """
-
-
 def _chart_block(chart, idx):
     cid = chart["id"]
     title = chart["title"]
@@ -447,25 +354,55 @@ def _scatter_js(chart):
 
 def _heatmap_js(chart):
     """No native Chart.js heatmap — drawn on canvas like the funnel chart.
-    Diverging fill within the XIA palette only: teal for positive
-    correlation, gold for negative, alpha scaled by magnitude."""
+
+    Two shapes: a square correlation matrix (`labels` shared by both axes,
+    values in [-1, 1], `color_mode` defaults to "diverging" — teal for
+    positive, gold for negative) or a rectangular matrix (`row_labels` +
+    `col_labels`, independent lengths, e.g. category x weekday). Alpha is
+    always scaled against the matrix's own max magnitude, so a rectangular
+    matrix with values outside [-1, 1] (an index, a deviation in pp) still
+    renders with a full-intensity range instead of clipping to alpha=1.
+    `color_mode="sequential"` uses a single teal hue (no negative/gold
+    branch) for intensity-only data (e.g. raw counts). `value_format="int"`
+    renders whole numbers (with a +/- sign for diverging data) instead of
+    the 2-decimal correlation format.
+    """
     cid = chart["id"]
-    labels = json.dumps(chart["labels"], ensure_ascii=False)
+    row_labels = chart.get("row_labels", chart.get("labels", []))
+    col_labels = chart.get("col_labels", chart.get("labels", []))
+    row_labels_js = json.dumps(row_labels, ensure_ascii=False)
+    col_labels_js = json.dumps(col_labels, ensure_ascii=False)
     matrix = json.dumps(chart["matrix"])
+    diverging = "true" if chart.get("color_mode", "diverging") == "diverging" else "false"
+    int_format = "true" if chart.get("value_format") == "int" else "false"
     return f"""
     (function() {{
       const canvas = document.getElementById('{cid}');
       const wrap = canvas.parentElement;
-      const labels = {labels};
+      const rowLabels = {row_labels_js};
+      const colLabels = {col_labels_js};
       const matrix = {matrix};
-      const n = labels.length;
+      const nRows = rowLabels.length, nCols = colLabels.length;
+      const diverging = {diverging};
+      const intFormat = {int_format};
+      let maxAbs = 0;
+      matrix.forEach(row => row.forEach(v => {{ maxAbs = Math.max(maxAbs, Math.abs(v)); }}));
+      maxAbs = maxAbs || 1;
 
       function cellColor(v) {{
-        const alpha = Math.min(Math.abs(v), 1);
+        const alpha = Math.min(Math.abs(v) / maxAbs, 1);
         const teal = isDark() ? [143, 194, 188] : [113, 168, 163];
         const gold = isDark() ? [212, 169, 79] : [184, 132, 44];
-        const [r, g, b] = v >= 0 ? teal : gold;
-        return `rgba(${{r}},${{g}},${{b}},${{(0.12 + alpha * 0.78).toFixed(2)}})`;
+        const [r, g, b] = (diverging && v < 0) ? gold : teal;
+        return `rgba(${{r}},${{g}},${{b}},${{(0.10 + alpha * 0.80).toFixed(2)}})`;
+      }}
+
+      function fmt(v) {{
+        if (intFormat) {{
+          const sign = diverging && v >= 0 ? '+' : '';
+          return sign + Math.round(v).toLocaleString('es-MX');
+        }}
+        return v.toFixed(2);
       }}
 
       function draw() {{
@@ -477,36 +414,36 @@ def _heatmap_js(chart):
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, w, h);
 
-        const padLeft = Math.min(120, w * 0.24);
+        const padLeft = Math.min(150, w * 0.28);
         const padTop = 8;
-        const padBottom = 34;
+        const padBottom = 30;
         const gridW = w - padLeft - 12;
         const gridH = h - padTop - padBottom;
-        const cell = Math.min(gridW / n, gridH / n);
+        const cellW = gridW / nCols;
+        const cellH = gridH / nRows;
         const gap = 3;
 
-        for (let i = 0; i < n; i++) {{
-          for (let j = 0; j < n; j++) {{
-            const x = padLeft + j * cell, y = padTop + i * cell;
+        for (let i = 0; i < nRows; i++) {{
+          for (let j = 0; j < nCols; j++) {{
+            const x = padLeft + j * cellW, y = padTop + i * cellH;
             ctx.fillStyle = cellColor(matrix[i][j]);
-            ctx.fillRect(x, y, cell - gap, cell - gap);
+            ctx.fillRect(x, y, cellW - gap, cellH - gap);
             ctx.fillStyle = inkColor('primary');
             ctx.font = '600 11px -apple-system, sans-serif';
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(matrix[i][j].toFixed(2), x + (cell - gap) / 2, y + (cell - gap) / 2);
+            ctx.fillText(fmt(matrix[i][j]), x + (cellW - gap) / 2, y + (cellH - gap) / 2);
           }}
         }}
 
         ctx.fillStyle = inkColor('secondary');
         ctx.font = '600 11px -apple-system, sans-serif';
-        for (let i = 0; i < n; i++) {{
+        for (let i = 0; i < nRows; i++) {{
           ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-          ctx.fillText(labels[i], padLeft - 10, padTop + i * cell + (cell - gap) / 2);
-          ctx.save();
+          ctx.fillText(rowLabels[i], padLeft - 10, padTop + i * cellH + (cellH - gap) / 2);
+        }}
+        for (let j = 0; j < nCols; j++) {{
           ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-          ctx.translate(padLeft + i * cell + (cell - gap) / 2, padTop + n * cell + 6);
-          ctx.fillText(labels[i], 0, 0);
-          ctx.restore();
+          ctx.fillText(colLabels[j], padLeft + j * cellW + (cellW - gap) / 2, padTop + nRows * cellH + 6);
         }}
       }}
 
@@ -805,6 +742,130 @@ def _checklist_js(checklist):
     """
 
 
+def _explorer_html(explorer):
+    """Category -> top-N table -> per-item demand chart, all client-side.
+    One dropdown (category) drives a ranked table; clicking a row swaps the
+    line chart below it (history + forecast) for that item — a drill-down
+    explorer for a catalog too large to chart item-by-item on the page."""
+    if not explorer:
+        return ""
+    eid = explorer["id"]
+    headers = "".join(f"<th>{h}</th>" for h in explorer["table_headers"])
+    options = "".join(f'<option value="{c}">{c}</option>' for c in explorer["categories"])
+    return f"""
+    <div class="explorer-card" id="{eid}">
+      <h3>{explorer["title"]}</h3>
+      <p class="checklist-sub">{explorer.get("subtitle", "")}</p>
+      <div class="explorer-controls">
+        <label for="{eid}-cat">Categoría</label>
+        <select id="{eid}-cat" class="explorer-select">{options}</select>
+      </div>
+      <div class="explorer-grid">
+        <div class="explorer-table-wrap">
+          <table class="checklist-table explorer-table">
+            <thead><tr><th></th>{headers}</tr></thead>
+            <tbody id="{eid}-tbody"></tbody>
+          </table>
+        </div>
+        <div class="explorer-chart-card">
+          <div class="chart-head">
+            <h4 id="{eid}-chart-title">Demanda</h4>
+            <p id="{eid}-chart-sub"></p>
+          </div>
+          <div class="chart-canvas-wrap">
+            <canvas id="{eid}-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+
+
+def _explorer_js(explorer):
+    if not explorer:
+        return ""
+    eid = explorer["id"]
+    data = json.dumps({
+        "categories": explorer["categories"],
+        "topByCategory": explorer["top_by_category"],
+        "histDates": explorer["hist_dates"],
+        "forecastDates": explorer["forecast_dates"],
+        "demand": explorer["demand"],
+        "rowFields": explorer["row_fields"],
+    }, ensure_ascii=False)
+    hist_light, hist_dark = CATEGORICAL_LIGHT[0], CATEGORICAL_DARK[0]
+    forecast_color = STATUS["critical"]
+    return f"""
+    (function() {{
+      const D = {data};
+      const eid = {json.dumps(eid)};
+      const catSelect = document.getElementById(eid + '-cat');
+      const tbody = document.getElementById(eid + '-tbody');
+      const chartTitle = document.getElementById(eid + '-chart-title');
+      const chartSub = document.getElementById(eid + '-chart-sub');
+      let chart = null;
+      let selectedSku = null;
+
+      function renderTable(cat) {{
+        const rows = D.topByCategory[cat] || [];
+        tbody.innerHTML = '';
+        rows.forEach((r, i) => {{
+          const tr = document.createElement('tr');
+          tr.dataset.sku = r.sku;
+          const cells = D.rowFields.map(f => `<td>${{r[f]}}</td>`).join('');
+          tr.innerHTML = `<td class="rank-col">${{i + 1}}</td>${{cells}}`;
+          tr.addEventListener('click', () => selectSku(r.sku, cat));
+          tbody.appendChild(tr);
+        }});
+        if (rows.length) selectSku(rows[0].sku, cat);
+      }}
+
+      function selectSku(sku, cat) {{
+        selectedSku = sku;
+        tbody.querySelectorAll('tr').forEach(tr => tr.classList.toggle('selected', tr.dataset.sku === sku));
+        const d = D.demand[sku];
+        if (!d) return;
+        chartTitle.textContent = `Demanda: ${{sku}}`;
+        chartSub.textContent = `${{cat}} — histórico (${{D.histDates.length}} días) + pronóstico (${{D.forecastDates.length}} días)`;
+        const labels = D.histDates.concat(D.forecastDates);
+        const histData = d.hist.concat(Array(D.forecastDates.length).fill(null));
+        const forecastData = Array(D.histDates.length - 1).fill(null).concat([d.hist[d.hist.length - 1]]).concat(d.forecast);
+        if (chart) chart.destroy();
+        chart = new Chart(document.getElementById(eid + '-canvas').getContext('2d'), {{
+          type: 'line',
+          data: {{
+            labels: labels,
+            datasets: [
+              {{ label: 'Histórico', data: histData, borderColor: seriesColorHex({json.dumps(hist_light)}, {json.dumps(hist_dark)}),
+                 backgroundColor: 'transparent', borderWidth: 2, pointRadius: 0, tension: 0.25 }},
+              {{ label: 'Pronóstico', data: forecastData, borderColor: {json.dumps(forecast_color)},
+                 backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.25 }},
+            ]
+          }},
+          options: {{
+            responsive: true, maintainAspectRatio: false,
+            interaction: {{ mode: 'index', intersect: false }},
+            plugins: {{
+              legend: {{ display: true, position: 'top', align: 'start',
+                         labels: {{ color: inkColor('secondary'), boxWidth: 12, usePointStyle: true }} }},
+              tooltip: {{ backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                          borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }}
+            }},
+            scales: {{
+              x: {{ grid: {{ display: false }}, ticks: {{ color: inkColor('muted'), maxTicksLimit: 10 }} }},
+              y: {{ grid: {{ color: inkColor('grid') }}, ticks: {{ color: inkColor('muted') }}, title: {{ display: true, text: 'Unidades/día', color: inkColor('secondary') }} }}
+            }}
+          }}
+        }});
+      }}
+
+      catSelect.addEventListener('change', () => renderTable(catSelect.value));
+      renderTable(D.categories[0]);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {{ if (selectedSku) selectSku(selectedSku, catSelect.value); }});
+    }})();
+    """
+
+
 TEMPLATE = """<!doctype html>
 <html lang="es">
 <head>
@@ -919,6 +980,25 @@ TEMPLATE = """<!doctype html>
   table.checklist-table input.xia-check {{ width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }}
   table.checklist-table tr.done td {{ color: var(--text-muted); text-decoration: line-through; opacity: .7; }}
   table.checklist-table tr.done td.check-col {{ text-decoration: none; }}
+  .explorer-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+                     padding: 18px 22px; margin-bottom: 22px; }}
+  .explorer-card h3 {{ margin: 0 0 2px; font-size: 16px; }}
+  .explorer-card p.checklist-sub {{ margin: 0 0 14px; color: var(--text-muted); font-size: 13px; }}
+  .explorer-controls {{ display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }}
+  .explorer-controls label {{ color: var(--text-secondary); font-size: 13px; font-weight: 600; }}
+  .explorer-select {{ background: var(--page); color: var(--text-primary); border: 1px solid var(--border);
+                       border-radius: 8px; padding: 7px 10px; font-size: 13.5px; font-family: inherit; cursor: pointer; }}
+  .explorer-grid {{ display: grid; grid-template-columns: minmax(260px, 380px) 1fr; gap: 18px; align-items: start; }}
+  .explorer-table-wrap {{ overflow-x: auto; }}
+  table.explorer-table tr {{ cursor: pointer; }}
+  table.explorer-table tr:hover td {{ color: var(--text-primary); }}
+  table.explorer-table tr.selected td {{ color: var(--text-primary); font-weight: 600; }}
+  table.explorer-table tr.selected {{ background: var(--page); }}
+  table.explorer-table td.rank-col {{ color: var(--text-muted); width: 22px; }}
+  .explorer-chart-card {{ background: var(--page); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }}
+  .explorer-chart-card .chart-head h4 {{ margin: 0 0 2px; font-size: 14.5px; color: var(--text-primary); }}
+  .explorer-chart-card .chart-head p {{ margin: 0 0 10px; color: var(--text-muted); font-size: 12px; }}
+  @media (max-width: 760px) {{ .explorer-grid {{ grid-template-columns: 1fr; }} }}
   .charts-grid {{ display: grid; grid-template-columns: {chart_grid_cols}; gap: 18px; margin-bottom: 26px; }}
   .chart-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }}
   .chart-card-wide {{ grid-column: 1 / -1; }}
@@ -974,6 +1054,8 @@ TEMPLATE = """<!doctype html>
 
   {checklist_html}
 
+  {explorer_html}
+
   <footer>
     Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
     <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
@@ -1013,15 +1095,18 @@ function surfaceColor() {{ return cssVar('--surface'); }}
 
 def render(filename, project_no, title, tagline, kpis, charts, insights, table=None, chart_cols=2,
            hero_kpi=None, hero_chart=None, drilldown_charts=None, drilldown_title=None,
-           banner=None, checklist=None, table_position="bottom"):
+           banner=None, checklist=None, table_position="bottom", explorer=None):
     tag = f"Proyecto {project_no:02d} · Portafolio de demostración"
 
     banner_html = _banner_html(banner)
     checklist_html = _checklist_html(checklist)
+    explorer_html = _explorer_html(explorer)
 
     extra_charts_js = []
     if checklist:
         extra_charts_js.append(_checklist_js(checklist))
+    if explorer:
+        extra_charts_js.append(_explorer_js(explorer))
     if hero_kpi and hero_chart:
         top_html = f"""<div class="top-row">
     {_hero_widget_html(hero_kpi, hero_chart["id"])}
@@ -1068,6 +1153,7 @@ def render(filename, project_no, title, tagline, kpis, charts, insights, table=N
         insights_html=insights_html,
         table_top_html=table_top_html,
         table_bottom_html=table_bottom_html,
+        explorer_html=explorer_html,
         charts_js=charts_js,
     )
     Path(filename).write_text(html, encoding="utf-8")
