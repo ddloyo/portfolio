@@ -1,0 +1,401 @@
+sku,categoria,segmento_demanda,lead_time_dias,stock_actual,costo_unitario,precio_unitario,margen_pct
+SKU-0001,Electrónica y Accesorios,alta,30,1340,148.0,235.52,37.2
+SKU-0002,Electrónica y Accesorios,media,30,4676,183.86,226.25,18.7
+SKU-0003,Alimentos y Bebidas,baja,6,113,29.65,39.09,24.2
+SKU-0004,Ferretería y Herramientas,media,21,5547,91.41,141.47,35.4
+SKU-0005,Cuidado Personal,media,14,1172,39.5,46.52,15.1
+SKU-0006,Electrónica y Accesorios,alta,30,11015,112.78,142.0,20.6
+SKU-0007,Ferretería y Herramientas,alta,21,5510,58.18,66.84,13.0
+SKU-0008,Cuidado Personal,nula,14,10,46.34,58.49,20.8
+SKU-0009,Ferretería y Herramientas,media,21,677,69.92,87.33,19.9
+SKU-0010,Limpieza del Hogar,media,10,992,30.28,50.45,40.0
+SKU-0011,Ferretería y Herramientas,media,21,1316,115.79,200.32,42.2
+SKU-0012,Electrónica y Accesorios,baja,30,2035,120.78,180.85,33.2
+SKU-0013,Cuidado Personal,media,14,3311,58.84,105.5,44.2
+SKU-0014,Electrónica y Accesorios,alta,30,1956,209.62,302.52,30.7
+SKU-0015,Electrónica y Accesorios,media,30,1671,125.31,203.96,38.6
+SKU-0016,Electrónica y Accesorios,media,30,1075,100.93,120.99,16.6
+SKU-0017,Alimentos y Bebidas,media,6,539,35.7,40.19,11.2
+SKU-0018,Cuidado Personal,media,14,348,39.71,53.65,26.0
+SKU-0019,Electrónica y Accesorios,media,30,4805,167.49,207.54,19.3
+SKU-0020,Ferretería y Herramientas,media,21,1133,103.46,163.62,36.8
+SKU-0021,Electrónica y Accesorios,media,30,4232,142.83,240.19,40.5
+SKU-0022,Electrónica y Accesorios,baja,30,1062,157.04,221.16,29.0
+SKU-0023,Alimentos y Bebidas,alta,6,2456,45.92,83.07,44.7
+SKU-0024,Limpieza del Hogar,media,10,678,30.61,40.72,24.8
+SKU-0025,Electrónica y Accesorios,alta,30,9110,182.32,316.33,42.4
+SKU-0026,Electrónica y Accesorios,esporadica,30,417,175.02,246.43,29.0
+SKU-0027,Ferretería y Herramientas,media,21,1962,73.14,122.93,40.5
+SKU-0028,Limpieza del Hogar,media,10,322,23.84,30.64,22.2
+SKU-0029,Cuidado Personal,alta,14,767,57.12,96.13,40.6
+SKU-0030,Cuidado Personal,nula,14,4,52.89,59.66,11.3
+SKU-0031,Cuidado Personal,media,14,2033,48.71,80.74,39.7
+SKU-0032,Cuidado Personal,alta,14,888,50.97,92.19,44.7
+SKU-0033,Cuidado Personal,nula,14,10,61.9,97.4,36.4
+SKU-0034,Electrónica y Accesorios,media,30,2594,109.56,172.5,36.5
+SKU-0035,Alimentos y Bebidas,alta,6,4337,37.19,51.59,27.9
+SKU-0036,Ferretería y Herramientas,nula,21,23,93.02,142.67,34.8
+SKU-0037,Ferretería y Herramientas,media,21,3321,134.0,237.0,43.5
+SKU-0038,Electrónica y Accesorios,media,30,852,171.63,209.23,18.0
+SKU-0039,Alimentos y Bebidas,alta,6,1202,54.0,78.01,30.8
+SKU-0040,Ferretería y Herramientas,baja,21,801,110.27,166.28,33.7
+SKU-0041,Ferretería y Herramientas,nula,21,24,94.79,119.15,20.4
+SKU-0042,Cuidado Personal,alta,14,5897,72.0,113.44,36.5
+SKU-0043,Alimentos y Bebidas,baja,6,264,36.82,50.9,27.7
+SKU-0044,Alimentos y Bebidas,baja,6,264,39.42,49.54,20.4
+SKU-0045,Alimentos y Bebidas,media,6,418,39.65,55.59,28.7
+SKU-0046,Ferretería y Herramientas,nula,21,7,99.93,111.66,10.5
+SKU-0047,Alimentos y Bebidas,media,6,983,43.46,66.15,34.3
+SKU-0048,Alimentos y Bebidas,esporadica,6,157,34.59,40.09,13.7
+SKU-0049,Limpieza del Hogar,baja,10,389,31.62,47.15,32.9
+SKU-0050,Cuidado Personal,media,14,788,54.39,82.44,34.0
+SKU-0051,Ferretería y Herramientas,media,21,1454,93.67,116.25,19.4
+SKU-0052,Electrónica y Accesorios,esporadica,30,59,266.58,365.94,27.2
+SKU-0053,Limpieza del Hogar,baja,10,89,29.55,50.83,41.9
+SKU-0054,Electrónica y Accesorios,esporadica,30,627,116.03,151.85,23.6
+SKU-0055,Alimentos y Bebidas,media,6,1185,51.46,81.84,37.1
+SKU-0056,Limpieza del Hogar,esporadica,10,106,30.57,55.1,44.5
+SKU-0057,Alimentos y Bebidas,baja,6,47,37.36,46.73,20.0
+SKU-0058,Limpieza del Hogar,esporadica,10,81,28.26,31.94,11.5
+SKU-0059,Cuidado Personal,media,14,1201,44.91,67.58,33.5
+SKU-0060,Cuidado Personal,esporadica,14,26,45.68,52.68,13.3
+SKU-0061,Limpieza del Hogar,media,10,1143,24.52,44.19,44.5
+SKU-0062,Alimentos y Bebidas,baja,6,332,30.9,36.81,16.1
+SKU-0063,Alimentos y Bebidas,media,6,741,42.16,76.59,45.0
+SKU-0064,Limpieza del Hogar,baja,10,607,22.33,34.33,34.9
+SKU-0065,Ferretería y Herramientas,baja,21,181,77.02,87.43,11.9
+SKU-0066,Limpieza del Hogar,esporadica,10,163,29.99,37.0,18.9
+SKU-0067,Cuidado Personal,alta,14,3006,43.8,56.91,23.0
+SKU-0068,Cuidado Personal,media,14,367,44.94,77.57,42.1
+SKU-0069,Cuidado Personal,baja,14,607,47.66,77.0,38.1
+SKU-0070,Ferretería y Herramientas,media,21,2006,92.84,111.74,16.9
+SKU-0071,Cuidado Personal,baja,14,541,30.09,44.38,32.2
+SKU-0072,Limpieza del Hogar,alta,10,1019,23.94,36.72,34.8
+SKU-0073,Electrónica y Accesorios,media,30,2911,151.05,181.73,16.9
+SKU-0074,Alimentos y Bebidas,media,6,1231,27.28,31.15,12.4
+SKU-0075,Alimentos y Bebidas,esporadica,6,54,44.85,73.17,38.7
+SKU-0076,Cuidado Personal,media,14,1980,57.35,64.25,10.7
+SKU-0077,Cuidado Personal,media,14,2038,39.39,46.9,16.0
+SKU-0078,Alimentos y Bebidas,baja,6,190,43.79,48.78,10.2
+SKU-0079,Alimentos y Bebidas,nula,6,3,38.08,53.32,28.6
+SKU-0080,Cuidado Personal,media,14,2568,72.0,88.97,19.1
+SKU-0081,Limpieza del Hogar,baja,10,98,30.69,42.17,27.2
+SKU-0082,Alimentos y Bebidas,media,6,610,46.25,66.64,30.6
+SKU-0083,Cuidado Personal,media,14,1454,40.89,47.62,14.1
+SKU-0084,Ferretería y Herramientas,baja,21,456,113.51,165.27,31.3
+SKU-0085,Alimentos y Bebidas,alta,6,691,22.57,40.29,44.0
+SKU-0086,Cuidado Personal,media,14,3630,61.54,105.27,41.5
+SKU-0087,Alimentos y Bebidas,media,6,598,31.62,46.37,31.8
+SKU-0088,Ferretería y Herramientas,media,21,4489,119.79,180.78,33.7
+SKU-0089,Ferretería y Herramientas,baja,21,197,109.93,192.85,43.0
+SKU-0090,Limpieza del Hogar,media,10,767,29.92,35.47,15.7
+SKU-0091,Alimentos y Bebidas,media,6,315,41.94,47.73,12.1
+SKU-0092,Electrónica y Accesorios,esporadica,30,228,236.79,400.45,40.9
+SKU-0093,Cuidado Personal,baja,14,72,48.88,88.21,44.6
+SKU-0094,Alimentos y Bebidas,baja,6,409,35.18,42.03,16.3
+SKU-0095,Alimentos y Bebidas,alta,6,1903,50.41,82.88,39.2
+SKU-0096,Electrónica y Accesorios,media,30,3002,171.12,217.82,21.4
+SKU-0097,Cuidado Personal,alta,14,2395,63.43,96.85,34.5
+SKU-0098,Limpieza del Hogar,nula,10,23,32.08,45.6,29.6
+SKU-0099,Cuidado Personal,alta,14,1059,57.6,71.46,19.4
+SKU-0100,Limpieza del Hogar,baja,10,160,35.85,63.55,43.6
+SKU-0101,Ferretería y Herramientas,esporadica,21,85,96.82,173.58,44.2
+SKU-0102,Cuidado Personal,alta,14,2247,39.28,45.96,14.5
+SKU-0103,Electrónica y Accesorios,media,30,3260,130.9,212.13,38.3
+SKU-0104,Cuidado Personal,esporadica,14,43,48.88,64.92,24.7
+SKU-0105,Electrónica y Accesorios,media,30,2573,262.96,386.22,31.9
+SKU-0106,Limpieza del Hogar,alta,10,3618,25.91,32.33,19.8
+SKU-0107,Cuidado Personal,media,14,1864,54.51,60.71,10.2
+SKU-0108,Cuidado Personal,media,14,2372,62.73,86.0,27.1
+SKU-0109,Electrónica y Accesorios,esporadica,30,162,154.5,175.92,12.2
+SKU-0110,Alimentos y Bebidas,media,6,180,44.59,74.5,40.1
+SKU-0111,Electrónica y Accesorios,alta,30,7211,202.86,226.01,10.2
+SKU-0112,Electrónica y Accesorios,baja,30,333,232.82,365.24,36.3
+SKU-0113,Limpieza del Hogar,esporadica,10,177,38.36,45.63,15.9
+SKU-0114,Alimentos y Bebidas,baja,6,110,34.14,37.96,10.1
+SKU-0115,Ferretería y Herramientas,esporadica,21,203,66.36,110.46,39.9
+SKU-0116,Ferretería y Herramientas,esporadica,21,360,108.79,139.57,22.1
+SKU-0117,Electrónica y Accesorios,alta,30,2544,175.61,309.13,43.2
+SKU-0118,Cuidado Personal,media,14,1412,40.69,57.74,29.5
+SKU-0119,Electrónica y Accesorios,media,30,3713,229.79,345.93,33.6
+SKU-0120,Limpieza del Hogar,alta,10,886,29.61,46.73,36.6
+SKU-0121,Limpieza del Hogar,media,10,2226,26.11,32.99,20.9
+SKU-0122,Ferretería y Herramientas,media,21,3428,91.13,155.04,41.2
+SKU-0123,Ferretería y Herramientas,alta,21,1355,69.73,94.44,26.2
+SKU-0124,Ferretería y Herramientas,baja,21,1249,67.78,94.6,28.4
+SKU-0125,Electrónica y Accesorios,media,30,2126,103.73,117.92,12.0
+SKU-0126,Ferretería y Herramientas,nula,21,7,51.86,62.99,17.7
+SKU-0127,Ferretería y Herramientas,esporadica,21,144,72.15,92.34,21.9
+SKU-0128,Electrónica y Accesorios,alta,30,18946,259.21,331.5,21.8
+SKU-0129,Ferretería y Herramientas,media,21,978,76.24,88.32,13.7
+SKU-0130,Limpieza del Hogar,esporadica,10,19,28.14,40.23,30.1
+SKU-0131,Electrónica y Accesorios,media,30,2985,90.15,121.29,25.7
+SKU-0132,Limpieza del Hogar,esporadica,10,72,30.13,46.99,35.9
+SKU-0133,Ferretería y Herramientas,media,21,2833,96.27,149.37,35.6
+SKU-0134,Cuidado Personal,alta,14,604,56.75,91.71,38.1
+SKU-0135,Limpieza del Hogar,alta,10,1595,33.68,40.06,15.9
+SKU-0136,Alimentos y Bebidas,alta,6,587,34.03,58.11,41.4
+SKU-0137,Electrónica y Accesorios,esporadica,30,497,199.84,261.69,23.6
+SKU-0138,Alimentos y Bebidas,media,6,614,34.38,60.58,43.2
+SKU-0139,Electrónica y Accesorios,alta,30,21297,136.5,155.73,12.3
+SKU-0140,Ferretería y Herramientas,media,21,3121,66.26,95.21,30.4
+SKU-0141,Cuidado Personal,esporadica,14,87,55.39,65.28,15.2
+SKU-0142,Ferretería y Herramientas,alta,21,14263,79.91,107.12,25.4
+SKU-0143,Limpieza del Hogar,alta,10,4662,24.75,36.71,32.6
+SKU-0144,Electrónica y Accesorios,media,30,3013,199.72,297.49,32.9
+SKU-0145,Alimentos y Bebidas,media,6,604,32.87,38.32,14.2
+SKU-0146,Cuidado Personal,alta,14,2030,46.69,52.54,11.1
+SKU-0147,Cuidado Personal,media,14,1787,49.13,61.78,20.5
+SKU-0148,Ferretería y Herramientas,nula,21,4,87.76,124.12,29.3
+SKU-0149,Cuidado Personal,alta,14,5201,44.92,77.13,41.8
+SKU-0150,Electrónica y Accesorios,media,30,7023,217.68,275.96,21.1
+SKU-0151,Electrónica y Accesorios,baja,30,1496,124.08,155.12,20.0
+SKU-0152,Electrónica y Accesorios,esporadica,30,464,199.79,269.87,26.0
+SKU-0153,Alimentos y Bebidas,media,6,593,30.71,39.89,23.0
+SKU-0154,Alimentos y Bebidas,nula,6,2,28.6,39.2,27.0
+SKU-0155,Cuidado Personal,media,14,1083,53.51,75.22,28.9
+SKU-0156,Ferretería y Herramientas,nula,21,20,134.0,167.81,20.1
+SKU-0157,Limpieza del Hogar,baja,10,447,27.83,31.23,10.9
+SKU-0158,Cuidado Personal,alta,14,5651,61.94,110.64,44.0
+SKU-0159,Alimentos y Bebidas,alta,6,1059,49.63,67.64,26.6
+SKU-0160,Ferretería y Herramientas,baja,21,1172,77.26,123.29,37.3
+SKU-0161,Ferretería y Herramientas,alta,21,7627,104.07,122.86,15.3
+SKU-0162,Limpieza del Hogar,baja,10,316,34.09,45.24,24.6
+SKU-0163,Alimentos y Bebidas,media,6,388,38.61,56.67,31.9
+SKU-0164,Limpieza del Hogar,media,10,396,27.84,40.39,31.1
+SKU-0165,Ferretería y Herramientas,media,21,2329,99.27,179.87,44.8
+SKU-0166,Cuidado Personal,esporadica,14,129,49.39,68.59,28.0
+SKU-0167,Electrónica y Accesorios,media,30,7251,124.6,167.64,25.7
+SKU-0168,Cuidado Personal,media,14,962,33.45,48.81,31.5
+SKU-0169,Alimentos y Bebidas,media,6,467,29.17,36.61,20.3
+SKU-0170,Cuidado Personal,alta,14,3009,42.99,51.18,16.0
+SKU-0171,Alimentos y Bebidas,baja,6,144,45.18,52.53,14.0
+SKU-0172,Ferretería y Herramientas,alta,21,13891,134.0,240.0,44.2
+SKU-0173,Alimentos y Bebidas,baja,6,182,26.31,44.75,41.2
+SKU-0174,Electrónica y Accesorios,esporadica,30,204,161.13,274.83,41.4
+SKU-0175,Cuidado Personal,media,14,1721,63.85,85.43,25.3
+SKU-0176,Cuidado Personal,media,14,3406,51.37,72.26,28.9
+SKU-0177,Alimentos y Bebidas,baja,6,49,37.86,64.78,41.6
+SKU-0178,Electrónica y Accesorios,esporadica,30,124,169.8,251.55,32.5
+SKU-0179,Electrónica y Accesorios,esporadica,30,573,155.53,176.59,11.9
+SKU-0180,Ferretería y Herramientas,media,21,3946,65.3,79.92,18.3
+SKU-0181,Ferretería y Herramientas,esporadica,21,262,69.36,90.74,23.6
+SKU-0182,Ferretería y Herramientas,media,21,839,109.38,192.27,43.1
+SKU-0183,Ferretería y Herramientas,media,21,4073,65.1,94.5,31.1
+SKU-0184,Ferretería y Herramientas,media,21,1907,71.51,103.71,31.0
+SKU-0185,Alimentos y Bebidas,media,6,682,27.35,31.96,14.4
+SKU-0186,Ferretería y Herramientas,media,21,3601,95.7,114.37,16.3
+SKU-0187,Electrónica y Accesorios,esporadica,30,61,143.59,183.81,21.9
+SKU-0188,Alimentos y Bebidas,media,6,300,32.75,52.23,37.3
+SKU-0189,Alimentos y Bebidas,media,6,651,31.67,39.26,19.3
+SKU-0190,Ferretería y Herramientas,esporadica,21,297,116.15,176.79,34.3
+SKU-0191,Alimentos y Bebidas,media,6,255,22.18,27.94,20.6
+SKU-0192,Limpieza del Hogar,esporadica,10,109,27.71,41.75,33.6
+SKU-0193,Electrónica y Accesorios,baja,30,2136,174.16,307.96,43.4
+SKU-0194,Limpieza del Hogar,alta,10,1005,35.43,40.21,11.9
+SKU-0195,Electrónica y Accesorios,media,30,494,183.83,282.63,35.0
+SKU-0196,Limpieza del Hogar,baja,10,775,19.21,31.46,38.9
+SKU-0197,Limpieza del Hogar,baja,10,62,34.46,60.1,42.7
+SKU-0198,Alimentos y Bebidas,media,6,1254,29.21,36.08,19.1
+SKU-0199,Electrónica y Accesorios,esporadica,30,77,154.77,174.4,11.3
+SKU-0200,Electrónica y Accesorios,media,30,2576,152.12,182.89,16.8
+SKU-0201,Alimentos y Bebidas,alta,6,655,38.37,49.95,23.2
+SKU-0202,Limpieza del Hogar,media,10,2373,30.06,40.17,25.2
+SKU-0203,Ferretería y Herramientas,media,21,862,83.34,131.94,36.8
+SKU-0204,Alimentos y Bebidas,baja,6,144,34.65,40.94,15.4
+SKU-0205,Alimentos y Bebidas,media,6,279,37.06,46.92,21.0
+SKU-0206,Limpieza del Hogar,baja,10,245,27.62,45.67,39.5
+SKU-0207,Limpieza del Hogar,alta,10,4313,29.1,36.39,20.0
+SKU-0208,Cuidado Personal,esporadica,14,163,48.93,82.87,41.0
+SKU-0209,Cuidado Personal,nula,14,9,50.37,64.32,21.7
+SKU-0210,Limpieza del Hogar,baja,10,82,23.92,32.69,26.8
+SKU-0211,Limpieza del Hogar,alta,10,4768,22.87,33.24,31.2
+SKU-0212,Limpieza del Hogar,esporadica,10,82,34.68,50.71,31.6
+SKU-0213,Alimentos y Bebidas,media,6,1362,44.02,63.91,31.1
+SKU-0214,Ferretería y Herramientas,media,21,2660,90.55,134.7,32.8
+SKU-0215,Alimentos y Bebidas,esporadica,6,36,31.6,40.13,21.3
+SKU-0216,Cuidado Personal,esporadica,14,93,54.76,70.64,22.5
+SKU-0217,Alimentos y Bebidas,esporadica,6,59,40.49,59.92,32.4
+SKU-0218,Electrónica y Accesorios,baja,30,458,169.54,215.8,21.4
+SKU-0219,Electrónica y Accesorios,media,30,1930,189.1,257.25,26.5
+SKU-0220,Alimentos y Bebidas,baja,6,349,37.13,52.97,29.9
+SKU-0221,Ferretería y Herramientas,baja,21,1471,79.07,121.5,34.9
+SKU-0222,Electrónica y Accesorios,esporadica,30,270,121.75,151.33,19.5
+SKU-0223,Limpieza del Hogar,media,10,1701,40.33,59.89,32.7
+SKU-0224,Ferretería y Herramientas,baja,21,157,98.49,151.42,35.0
+SKU-0225,Electrónica y Accesorios,media,30,660,205.04,237.89,13.8
+SKU-0226,Alimentos y Bebidas,esporadica,6,45,31.47,37.46,16.0
+SKU-0227,Limpieza del Hogar,media,10,1487,24.68,39.92,38.2
+SKU-0228,Alimentos y Bebidas,esporadica,6,108,54.0,76.27,29.2
+SKU-0229,Alimentos y Bebidas,nula,6,9,27.92,31.38,11.0
+SKU-0230,Alimentos y Bebidas,baja,6,572,42.97,60.64,29.1
+SKU-0231,Alimentos y Bebidas,alta,6,556,24.5,38.08,35.7
+SKU-0232,Ferretería y Herramientas,nula,21,27,79.82,118.18,32.5
+SKU-0233,Limpieza del Hogar,alta,10,1511,34.79,50.01,30.4
+SKU-0234,Electrónica y Accesorios,baja,30,441,194.33,345.42,43.7
+SKU-0235,Limpieza del Hogar,baja,10,222,28.42,38.04,25.3
+SKU-0236,Electrónica y Accesorios,media,30,3707,129.26,209.57,38.3
+SKU-0237,Alimentos y Bebidas,baja,6,746,38.3,58.87,34.9
+SKU-0238,Cuidado Personal,media,14,1961,56.62,88.57,36.1
+SKU-0239,Limpieza del Hogar,alta,10,796,31.69,37.32,15.1
+SKU-0240,Electrónica y Accesorios,baja,30,1206,244.16,422.66,42.2
+SKU-0241,Limpieza del Hogar,media,10,1167,23.98,31.51,23.9
+SKU-0242,Alimentos y Bebidas,nula,6,6,44.27,57.86,23.5
+SKU-0243,Cuidado Personal,media,14,796,48.49,80.51,39.8
+SKU-0244,Limpieza del Hogar,media,10,2074,17.76,28.94,38.6
+SKU-0245,Ferretería y Herramientas,esporadica,21,124,111.65,159.5,30.0
+SKU-0246,Ferretería y Herramientas,nula,21,29,80.73,113.57,28.9
+SKU-0247,Alimentos y Bebidas,media,6,388,21.0,31.55,33.4
+SKU-0248,Alimentos y Bebidas,media,6,540,21.0,33.56,37.4
+SKU-0249,Electrónica y Accesorios,media,30,5098,164.78,222.62,26.0
+SKU-0250,Limpieza del Hogar,media,10,926,23.16,33.81,31.5
+SKU-0251,Limpieza del Hogar,alta,10,5947,23.7,36.66,35.4
+SKU-0252,Limpieza del Hogar,media,10,302,34.48,42.88,19.6
+SKU-0253,Limpieza del Hogar,esporadica,10,108,23.91,35.1,31.9
+SKU-0254,Ferretería y Herramientas,alta,21,4634,55.17,64.07,13.9
+SKU-0255,Limpieza del Hogar,baja,10,99,20.84,28.69,27.4
+SKU-0256,Ferretería y Herramientas,alta,21,2201,112.13,176.16,36.3
+SKU-0257,Ferretería y Herramientas,alta,21,8648,110.53,166.66,33.7
+SKU-0258,Cuidado Personal,alta,14,5817,49.17,65.47,24.9
+SKU-0259,Ferretería y Herramientas,alta,21,2537,88.64,142.27,37.7
+SKU-0260,Alimentos y Bebidas,esporadica,6,40,30.02,48.28,37.8
+SKU-0261,Cuidado Personal,media,14,588,63.36,107.77,41.2
+SKU-0262,Cuidado Personal,alta,14,3573,58.74,88.33,33.5
+SKU-0263,Alimentos y Bebidas,esporadica,6,78,37.62,46.7,19.4
+SKU-0264,Alimentos y Bebidas,media,6,232,43.6,69.92,37.6
+SKU-0265,Electrónica y Accesorios,media,30,5163,126.88,217.5,41.7
+SKU-0266,Ferretería y Herramientas,media,21,3321,76.3,91.96,17.0
+SKU-0267,Electrónica y Accesorios,baja,30,523,150.45,207.43,27.5
+SKU-0268,Limpieza del Hogar,media,10,1287,35.84,41.66,14.0
+SKU-0269,Ferretería y Herramientas,baja,21,1210,69.18,121.8,43.2
+SKU-0270,Cuidado Personal,alta,14,1260,36.63,66.04,44.5
+SKU-0271,Cuidado Personal,baja,14,657,51.3,90.03,43.0
+SKU-0272,Alimentos y Bebidas,media,6,772,39.63,62.29,36.4
+SKU-0273,Alimentos y Bebidas,alta,6,2411,44.74,65.35,31.5
+SKU-0274,Alimentos y Bebidas,media,6,450,32.5,52.56,38.2
+SKU-0275,Cuidado Personal,alta,14,1002,40.58,61.74,34.3
+SKU-0276,Limpieza del Hogar,media,10,2118,20.87,32.22,35.2
+SKU-0277,Alimentos y Bebidas,alta,6,449,39.31,60.47,35.0
+SKU-0278,Limpieza del Hogar,baja,10,234,26.45,39.82,33.6
+SKU-0279,Cuidado Personal,media,14,922,53.64,83.58,35.8
+SKU-0280,Ferretería y Herramientas,media,21,1936,78.13,120.96,35.4
+SKU-0281,Cuidado Personal,baja,14,538,66.37,74.62,11.1
+SKU-0282,Ferretería y Herramientas,esporadica,21,138,93.4,119.52,21.9
+SKU-0283,Cuidado Personal,media,14,1236,33.34,48.6,31.4
+SKU-0284,Limpieza del Hogar,esporadica,10,191,27.39,47.22,42.0
+SKU-0285,Limpieza del Hogar,esporadica,10,89,35.67,53.39,33.2
+SKU-0286,Cuidado Personal,media,14,2932,33.83,41.01,17.5
+SKU-0287,Ferretería y Herramientas,alta,21,7334,69.55,90.78,23.4
+SKU-0288,Electrónica y Accesorios,alta,30,13068,167.97,198.09,15.2
+SKU-0289,Electrónica y Accesorios,media,30,3307,152.12,270.33,43.7
+SKU-0290,Cuidado Personal,alta,14,972,30.39,36.85,17.5
+SKU-0291,Electrónica y Accesorios,alta,30,11182,170.48,201.18,15.3
+SKU-0292,Alimentos y Bebidas,alta,6,3740,44.4,50.84,12.7
+SKU-0293,Electrónica y Accesorios,baja,30,1038,237.76,290.75,18.2
+SKU-0294,Alimentos y Bebidas,esporadica,6,39,24.01,27.28,12.0
+SKU-0295,Ferretería y Herramientas,media,21,2949,94.61,168.86,44.0
+SKU-0296,Electrónica y Accesorios,alta,30,2302,263.44,403.69,34.7
+SKU-0297,Limpieza del Hogar,esporadica,10,43,16.3,26.26,37.9
+SKU-0298,Limpieza del Hogar,media,10,1174,34.33,40.68,15.6
+SKU-0299,Electrónica y Accesorios,media,30,2055,164.55,199.13,17.4
+SKU-0300,Limpieza del Hogar,baja,10,460,27.08,43.23,37.4
+SKU-0301,Ferretería y Herramientas,baja,21,1046,98.67,171.23,42.4
+SKU-0302,Limpieza del Hogar,baja,10,90,25.36,35.93,29.4
+SKU-0303,Limpieza del Hogar,alta,10,3142,27.06,36.42,25.7
+SKU-0304,Ferretería y Herramientas,media,21,4029,81.66,142.08,42.5
+SKU-0305,Cuidado Personal,esporadica,14,45,34.95,58.2,39.9
+SKU-0306,Ferretería y Herramientas,media,21,3009,89.31,110.61,19.3
+SKU-0307,Alimentos y Bebidas,baja,6,177,32.85,45.43,27.7
+SKU-0308,Electrónica y Accesorios,media,30,5679,160.88,247.15,34.9
+SKU-0309,Ferretería y Herramientas,baja,21,948,46.0,69.62,33.9
+SKU-0310,Cuidado Personal,media,14,406,44.4,79.1,43.9
+SKU-0311,Ferretería y Herramientas,media,21,349,74.32,105.72,29.7
+SKU-0312,Electrónica y Accesorios,esporadica,30,450,212.07,295.92,28.3
+SKU-0313,Ferretería y Herramientas,alta,21,5242,92.4,167.3,44.8
+SKU-0314,Limpieza del Hogar,alta,10,2518,36.64,65.11,43.7
+SKU-0315,Ferretería y Herramientas,media,21,753,105.26,169.13,37.8
+SKU-0316,Cuidado Personal,media,14,2176,72.0,90.56,20.5
+SKU-0317,Electrónica y Accesorios,esporadica,30,352,129.12,157.21,17.9
+SKU-0318,Limpieza del Hogar,baja,10,58,35.27,40.96,13.9
+SKU-0319,Cuidado Personal,media,14,3327,66.07,77.05,14.3
+SKU-0320,Alimentos y Bebidas,alta,6,2877,50.9,57.98,12.2
+SKU-0321,Alimentos y Bebidas,media,6,376,37.35,65.53,43.0
+SKU-0322,Cuidado Personal,media,14,2180,72.0,121.5,40.7
+SKU-0323,Cuidado Personal,media,14,501,59.92,85.24,29.7
+SKU-0324,Ferretería y Herramientas,media,21,2281,103.06,152.21,32.3
+SKU-0325,Limpieza del Hogar,baja,10,341,23.23,27.1,14.3
+SKU-0326,Alimentos y Bebidas,media,6,371,35.4,61.29,42.2
+SKU-0327,Alimentos y Bebidas,baja,6,115,30.4,46.53,34.7
+SKU-0328,Cuidado Personal,alta,14,1045,32.38,45.5,28.8
+SKU-0329,Alimentos y Bebidas,nula,6,7,37.29,57.65,35.3
+SKU-0330,Alimentos y Bebidas,baja,6,629,40.51,45.9,11.7
+SKU-0331,Ferretería y Herramientas,media,21,3536,83.26,102.54,18.8
+SKU-0332,Electrónica y Accesorios,alta,30,3263,235.72,413.12,42.9
+SKU-0333,Alimentos y Bebidas,media,6,1060,28.28,42.1,32.8
+SKU-0334,Alimentos y Bebidas,baja,6,38,39.2,61.76,36.5
+SKU-0335,Limpieza del Hogar,alta,10,5103,14.67,18.5,20.7
+SKU-0336,Cuidado Personal,alta,14,1543,55.94,69.08,19.0
+SKU-0337,Electrónica y Accesorios,esporadica,30,376,153.44,228.91,33.0
+SKU-0338,Cuidado Personal,media,14,2178,28.0,46.18,39.4
+SKU-0339,Ferretería y Herramientas,baja,21,713,65.9,75.16,12.3
+SKU-0340,Ferretería y Herramientas,media,21,511,70.25,113.03,37.8
+SKU-0341,Electrónica y Accesorios,alta,30,2767,150.09,202.63,25.9
+SKU-0342,Electrónica y Accesorios,baja,30,660,98.56,122.9,19.8
+SKU-0343,Limpieza del Hogar,baja,10,438,31.41,46.5,32.4
+SKU-0344,Electrónica y Accesorios,media,30,2028,236.73,287.46,17.6
+SKU-0345,Limpieza del Hogar,alta,10,3049,23.15,33.63,31.2
+SKU-0346,Electrónica y Accesorios,alta,30,13331,234.55,267.63,12.4
+SKU-0347,Limpieza del Hogar,esporadica,10,110,22.95,29.29,21.7
+SKU-0348,Cuidado Personal,nula,14,16,50.17,88.17,43.1
+SKU-0349,Ferretería y Herramientas,media,21,2873,74.77,114.84,34.9
+SKU-0350,Limpieza del Hogar,baja,10,141,26.52,32.8,19.2
+SKU-0351,Electrónica y Accesorios,esporadica,30,438,186.52,236.25,21.0
+SKU-0352,Electrónica y Accesorios,alta,30,15250,266.67,328.04,18.7
+SKU-0353,Cuidado Personal,baja,14,496,46.27,69.32,33.2
+SKU-0354,Alimentos y Bebidas,baja,6,194,42.62,48.76,12.6
+SKU-0355,Limpieza del Hogar,esporadica,10,96,22.52,28.31,20.5
+SKU-0356,Electrónica y Accesorios,baja,30,765,136.59,173.49,21.3
+SKU-0357,Cuidado Personal,alta,14,3528,28.0,36.17,22.6
+SKU-0358,Cuidado Personal,media,14,2070,51.79,69.3,25.3
+SKU-0359,Alimentos y Bebidas,media,6,622,37.57,47.66,21.2
+SKU-0360,Ferretería y Herramientas,alta,21,9015,112.59,143.34,21.5
+SKU-0361,Alimentos y Bebidas,baja,6,54,29.46,42.57,30.8
+SKU-0362,Alimentos y Bebidas,baja,6,87,37.53,60.66,38.1
+SKU-0363,Cuidado Personal,baja,14,607,68.28,119.52,42.9
+SKU-0364,Ferretería y Herramientas,media,21,739,115.39,190.65,39.5
+SKU-0365,Alimentos y Bebidas,media,6,867,41.57,46.4,10.4
+SKU-0366,Electrónica y Accesorios,media,30,3480,156.4,267.9,41.6
+SKU-0367,Ferretería y Herramientas,media,21,712,104.54,131.24,20.3
+SKU-0368,Electrónica y Accesorios,alta,30,6257,138.37,175.6,21.2
+SKU-0369,Ferretería y Herramientas,alta,21,7878,85.76,103.02,16.8
+SKU-0370,Cuidado Personal,media,14,1167,61.28,101.34,39.5
+SKU-0371,Ferretería y Herramientas,media,21,3286,113.89,176.22,35.4
+SKU-0372,Alimentos y Bebidas,media,6,917,33.35,57.65,42.1
+SKU-0373,Cuidado Personal,esporadica,14,66,38.0,51.96,26.9
+SKU-0374,Cuidado Personal,baja,14,228,57.5,75.83,24.2
+SKU-0375,Ferretería y Herramientas,esporadica,21,87,113.9,163.45,30.3
+SKU-0376,Alimentos y Bebidas,media,6,509,54.0,77.96,30.7
+SKU-0377,Limpieza del Hogar,esporadica,10,49,20.48,32.39,36.8
+SKU-0378,Electrónica y Accesorios,alta,30,10113,83.33,94.24,11.6
+SKU-0379,Limpieza del Hogar,baja,10,536,22.77,26.98,15.6
+SKU-0380,Ferretería y Herramientas,media,21,1458,124.26,159.02,21.9
+SKU-0381,Limpieza del Hogar,baja,10,568,25.87,40.82,36.6
+SKU-0382,Cuidado Personal,media,14,517,55.67,88.8,37.3
+SKU-0383,Electrónica y Accesorios,media,30,4870,132.13,155.9,15.2
+SKU-0384,Electrónica y Accesorios,baja,30,1562,177.63,209.07,15.0
+SKU-0385,Alimentos y Bebidas,media,6,552,45.01,55.97,19.6
+SKU-0386,Limpieza del Hogar,media,10,1330,27.16,38.77,29.9
+SKU-0387,Limpieza del Hogar,alta,10,3046,27.55,41.21,33.2
+SKU-0388,Electrónica y Accesorios,esporadica,30,69,91.39,162.74,43.8
+SKU-0389,Alimentos y Bebidas,media,6,145,37.25,46.68,20.2
+SKU-0390,Cuidado Personal,baja,14,849,33.91,43.2,21.5
+SKU-0391,Electrónica y Accesorios,nula,30,11,253.95,396.2,35.9
+SKU-0392,Alimentos y Bebidas,media,6,342,36.5,45.66,20.1
+SKU-0393,Ferretería y Herramientas,baja,21,1164,94.2,107.26,12.2
+SKU-0394,Ferretería y Herramientas,media,21,726,98.55,150.58,34.6
+SKU-0395,Alimentos y Bebidas,media,6,1012,54.0,68.3,20.9
+SKU-0396,Limpieza del Hogar,esporadica,10,192,26.94,33.41,19.4
+SKU-0397,Cuidado Personal,media,14,3348,63.35,71.99,12.0
+SKU-0398,Alimentos y Bebidas,baja,6,82,45.2,73.5,38.5
+SKU-0399,Electrónica y Accesorios,alta,30,17521,179.02,221.78,19.3
+SKU-0400,Ferretería y Herramientas,media,21,1248,134.0,156.4,14.3
