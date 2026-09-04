@@ -1,0 +1,417 @@
+producto,semana,precio_mxn,unidades_vendidas
+Componente A (commodity),1,142.65,926.0
+Componente A (commodity),2,145.32,996.0
+Componente A (commodity),3,146.69,901.0
+Componente A (commodity),4,144.47,885.0
+Componente A (commodity),5,146.3,864.0
+Componente A (commodity),6,145.44,825.0
+Componente A (commodity),7,144.56,980.0
+Componente A (commodity),8,143.93,876.0
+Componente A (commodity),9,145.37,934.0
+Componente A (commodity),10,145.14,918.0
+Componente A (commodity),11,145.73,878.0
+Componente A (commodity),12,144.92,823.0
+Componente A (commodity),13,144.47,989.0
+Componente A (commodity),14,145.52,894.0
+Componente A (commodity),15,146.3,859.0
+Componente A (commodity),16,143.22,877.0
+Componente A (commodity),17,143.03,971.0
+Componente A (commodity),18,136.76,970.0
+Componente A (commodity),19,136.88,976.0
+Componente A (commodity),20,138.49,1021.0
+Componente A (commodity),21,139.1,974.0
+Componente A (commodity),22,137.92,1044.0
+Componente A (commodity),23,137.52,1032.0
+Componente A (commodity),24,137.44,1048.0
+Componente A (commodity),25,139.88,890.0
+Componente A (commodity),26,137.53,1087.0
+Componente A (commodity),27,138.81,1014.0
+Componente A (commodity),28,147.72,905.0
+Componente A (commodity),29,149.26,887.0
+Componente A (commodity),30,155.4,828.0
+Componente A (commodity),31,154.54,777.0
+Componente A (commodity),32,168.18,637.0
+Componente A (commodity),33,167.42,598.0
+Componente A (commodity),34,168.86,671.0
+Componente A (commodity),35,164.21,678.0
+Componente A (commodity),36,152.62,760.0
+Componente A (commodity),37,153.17,881.0
+Componente A (commodity),38,150.58,841.0
+Componente A (commodity),39,156.6,790.0
+Componente A (commodity),40,164.71,711.0
+Componente A (commodity),41,167.73,639.0
+Componente A (commodity),42,166.42,716.0
+Componente A (commodity),43,166.31,639.0
+Componente A (commodity),44,167.5,748.0
+Componente A (commodity),45,168.09,669.0
+Componente A (commodity),46,167.94,643.0
+Componente A (commodity),47,168.22,591.0
+Componente A (commodity),48,177.27,578.0
+Componente A (commodity),49,172.01,621.0
+Componente A (commodity),50,174.37,587.0
+Componente A (commodity),51,174.68,638.0
+Componente A (commodity),52,174.25,608.0
+Componente B (commodity),1,97.98,1252.0
+Componente B (commodity),2,96.78,1139.0
+Componente B (commodity),3,98.69,1121.0
+Componente B (commodity),4,98.85,1230.0
+Componente B (commodity),5,97.37,1271.0
+Componente B (commodity),6,98.92,1282.0
+Componente B (commodity),7,99.18,1102.0
+Componente B (commodity),8,105.93,1061.0
+Componente B (commodity),9,104.93,967.0
+Componente B (commodity),10,107.63,1122.0
+Componente B (commodity),11,105.81,1098.0
+Componente B (commodity),12,108.59,1008.0
+Componente B (commodity),13,106.97,994.0
+Componente B (commodity),14,111.04,928.0
+Componente B (commodity),15,108.62,1034.0
+Componente B (commodity),16,110.49,1033.0
+Componente B (commodity),17,106.86,950.0
+Componente B (commodity),18,111.44,933.0
+Componente B (commodity),19,108.87,924.0
+Componente B (commodity),20,109.43,979.0
+Componente B (commodity),21,111.98,1020.0
+Componente B (commodity),22,110.85,904.0
+Componente B (commodity),23,111.65,997.0
+Componente B (commodity),24,110.33,921.0
+Componente B (commodity),25,109.31,1052.0
+Componente B (commodity),26,108.93,996.0
+Componente B (commodity),27,101.09,1125.0
+Componente B (commodity),28,99.74,1202.0
+Componente B (commodity),29,100.12,1111.0
+Componente B (commodity),30,101.81,1112.0
+Componente B (commodity),31,101.07,1198.0
+Componente B (commodity),32,100.8,1216.0
+Componente B (commodity),33,101.69,1070.0
+Componente B (commodity),34,100.33,1152.0
+Componente B (commodity),35,100.71,1153.0
+Componente B (commodity),36,100.38,1136.0
+Componente B (commodity),37,99.75,1248.0
+Componente B (commodity),38,100.9,1199.0
+Componente B (commodity),39,101.23,1082.0
+Componente B (commodity),40,102.05,1153.0
+Componente B (commodity),41,100.82,1147.0
+Componente B (commodity),42,93.65,1388.0
+Componente B (commodity),43,94.99,1301.0
+Componente B (commodity),44,95.6,1181.0
+Componente B (commodity),45,94.47,1308.0
+Componente B (commodity),46,94.84,1230.0
+Componente B (commodity),47,94.36,1249.0
+Componente B (commodity),48,98.14,1338.0
+Componente B (commodity),49,99.14,1141.0
+Componente B (commodity),50,97.67,1286.0
+Componente B (commodity),51,97.96,1243.0
+Componente B (commodity),52,99.39,1230.0
+Kit de mantenimiento,1,309.96,403.0
+Kit de mantenimiento,2,311.95,412.0
+Kit de mantenimiento,3,311.73,382.0
+Kit de mantenimiento,4,314.31,401.0
+Kit de mantenimiento,5,305.62,480.0
+Kit de mantenimiento,6,310.33,409.0
+Kit de mantenimiento,7,284.82,490.0
+Kit de mantenimiento,8,279.64,461.0
+Kit de mantenimiento,9,290.35,473.0
+Kit de mantenimiento,10,293.47,481.0
+Kit de mantenimiento,11,290.33,437.0
+Kit de mantenimiento,12,293.29,455.0
+Kit de mantenimiento,13,298.35,472.0
+Kit de mantenimiento,14,292.58,392.0
+Kit de mantenimiento,15,291.91,428.0
+Kit de mantenimiento,16,290.63,460.0
+Kit de mantenimiento,17,293.7,439.0
+Kit de mantenimiento,18,290.3,448.0
+Kit de mantenimiento,19,288.25,457.0
+Kit de mantenimiento,20,294.9,443.0
+Kit de mantenimiento,21,292.33,421.0
+Kit de mantenimiento,22,292.16,473.0
+Kit de mantenimiento,23,289.98,443.0
+Kit de mantenimiento,24,311.5,428.0
+Kit de mantenimiento,25,313.56,384.0
+Kit de mantenimiento,26,308.31,452.0
+Kit de mantenimiento,27,314.18,420.0
+Kit de mantenimiento,28,305.95,423.0
+Kit de mantenimiento,29,309.94,414.0
+Kit de mantenimiento,30,315.95,388.0
+Kit de mantenimiento,31,312.98,416.0
+Kit de mantenimiento,32,312.22,457.0
+Kit de mantenimiento,33,313.02,410.0
+Kit de mantenimiento,34,316.26,390.0
+Kit de mantenimiento,35,315.68,450.0
+Kit de mantenimiento,36,308.63,402.0
+Kit de mantenimiento,37,312.74,430.0
+Kit de mantenimiento,38,315.86,420.0
+Kit de mantenimiento,39,313.37,405.0
+Kit de mantenimiento,40,335.98,444.0
+Kit de mantenimiento,41,331.74,378.0
+Kit de mantenimiento,42,337.5,429.0
+Kit de mantenimiento,43,342.59,370.0
+Kit de mantenimiento,44,337.85,366.0
+Kit de mantenimiento,45,332.17,397.0
+Kit de mantenimiento,46,335.53,415.0
+Kit de mantenimiento,47,337.26,411.0
+Kit de mantenimiento,48,320.9,403.0
+Kit de mantenimiento,49,299.01,469.0
+Kit de mantenimiento,50,300.8,395.0
+Kit de mantenimiento,51,302.81,457.0
+Kit de mantenimiento,52,292.84,507.0
+Repuesto especializado X,1,781.93,148.0
+Repuesto especializado X,2,781.4,150.0
+Repuesto especializado X,3,784.44,143.0
+Repuesto especializado X,4,782.77,138.0
+Repuesto especializado X,5,762.99,145.0
+Repuesto especializado X,6,808.02,143.0
+Repuesto especializado X,7,814.23,141.0
+Repuesto especializado X,8,815.41,148.0
+Repuesto especializado X,9,793.56,144.0
+Repuesto especializado X,10,794.78,152.0
+Repuesto especializado X,11,805.41,141.0
+Repuesto especializado X,12,797.97,166.0
+Repuesto especializado X,13,817.4,150.0
+Repuesto especializado X,14,816.96,130.0
+Repuesto especializado X,15,808.98,151.0
+Repuesto especializado X,16,856.3,155.0
+Repuesto especializado X,17,848.13,137.0
+Repuesto especializado X,18,906.59,126.0
+Repuesto especializado X,19,923.36,141.0
+Repuesto especializado X,20,901.48,146.0
+Repuesto especializado X,21,1000.12,125.0
+Repuesto especializado X,22,994.52,132.0
+Repuesto especializado X,23,968.99,143.0
+Repuesto especializado X,24,974.62,127.0
+Repuesto especializado X,25,978.93,129.0
+Repuesto especializado X,26,992.09,135.0
+Repuesto especializado X,27,1003.93,125.0
+Repuesto especializado X,28,981.88,128.0
+Repuesto especializado X,29,993.86,131.0
+Repuesto especializado X,30,935.63,126.0
+Repuesto especializado X,31,939.57,131.0
+Repuesto especializado X,32,1004.2,112.0
+Repuesto especializado X,33,996.86,122.0
+Repuesto especializado X,34,1006.46,133.0
+Repuesto especializado X,35,1004.96,118.0
+Repuesto especializado X,36,996.85,140.0
+Repuesto especializado X,37,1009.46,128.0
+Repuesto especializado X,38,993.88,142.0
+Repuesto especializado X,39,997.95,126.0
+Repuesto especializado X,40,993.62,125.0
+Repuesto especializado X,41,1015.69,131.0
+Repuesto especializado X,42,1007.54,127.0
+Repuesto especializado X,43,1001.16,131.0
+Repuesto especializado X,44,998.81,119.0
+Repuesto especializado X,45,992.31,130.0
+Repuesto especializado X,46,1005.29,121.0
+Repuesto especializado X,47,1004.2,130.0
+Repuesto especializado X,48,1065.14,118.0
+Repuesto especializado X,49,970.37,134.0
+Repuesto especializado X,50,974.04,129.0
+Repuesto especializado X,51,971.87,135.0
+Repuesto especializado X,52,971.7,135.0
+Repuesto especializado Y,1,1243.91,90.0
+Repuesto especializado Y,2,1231.07,95.0
+Repuesto especializado Y,3,1242.78,90.0
+Repuesto especializado Y,4,1257.27,92.0
+Repuesto especializado Y,5,1250.52,89.0
+Repuesto especializado Y,6,1338.19,81.0
+Repuesto especializado Y,7,1327.79,94.0
+Repuesto especializado Y,8,1346.46,79.0
+Repuesto especializado Y,9,1333.02,92.0
+Repuesto especializado Y,10,1350.0,82.0
+Repuesto especializado Y,11,1345.78,94.0
+Repuesto especializado Y,12,1409.1,88.0
+Repuesto especializado Y,13,1417.49,91.0
+Repuesto especializado Y,14,1371.43,96.0
+Repuesto especializado Y,15,1415.07,87.0
+Repuesto especializado Y,16,1384.58,87.0
+Repuesto especializado Y,17,1378.98,85.0
+Repuesto especializado Y,18,1292.56,87.0
+Repuesto especializado Y,19,1293.05,94.0
+Repuesto especializado Y,20,1277.73,94.0
+Repuesto especializado Y,21,1295.2,81.0
+Repuesto especializado Y,22,1288.38,77.0
+Repuesto especializado Y,23,1271.68,90.0
+Repuesto especializado Y,24,1289.29,86.0
+Repuesto especializado Y,25,1310.44,94.0
+Repuesto especializado Y,26,1297.74,97.0
+Repuesto especializado Y,27,1300.87,86.0
+Repuesto especializado Y,28,1286.11,84.0
+Repuesto especializado Y,29,1306.07,85.0
+Repuesto especializado Y,30,1282.75,92.0
+Repuesto especializado Y,31,1291.06,85.0
+Repuesto especializado Y,32,1301.94,81.0
+Repuesto especializado Y,33,1275.18,91.0
+Repuesto especializado Y,34,1295.6,104.0
+Repuesto especializado Y,35,1280.96,92.0
+Repuesto especializado Y,36,1354.17,85.0
+Repuesto especializado Y,37,1371.7,74.0
+Repuesto especializado Y,38,1342.11,84.0
+Repuesto especializado Y,39,1356.4,80.0
+Repuesto especializado Y,40,1362.66,93.0
+Repuesto especializado Y,41,1354.99,82.0
+Repuesto especializado Y,42,1413.34,91.0
+Repuesto especializado Y,43,1433.5,86.0
+Repuesto especializado Y,44,1459.23,87.0
+Repuesto especializado Y,45,1432.27,78.0
+Repuesto especializado Y,46,1428.28,81.0
+Repuesto especializado Y,47,1426.03,78.0
+Repuesto especializado Y,48,1411.02,85.0
+Repuesto especializado Y,49,1490.97,81.0
+Repuesto especializado Y,50,1510.41,79.0
+Repuesto especializado Y,51,1477.37,83.0
+Repuesto especializado Y,52,1479.28,93.0
+Servicio de instalación,1,2079.38,56.0
+Servicio de instalación,2,2041.02,59.0
+Servicio de instalación,3,2102.6,62.0
+Servicio de instalación,4,2091.54,60.0
+Servicio de instalación,5,2133.64,55.0
+Servicio de instalación,6,2125.2,61.0
+Servicio de instalación,7,2091.19,59.0
+Servicio de instalación,8,2279.28,64.0
+Servicio de instalación,9,2249.61,62.0
+Servicio de instalación,10,2220.67,60.0
+Servicio de instalación,11,2260.05,54.0
+Servicio de instalación,12,2256.3,58.0
+Servicio de instalación,13,2240.7,54.0
+Servicio de instalación,14,2102.14,65.0
+Servicio de instalación,15,2051.77,55.0
+Servicio de instalación,16,2024.25,63.0
+Servicio de instalación,17,2036.82,62.0
+Servicio de instalación,18,2137.0,61.0
+Servicio de instalación,19,2131.01,58.0
+Servicio de instalación,20,2139.59,60.0
+Servicio de instalación,21,2133.79,66.0
+Servicio de instalación,22,2145.28,58.0
+Servicio de instalación,23,2152.86,62.0
+Servicio de instalación,24,2129.33,64.0
+Servicio de instalación,25,2140.24,63.0
+Servicio de instalación,26,2121.27,56.0
+Servicio de instalación,27,2099.12,62.0
+Servicio de instalación,28,2225.83,58.0
+Servicio de instalación,29,2216.21,58.0
+Servicio de instalación,30,2437.65,55.0
+Servicio de instalación,31,2399.13,59.0
+Servicio de instalación,32,2397.4,55.0
+Servicio de instalación,33,2433.21,64.0
+Servicio de instalación,34,2406.99,60.0
+Servicio de instalación,35,2409.58,58.0
+Servicio de instalación,36,2237.23,54.0
+Servicio de instalación,37,2228.98,60.0
+Servicio de instalación,38,2195.41,61.0
+Servicio de instalación,39,2238.22,53.0
+Servicio de instalación,40,2266.27,55.0
+Servicio de instalación,41,2263.92,65.0
+Servicio de instalación,42,2245.48,56.0
+Servicio de instalación,43,2252.8,58.0
+Servicio de instalación,44,2266.34,56.0
+Servicio de instalación,45,2238.05,60.0
+Servicio de instalación,46,2248.95,53.0
+Servicio de instalación,47,2192.4,61.0
+Servicio de instalación,48,2221.8,58.0
+Servicio de instalación,49,2257.08,55.0
+Servicio de instalación,50,2248.8,65.0
+Servicio de instalación,51,2258.55,62.0
+Servicio de instalación,52,2237.6,61.0
+Accesorio estándar,1,58.81,2280.0
+Accesorio estándar,2,61.03,2059.0
+Accesorio estándar,3,59.9,2028.0
+Accesorio estándar,4,59.66,1897.0
+Accesorio estándar,5,59.25,2255.0
+Accesorio estándar,6,59.95,2070.0
+Accesorio estándar,7,61.04,2184.0
+Accesorio estándar,8,60.51,2106.0
+Accesorio estándar,9,55.61,2527.0
+Accesorio estándar,10,56.0,2299.0
+Accesorio estándar,11,56.34,2298.0
+Accesorio estándar,12,56.94,2445.0
+Accesorio estándar,13,56.27,2316.0
+Accesorio estándar,14,56.27,2402.0
+Accesorio estándar,15,55.9,2362.0
+Accesorio estándar,16,55.82,2518.0
+Accesorio estándar,17,55.93,2163.0
+Accesorio estándar,18,59.58,2089.0
+Accesorio estándar,19,59.87,2267.0
+Accesorio estándar,20,58.97,2228.0
+Accesorio estándar,21,57.88,2223.0
+Accesorio estándar,22,58.8,2057.0
+Accesorio estándar,23,59.49,2224.0
+Accesorio estándar,24,56.06,2508.0
+Accesorio estándar,25,55.92,2326.0
+Accesorio estándar,26,56.82,2528.0
+Accesorio estándar,27,55.56,2346.0
+Accesorio estándar,28,56.48,2498.0
+Accesorio estándar,29,55.69,2457.0
+Accesorio estándar,30,56.04,2691.0
+Accesorio estándar,31,56.33,2247.0
+Accesorio estándar,32,55.82,2580.0
+Accesorio estándar,33,56.87,2284.0
+Accesorio estándar,34,56.66,2256.0
+Accesorio estándar,35,55.59,2477.0
+Accesorio estándar,36,56.46,2420.0
+Accesorio estándar,37,54.96,2721.0
+Accesorio estándar,38,56.72,2304.0
+Accesorio estándar,39,56.13,2229.0
+Accesorio estándar,40,56.19,2303.0
+Accesorio estándar,41,55.86,2615.0
+Accesorio estándar,42,60.22,2215.0
+Accesorio estándar,43,59.91,1873.0
+Accesorio estándar,44,60.57,2075.0
+Accesorio estándar,45,59.5,1981.0
+Accesorio estándar,46,59.87,2111.0
+Accesorio estándar,47,60.6,2205.0
+Accesorio estándar,48,59.67,2060.0
+Accesorio estándar,49,60.19,2470.0
+Accesorio estándar,50,60.04,1995.0
+Accesorio estándar,51,60.49,2012.0
+Accesorio estándar,52,60.03,2057.0
+Refacción crítica (sin sustituto),1,552.79,211.0
+Refacción crítica (sin sustituto),2,539.52,221.0
+Refacción crítica (sin sustituto),3,549.2,183.0
+Refacción crítica (sin sustituto),4,541.31,227.0
+Refacción crítica (sin sustituto),5,543.02,229.0
+Refacción crítica (sin sustituto),6,551.05,207.0
+Refacción crítica (sin sustituto),7,541.19,202.0
+Refacción crítica (sin sustituto),8,542.31,206.0
+Refacción crítica (sin sustituto),9,536.5,211.0
+Refacción crítica (sin sustituto),10,536.13,217.0
+Refacción crítica (sin sustituto),11,536.65,229.0
+Refacción crítica (sin sustituto),12,540.96,222.0
+Refacción crítica (sin sustituto),13,535.6,218.0
+Refacción crítica (sin sustituto),14,577.69,201.0
+Refacción crítica (sin sustituto),15,578.1,201.0
+Refacción crítica (sin sustituto),16,587.54,238.0
+Refacción crítica (sin sustituto),17,581.97,200.0
+Refacción crítica (sin sustituto),18,625.56,213.0
+Refacción crítica (sin sustituto),19,624.36,212.0
+Refacción crítica (sin sustituto),20,633.31,204.0
+Refacción crítica (sin sustituto),21,615.16,205.0
+Refacción crítica (sin sustituto),22,630.34,229.0
+Refacción crítica (sin sustituto),23,624.19,202.0
+Refacción crítica (sin sustituto),24,626.17,219.0
+Refacción crítica (sin sustituto),25,632.78,218.0
+Refacción crítica (sin sustituto),26,624.99,202.0
+Refacción crítica (sin sustituto),27,623.65,219.0
+Refacción crítica (sin sustituto),28,621.53,204.0
+Refacción crítica (sin sustituto),29,627.72,192.0
+Refacción crítica (sin sustituto),30,625.49,186.0
+Refacción crítica (sin sustituto),31,633.13,198.0
+Refacción crítica (sin sustituto),32,586.88,229.0
+Refacción crítica (sin sustituto),33,587.56,208.0
+Refacción crítica (sin sustituto),34,595.27,202.0
+Refacción crítica (sin sustituto),35,541.27,196.0
+Refacción crítica (sin sustituto),36,510.85,220.0
+Refacción crítica (sin sustituto),37,506.04,222.0
+Refacción crítica (sin sustituto),38,500.94,206.0
+Refacción crítica (sin sustituto),39,502.38,194.0
+Refacción crítica (sin sustituto),40,504.19,224.0
+Refacción crítica (sin sustituto),41,503.03,201.0
+Refacción crítica (sin sustituto),42,500.98,211.0
+Refacción crítica (sin sustituto),43,501.57,208.0
+Refacción crítica (sin sustituto),44,502.52,203.0
+Refacción crítica (sin sustituto),45,504.36,218.0
+Refacción crítica (sin sustituto),46,496.91,194.0
+Refacción crítica (sin sustituto),47,493.61,226.0
+Refacción crítica (sin sustituto),48,507.05,221.0
+Refacción crítica (sin sustituto),49,499.03,245.0
+Refacción crítica (sin sustituto),50,507.79,200.0
+Refacción crítica (sin sustituto),51,500.69,228.0
+Refacción crítica (sin sustituto),52,505.64,222.0
