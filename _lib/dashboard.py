@@ -33,6 +33,7 @@ STATUS = {
     "warning": ("#B8842C", "#B8842C"),
     "serious": ("#8C5A1E", "#8C5A1E"),
     "critical": ("#d03b3b", "#d03b3b"),
+    "neutral": ("#9CB8B4", "#9CB8B4"),
 }
 
 CHARTJS_URL = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"
@@ -88,7 +89,11 @@ def _insights_html(insights):
     return f'<ul class="insights">{items}</ul>'
 
 
-def _table_html(table):
+def _table_html(table, open=False):
+    """`open=True` renders an always-visible summary table instead of a
+    collapsed <details> — for table_position="top" (Minto pyramid: the
+    overview is part of the answer, not a "show more" toggle buried below
+    the charts)."""
     if not table:
         return ""
     headers = "".join(f"<th>{h}</th>" for h in table["headers"])
@@ -96,14 +101,116 @@ def _table_html(table):
     for row in table["rows"]:
         cells = "".join(f"<td>{c}</td>" for c in row)
         rows += f"<tr>{cells}</tr>\n"
+    table_markup = f"""<table>
+        <thead><tr>{headers}</tr></thead>
+        <tbody>{rows}</tbody>
+      </table>"""
+    if open:
+        title_html = f'<p class="section-label">{table["title"]}</p>' if table.get("title") else ""
+        return f"""
+    <div class="table-wrap table-wrap-open">
+      {title_html}
+      {table_markup}
+    </div>
+    """
     return f"""
     <details class="table-wrap">
       <summary>Ver tabla de datos</summary>
-      <table>
-        <thead><tr>{headers}</tr></thead>
-        <tbody>{rows}</tbody>
-      </table>
+      {table_markup}
     </details>
+    """
+
+
+def _banner_html(banner):
+    """Banner de 'la respuesta primero' (principio de la pirámide de Minto):
+    va arriba de todo, antes incluso de los KPIs, para que la conclusión
+    accionable de la semana se lea sin tener que interpretar ningún gráfico."""
+    if not banner:
+        return ""
+    label = banner.get("label", "Esta semana")
+    return f"""
+    <div class="minto-banner">
+      <p class="minto-label">{label}</p>
+      <h2>{banner["headline"]}</h2>
+      <p class="minto-sub">{banner.get("subtext", "")}</p>
+    </div>
+    """
+
+
+def _checklist_html(checklist):
+    """Lista de tareas con checkboxes persistidos en localStorage (por
+    navegador, sin backend) -- convierte la tabla estática de 'top clientes'
+    en una herramienta de seguimiento diario real: marcar, ver progreso,
+    y que quede marcado la próxima vez que se abra el dashboard."""
+    if not checklist:
+        return ""
+    cid = checklist["id"]
+    headers = "".join(f"<th>{h}</th>" for h in checklist["headers"])
+    rows_html = []
+    for row in checklist["rows"]:
+        cells = "".join(f"<td>{c}</td>" for c in row["cells"])
+        rows_html.append(
+            f'<tr data-row="{row["id"]}">'
+            f'<td class="check-col"><input type="checkbox" class="xia-check" data-scope="{cid}" data-row="{row["id"]}"></td>'
+            f'{cells}</tr>'
+        )
+    total = len(checklist["rows"])
+    return f"""
+    <div class="checklist-card">
+      <h3>{checklist["title"]}</h3>
+      <p class="checklist-sub">{checklist.get("subtitle", "")}</p>
+      <div class="checklist-progress">
+        <div class="progress-bar"><div class="progress-fill" id="{cid}-fill" style="width:0%"></div></div>
+        <span id="{cid}-count">0 / {total} {checklist.get("progress_noun", "contactados")}</span>
+      </div>
+      <div class="checklist-table-wrap">
+        <table class="checklist-table">
+          <thead><tr><th></th>{headers}</tr></thead>
+          <tbody>{"".join(rows_html)}</tbody>
+        </table>
+      </div>
+    </div>
+    """
+
+
+def _checklist_js(checklist):
+    if not checklist:
+        return ""
+    cid = checklist["id"]
+    total = len(checklist["rows"])
+    noun = json.dumps(checklist.get("progress_noun", "contactados"), ensure_ascii=False)
+    return f"""
+    (function() {{
+      const scopeId = {json.dumps(cid)};
+      const total = {total};
+      const storageKey = 'xia_checklist_' + scopeId;
+      let state = {{}};
+      try {{ state = JSON.parse(localStorage.getItem(storageKey) || '{{}}'); }} catch (e) {{}}
+      const boxes = document.querySelectorAll(`input.xia-check[data-scope="${{scopeId}}"]`);
+      function updateProgress() {{
+        const checked = document.querySelectorAll(`input.xia-check[data-scope="${{scopeId}}"]:checked`).length;
+        const fill = document.getElementById(scopeId + '-fill');
+        const count = document.getElementById(scopeId + '-count');
+        if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
+        if (count) count.textContent = `${{checked}} / ${{total}} ${{{noun}}}`;
+      }}
+      boxes.forEach((b) => {{
+        const rowId = b.dataset.row;
+        if (state[rowId]) {{
+          b.checked = true;
+          const tr = b.closest('tr');
+          if (tr) tr.classList.add('done');
+        }}
+        b.addEventListener('change', () => {{
+          state[rowId] = b.checked;
+          try {{ localStorage.setItem(storageKey, JSON.stringify(state)); }} catch (e) {{}}
+          const tr = b.closest('tr');
+          if (tr) tr.classList.toggle('done', b.checked);
+          updateProgress();
+        }});
+      }});
+      updateProgress();
+    }})();
     """
 
 
@@ -220,7 +327,14 @@ def _funnel_js(chart):
 def _scatter_js(chart):
     """Chart.js native scatter — one dataset per status so the legend reads
     as good/warning/critical instead of one undifferentiated point cloud.
-    Points carry a `label` (the KPI/entity name) for the tooltip."""
+    Points carry a `label` (the KPI/entity name) for the tooltip.
+
+    Optional per-chart overrides for quadrant-style scatters (e.g. a
+    risk-vs-value matrix): `status_labels` (dict, merged over the generic
+    defaults), `point_radius`/`point_alpha` (denser point clouds need smaller,
+    semi-transparent markers), `quadrant_lines` ({"x": v, "y": v} data-value
+    dashed dividers), and `quadrant_labels` (list of {"corner", "text"} corner
+    annotations, corner in top-left/top-right/bottom-left/bottom-right)."""
     cid = chart["id"]
     points = chart["points"]
     x_label = chart.get("x_label", "")
@@ -228,6 +342,11 @@ def _scatter_js(chart):
     x_unit = chart.get("x_unit", "")
     y_unit = chart.get("y_unit", "")
     status_labels = {"good": "En meta", "warning": "Cerca de meta", "critical": "En riesgo"}
+    status_labels.update(chart.get("status_labels", {}))
+    point_radius = chart.get("point_radius", 6)
+    point_alpha = chart.get("point_alpha", 1)
+    quadrant_lines = json.dumps(chart.get("quadrant_lines"))
+    quadrant_labels = json.dumps(chart.get("quadrant_labels", []), ensure_ascii=False)
 
     groups = {}
     order = []
@@ -247,39 +366,82 @@ def _scatter_js(chart):
         datasets_js.append(f"""{{
             label: {label},
             data: {data},
-            backgroundColor: seriesColorHex({json.dumps(color_l)}, {json.dumps(color_d)}),
+            backgroundColor: withAlpha(seriesColorHex({json.dumps(color_l)}, {json.dumps(color_d)}), {point_alpha}),
             borderColor: seriesColorHex({json.dumps(color_l)}, {json.dumps(color_d)}),
-            pointRadius: 6,
-            pointHoverRadius: 8,
+            pointRadius: {point_radius},
+            pointHoverRadius: {point_radius + 2},
         }}""")
     datasets_str = ",\n".join(datasets_js)
 
     return f"""
-    new Chart(document.getElementById('{cid}').getContext('2d'), {{
-      type: 'scatter',
-      data: {{ datasets: [{datasets_str}] }},
-      options: {{
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {{
-          legend: {{ display: true, position: 'top', align: 'start',
-                     labels: {{ color: inkColor('secondary'), boxWidth: 12, usePointStyle: true }} }},
-          tooltip: {{
-            backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
-            borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-            callbacks: {{
-              label: (ctx) => `${{ctx.raw.label}}: ${{ctx.parsed.x.toFixed(1)}}{x_unit}, ${{ctx.parsed.y.toFixed(1)}}{y_unit}`
+    (function() {{
+      const quadrantLines_{cid} = {quadrant_lines};
+      const quadrantLabels_{cid} = {quadrant_labels};
+      new Chart(document.getElementById('{cid}').getContext('2d'), {{
+        type: 'scatter',
+        data: {{ datasets: [{datasets_str}] }},
+        options: {{
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {{
+            legend: {{ display: true, position: 'top', align: 'start',
+                       labels: {{ color: inkColor('secondary'), boxWidth: 12, usePointStyle: true }} }},
+            tooltip: {{
+              backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+              borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+              callbacks: {{
+                label: (ctx) => `${{ctx.raw.label}}: ${{ctx.parsed.x.toFixed(1)}}{x_unit}, ${{ctx.parsed.y.toFixed(1)}}{y_unit}`
+              }}
             }}
+          }},
+          scales: {{
+            x: {{ title: {{ display: {str(bool(x_label)).lower()}, text: {json.dumps(x_label, ensure_ascii=False)}, color: inkColor('secondary') }},
+                  grid: {{ color: inkColor('grid') }}, ticks: {{ color: inkColor('muted') }} }},
+            y: {{ title: {{ display: {str(bool(y_label)).lower()}, text: {json.dumps(y_label, ensure_ascii=False)}, color: inkColor('secondary') }},
+                  grid: {{ color: inkColor('grid') }}, ticks: {{ color: inkColor('muted') }} }}
           }}
         }},
-        scales: {{
-          x: {{ title: {{ display: {str(bool(x_label)).lower()}, text: {json.dumps(x_label, ensure_ascii=False)}, color: inkColor('secondary') }},
-                grid: {{ color: inkColor('grid') }}, ticks: {{ color: inkColor('muted') }} }},
-          y: {{ title: {{ display: {str(bool(y_label)).lower()}, text: {json.dumps(y_label, ensure_ascii=False)}, color: inkColor('secondary') }},
-                grid: {{ color: inkColor('grid') }}, ticks: {{ color: inkColor('muted') }} }}
-        }}
-      }}
-    }});
+        plugins: [{{
+          id: 'quadrantOverlay_{cid}',
+          afterDraw: (chartInstance) => {{
+            const {{ ctx, chartArea }} = chartInstance;
+            if (!chartArea) return;
+            const {{ left, right, top, bottom }} = chartArea;
+            const scales = chartInstance.scales;
+            ctx.save();
+            if (quadrantLines_{cid}) {{
+              ctx.strokeStyle = withAlpha(inkColor('grid'), 0.55);
+              ctx.setLineDash([4, 4]);
+              ctx.lineWidth = 1;
+              if (quadrantLines_{cid}.x !== undefined && quadrantLines_{cid}.x !== null) {{
+                const xPix = scales.x.getPixelForValue(quadrantLines_{cid}.x);
+                ctx.beginPath(); ctx.moveTo(xPix, top); ctx.lineTo(xPix, bottom); ctx.stroke();
+              }}
+              if (quadrantLines_{cid}.y !== undefined && quadrantLines_{cid}.y !== null) {{
+                const yPix = scales.y.getPixelForValue(quadrantLines_{cid}.y);
+                ctx.beginPath(); ctx.moveTo(left, yPix); ctx.lineTo(right, yPix); ctx.stroke();
+              }}
+              ctx.setLineDash([]);
+            }}
+            if (quadrantLabels_{cid}.length) {{
+              ctx.font = '700 10px -apple-system, sans-serif';
+              ctx.fillStyle = withAlpha(inkColor('muted'), 0.95);
+              const pad = 10;
+              quadrantLabels_{cid}.forEach((q) => {{
+                let x, y, align;
+                if (q.corner === 'top-left') {{ x = left + pad; y = top + pad + 9; align = 'left'; }}
+                else if (q.corner === 'top-right') {{ x = right - pad; y = top + pad + 9; align = 'right'; }}
+                else if (q.corner === 'bottom-left') {{ x = left + pad; y = bottom - pad; align = 'left'; }}
+                else {{ x = right - pad; y = bottom - pad; align = 'right'; }}
+                ctx.textAlign = align;
+                ctx.fillText(q.text, x, y);
+              }});
+            }}
+            ctx.restore();
+          }}
+        }}]
+      }});
+    }})();
     """
 
 
@@ -635,6 +797,28 @@ TEMPLATE = """<!doctype html>
   .kpi-warning {{ background: rgba(184,132,44,0.18); color: #8c6220; }}
   .kpi-serious {{ background: rgba(140,90,30,0.18); color: #6b4517; }}
   .kpi-critical {{ background: rgba(208,59,59,0.14); color: #d03b3b; }}
+  .minto-banner {{ background: var(--surface); border: 1px solid var(--border); border-left: 5px solid var(--gold);
+                   border-radius: 10px; padding: 18px 22px; margin-bottom: 22px; }}
+  .minto-banner .minto-label {{ margin: 0 0 6px; color: var(--gold); font-size: 12px; font-weight: 700;
+                                 text-transform: uppercase; letter-spacing: .06em; }}
+  .minto-banner h2 {{ margin: 0 0 8px; font-size: 21px; line-height: 1.35; color: var(--text-primary); }}
+  .minto-banner p.minto-sub {{ margin: 0; color: var(--text-secondary); font-size: 14px; line-height: 1.55; max-width: 780px; }}
+  .checklist-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+                      padding: 18px 22px; margin-bottom: 22px; }}
+  .checklist-card h3 {{ margin: 0 0 2px; font-size: 16px; }}
+  .checklist-card p.checklist-sub {{ margin: 0 0 14px; color: var(--text-muted); font-size: 13px; }}
+  .checklist-progress {{ display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }}
+  .progress-bar {{ flex: 1; max-width: 320px; height: 8px; border-radius: 999px; background: var(--grid); overflow: hidden; }}
+  .progress-fill {{ height: 100%; background: var(--accent); border-radius: 999px; transition: width .2s ease; }}
+  .checklist-progress span {{ color: var(--text-secondary); font-size: 13px; font-weight: 600; white-space: nowrap; }}
+  .checklist-table-wrap {{ overflow-x: auto; }}
+  table.checklist-table {{ width: 100%; border-collapse: collapse; font-size: 13px; }}
+  table.checklist-table th, table.checklist-table td {{ text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }}
+  table.checklist-table th {{ color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }}
+  table.checklist-table td.check-col {{ width: 30px; }}
+  table.checklist-table input.xia-check {{ width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }}
+  table.checklist-table tr.done td {{ color: var(--text-muted); text-decoration: line-through; opacity: .7; }}
+  table.checklist-table tr.done td.check-col {{ text-decoration: none; }}
   .charts-grid {{ display: grid; grid-template-columns: {chart_grid_cols}; gap: 18px; margin-bottom: 26px; }}
   .chart-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }}
   .chart-card-wide {{ grid-column: 1 / -1; }}
@@ -669,7 +853,11 @@ TEMPLATE = """<!doctype html>
     <p class="tagline">{tagline}</p>
   </header>
 
+  {banner_html}
+
   {top_html}
+
+  {table_top_html}
 
   <div class="charts-grid">
     {chart_blocks}
@@ -682,7 +870,9 @@ TEMPLATE = """<!doctype html>
     {insights_html}
   </div>
 
-  {table_html}
+  {table_bottom_html}
+
+  {checklist_html}
 
   <footer>
     Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
@@ -722,10 +912,16 @@ function surfaceColor() {{ return cssVar('--surface'); }}
 
 
 def render(filename, project_no, title, tagline, kpis, charts, insights, table=None, chart_cols=2,
-           hero_kpi=None, hero_chart=None, drilldown_charts=None, drilldown_title=None):
+           hero_kpi=None, hero_chart=None, drilldown_charts=None, drilldown_title=None,
+           banner=None, checklist=None, table_position="bottom"):
     tag = f"Proyecto {project_no:02d} · Portafolio de demostración"
 
+    banner_html = _banner_html(banner)
+    checklist_html = _checklist_html(checklist)
+
     extra_charts_js = []
+    if checklist:
+        extra_charts_js.append(_checklist_js(checklist))
     if hero_kpi and hero_chart:
         top_html = f"""<div class="top-row">
     {_hero_widget_html(hero_kpi, hero_chart["id"])}
@@ -749,7 +945,12 @@ def render(filename, project_no, title, tagline, kpis, charts, insights, table=N
 
     charts_js = "\n".join(charts_js_parts)
     insights_html = _insights_html(insights)
-    table_html = _table_html(table) if table else ""
+    # table_position="top" surfaces the segment/status summary right under
+    # the KPIs, always expanded (Minto pyramid: the overview belongs with
+    # the answer, not a "show more" toggle after the charts) — default
+    # "bottom" keeps every other project's existing collapsed-table layout.
+    table_top_html = _table_html(table, open=True) if (table and table_position == "top") else ""
+    table_bottom_html = _table_html(table) if (table and table_position != "top") else ""
     grid_cols = "1fr" if chart_cols == 1 or len(charts) == 1 else "repeat(2, 1fr)"
 
     html = TEMPLATE.format(
@@ -758,12 +959,15 @@ def render(filename, project_no, title, tagline, kpis, charts, insights, table=N
         tag=tag,
         title=title,
         tagline=tagline,
+        banner_html=banner_html,
         top_html=top_html,
+        checklist_html=checklist_html,
         chart_blocks=chart_blocks,
         chart_grid_cols=grid_cols,
         drilldown_html=drilldown_html,
         insights_html=insights_html,
-        table_html=table_html,
+        table_top_html=table_top_html,
+        table_bottom_html=table_bottom_html,
         charts_js=charts_js,
     )
     Path(filename).write_text(html, encoding="utf-8")

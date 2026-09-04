@@ -44,6 +44,7 @@ STATUS = {
     "warning": GOLD,
     "serious": "#8C5A1E",   # deep bronze — escalated warning, not clay-orange
     "critical": "#d03b3b",  # red — universal alarm, unrelated hue family
+    "neutral": "#9CB8B4",   # muted teal-gray — stable/no-action-needed group
 }
 
 # Sequential teal: light tint -> dark teal, for funnels, heatmaps, gradients.
