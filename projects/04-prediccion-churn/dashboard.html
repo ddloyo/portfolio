@@ -1,0 +1,1128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XIA · Predicción de Riesgo de Churn</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --brand-ink: #163832;
+    --brand-cream: #F6EFE1;
+    --gold: #B8842C;
+    --surface: #FFFFFF;
+    --page: #F6EFE1;
+    --text-primary: #163832;
+    --text-secondary: #4A625D;
+    --text-muted: #7E948F;
+    --grid: rgba(22,56,50,0.15);
+    --border: rgba(22,56,50,0.12);
+    --accent: #71A8A3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface: #163832;
+      --page: #0E1F1B;
+      --text-primary: #F6EFE1;
+      --text-secondary: #C7D9D5;
+      --text-muted: #8FA8A3;
+      --grid: rgba(246,239,225,0.14);
+      --border: rgba(246,239,225,0.12);
+      --accent: #8FC2BC;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #163832;
+    --page: #0E1F1B;
+    --text-primary: #F6EFE1;
+    --text-secondary: #C7D9D5;
+    --text-muted: #8FA8A3;
+    --grid: rgba(246,239,225,0.14);
+    --border: rgba(246,239,225,0.12);
+    --accent: #8FC2BC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--text-primary);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    padding: 32px 20px 60px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brand .mark { width:28px; height:28px; border-radius:7px; background: var(--brand-ink);
+                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px; }
+  .brand span { color: var(--text-muted); font-size:13px; letter-spacing: .04em; text-transform: uppercase; }
+  header.page-head { margin-bottom: 28px; }
+  header.page-head .tag { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  header.page-head h1 { font-size: 26px; margin: 0 0 8px; }
+  header.page-head p.tagline { color: var(--text-secondary); font-size: 15px; max-width: 720px; margin: 0; line-height:1.5; }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .top-row { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 14px; margin-bottom: 28px; align-items: stretch; }
+  .hero-widget { background: var(--surface); border: 1px solid var(--gold); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; }
+  .hero-widget .hero-value { color: var(--gold); }
+  .hero-chart-wrap { position: relative; flex: 1; min-height: 130px; margin-top: 12px; }
+  .kpi-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 1fr; gap: 14px; }
+  .kpi-grid-5 .kpi-card { padding: 12px 14px; }
+  .kpi-grid-5 .kpi-label { font-size: 10.5px; }
+  .kpi-grid-5 .kpi-value { font-size: 18px; }
+  @media (max-width: 860px) {
+    .top-row { grid-template-columns: 1fr; }
+    .kpi-grid-5 { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .kpi-grid-5 { grid-template-columns: repeat(2, 1fr); }
+    .drilldown-grid { grid-template-columns: 1fr !important; }
+  }
+  .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; position: relative; }
+  .kpi-hero { border: 1px solid var(--gold); }
+  .kpi-hero .kpi-value { color: var(--gold); }
+  .kpi-label { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 600; }
+  .kpi-delta { font-size: 13px; margin-top: 4px; font-weight: 600; }
+  .delta-up { color: #2f6e57; }
+  .delta-down { color: #d03b3b; }
+  .kpi-badge { display:inline-block; margin-top:8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+                letter-spacing: .03em; padding: 3px 8px; border-radius: 999px; }
+  .kpi-good { background: rgba(62,143,114,0.16); color: #2f6e57; }
+  .kpi-warning { background: rgba(184,132,44,0.18); color: #8c6220; }
+  .kpi-serious { background: rgba(140,90,30,0.18); color: #6b4517; }
+  .kpi-critical { background: rgba(208,59,59,0.14); color: #d03b3b; }
+  .minto-banner { background: var(--surface); border: 1px solid var(--border); border-left: 5px solid var(--gold);
+                   border-radius: 10px; padding: 18px 22px; margin-bottom: 22px; }
+  .minto-banner .minto-label { margin: 0 0 6px; color: var(--gold); font-size: 12px; font-weight: 700;
+                                 text-transform: uppercase; letter-spacing: .06em; }
+  .minto-banner h2 { margin: 0 0 8px; font-size: 21px; line-height: 1.35; color: var(--text-primary); }
+  .minto-banner p.minto-sub { margin: 0; color: var(--text-secondary); font-size: 14px; line-height: 1.55; max-width: 780px; }
+  .checklist-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+                      padding: 18px 22px; margin-bottom: 22px; }
+  .checklist-card h3 { margin: 0 0 2px; font-size: 16px; }
+  .checklist-card p.checklist-sub { margin: 0 0 14px; color: var(--text-muted); font-size: 13px; }
+  .checklist-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .progress-bar { flex: 1; max-width: 320px; height: 8px; border-radius: 999px; background: var(--grid); overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .2s ease; }
+  .checklist-progress span { color: var(--text-secondary); font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .checklist-table-wrap { overflow-x: auto; }
+  table.checklist-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.checklist-table th, table.checklist-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  table.checklist-table th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  table.checklist-table td.check-col { width: 30px; }
+  table.checklist-table input.xia-check { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+  table.checklist-table tr.done td { color: var(--text-muted); text-decoration: line-through; opacity: .7; }
+  table.checklist-table tr.done td.check-col { text-decoration: none; }
+  .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 26px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .chart-card-wide { grid-column: 1 / -1; }
+  .chart-head h3 { margin: 0 0 2px; font-size: 15px; }
+  .chart-head p { margin: 0 0 12px; color: var(--text-muted); font-size: 12.5px; }
+  .chart-canvas-wrap { position: relative; height: 280px; }
+  .section-label { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; }
+  .drilldown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 26px; }
+  .drilldown-grid .chart-card { padding: 14px 16px; }
+  .drilldown-grid .chart-head h3 { font-size: 13.5px; }
+  .drilldown-grid .chart-head p { margin: 0 0 8px; font-size: 11.5px; }
+  .drilldown-grid .chart-canvas-wrap { height: 190px; }
+  .insights-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 22px; }
+  .insights-card h3 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+  ul.insights { margin: 0; padding-left: 18px; color: var(--text-secondary); line-height: 1.65; font-size: 14.5px; }
+  ul.insights li::marker { color: var(--accent); }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 22px; }
+  .table-wrap summary { cursor: pointer; color: var(--text-secondary); font-size: 13.5px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  footer { color: var(--text-muted); font-size: 12px; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 16px; }
+  footer a { color: var(--text-primary); text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="mark">X</div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
+  <header class="page-head">
+    <div class="tag">Proyecto 04 · Portafolio de demostración</div>
+    <h1>Predicción de Riesgo de Churn</h1>
+    <p class="tagline">De 'sabemos que algo bajó' a 'aquí está el plan de llamadas de esta semana, en orden' — planeación semanal y seguimiento diario, no solo un score.</p>
+  </header>
+
+  
+    <div class="minto-banner">
+      <p class="minto-label">Esta semana</p>
+      <h2>100 llamadas de retención prioritaria — $171,993 MXN/mes en juego</h2>
+      <p class="minto-sub">Ordenadas por gasto mensual, 20 por día de lunes a viernes: empieza el lunes por los clientes de mayor valor. Quedan 195 clientes en cola ($190,575 MXN/mes adicionales) para la próxima semana.</p>
+    </div>
+    
+
+  <div class="kpi-row">
+    
+        <div class="kpi-card">
+          <div class="kpi-label">Llamadas esta semana</div>
+          <div class="kpi-value">100 de 295</div>
+          
+          <span class="kpi-badge kpi-critical">critical</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Cola automatizada</div>
+          <div class="kpi-value">306 clientes</div>
+          
+          <span class="kpi-badge kpi-serious">serious</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Backlog próxima semana</div>
+          <div class="kpi-value">195 clientes</div>
+          
+          <span class="kpi-badge kpi-warning">warning</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Sin acción esta semana</div>
+          <div class="kpi-value">599 clientes</div>
+          
+          <span class="kpi-badge kpi-good">good</span>
+        </div>
+  </div>
+
+  <div class="charts-grid">
+    
+    <div class="chart-card chart-card-wide">
+      <div class="chart-head">
+        <h3>Matriz riesgo x valor: qué acción corresponde a cada cliente</h3>
+        <p>1,200 clientes activos — riesgo relativo de churn vs. gasto mensual, divididos en la mediana de cada eje</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_matriz"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Qué empuja el riesgo de churn</h3>
+        <p>Coeficientes estandarizados del modelo (+ = más riesgo)</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_importance"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card chart-card-wide">
+      <div class="chart-head">
+        <h3>Pirámide de la cartera: bajo riesgo vs. alto riesgo por nivel de gasto</h3>
+        <p>Izquierda = base estable + clientes ancla (bajo riesgo) · Derecha = riesgo menor + rescate prioritario (alto riesgo)</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_pyramid"></canvas>
+      </div>
+    </div>
+    
+  </div>
+
+  <div>
+    <p class="section-label">Revisión mensual (no semanal): distribución de la cartera y salud del modelo — AUC 0.79</p>
+    <div class="drilldown-grid">
+      
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Score de uso del producto</h3>
+        <p>A menor uso, mayor concentración de alto riesgo (rojo/café)</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_hist_usage"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Antigüedad (meses)</h3>
+        <p>Los clientes más nuevos concentran más riesgo que los antiguos</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_hist_antiguedad"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Gasto mensual (MXN)</h3>
+        <p>El riesgo aparece en todos los niveles de gasto — por eso importa cruzarlo con valor</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_hist_gasto"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Tickets de soporte (90 días)</h3>
+        <p>Más tickets recientes, más concentración de alto riesgo</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_hist_tickets"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Tipo de contrato</h3>
+        <p>El contrato mensual concentra más riesgo que el anual</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_hist_contrato"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Días desde la última actividad</h3>
+        <p>La señal más fuerte del modelo: más días inactivo, más riesgo</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_hist_actividad"></canvas>
+      </div>
+    </div>
+    
+    </div>
+  </div>
+
+  <div class="insights-card">
+    <h3>Lo que dice el dato</h3>
+    <ul class="insights"><li>El plan prioriza gasto mensual dentro de Rescate Prioritario: llamar primero a los 20 clientes de mayor valor cada día protege el ingreso más grande con el mismo esfuerzo de llamada, en vez de ordenar solo por score de riesgo.</li>
+<li>"Riesgo menor" (306 clientes, 25.5%, alto riesgo pero bajo gasto) no entra al plan de llamadas — una campaña automatizada de email/WhatsApp cuesta lo mismo para 1 cliente que para 306, así que ahí se gana eficiencia sin ocupar tiempo del equipo comercial.</li>
+<li>"Clientes ancla" y "Base estable" (bajo riesgo, 599 clientes) no requieren acción esta semana — se revisan en la cadencia mensual. Ancla ($379,436 MXN/mes) es la cartera más valiosa y candidata a upsell o plan anual en esa revisión, no solo "sin riesgo".</li>
+<li>Los días sin actividad y los tickets de soporte recientes son las señales más fuertes del modelo — más que la antigüedad del cliente. Si el backlog de la próxima semana sigue creciendo semana a semana, vale la pena revisar la capacidad del equipo antes de mover el corte de "alto riesgo".</li></ul>
+  </div>
+
+  
+
+  
+    <div class="checklist-card">
+      <h3>Plan de llamadas de esta semana</h3>
+      <p class="checklist-sub">100 clientes de Rescate Prioritario repartidos en 5 días (20/día). Marca cada uno al contactarlo — el progreso se guarda en este navegador.</p>
+      <div class="checklist-progress">
+        <div class="progress-bar"><div class="progress-fill" id="rescate_semana-fill" style="width:0%"></div></div>
+        <span id="rescate_semana-count">0 / 100 contactados</span>
+      </div>
+      <div class="checklist-table-wrap">
+        <table class="checklist-table">
+          <thead><tr><th></th><th>Día</th><th>Cliente</th><th>Gasto mensual</th><th>Riesgo</th><th>Días sin actividad</th><th>Contrato</th></tr></thead>
+          <tbody><tr data-row="CLI-01119"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01119"></td><td>Lunes</td><td>CLI-01119</td><td>$3,677</td><td>14%</td><td>53</td><td>Mensual</td></tr><tr data-row="CLI-01056"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01056"></td><td>Lunes</td><td>CLI-01056</td><td>$3,435</td><td>16%</td><td>27</td><td>Mensual</td></tr><tr data-row="CLI-00175"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00175"></td><td>Lunes</td><td>CLI-00175</td><td>$2,957</td><td>8%</td><td>69</td><td>Anual</td></tr><tr data-row="CLI-00139"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00139"></td><td>Lunes</td><td>CLI-00139</td><td>$2,835</td><td>6%</td><td>14</td><td>Mensual</td></tr><tr data-row="CLI-00499"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00499"></td><td>Lunes</td><td>CLI-00499</td><td>$2,440</td><td>10%</td><td>11</td><td>Mensual</td></tr><tr data-row="CLI-01180"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01180"></td><td>Lunes</td><td>CLI-01180</td><td>$2,433</td><td>6%</td><td>38</td><td>Mensual</td></tr><tr data-row="CLI-00283"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00283"></td><td>Lunes</td><td>CLI-00283</td><td>$2,399</td><td>9%</td><td>3</td><td>Mensual</td></tr><tr data-row="CLI-00006"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00006"></td><td>Lunes</td><td>CLI-00006</td><td>$2,354</td><td>9%</td><td>16</td><td>Mensual</td></tr><tr data-row="CLI-00872"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00872"></td><td>Lunes</td><td>CLI-00872</td><td>$2,305</td><td>5%</td><td>28</td><td>Mensual</td></tr><tr data-row="CLI-01103"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01103"></td><td>Lunes</td><td>CLI-01103</td><td>$2,251</td><td>14%</td><td>36</td><td>Mensual</td></tr><tr data-row="CLI-00301"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00301"></td><td>Lunes</td><td>CLI-00301</td><td>$2,230</td><td>21%</td><td>49</td><td>Mensual</td></tr><tr data-row="CLI-00069"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00069"></td><td>Lunes</td><td>CLI-00069</td><td>$2,203</td><td>4%</td><td>15</td><td>Mensual</td></tr><tr data-row="CLI-00769"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00769"></td><td>Lunes</td><td>CLI-00769</td><td>$2,143</td><td>4%</td><td>7</td><td>Mensual</td></tr><tr data-row="CLI-00023"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00023"></td><td>Lunes</td><td>CLI-00023</td><td>$2,136</td><td>9%</td><td>35</td><td>Mensual</td></tr><tr data-row="CLI-00300"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00300"></td><td>Lunes</td><td>CLI-00300</td><td>$2,106</td><td>8%</td><td>23</td><td>Mensual</td></tr><tr data-row="CLI-00430"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00430"></td><td>Lunes</td><td>CLI-00430</td><td>$2,099</td><td>7%</td><td>50</td><td>Anual</td></tr><tr data-row="CLI-00815"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00815"></td><td>Lunes</td><td>CLI-00815</td><td>$2,071</td><td>7%</td><td>8</td><td>Mensual</td></tr><tr data-row="CLI-00205"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00205"></td><td>Lunes</td><td>CLI-00205</td><td>$2,068</td><td>4%</td><td>1</td><td>Anual</td></tr><tr data-row="CLI-00341"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00341"></td><td>Lunes</td><td>CLI-00341</td><td>$2,066</td><td>10%</td><td>35</td><td>Mensual</td></tr><tr data-row="CLI-00739"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00739"></td><td>Lunes</td><td>CLI-00739</td><td>$2,049</td><td>5%</td><td>19</td><td>Mensual</td></tr><tr data-row="CLI-00761"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00761"></td><td>Martes</td><td>CLI-00761</td><td>$2,008</td><td>11%</td><td>15</td><td>Mensual</td></tr><tr data-row="CLI-01190"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01190"></td><td>Martes</td><td>CLI-01190</td><td>$1,992</td><td>33%</td><td>59</td><td>Mensual</td></tr><tr data-row="CLI-00863"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00863"></td><td>Martes</td><td>CLI-00863</td><td>$1,974</td><td>6%</td><td>9</td><td>Mensual</td></tr><tr data-row="CLI-00798"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00798"></td><td>Martes</td><td>CLI-00798</td><td>$1,938</td><td>8%</td><td>3</td><td>Mensual</td></tr><tr data-row="CLI-00151"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00151"></td><td>Martes</td><td>CLI-00151</td><td>$1,934</td><td>5%</td><td>17</td><td>Anual</td></tr><tr data-row="CLI-00619"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00619"></td><td>Martes</td><td>CLI-00619</td><td>$1,882</td><td>7%</td><td>12</td><td>Mensual</td></tr><tr data-row="CLI-00101"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00101"></td><td>Martes</td><td>CLI-00101</td><td>$1,878</td><td>13%</td><td>28</td><td>Mensual</td></tr><tr data-row="CLI-00991"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00991"></td><td>Martes</td><td>CLI-00991</td><td>$1,856</td><td>13%</td><td>24</td><td>Mensual</td></tr><tr data-row="CLI-00837"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00837"></td><td>Martes</td><td>CLI-00837</td><td>$1,855</td><td>5%</td><td>7</td><td>Mensual</td></tr><tr data-row="CLI-00530"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00530"></td><td>Martes</td><td>CLI-00530</td><td>$1,827</td><td>9%</td><td>62</td><td>Anual</td></tr><tr data-row="CLI-00588"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00588"></td><td>Martes</td><td>CLI-00588</td><td>$1,812</td><td>4%</td><td>0</td><td>Mensual</td></tr><tr data-row="CLI-00147"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00147"></td><td>Martes</td><td>CLI-00147</td><td>$1,803</td><td>5%</td><td>2</td><td>Mensual</td></tr><tr data-row="CLI-00977"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00977"></td><td>Martes</td><td>CLI-00977</td><td>$1,796</td><td>21%</td><td>43</td><td>Mensual</td></tr><tr data-row="CLI-00134"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00134"></td><td>Martes</td><td>CLI-00134</td><td>$1,787</td><td>5%</td><td>57</td><td>Anual</td></tr><tr data-row="CLI-00180"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00180"></td><td>Martes</td><td>CLI-00180</td><td>$1,777</td><td>12%</td><td>15</td><td>Mensual</td></tr><tr data-row="CLI-00589"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00589"></td><td>Martes</td><td>CLI-00589</td><td>$1,770</td><td>11%</td><td>1</td><td>Mensual</td></tr><tr data-row="CLI-00033"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00033"></td><td>Martes</td><td>CLI-00033</td><td>$1,748</td><td>6%</td><td>14</td><td>Anual</td></tr><tr data-row="CLI-00330"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00330"></td><td>Martes</td><td>CLI-00330</td><td>$1,746</td><td>31%</td><td>66</td><td>Anual</td></tr><tr data-row="CLI-01162"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01162"></td><td>Martes</td><td>CLI-01162</td><td>$1,733</td><td>8%</td><td>13</td><td>Mensual</td></tr><tr data-row="CLI-00693"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00693"></td><td>Martes</td><td>CLI-00693</td><td>$1,728</td><td>12%</td><td>32</td><td>Mensual</td></tr><tr data-row="CLI-00818"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00818"></td><td>Miércoles</td><td>CLI-00818</td><td>$1,725</td><td>12%</td><td>20</td><td>Mensual</td></tr><tr data-row="CLI-00755"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00755"></td><td>Miércoles</td><td>CLI-00755</td><td>$1,682</td><td>27%</td><td>68</td><td>Anual</td></tr><tr data-row="CLI-00458"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00458"></td><td>Miércoles</td><td>CLI-00458</td><td>$1,647</td><td>4%</td><td>7</td><td>Mensual</td></tr><tr data-row="CLI-00527"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00527"></td><td>Miércoles</td><td>CLI-00527</td><td>$1,637</td><td>6%</td><td>8</td><td>Mensual</td></tr><tr data-row="CLI-00914"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00914"></td><td>Miércoles</td><td>CLI-00914</td><td>$1,629</td><td>7%</td><td>0</td><td>Mensual</td></tr><tr data-row="CLI-00750"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00750"></td><td>Miércoles</td><td>CLI-00750</td><td>$1,622</td><td>5%</td><td>5</td><td>Mensual</td></tr><tr data-row="CLI-00286"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00286"></td><td>Miércoles</td><td>CLI-00286</td><td>$1,614</td><td>39%</td><td>50</td><td>Mensual</td></tr><tr data-row="CLI-00832"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00832"></td><td>Miércoles</td><td>CLI-00832</td><td>$1,589</td><td>6%</td><td>20</td><td>Mensual</td></tr><tr data-row="CLI-00274"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00274"></td><td>Miércoles</td><td>CLI-00274</td><td>$1,587</td><td>10%</td><td>7</td><td>Anual</td></tr><tr data-row="CLI-00955"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00955"></td><td>Miércoles</td><td>CLI-00955</td><td>$1,576</td><td>11%</td><td>8</td><td>Mensual</td></tr><tr data-row="CLI-00482"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00482"></td><td>Miércoles</td><td>CLI-00482</td><td>$1,567</td><td>21%</td><td>62</td><td>Anual</td></tr><tr data-row="CLI-00733"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00733"></td><td>Miércoles</td><td>CLI-00733</td><td>$1,543</td><td>8%</td><td>10</td><td>Mensual</td></tr><tr data-row="CLI-00221"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00221"></td><td>Miércoles</td><td>CLI-00221</td><td>$1,542</td><td>14%</td><td>44</td><td>Mensual</td></tr><tr data-row="CLI-00882"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00882"></td><td>Miércoles</td><td>CLI-00882</td><td>$1,535</td><td>9%</td><td>33</td><td>Anual</td></tr><tr data-row="CLI-00725"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00725"></td><td>Miércoles</td><td>CLI-00725</td><td>$1,521</td><td>19%</td><td>32</td><td>Mensual</td></tr><tr data-row="CLI-00143"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00143"></td><td>Miércoles</td><td>CLI-00143</td><td>$1,515</td><td>5%</td><td>8</td><td>Anual</td></tr><tr data-row="CLI-00550"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00550"></td><td>Miércoles</td><td>CLI-00550</td><td>$1,514</td><td>10%</td><td>33</td><td>Mensual</td></tr><tr data-row="CLI-00856"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00856"></td><td>Miércoles</td><td>CLI-00856</td><td>$1,495</td><td>9%</td><td>9</td><td>Mensual</td></tr><tr data-row="CLI-01099"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01099"></td><td>Miércoles</td><td>CLI-01099</td><td>$1,491</td><td>6%</td><td>21</td><td>Mensual</td></tr><tr data-row="CLI-00469"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00469"></td><td>Miércoles</td><td>CLI-00469</td><td>$1,482</td><td>6%</td><td>20</td><td>Mensual</td></tr><tr data-row="CLI-01165"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01165"></td><td>Jueves</td><td>CLI-01165</td><td>$1,468</td><td>22%</td><td>26</td><td>Mensual</td></tr><tr data-row="CLI-00804"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00804"></td><td>Jueves</td><td>CLI-00804</td><td>$1,454</td><td>7%</td><td>5</td><td>Mensual</td></tr><tr data-row="CLI-01156"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01156"></td><td>Jueves</td><td>CLI-01156</td><td>$1,453</td><td>5%</td><td>4</td><td>Mensual</td></tr><tr data-row="CLI-00935"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00935"></td><td>Jueves</td><td>CLI-00935</td><td>$1,452</td><td>12%</td><td>16</td><td>Mensual</td></tr><tr data-row="CLI-01198"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01198"></td><td>Jueves</td><td>CLI-01198</td><td>$1,449</td><td>27%</td><td>28</td><td>Mensual</td></tr><tr data-row="CLI-00947"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00947"></td><td>Jueves</td><td>CLI-00947</td><td>$1,444</td><td>5%</td><td>10</td><td>Anual</td></tr><tr data-row="CLI-00358"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00358"></td><td>Jueves</td><td>CLI-00358</td><td>$1,437</td><td>8%</td><td>16</td><td>Mensual</td></tr><tr data-row="CLI-00426"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00426"></td><td>Jueves</td><td>CLI-00426</td><td>$1,434</td><td>7%</td><td>39</td><td>Mensual</td></tr><tr data-row="CLI-00575"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00575"></td><td>Jueves</td><td>CLI-00575</td><td>$1,423</td><td>19%</td><td>39</td><td>Mensual</td></tr><tr data-row="CLI-00120"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00120"></td><td>Jueves</td><td>CLI-00120</td><td>$1,420</td><td>15%</td><td>34</td><td>Mensual</td></tr><tr data-row="CLI-00853"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00853"></td><td>Jueves</td><td>CLI-00853</td><td>$1,415</td><td>36%</td><td>56</td><td>Mensual</td></tr><tr data-row="CLI-00182"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00182"></td><td>Jueves</td><td>CLI-00182</td><td>$1,414</td><td>43%</td><td>66</td><td>Mensual</td></tr><tr data-row="CLI-00193"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00193"></td><td>Jueves</td><td>CLI-00193</td><td>$1,410</td><td>5%</td><td>28</td><td>Anual</td></tr><tr data-row="CLI-01076"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01076"></td><td>Jueves</td><td>CLI-01076</td><td>$1,409</td><td>35%</td><td>81</td><td>Mensual</td></tr><tr data-row="CLI-00287"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00287"></td><td>Jueves</td><td>CLI-00287</td><td>$1,409</td><td>13%</td><td>23</td><td>Mensual</td></tr><tr data-row="CLI-00903"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00903"></td><td>Jueves</td><td>CLI-00903</td><td>$1,404</td><td>14%</td><td>24</td><td>Mensual</td></tr><tr data-row="CLI-00035"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00035"></td><td>Jueves</td><td>CLI-00035</td><td>$1,402</td><td>19%</td><td>42</td><td>Mensual</td></tr><tr data-row="CLI-00104"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00104"></td><td>Jueves</td><td>CLI-00104</td><td>$1,395</td><td>5%</td><td>20</td><td>Mensual</td></tr><tr data-row="CLI-01166"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01166"></td><td>Jueves</td><td>CLI-01166</td><td>$1,394</td><td>6%</td><td>18</td><td>Mensual</td></tr><tr data-row="CLI-00900"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00900"></td><td>Jueves</td><td>CLI-00900</td><td>$1,388</td><td>5%</td><td>13</td><td>Mensual</td></tr><tr data-row="CLI-00778"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00778"></td><td>Viernes</td><td>CLI-00778</td><td>$1,386</td><td>9%</td><td>35</td><td>Mensual</td></tr><tr data-row="CLI-00206"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00206"></td><td>Viernes</td><td>CLI-00206</td><td>$1,384</td><td>11%</td><td>31</td><td>Mensual</td></tr><tr data-row="CLI-01141"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01141"></td><td>Viernes</td><td>CLI-01141</td><td>$1,381</td><td>11%</td><td>44</td><td>Mensual</td></tr><tr data-row="CLI-00473"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00473"></td><td>Viernes</td><td>CLI-00473</td><td>$1,377</td><td>51%</td><td>51</td><td>Mensual</td></tr><tr data-row="CLI-00809"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00809"></td><td>Viernes</td><td>CLI-00809</td><td>$1,368</td><td>5%</td><td>13</td><td>Anual</td></tr><tr data-row="CLI-00907"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00907"></td><td>Viernes</td><td>CLI-00907</td><td>$1,367</td><td>23%</td><td>31</td><td>Mensual</td></tr><tr data-row="CLI-01040"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01040"></td><td>Viernes</td><td>CLI-01040</td><td>$1,365</td><td>8%</td><td>29</td><td>Mensual</td></tr><tr data-row="CLI-00491"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00491"></td><td>Viernes</td><td>CLI-00491</td><td>$1,362</td><td>8%</td><td>43</td><td>Anual</td></tr><tr data-row="CLI-00133"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00133"></td><td>Viernes</td><td>CLI-00133</td><td>$1,356</td><td>8%</td><td>2</td><td>Mensual</td></tr><tr data-row="CLI-00648"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00648"></td><td>Viernes</td><td>CLI-00648</td><td>$1,352</td><td>23%</td><td>18</td><td>Mensual</td></tr><tr data-row="CLI-01154"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01154"></td><td>Viernes</td><td>CLI-01154</td><td>$1,351</td><td>8%</td><td>12</td><td>Mensual</td></tr><tr data-row="CLI-00400"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00400"></td><td>Viernes</td><td>CLI-00400</td><td>$1,350</td><td>11%</td><td>27</td><td>Mensual</td></tr><tr data-row="CLI-00803"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00803"></td><td>Viernes</td><td>CLI-00803</td><td>$1,339</td><td>5%</td><td>15</td><td>Mensual</td></tr><tr data-row="CLI-00347"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00347"></td><td>Viernes</td><td>CLI-00347</td><td>$1,331</td><td>11%</td><td>38</td><td>Mensual</td></tr><tr data-row="CLI-00559"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00559"></td><td>Viernes</td><td>CLI-00559</td><td>$1,319</td><td>33%</td><td>47</td><td>Mensual</td></tr><tr data-row="CLI-00135"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00135"></td><td>Viernes</td><td>CLI-00135</td><td>$1,314</td><td>6%</td><td>30</td><td>Mensual</td></tr><tr data-row="CLI-00220"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00220"></td><td>Viernes</td><td>CLI-00220</td><td>$1,310</td><td>21%</td><td>21</td><td>Mensual</td></tr><tr data-row="CLI-00149"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00149"></td><td>Viernes</td><td>CLI-00149</td><td>$1,302</td><td>17%</td><td>22</td><td>Mensual</td></tr><tr data-row="CLI-00700"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-00700"></td><td>Viernes</td><td>CLI-00700</td><td>$1,298</td><td>41%</td><td>71</td><td>Mensual</td></tr><tr data-row="CLI-01068"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="rescate_semana" data-row="CLI-01068"></td><td>Viernes</td><td>CLI-01068</td><td>$1,292</td><td>5%</td><td>10</td><td>Mensual</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    
+
+  <footer>
+    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
+  </footer>
+</div>
+
+<script>
+function isDark() {
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t === 'dark') return true;
+  if (t === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function withAlpha(hex, alpha) {
+  if (alpha >= 1) return hex;
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function seriesColor(i, light, dark, alpha) {
+  const hex = isDark() ? dark : light;
+  return withAlpha(hex, alpha);
+}
+function seriesColorHex(light, dark) { return isDark() ? dark : light; }
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function inkColor(role) {
+  return { primary: cssVar('--text-primary'), secondary: cssVar('--text-secondary'),
+            muted: cssVar('--text-muted'), grid: cssVar('--grid') }[role];
+}
+function surfaceColor() { return cssVar('--surface'); }
+
+
+    (function() {
+      const scopeId = "rescate_semana";
+      const total = 100;
+      const storageKey = 'xia_checklist_' + scopeId;
+      let state = {};
+      try { state = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (e) {}
+      const boxes = document.querySelectorAll(`input.xia-check[data-scope="${scopeId}"]`);
+      function updateProgress() {
+        const checked = document.querySelectorAll(`input.xia-check[data-scope="${scopeId}"]:checked`).length;
+        const fill = document.getElementById(scopeId + '-fill');
+        const count = document.getElementById(scopeId + '-count');
+        if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
+        if (count) count.textContent = `${checked} / ${total} ${"contactados"}`;
+      }
+      boxes.forEach((b) => {
+        const rowId = b.dataset.row;
+        if (state[rowId]) {
+          b.checked = true;
+          const tr = b.closest('tr');
+          if (tr) tr.classList.add('done');
+        }
+        b.addEventListener('change', () => {
+          state[rowId] = b.checked;
+          try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch (e) {}
+          const tr = b.closest('tr');
+          if (tr) tr.classList.toggle('done', b.checked);
+          updateProgress();
+        });
+      });
+      updateProgress();
+    })();
+    
+
+    (function() {
+      const quadrantLines_chart_matriz = {"x": 50.0, "y": 759.36};
+      const quadrantLabels_chart_matriz = [{"corner": "top-left", "text": "CLIENTES ANCLA"}, {"corner": "top-right", "text": "RESCATE PRIORITARIO"}, {"corner": "bottom-left", "text": "BASE ESTABLE"}, {"corner": "bottom-right", "text": "RIESGO MENOR"}];
+      new Chart(document.getElementById('chart_matriz').getContext('2d'), {
+        type: 'scatter',
+        data: { datasets: [{
+            label: "Riesgo menor",
+            data: [{"x": 91.5, "y": 395.82, "label": "CLI-00001 (20% riesgo)"}, {"x": 98.8, "y": 533.01, "label": "CLI-00007 (45% riesgo)"}, {"x": 98.0, "y": 297.54, "label": "CLI-00011 (38% riesgo)"}, {"x": 88.1, "y": 432.59, "label": "CLI-00022 (16% riesgo)"}, {"x": 57.2, "y": 707.0, "label": "CLI-00024 (5% riesgo)"}, {"x": 96.6, "y": 553.6, "label": "CLI-00034 (32% riesgo)"}, {"x": 51.3, "y": 747.98, "label": "CLI-00044 (4% riesgo)"}, {"x": 66.4, "y": 105.6, "label": "CLI-00045 (7% riesgo)"}, {"x": 86.4, "y": 334.48, "label": "CLI-00046 (14% riesgo)"}, {"x": 70.8, "y": 565.81, "label": "CLI-00050 (8% riesgo)"}, {"x": 59.3, "y": 429.05, "label": "CLI-00052 (5% riesgo)"}, {"x": 58.5, "y": 473.04, "label": "CLI-00053 (5% riesgo)"}, {"x": 81.8, "y": 483.43, "label": "CLI-00056 (11% riesgo)"}, {"x": 99.6, "y": 506.71, "label": "CLI-00060 (58% riesgo)"}, {"x": 97.7, "y": 454.25, "label": "CLI-00061 (36% riesgo)"}, {"x": 66.5, "y": 616.32, "label": "CLI-00062 (7% riesgo)"}, {"x": 50.5, "y": 178.91, "label": "CLI-00063 (4% riesgo)"}, {"x": 81.1, "y": 555.47, "label": "CLI-00067 (10% riesgo)"}, {"x": 86.0, "y": 67.12, "label": "CLI-00070 (13% riesgo)"}, {"x": 70.4, "y": 572.5, "label": "CLI-00072 (7% riesgo)"}, {"x": 79.7, "y": 743.83, "label": "CLI-00073 (10% riesgo)"}, {"x": 72.2, "y": 263.82, "label": "CLI-00074 (8% riesgo)"}, {"x": 75.2, "y": 670.04, "label": "CLI-00077 (8% riesgo)"}, {"x": 74.0, "y": 511.1, "label": "CLI-00085 (8% riesgo)"}, {"x": 73.4, "y": 467.31, "label": "CLI-00089 (8% riesgo)"}, {"x": 86.2, "y": 380.93, "label": "CLI-00090 (14% riesgo)"}, {"x": 99.4, "y": 523.65, "label": "CLI-00093 (57% riesgo)"}, {"x": 85.1, "y": 290.55, "label": "CLI-00094 (12% riesgo)"}, {"x": 52.5, "y": 401.42, "label": "CLI-00100 (4% riesgo)"}, {"x": 87.0, "y": 377.17, "label": "CLI-00103 (14% riesgo)"}, {"x": 63.7, "y": 476.41, "label": "CLI-00113 (6% riesgo)"}, {"x": 75.1, "y": 443.36, "label": "CLI-00118 (8% riesgo)"}, {"x": 87.6, "y": 245.15, "label": "CLI-00119 (15% riesgo)"}, {"x": 53.4, "y": 676.65, "label": "CLI-00121 (5% riesgo)"}, {"x": 93.4, "y": 563.3, "label": "CLI-00124 (22% riesgo)"}, {"x": 67.5, "y": 262.33, "label": "CLI-00127 (7% riesgo)"}, {"x": 82.8, "y": 605.88, "label": "CLI-00128 (11% riesgo)"}, {"x": 78.9, "y": 108.96, "label": "CLI-00129 (9% riesgo)"}, {"x": 63.5, "y": 536.81, "label": "CLI-00138 (6% riesgo)"}, {"x": 64.7, "y": 617.08, "label": "CLI-00145 (6% riesgo)"}, {"x": 60.5, "y": 651.68, "label": "CLI-00146 (5% riesgo)"}, {"x": 51.0, "y": 555.33, "label": "CLI-00152 (4% riesgo)"}, {"x": 99.5, "y": 612.2, "label": "CLI-00155 (57% riesgo)"}, {"x": 77.8, "y": 321.04, "label": "CLI-00158 (9% riesgo)"}, {"x": 55.3, "y": 591.2, "label": "CLI-00176 (5% riesgo)"}, {"x": 92.0, "y": 531.06, "label": "CLI-00179 (21% riesgo)"}, {"x": 93.7, "y": 683.8, "label": "CLI-00188 (23% riesgo)"}, {"x": 95.9, "y": 242.97, "label": "CLI-00198 (29% riesgo)"}, {"x": 73.8, "y": 643.14, "label": "CLI-00203 (8% riesgo)"}, {"x": 88.8, "y": 686.83, "label": "CLI-00230 (16% riesgo)"}, {"x": 80.3, "y": 194.1, "label": "CLI-00231 (10% riesgo)"}, {"x": 52.7, "y": 650.47, "label": "CLI-00232 (4% riesgo)"}, {"x": 82.2, "y": 327.27, "label": "CLI-00234 (11% riesgo)"}, {"x": 71.6, "y": 686.47, "label": "CLI-00235 (8% riesgo)"}, {"x": 98.3, "y": 343.3, "label": "CLI-00238 (41% riesgo)"}, {"x": 58.1, "y": 546.08, "label": "CLI-00240 (5% riesgo)"}, {"x": 97.3, "y": 663.68, "label": "CLI-00245 (34% riesgo)"}, {"x": 69.2, "y": 309.66, "label": "CLI-00249 (7% riesgo)"}, {"x": 83.2, "y": 333.72, "label": "CLI-00250 (11% riesgo)"}, {"x": 96.2, "y": 342.58, "label": "CLI-00257 (30% riesgo)"}, {"x": 58.8, "y": 401.87, "label": "CLI-00258 (5% riesgo)"}, {"x": 85.2, "y": 170.39, "label": "CLI-00259 (12% riesgo)"}, {"x": 97.6, "y": 338.54, "label": "CLI-00268 (35% riesgo)"}, {"x": 62.2, "y": 539.1, "label": "CLI-00269 (6% riesgo)"}, {"x": 81.8, "y": 346.73, "label": "CLI-00278 (11% riesgo)"}, {"x": 81.3, "y": 358.21, "label": "CLI-00279 (10% riesgo)"}, {"x": 85.9, "y": 217.5, "label": "CLI-00289 (13% riesgo)"}, {"x": 69.7, "y": 578.34, "label": "CLI-00294 (7% riesgo)"}, {"x": 57.8, "y": 208.3, "label": "CLI-00307 (5% riesgo)"}, {"x": 59.9, "y": 268.15, "label": "CLI-00313 (5% riesgo)"}, {"x": 68.5, "y": 604.93, "label": "CLI-00314 (7% riesgo)"}, {"x": 85.5, "y": 548.89, "label": "CLI-00315 (13% riesgo)"}, {"x": 53.9, "y": 273.09, "label": "CLI-00319 (5% riesgo)"}, {"x": 82.3, "y": 389.34, "label": "CLI-00328 (11% riesgo)"}, {"x": 73.9, "y": 335.53, "label": "CLI-00331 (8% riesgo)"}, {"x": 73.5, "y": 742.75, "label": "CLI-00336 (8% riesgo)"}, {"x": 86.5, "y": 620.8, "label": "CLI-00338 (14% riesgo)"}, {"x": 81.4, "y": 677.82, "label": "CLI-00339 (10% riesgo)"}, {"x": 66.8, "y": 267.36, "label": "CLI-00340 (7% riesgo)"}, {"x": 77.8, "y": 298.09, "label": "CLI-00342 (9% riesgo)"}, {"x": 60.7, "y": 708.55, "label": "CLI-00345 (6% riesgo)"}, {"x": 78.2, "y": 585.1, "label": "CLI-00349 (9% riesgo)"}, {"x": 91.2, "y": 455.88, "label": "CLI-00354 (20% riesgo)"}, {"x": 58.4, "y": 453.19, "label": "CLI-00355 (5% riesgo)"}, {"x": 83.1, "y": 704.17, "label": "CLI-00364 (11% riesgo)"}, {"x": 51.6, "y": 542.84, "label": "CLI-00366 (4% riesgo)"}, {"x": 59.7, "y": 159.13, "label": "CLI-00368 (5% riesgo)"}, {"x": 96.1, "y": 716.51, "label": "CLI-00370 (30% riesgo)"}, {"x": 57.4, "y": 690.22, "label": "CLI-00372 (5% riesgo)"}, {"x": 64.3, "y": 622.8, "label": "CLI-00373 (6% riesgo)"}, {"x": 77.1, "y": 364.43, "label": "CLI-00374 (9% riesgo)"}, {"x": 63.3, "y": 610.15, "label": "CLI-00376 (6% riesgo)"}, {"x": 95.6, "y": 590.94, "label": "CLI-00377 (27% riesgo)"}, {"x": 72.7, "y": 526.67, "label": "CLI-00378 (8% riesgo)"}, {"x": 70.2, "y": 390.15, "label": "CLI-00380 (7% riesgo)"}, {"x": 79.2, "y": 597.79, "label": "CLI-00383 (10% riesgo)"}, {"x": 63.2, "y": 525.34, "label": "CLI-00385 (6% riesgo)"}, {"x": 84.0, "y": 422.29, "label": "CLI-00388 (11% riesgo)"}, {"x": 74.1, "y": 361.86, "label": "CLI-00391 (8% riesgo)"}, {"x": 77.2, "y": 598.44, "label": "CLI-00401 (9% riesgo)"}, {"x": 76.9, "y": 514.33, "label": "CLI-00405 (9% riesgo)"}, {"x": 51.7, "y": 318.49, "label": "CLI-00408 (4% riesgo)"}, {"x": 65.0, "y": 662.13, "label": "CLI-00409 (6% riesgo)"}, {"x": 55.6, "y": 516.29, "label": "CLI-00411 (5% riesgo)"}, {"x": 66.3, "y": 455.88, "label": "CLI-00412 (7% riesgo)"}, {"x": 67.1, "y": 156.45, "label": "CLI-00413 (7% riesgo)"}, {"x": 58.8, "y": 287.64, "label": "CLI-00423 (5% riesgo)"}, {"x": 57.5, "y": 271.02, "label": "CLI-00424 (5% riesgo)"}, {"x": 79.4, "y": 250.39, "label": "CLI-00427 (10% riesgo)"}, {"x": 94.1, "y": 201.71, "label": "CLI-00429 (23% riesgo)"}, {"x": 64.4, "y": 106.79, "label": "CLI-00434 (6% riesgo)"}, {"x": 61.4, "y": 444.98, "label": "CLI-00438 (6% riesgo)"}, {"x": 50.0, "y": 587.01, "label": "CLI-00439 (4% riesgo)"}, {"x": 99.8, "y": 545.87, "label": "CLI-00449 (65% riesgo)"}, {"x": 60.6, "y": 465.28, "label": "CLI-00453 (6% riesgo)"}, {"x": 87.4, "y": 270.66, "label": "CLI-00456 (15% riesgo)"}, {"x": 93.2, "y": 661.66, "label": "CLI-00461 (22% riesgo)"}, {"x": 82.2, "y": 591.06, "label": "CLI-00465 (11% riesgo)"}, {"x": 74.3, "y": 739.31, "label": "CLI-00466 (8% riesgo)"}, {"x": 60.1, "y": 410.56, "label": "CLI-00468 (5% riesgo)"}, {"x": 97.9, "y": 294.28, "label": "CLI-00472 (37% riesgo)"}, {"x": 68.0, "y": 181.69, "label": "CLI-00477 (7% riesgo)"}, {"x": 92.9, "y": 616.42, "label": "CLI-00484 (22% riesgo)"}, {"x": 72.3, "y": 743.66, "label": "CLI-00486 (8% riesgo)"}, {"x": 80.8, "y": 615.64, "label": "CLI-00489 (10% riesgo)"}, {"x": 56.2, "y": 612.48, "label": "CLI-00490 (5% riesgo)"}, {"x": 72.4, "y": 707.13, "label": "CLI-00494 (8% riesgo)"}, {"x": 55.4, "y": 259.66, "label": "CLI-00501 (5% riesgo)"}, {"x": 69.0, "y": 409.73, "label": "CLI-00502 (7% riesgo)"}, {"x": 64.5, "y": 595.52, "label": "CLI-00503 (6% riesgo)"}, {"x": 79.1, "y": 672.49, "label": "CLI-00511 (10% riesgo)"}, {"x": 62.1, "y": 697.7, "label": "CLI-00514 (6% riesgo)"}, {"x": 66.2, "y": 575.47, "label": "CLI-00515 (6% riesgo)"}, {"x": 78.5, "y": 491.44, "label": "CLI-00519 (9% riesgo)"}, {"x": 88.9, "y": 448.04, "label": "CLI-00528 (17% riesgo)"}, {"x": 73.2, "y": 296.91, "label": "CLI-00529 (8% riesgo)"}, {"x": 90.3, "y": 293.44, "label": "CLI-00537 (19% riesgo)"}, {"x": 60.8, "y": 553.19, "label": "CLI-00540 (6% riesgo)"}, {"x": 56.0, "y": 730.3, "label": "CLI-00541 (5% riesgo)"}, {"x": 89.8, "y": 123.09, "label": "CLI-00543 (17% riesgo)"}, {"x": 84.9, "y": 159.58, "label": "CLI-00544 (12% riesgo)"}, {"x": 97.1, "y": 289.4, "label": "CLI-00545 (33% riesgo)"}, {"x": 72.5, "y": 662.15, "label": "CLI-00549 (8% riesgo)"}, {"x": 90.7, "y": 418.45, "label": "CLI-00551 (19% riesgo)"}, {"x": 96.2, "y": 144.34, "label": "CLI-00553 (30% riesgo)"}, {"x": 95.8, "y": 482.33, "label": "CLI-00556 (29% riesgo)"}, {"x": 56.2, "y": 304.76, "label": "CLI-00557 (5% riesgo)"}, {"x": 79.0, "y": 496.62, "label": "CLI-00560 (10% riesgo)"}, {"x": 52.1, "y": 664.45, "label": "CLI-00562 (4% riesgo)"}, {"x": 88.4, "y": 243.77, "label": "CLI-00571 (16% riesgo)"}, {"x": 78.8, "y": 516.16, "label": "CLI-00583 (9% riesgo)"}, {"x": 82.1, "y": 441.73, "label": "CLI-00584 (11% riesgo)"}, {"x": 76.4, "y": 458.68, "label": "CLI-00591 (9% riesgo)"}, {"x": 83.8, "y": 474.73, "label": "CLI-00599 (11% riesgo)"}, {"x": 67.8, "y": 401.12, "label": "CLI-00601 (7% riesgo)"}, {"x": 54.4, "y": 455.1, "label": "CLI-00603 (5% riesgo)"}, {"x": 91.8, "y": 316.94, "label": "CLI-00606 (21% riesgo)"}, {"x": 70.1, "y": 696.75, "label": "CLI-00607 (7% riesgo)"}, {"x": 88.2, "y": 638.97, "label": "CLI-00608 (16% riesgo)"}, {"x": 85.7, "y": 306.71, "label": "CLI-00609 (13% riesgo)"}, {"x": 87.8, "y": 281.69, "label": "CLI-00610 (15% riesgo)"}, {"x": 83.7, "y": 285.52, "label": "CLI-00613 (11% riesgo)"}, {"x": 75.9, "y": 457.38, "label": "CLI-00614 (9% riesgo)"}, {"x": 93.9, "y": 396.87, "label": "CLI-00622 (23% riesgo)"}, {"x": 95.8, "y": 657.46, "label": "CLI-00623 (29% riesgo)"}, {"x": 61.7, "y": 312.08, "label": "CLI-00625 (6% riesgo)"}, {"x": 89.2, "y": 203.48, "label": "CLI-00628 (17% riesgo)"}, {"x": 53.8, "y": 677.51, "label": "CLI-00629 (5% riesgo)"}, {"x": 68.9, "y": 486.27, "label": "CLI-00633 (7% riesgo)"}, {"x": 76.7, "y": 646.18, "label": "CLI-00634 (9% riesgo)"}, {"x": 54.9, "y": 456.23, "label": "CLI-00635 (5% riesgo)"}, {"x": 90.9, "y": 635.13, "label": "CLI-00639 (19% riesgo)"}, {"x": 60.2, "y": 641.24, "label": "CLI-00640 (5% riesgo)"}, {"x": 71.4, "y": 563.48, "label": "CLI-00641 (8% riesgo)"}, {"x": 54.6, "y": 593.87, "label": "CLI-00647 (5% riesgo)"}, {"x": 94.4, "y": 399.7, "label": "CLI-00649 (25% riesgo)"}, {"x": 92.3, "y": 621.64, "label": "CLI-00654 (21% riesgo)"}, {"x": 98.2, "y": 680.65, "label": "CLI-00656 (41% riesgo)"}, {"x": 61.6, "y": 472.55, "label": "CLI-00657 (6% riesgo)"}, {"x": 76.2, "y": 664.62, "label": "CLI-00659 (9% riesgo)"}, {"x": 66.7, "y": 153.98, "label": "CLI-00663 (7% riesgo)"}, {"x": 88.2, "y": 655.96, "label": "CLI-00674 (16% riesgo)"}, {"x": 88.3, "y": 316.65, "label": "CLI-00678 (16% riesgo)"}, {"x": 86.1, "y": 533.19, "label": "CLI-00681 (13% riesgo)"}, {"x": 60.2, "y": 501.48, "label": "CLI-00687 (5% riesgo)"}, {"x": 85.8, "y": 239.06, "label": "CLI-00688 (13% riesgo)"}, {"x": 65.8, "y": 457.41, "label": "CLI-00696 (6% riesgo)"}, {"x": 50.6, "y": 358.52, "label": "CLI-00697 (4% riesgo)"}, {"x": 51.1, "y": 393.23, "label": "CLI-00698 (4% riesgo)"}, {"x": 95.1, "y": 453.87, "label": "CLI-00699 (26% riesgo)"}, {"x": 96.9, "y": 723.9, "label": "CLI-00701 (33% riesgo)"}, {"x": 50.4, "y": 643.47, "label": "CLI-00703 (4% riesgo)"}, {"x": 93.2, "y": 538.06, "label": "CLI-00705 (22% riesgo)"}, {"x": 66.6, "y": 359.76, "label": "CLI-00707 (7% riesgo)"}, {"x": 76.3, "y": 63.32, "label": "CLI-00714 (9% riesgo)"}, {"x": 99.8, "y": 420.65, "label": "CLI-00715 (67% riesgo)"}, {"x": 54.7, "y": 442.59, "label": "CLI-00718 (5% riesgo)"}, {"x": 99.0, "y": 411.46, "label": "CLI-00729 (47% riesgo)"}, {"x": 55.2, "y": 391.7, "label": "CLI-00731 (5% riesgo)"}, {"x": 53.0, "y": 504.97, "label": "CLI-00736 (5% riesgo)"}, {"x": 67.6, "y": 203.11, "label": "CLI-00740 (7% riesgo)"}, {"x": 90.2, "y": 178.35, "label": "CLI-00743 (18% riesgo)"}, {"x": 89.3, "y": 260.41, "label": "CLI-00744 (17% riesgo)"}, {"x": 65.6, "y": 580.36, "label": "CLI-00748 (6% riesgo)"}, {"x": 70.6, "y": 425.19, "label": "CLI-00751 (8% riesgo)"}, {"x": 57.0, "y": 412.3, "label": "CLI-00752 (5% riesgo)"}, {"x": 53.5, "y": 458.05, "label": "CLI-00754 (5% riesgo)"}, {"x": 62.6, "y": 644.42, "label": "CLI-00764 (6% riesgo)"}, {"x": 94.8, "y": 603.7, "label": "CLI-00771 (25% riesgo)"}, {"x": 89.9, "y": 270.18, "label": "CLI-00775 (18% riesgo)"}, {"x": 95.4, "y": 259.81, "label": "CLI-00777 (27% riesgo)"}, {"x": 80.8, "y": 668.11, "label": "CLI-00791 (10% riesgo)"}, {"x": 65.1, "y": 398.66, "label": "CLI-00802 (6% riesgo)"}, {"x": 73.1, "y": 250.53, "label": "CLI-00805 (8% riesgo)"}, {"x": 74.6, "y": 745.64, "label": "CLI-00808 (8% riesgo)"}, {"x": 80.1, "y": 325.08, "label": "CLI-00811 (10% riesgo)"}, {"x": 98.9, "y": 630.34, "label": "CLI-00812 (46% riesgo)"}, {"x": 86.8, "y": 652.34, "label": "CLI-00819 (14% riesgo)"}, {"x": 89.4, "y": 685.79, "label": "CLI-00823 (17% riesgo)"}, {"x": 53.1, "y": 370.09, "label": "CLI-00831 (5% riesgo)"}, {"x": 97.2, "y": 334.4, "label": "CLI-00833 (33% riesgo)"}, {"x": 88.0, "y": 588.06, "label": "CLI-00834 (15% riesgo)"}, {"x": 66.9, "y": 707.06, "label": "CLI-00835 (7% riesgo)"}, {"x": 52.8, "y": 264.47, "label": "CLI-00840 (4% riesgo)"}, {"x": 50.2, "y": 237.49, "label": "CLI-00841 (4% riesgo)"}, {"x": 86.9, "y": 308.68, "label": "CLI-00842 (14% riesgo)"}, {"x": 59.2, "y": 458.83, "label": "CLI-00857 (5% riesgo)"}, {"x": 97.2, "y": 507.8, "label": "CLI-00866 (33% riesgo)"}, {"x": 79.2, "y": 421.72, "label": "CLI-00867 (10% riesgo)"}, {"x": 73.6, "y": 462.83, "label": "CLI-00868 (8% riesgo)"}, {"x": 83.4, "y": 439.03, "label": "CLI-00869 (11% riesgo)"}, {"x": 56.6, "y": 214.35, "label": "CLI-00870 (5% riesgo)"}, {"x": 70.7, "y": 388.0, "label": "CLI-00875 (8% riesgo)"}, {"x": 89.5, "y": 371.17, "label": "CLI-00878 (17% riesgo)"}, {"x": 90.5, "y": 448.31, "label": "CLI-00886 (19% riesgo)"}, {"x": 86.6, "y": 540.13, "label": "CLI-00888 (14% riesgo)"}, {"x": 77.7, "y": 351.9, "label": "CLI-00889 (9% riesgo)"}, {"x": 58.6, "y": 618.4, "label": "CLI-00896 (5% riesgo)"}, {"x": 50.8, "y": 618.4, "label": "CLI-00901 (4% riesgo)"}, {"x": 84.2, "y": 722.55, "label": "CLI-00910 (12% riesgo)"}, {"x": 95.7, "y": 435.56, "label": "CLI-00911 (28% riesgo)"}, {"x": 85.6, "y": 204.46, "label": "CLI-00918 (13% riesgo)"}, {"x": 51.8, "y": 609.53, "label": "CLI-00926 (4% riesgo)"}, {"x": 94.8, "y": 523.73, "label": "CLI-00927 (25% riesgo)"}, {"x": 83.5, "y": 680.52, "label": "CLI-00936 (11% riesgo)"}, {"x": 78.0, "y": 311.76, "label": "CLI-00941 (9% riesgo)"}, {"x": 77.4, "y": 395.18, "label": "CLI-00943 (9% riesgo)"}, {"x": 94.3, "y": 412.57, "label": "CLI-00946 (24% riesgo)"}, {"x": 69.2, "y": 700.54, "label": "CLI-00948 (7% riesgo)"}, {"x": 99.1, "y": 536.48, "label": "CLI-00954 (50% riesgo)"}, {"x": 54.8, "y": 652.6, "label": "CLI-00956 (5% riesgo)"}, {"x": 89.6, "y": 568.92, "label": "CLI-00957 (17% riesgo)"}, {"x": 96.3, "y": 575.25, "label": "CLI-00959 (31% riesgo)"}, {"x": 69.6, "y": 702.54, "label": "CLI-00963 (7% riesgo)"}, {"x": 79.6, "y": 663.64, "label": "CLI-00967 (10% riesgo)"}, {"x": 61.5, "y": 397.71, "label": "CLI-00972 (6% riesgo)"}, {"x": 53.7, "y": 137.53, "label": "CLI-00973 (5% riesgo)"}, {"x": 50.7, "y": 739.5, "label": "CLI-00974 (4% riesgo)"}, {"x": 56.1, "y": 733.08, "label": "CLI-00979 (5% riesgo)"}, {"x": 71.0, "y": 651.67, "label": "CLI-00982 (8% riesgo)"}, {"x": 69.8, "y": 115.9, "label": "CLI-00984 (7% riesgo)"}, {"x": 52.4, "y": 348.55, "label": "CLI-00985 (4% riesgo)"}, {"x": 93.0, "y": 505.16, "label": "CLI-00989 (22% riesgo)"}, {"x": 81.0, "y": 326.0, "label": "CLI-01001 (10% riesgo)"}, {"x": 54.1, "y": 323.53, "label": "CLI-01005 (5% riesgo)"}, {"x": 71.7, "y": 232.16, "label": "CLI-01006 (8% riesgo)"}, {"x": 71.2, "y": 83.08, "label": "CLI-01009 (8% riesgo)"}, {"x": 97.8, "y": 221.29, "label": "CLI-01012 (36% riesgo)"}, {"x": 62.3, "y": 248.97, "label": "CLI-01016 (6% riesgo)"}, {"x": 59.4, "y": 403.26, "label": "CLI-01017 (5% riesgo)"}, {"x": 76.1, "y": 502.97, "label": "CLI-01018 (9% riesgo)"}, {"x": 62.8, "y": 620.56, "label": "CLI-01019 (6% riesgo)"}, {"x": 75.3, "y": 411.95, "label": "CLI-01022 (8% riesgo)"}, {"x": 59.1, "y": 385.14, "label": "CLI-01025 (5% riesgo)"}, {"x": 94.2, "y": 616.88, "label": "CLI-01027 (24% riesgo)"}, {"x": 59.5, "y": 646.19, "label": "CLI-01032 (5% riesgo)"}, {"x": 56.7, "y": 241.58, "label": "CLI-01034 (5% riesgo)"}, {"x": 88.5, "y": 529.68, "label": "CLI-01038 (16% riesgo)"}, {"x": 98.8, "y": 304.98, "label": "CLI-01048 (46% riesgo)"}, {"x": 73.3, "y": 333.94, "label": "CLI-01049 (8% riesgo)"}, {"x": 50.7, "y": 444.46, "label": "CLI-01053 (4% riesgo)"}, {"x": 60.8, "y": 442.43, "label": "CLI-01055 (6% riesgo)"}, {"x": 51.4, "y": 624.05, "label": "CLI-01057 (4% riesgo)"}, {"x": 95.0, "y": 234.59, "label": "CLI-01061 (26% riesgo)"}, {"x": 77.9, "y": 366.63, "label": "CLI-01067 (9% riesgo)"}, {"x": 65.8, "y": 286.87, "label": "CLI-01075 (6% riesgo)"}, {"x": 58.3, "y": 739.09, "label": "CLI-01080 (5% riesgo)"}, {"x": 77.6, "y": 33.94, "label": "CLI-01093 (9% riesgo)"}, {"x": 97.5, "y": 204.42, "label": "CLI-01104 (35% riesgo)"}, {"x": 96.7, "y": 478.0, "label": "CLI-01114 (32% riesgo)"}, {"x": 71.8, "y": 290.74, "label": "CLI-01122 (8% riesgo)"}, {"x": 95.2, "y": 717.93, "label": "CLI-01127 (26% riesgo)"}, {"x": 62.5, "y": 751.3, "label": "CLI-01136 (6% riesgo)"}, {"x": 78.3, "y": 384.11, "label": "CLI-01137 (9% riesgo)"}, {"x": 75.2, "y": 346.08, "label": "CLI-01140 (8% riesgo)"}, {"x": 73.8, "y": 303.8, "label": "CLI-01143 (8% riesgo)"}, {"x": 69.3, "y": 580.04, "label": "CLI-01147 (7% riesgo)"}, {"x": 92.2, "y": 383.66, "label": "CLI-01159 (21% riesgo)"}, {"x": 63.7, "y": 226.51, "label": "CLI-01163 (6% riesgo)"}, {"x": 87.1, "y": 498.2, "label": "CLI-01164 (14% riesgo)"}, {"x": 94.6, "y": 726.64, "label": "CLI-01174 (25% riesgo)"}, {"x": 52.8, "y": 710.72, "label": "CLI-01186 (4% riesgo)"}, {"x": 92.8, "y": 633.66, "label": "CLI-01189 (21% riesgo)"}, {"x": 72.2, "y": 703.8, "label": "CLI-01191 (8% riesgo)"}, {"x": 62.7, "y": 633.87, "label": "CLI-01193 (6% riesgo)"}, {"x": 65.9, "y": 343.0, "label": "CLI-01196 (6% riesgo)"}],
+            backgroundColor: withAlpha(seriesColorHex("#8C5A1E", "#8C5A1E"), 0.55),
+            borderColor: seriesColorHex("#8C5A1E", "#8C5A1E"),
+            pointRadius: 4,
+            pointHoverRadius: 6,
+        },
+{
+            label: "Base estable",
+            data: [{"x": 6.4, "y": 551.6, "label": "CLI-00002 (1% riesgo)"}, {"x": 42.9, "y": 343.92, "label": "CLI-00003 (3% riesgo)"}, {"x": 8.5, "y": 707.79, "label": "CLI-00010 (1% riesgo)"}, {"x": 8.0, "y": 675.9, "label": "CLI-00015 (1% riesgo)"}, {"x": 42.3, "y": 433.21, "label": "CLI-00016 (3% riesgo)"}, {"x": 39.5, "y": 471.96, "label": "CLI-00017 (3% riesgo)"}, {"x": 21.5, "y": 710.43, "label": "CLI-00018 (2% riesgo)"}, {"x": 6.2, "y": 709.31, "label": "CLI-00025 (1% riesgo)"}, {"x": 31.3, "y": 416.47, "label": "CLI-00026 (3% riesgo)"}, {"x": 25.6, "y": 644.0, "label": "CLI-00027 (2% riesgo)"}, {"x": 21.7, "y": 260.49, "label": "CLI-00028 (2% riesgo)"}, {"x": 23.7, "y": 668.46, "label": "CLI-00037 (2% riesgo)"}, {"x": 24.8, "y": 733.4, "label": "CLI-00039 (2% riesgo)"}, {"x": 38.5, "y": 716.58, "label": "CLI-00040 (3% riesgo)"}, {"x": 39.7, "y": 216.3, "label": "CLI-00042 (3% riesgo)"}, {"x": 21.9, "y": 476.39, "label": "CLI-00043 (2% riesgo)"}, {"x": 27.0, "y": 370.37, "label": "CLI-00054 (2% riesgo)"}, {"x": 13.8, "y": 382.17, "label": "CLI-00055 (1% riesgo)"}, {"x": 36.2, "y": 224.44, "label": "CLI-00059 (3% riesgo)"}, {"x": 39.6, "y": 451.33, "label": "CLI-00065 (3% riesgo)"}, {"x": 9.0, "y": 489.46, "label": "CLI-00075 (1% riesgo)"}, {"x": 31.4, "y": 195.83, "label": "CLI-00076 (3% riesgo)"}, {"x": 4.2, "y": 678.18, "label": "CLI-00079 (1% riesgo)"}, {"x": 47.6, "y": 519.95, "label": "CLI-00084 (4% riesgo)"}, {"x": 6.1, "y": 346.43, "label": "CLI-00086 (1% riesgo)"}, {"x": 47.2, "y": 531.77, "label": "CLI-00087 (4% riesgo)"}, {"x": 40.8, "y": 642.82, "label": "CLI-00091 (3% riesgo)"}, {"x": 45.8, "y": 731.03, "label": "CLI-00095 (4% riesgo)"}, {"x": 27.6, "y": 325.74, "label": "CLI-00096 (2% riesgo)"}, {"x": 30.5, "y": 727.66, "label": "CLI-00099 (3% riesgo)"}, {"x": 47.5, "y": 560.72, "label": "CLI-00102 (4% riesgo)"}, {"x": 22.5, "y": 589.06, "label": "CLI-00105 (2% riesgo)"}, {"x": 20.5, "y": 428.44, "label": "CLI-00107 (2% riesgo)"}, {"x": 48.8, "y": 676.52, "label": "CLI-00108 (4% riesgo)"}, {"x": 3.8, "y": 351.03, "label": "CLI-00109 (1% riesgo)"}, {"x": 40.8, "y": 745.17, "label": "CLI-00112 (3% riesgo)"}, {"x": 32.0, "y": 583.55, "label": "CLI-00114 (3% riesgo)"}, {"x": 30.3, "y": 362.59, "label": "CLI-00122 (3% riesgo)"}, {"x": 32.7, "y": 581.05, "label": "CLI-00125 (3% riesgo)"}, {"x": 25.4, "y": 456.23, "label": "CLI-00130 (2% riesgo)"}, {"x": 40.7, "y": 491.86, "label": "CLI-00131 (3% riesgo)"}, {"x": 14.3, "y": 725.51, "label": "CLI-00148 (2% riesgo)"}, {"x": 9.8, "y": 675.05, "label": "CLI-00150 (1% riesgo)"}, {"x": 18.2, "y": 347.63, "label": "CLI-00156 (2% riesgo)"}, {"x": 5.9, "y": 400.15, "label": "CLI-00159 (1% riesgo)"}, {"x": 34.5, "y": 469.59, "label": "CLI-00160 (3% riesgo)"}, {"x": 49.2, "y": 571.12, "label": "CLI-00163 (4% riesgo)"}, {"x": 38.9, "y": 623.18, "label": "CLI-00171 (3% riesgo)"}, {"x": 20.2, "y": 192.05, "label": "CLI-00174 (2% riesgo)"}, {"x": 49.8, "y": 704.95, "label": "CLI-00184 (4% riesgo)"}, {"x": 49.4, "y": 735.96, "label": "CLI-00190 (4% riesgo)"}, {"x": 7.2, "y": 481.82, "label": "CLI-00191 (1% riesgo)"}, {"x": 40.0, "y": 630.18, "label": "CLI-00195 (3% riesgo)"}, {"x": 23.5, "y": 749.03, "label": "CLI-00196 (2% riesgo)"}, {"x": 42.6, "y": 686.56, "label": "CLI-00200 (3% riesgo)"}, {"x": 34.7, "y": 371.89, "label": "CLI-00201 (3% riesgo)"}, {"x": 44.2, "y": 317.75, "label": "CLI-00204 (4% riesgo)"}, {"x": 27.4, "y": 407.19, "label": "CLI-00208 (2% riesgo)"}, {"x": 29.7, "y": 616.04, "label": "CLI-00210 (3% riesgo)"}, {"x": 10.1, "y": 699.84, "label": "CLI-00211 (1% riesgo)"}, {"x": 17.6, "y": 531.54, "label": "CLI-00215 (2% riesgo)"}, {"x": 25.8, "y": 502.64, "label": "CLI-00218 (2% riesgo)"}, {"x": 32.6, "y": 574.96, "label": "CLI-00222 (3% riesgo)"}, {"x": 5.8, "y": 744.64, "label": "CLI-00226 (1% riesgo)"}, {"x": 43.8, "y": 265.97, "label": "CLI-00228 (3% riesgo)"}, {"x": 26.2, "y": 609.87, "label": "CLI-00233 (2% riesgo)"}, {"x": 42.1, "y": 616.91, "label": "CLI-00236 (3% riesgo)"}, {"x": 21.2, "y": 607.52, "label": "CLI-00239 (2% riesgo)"}, {"x": 10.5, "y": 701.33, "label": "CLI-00241 (1% riesgo)"}, {"x": 40.9, "y": 151.28, "label": "CLI-00247 (3% riesgo)"}, {"x": 16.8, "y": 439.71, "label": "CLI-00251 (2% riesgo)"}, {"x": 26.0, "y": 423.55, "label": "CLI-00253 (2% riesgo)"}, {"x": 48.3, "y": 613.09, "label": "CLI-00254 (4% riesgo)"}, {"x": 18.7, "y": 724.65, "label": "CLI-00260 (2% riesgo)"}, {"x": 5.5, "y": 613.96, "label": "CLI-00261 (1% riesgo)"}, {"x": 11.4, "y": 471.76, "label": "CLI-00262 (1% riesgo)"}, {"x": 45.6, "y": 745.54, "label": "CLI-00263 (4% riesgo)"}, {"x": 34.8, "y": 515.48, "label": "CLI-00264 (3% riesgo)"}, {"x": 43.3, "y": 380.41, "label": "CLI-00265 (3% riesgo)"}, {"x": 12.8, "y": 379.43, "label": "CLI-00270 (1% riesgo)"}, {"x": 10.8, "y": 331.57, "label": "CLI-00277 (1% riesgo)"}, {"x": 35.3, "y": 534.48, "label": "CLI-00280 (3% riesgo)"}, {"x": 2.3, "y": 594.12, "label": "CLI-00282 (1% riesgo)"}, {"x": 33.4, "y": 480.33, "label": "CLI-00285 (3% riesgo)"}, {"x": 26.2, "y": 550.98, "label": "CLI-00291 (2% riesgo)"}, {"x": 34.8, "y": 651.82, "label": "CLI-00293 (3% riesgo)"}, {"x": 38.7, "y": 260.3, "label": "CLI-00297 (3% riesgo)"}, {"x": 2.7, "y": 276.29, "label": "CLI-00298 (1% riesgo)"}, {"x": 45.4, "y": 200.79, "label": "CLI-00299 (4% riesgo)"}, {"x": 44.9, "y": 667.5, "label": "CLI-00311 (4% riesgo)"}, {"x": 18.1, "y": 519.32, "label": "CLI-00316 (2% riesgo)"}, {"x": 49.0, "y": 652.06, "label": "CLI-00320 (4% riesgo)"}, {"x": 29.4, "y": 596.97, "label": "CLI-00323 (3% riesgo)"}, {"x": 36.4, "y": 247.18, "label": "CLI-00324 (3% riesgo)"}, {"x": 32.8, "y": 392.8, "label": "CLI-00325 (3% riesgo)"}, {"x": 2.6, "y": 156.04, "label": "CLI-00333 (1% riesgo)"}, {"x": 0.1, "y": 526.78, "label": "CLI-00335 (0% riesgo)"}, {"x": 36.0, "y": 758.78, "label": "CLI-00346 (3% riesgo)"}, {"x": 28.2, "y": 532.7, "label": "CLI-00350 (2% riesgo)"}, {"x": 32.2, "y": 533.27, "label": "CLI-00352 (3% riesgo)"}, {"x": 44.2, "y": 565.04, "label": "CLI-00365 (4% riesgo)"}, {"x": 2.9, "y": 415.44, "label": "CLI-00367 (1% riesgo)"}, {"x": 40.6, "y": 604.53, "label": "CLI-00382 (3% riesgo)"}, {"x": 23.6, "y": 445.3, "label": "CLI-00384 (2% riesgo)"}, {"x": 35.0, "y": 369.02, "label": "CLI-00387 (3% riesgo)"}, {"x": 27.3, "y": 249.53, "label": "CLI-00393 (2% riesgo)"}, {"x": 19.2, "y": 549.12, "label": "CLI-00396 (2% riesgo)"}, {"x": 47.8, "y": 662.54, "label": "CLI-00397 (4% riesgo)"}, {"x": 23.2, "y": 661.18, "label": "CLI-00403 (2% riesgo)"}, {"x": 42.4, "y": 562.25, "label": "CLI-00404 (3% riesgo)"}, {"x": 21.6, "y": 228.91, "label": "CLI-00416 (2% riesgo)"}, {"x": 46.3, "y": 726.05, "label": "CLI-00419 (4% riesgo)"}, {"x": 25.7, "y": 592.06, "label": "CLI-00425 (2% riesgo)"}, {"x": 49.5, "y": 81.09, "label": "CLI-00432 (4% riesgo)"}, {"x": 24.1, "y": 567.75, "label": "CLI-00433 (2% riesgo)"}, {"x": 10.2, "y": 226.68, "label": "CLI-00435 (1% riesgo)"}, {"x": 23.4, "y": 630.82, "label": "CLI-00437 (2% riesgo)"}, {"x": 8.3, "y": 697.99, "label": "CLI-00440 (1% riesgo)"}, {"x": 13.4, "y": 328.78, "label": "CLI-00447 (1% riesgo)"}, {"x": 31.7, "y": 434.76, "label": "CLI-00450 (3% riesgo)"}, {"x": 25.9, "y": 497.31, "label": "CLI-00454 (2% riesgo)"}, {"x": 10.7, "y": 662.11, "label": "CLI-00455 (1% riesgo)"}, {"x": 10.4, "y": 461.64, "label": "CLI-00457 (1% riesgo)"}, {"x": 7.3, "y": 634.7, "label": "CLI-00464 (1% riesgo)"}, {"x": 11.7, "y": 641.65, "label": "CLI-00467 (1% riesgo)"}, {"x": 34.2, "y": 476.88, "label": "CLI-00470 (3% riesgo)"}, {"x": 16.2, "y": 594.37, "label": "CLI-00471 (2% riesgo)"}, {"x": 29.3, "y": 604.58, "label": "CLI-00474 (3% riesgo)"}, {"x": 38.0, "y": 759.27, "label": "CLI-00480 (3% riesgo)"}, {"x": 11.2, "y": 485.95, "label": "CLI-00481 (1% riesgo)"}, {"x": 1.9, "y": 505.99, "label": "CLI-00488 (1% riesgo)"}, {"x": 9.5, "y": 598.04, "label": "CLI-00497 (1% riesgo)"}, {"x": 15.2, "y": 299.44, "label": "CLI-00506 (2% riesgo)"}, {"x": 25.1, "y": 440.33, "label": "CLI-00509 (2% riesgo)"}, {"x": 13.1, "y": 724.21, "label": "CLI-00510 (1% riesgo)"}, {"x": 32.1, "y": 158.43, "label": "CLI-00513 (3% riesgo)"}, {"x": 24.8, "y": 11.11, "label": "CLI-00522 (2% riesgo)"}, {"x": 19.4, "y": 273.83, "label": "CLI-00523 (2% riesgo)"}, {"x": 23.9, "y": 302.13, "label": "CLI-00525 (2% riesgo)"}, {"x": 4.7, "y": 139.52, "label": "CLI-00536 (1% riesgo)"}, {"x": 37.0, "y": 403.5, "label": "CLI-00538 (3% riesgo)"}, {"x": 16.2, "y": 453.87, "label": "CLI-00539 (2% riesgo)"}, {"x": 2.8, "y": 273.13, "label": "CLI-00542 (1% riesgo)"}, {"x": 42.7, "y": 307.07, "label": "CLI-00548 (3% riesgo)"}, {"x": 33.8, "y": 351.49, "label": "CLI-00552 (3% riesgo)"}, {"x": 35.2, "y": 544.99, "label": "CLI-00554 (3% riesgo)"}, {"x": 13.7, "y": 279.5, "label": "CLI-00561 (1% riesgo)"}, {"x": 46.2, "y": 484.09, "label": "CLI-00564 (4% riesgo)"}, {"x": 37.9, "y": 406.26, "label": "CLI-00569 (3% riesgo)"}, {"x": 18.5, "y": 413.21, "label": "CLI-00570 (2% riesgo)"}, {"x": 48.2, "y": 637.83, "label": "CLI-00574 (4% riesgo)"}, {"x": 33.3, "y": 161.05, "label": "CLI-00576 (3% riesgo)"}, {"x": 17.8, "y": 558.9, "label": "CLI-00577 (2% riesgo)"}, {"x": 31.6, "y": 665.94, "label": "CLI-00578 (3% riesgo)"}, {"x": 23.0, "y": 693.61, "label": "CLI-00579 (2% riesgo)"}, {"x": 37.7, "y": 383.53, "label": "CLI-00581 (3% riesgo)"}, {"x": 29.9, "y": 258.16, "label": "CLI-00582 (3% riesgo)"}, {"x": 46.5, "y": 285.02, "label": "CLI-00587 (4% riesgo)"}, {"x": 3.9, "y": 482.81, "label": "CLI-00595 (1% riesgo)"}, {"x": 20.1, "y": 370.96, "label": "CLI-00618 (2% riesgo)"}, {"x": 24.0, "y": 652.42, "label": "CLI-00620 (2% riesgo)"}, {"x": 33.7, "y": 607.74, "label": "CLI-00624 (3% riesgo)"}, {"x": 22.7, "y": 600.79, "label": "CLI-00630 (2% riesgo)"}, {"x": 15.9, "y": 408.92, "label": "CLI-00637 (2% riesgo)"}, {"x": 49.3, "y": 171.43, "label": "CLI-00644 (4% riesgo)"}, {"x": 35.9, "y": 360.63, "label": "CLI-00650 (3% riesgo)"}, {"x": 25.3, "y": 433.97, "label": "CLI-00666 (2% riesgo)"}, {"x": 49.8, "y": 407.58, "label": "CLI-00667 (4% riesgo)"}, {"x": 26.8, "y": 664.07, "label": "CLI-00669 (2% riesgo)"}, {"x": 19.8, "y": 609.14, "label": "CLI-00672 (2% riesgo)"}, {"x": 6.5, "y": 404.76, "label": "CLI-00675 (1% riesgo)"}, {"x": 23.3, "y": 471.31, "label": "CLI-00676 (2% riesgo)"}, {"x": 24.7, "y": 745.25, "label": "CLI-00679 (2% riesgo)"}, {"x": 39.3, "y": 418.09, "label": "CLI-00683 (3% riesgo)"}, {"x": 33.1, "y": 336.15, "label": "CLI-00685 (3% riesgo)"}, {"x": 35.4, "y": 319.6, "label": "CLI-00692 (3% riesgo)"}, {"x": 35.8, "y": 598.77, "label": "CLI-00704 (3% riesgo)"}, {"x": 5.2, "y": 659.58, "label": "CLI-00709 (1% riesgo)"}, {"x": 49.9, "y": 256.19, "label": "CLI-00713 (4% riesgo)"}, {"x": 26.9, "y": 705.87, "label": "CLI-00728 (2% riesgo)"}, {"x": 6.9, "y": 274.95, "label": "CLI-00735 (1% riesgo)"}, {"x": 13.9, "y": 586.72, "label": "CLI-00738 (1% riesgo)"}, {"x": 28.8, "y": 668.41, "label": "CLI-00747 (2% riesgo)"}, {"x": 36.1, "y": 573.12, "label": "CLI-00749 (3% riesgo)"}, {"x": 47.4, "y": 321.61, "label": "CLI-00757 (4% riesgo)"}, {"x": 12.4, "y": 747.79, "label": "CLI-00759 (1% riesgo)"}, {"x": 37.6, "y": 393.39, "label": "CLI-00766 (3% riesgo)"}, {"x": 37.8, "y": 509.98, "label": "CLI-00770 (3% riesgo)"}, {"x": 15.2, "y": 651.73, "label": "CLI-00776 (2% riesgo)"}, {"x": 13.3, "y": 697.72, "label": "CLI-00779 (1% riesgo)"}, {"x": 35.8, "y": 438.81, "label": "CLI-00780 (3% riesgo)"}, {"x": 33.5, "y": 282.52, "label": "CLI-00781 (3% riesgo)"}, {"x": 37.4, "y": 218.55, "label": "CLI-00784 (3% riesgo)"}, {"x": 4.8, "y": 414.96, "label": "CLI-00789 (1% riesgo)"}, {"x": 6.3, "y": 542.9, "label": "CLI-00796 (1% riesgo)"}, {"x": 45.1, "y": 603.08, "label": "CLI-00806 (4% riesgo)"}, {"x": 8.8, "y": 653.38, "label": "CLI-00814 (1% riesgo)"}, {"x": 32.4, "y": 570.88, "label": "CLI-00816 (3% riesgo)"}, {"x": 19.0, "y": 429.54, "label": "CLI-00820 (2% riesgo)"}, {"x": 27.1, "y": 420.45, "label": "CLI-00822 (2% riesgo)"}, {"x": 1.1, "y": 401.74, "label": "CLI-00825 (0% riesgo)"}, {"x": 6.2, "y": 734.55, "label": "CLI-00828 (1% riesgo)"}, {"x": 6.7, "y": 592.8, "label": "CLI-00829 (1% riesgo)"}, {"x": 17.7, "y": 486.59, "label": "CLI-00836 (2% riesgo)"}, {"x": 10.6, "y": 646.38, "label": "CLI-00838 (1% riesgo)"}, {"x": 7.8, "y": 740.88, "label": "CLI-00846 (1% riesgo)"}, {"x": 0.5, "y": 717.08, "label": "CLI-00852 (0% riesgo)"}, {"x": 38.6, "y": 644.59, "label": "CLI-00854 (3% riesgo)"}, {"x": 46.9, "y": 405.4, "label": "CLI-00855 (4% riesgo)"}, {"x": 48.6, "y": 385.67, "label": "CLI-00858 (4% riesgo)"}, {"x": 3.6, "y": 655.69, "label": "CLI-00861 (1% riesgo)"}, {"x": 37.2, "y": 213.19, "label": "CLI-00865 (3% riesgo)"}, {"x": 44.5, "y": 405.83, "label": "CLI-00873 (4% riesgo)"}, {"x": 1.7, "y": 642.37, "label": "CLI-00879 (1% riesgo)"}, {"x": 5.8, "y": 726.87, "label": "CLI-00881 (1% riesgo)"}, {"x": 8.1, "y": 660.73, "label": "CLI-00883 (1% riesgo)"}, {"x": 30.0, "y": 708.25, "label": "CLI-00887 (3% riesgo)"}, {"x": 43.7, "y": 692.33, "label": "CLI-00891 (3% riesgo)"}, {"x": 21.0, "y": 193.6, "label": "CLI-00893 (2% riesgo)"}, {"x": 29.8, "y": 737.82, "label": "CLI-00897 (3% riesgo)"}, {"x": 47.0, "y": 342.57, "label": "CLI-00902 (4% riesgo)"}, {"x": 7.9, "y": 628.22, "label": "CLI-00909 (1% riesgo)"}, {"x": 48.9, "y": 695.47, "label": "CLI-00912 (4% riesgo)"}, {"x": 44.0, "y": 540.46, "label": "CLI-00917 (4% riesgo)"}, {"x": 2.2, "y": 507.98, "label": "CLI-00925 (1% riesgo)"}, {"x": 48.1, "y": 433.43, "label": "CLI-00930 (4% riesgo)"}, {"x": 48.8, "y": 346.26, "label": "CLI-00932 (4% riesgo)"}, {"x": 36.5, "y": 338.49, "label": "CLI-00934 (3% riesgo)"}, {"x": 4.4, "y": 363.36, "label": "CLI-00937 (1% riesgo)"}, {"x": 47.3, "y": 294.41, "label": "CLI-00949 (4% riesgo)"}, {"x": 16.4, "y": 505.26, "label": "CLI-00950 (2% riesgo)"}, {"x": 7.7, "y": 300.41, "label": "CLI-00951 (1% riesgo)"}, {"x": 46.1, "y": 496.92, "label": "CLI-00952 (4% riesgo)"}, {"x": 8.8, "y": 445.01, "label": "CLI-00953 (1% riesgo)"}, {"x": 28.9, "y": 356.18, "label": "CLI-00962 (3% riesgo)"}, {"x": 21.8, "y": 446.25, "label": "CLI-00965 (2% riesgo)"}, {"x": 14.5, "y": 483.16, "label": "CLI-00966 (2% riesgo)"}, {"x": 22.0, "y": 392.05, "label": "CLI-00969 (2% riesgo)"}, {"x": 28.7, "y": 753.43, "label": "CLI-00981 (2% riesgo)"}, {"x": 11.8, "y": 312.64, "label": "CLI-00983 (1% riesgo)"}, {"x": 11.8, "y": 331.31, "label": "CLI-00993 (1% riesgo)"}, {"x": 33.8, "y": 493.61, "label": "CLI-00994 (3% riesgo)"}, {"x": 28.4, "y": 426.26, "label": "CLI-00999 (2% riesgo)"}, {"x": 34.3, "y": 560.72, "label": "CLI-01003 (3% riesgo)"}, {"x": 7.5, "y": 267.26, "label": "CLI-01004 (1% riesgo)"}, {"x": 17.8, "y": 623.93, "label": "CLI-01011 (2% riesgo)"}, {"x": 12.8, "y": 264.04, "label": "CLI-01020 (1% riesgo)"}, {"x": 45.9, "y": 535.47, "label": "CLI-01023 (4% riesgo)"}, {"x": 9.4, "y": 447.04, "label": "CLI-01029 (1% riesgo)"}, {"x": 41.8, "y": 736.82, "label": "CLI-01030 (3% riesgo)"}, {"x": 43.5, "y": 506.37, "label": "CLI-01042 (3% riesgo)"}, {"x": 21.3, "y": 673.14, "label": "CLI-01050 (2% riesgo)"}, {"x": 1.6, "y": 523.86, "label": "CLI-01052 (1% riesgo)"}, {"x": 7.2, "y": 422.53, "label": "CLI-01060 (1% riesgo)"}, {"x": 7.4, "y": 629.78, "label": "CLI-01062 (1% riesgo)"}, {"x": 48.4, "y": 284.84, "label": "CLI-01063 (4% riesgo)"}, {"x": 42.2, "y": 216.05, "label": "CLI-01065 (3% riesgo)"}, {"x": 34.6, "y": 605.53, "label": "CLI-01070 (3% riesgo)"}, {"x": 43.2, "y": 195.25, "label": "CLI-01071 (3% riesgo)"}, {"x": 28.0, "y": 461.96, "label": "CLI-01082 (2% riesgo)"}, {"x": 21.1, "y": 215.16, "label": "CLI-01083 (2% riesgo)"}, {"x": 8.2, "y": 252.0, "label": "CLI-01084 (1% riesgo)"}, {"x": 29.2, "y": 715.66, "label": "CLI-01086 (3% riesgo)"}, {"x": 41.1, "y": 664.25, "label": "CLI-01089 (3% riesgo)"}, {"x": 30.6, "y": 450.59, "label": "CLI-01091 (3% riesgo)"}, {"x": 28.6, "y": 236.42, "label": "CLI-01094 (2% riesgo)"}, {"x": 41.9, "y": 538.53, "label": "CLI-01095 (3% riesgo)"}, {"x": 12.2, "y": 222.88, "label": "CLI-01098 (1% riesgo)"}, {"x": 22.8, "y": 333.89, "label": "CLI-01100 (2% riesgo)"}, {"x": 9.7, "y": 486.62, "label": "CLI-01107 (1% riesgo)"}, {"x": 44.6, "y": 275.42, "label": "CLI-01111 (4% riesgo)"}, {"x": 36.2, "y": 709.53, "label": "CLI-01115 (3% riesgo)"}, {"x": 38.4, "y": 682.93, "label": "CLI-01116 (3% riesgo)"}, {"x": 5.7, "y": 526.6, "label": "CLI-01117 (1% riesgo)"}, {"x": 10.2, "y": 288.18, "label": "CLI-01124 (1% riesgo)"}, {"x": 14.2, "y": 685.54, "label": "CLI-01128 (1% riesgo)"}, {"x": 9.1, "y": 282.84, "label": "CLI-01131 (1% riesgo)"}, {"x": 18.8, "y": 554.6, "label": "CLI-01132 (2% riesgo)"}, {"x": 1.3, "y": 492.3, "label": "CLI-01133 (1% riesgo)"}, {"x": 39.2, "y": 683.22, "label": "CLI-01139 (3% riesgo)"}, {"x": 5.1, "y": 659.07, "label": "CLI-01146 (1% riesgo)"}, {"x": 25.8, "y": 382.5, "label": "CLI-01148 (2% riesgo)"}, {"x": 3.8, "y": 652.74, "label": "CLI-01150 (1% riesgo)"}, {"x": 29.0, "y": 599.43, "label": "CLI-01161 (3% riesgo)"}, {"x": 31.9, "y": 681.44, "label": "CLI-01168 (3% riesgo)"}, {"x": 7.6, "y": 585.26, "label": "CLI-01169 (1% riesgo)"}, {"x": 6.0, "y": 571.1, "label": "CLI-01173 (1% riesgo)"}, {"x": 30.1, "y": 340.31, "label": "CLI-01177 (3% riesgo)"}, {"x": 26.1, "y": 344.69, "label": "CLI-01178 (2% riesgo)"}, {"x": 11.3, "y": 577.47, "label": "CLI-01179 (1% riesgo)"}, {"x": 26.3, "y": 752.35, "label": "CLI-01182 (2% riesgo)"}, {"x": 30.8, "y": 347.37, "label": "CLI-01184 (3% riesgo)"}, {"x": 16.1, "y": 257.14, "label": "CLI-01192 (2% riesgo)"}, {"x": 34.4, "y": 470.38, "label": "CLI-01194 (3% riesgo)"}],
+            backgroundColor: withAlpha(seriesColorHex("#9CB8B4", "#9CB8B4"), 0.55),
+            borderColor: seriesColorHex("#9CB8B4", "#9CB8B4"),
+            pointRadius: 4,
+            pointHoverRadius: 6,
+        },
+{
+            label: "Rescate prioritario",
+            data: [{"x": 87.8, "y": 824.18, "label": "CLI-00004 (15% riesgo)"}, {"x": 81.5, "y": 1025.71, "label": "CLI-00005 (10% riesgo)"}, {"x": 75.4, "y": 2353.74, "label": "CLI-00006 (9% riesgo)"}, {"x": 59.6, "y": 776.31, "label": "CLI-00008 (5% riesgo)"}, {"x": 63.6, "y": 1026.06, "label": "CLI-00014 (6% riesgo)"}, {"x": 91.9, "y": 1027.4, "label": "CLI-00019 (21% riesgo)"}, {"x": 94.2, "y": 856.74, "label": "CLI-00021 (24% riesgo)"}, {"x": 75.7, "y": 2136.27, "label": "CLI-00023 (9% riesgo)"}, {"x": 90.8, "y": 775.02, "label": "CLI-00032 (19% riesgo)"}, {"x": 64.8, "y": 1747.97, "label": "CLI-00033 (6% riesgo)"}, {"x": 91.0, "y": 1402.13, "label": "CLI-00035 (19% riesgo)"}, {"x": 72.0, "y": 775.97, "label": "CLI-00048 (8% riesgo)"}, {"x": 56.5, "y": 1169.72, "label": "CLI-00058 (5% riesgo)"}, {"x": 51.2, "y": 2203.33, "label": "CLI-00069 (4% riesgo)"}, {"x": 82.9, "y": 1108.83, "label": "CLI-00071 (11% riesgo)"}, {"x": 76.5, "y": 1031.06, "label": "CLI-00078 (9% riesgo)"}, {"x": 78.6, "y": 1234.18, "label": "CLI-00083 (9% riesgo)"}, {"x": 68.8, "y": 1119.67, "label": "CLI-00088 (7% riesgo)"}, {"x": 84.3, "y": 911.68, "label": "CLI-00098 (12% riesgo)"}, {"x": 85.8, "y": 1878.0, "label": "CLI-00101 (13% riesgo)"}, {"x": 57.8, "y": 1394.79, "label": "CLI-00104 (5% riesgo)"}, {"x": 54.8, "y": 935.04, "label": "CLI-00106 (5% riesgo)"}, {"x": 68.1, "y": 959.71, "label": "CLI-00111 (7% riesgo)"}, {"x": 53.6, "y": 1021.36, "label": "CLI-00115 (5% riesgo)"}, {"x": 72.1, "y": 1162.43, "label": "CLI-00117 (8% riesgo)"}, {"x": 87.9, "y": 1419.64, "label": "CLI-00120 (15% riesgo)"}, {"x": 81.6, "y": 834.05, "label": "CLI-00123 (10% riesgo)"}, {"x": 71.3, "y": 1356.03, "label": "CLI-00133 (8% riesgo)"}, {"x": 60.4, "y": 1786.56, "label": "CLI-00134 (5% riesgo)"}, {"x": 64.2, "y": 1313.64, "label": "CLI-00135 (6% riesgo)"}, {"x": 77.2, "y": 1137.15, "label": "CLI-00136 (9% riesgo)"}, {"x": 93.1, "y": 972.61, "label": "CLI-00137 (22% riesgo)"}, {"x": 61.8, "y": 2835.22, "label": "CLI-00139 (6% riesgo)"}, {"x": 58.9, "y": 1035.83, "label": "CLI-00141 (5% riesgo)"}, {"x": 53.2, "y": 1514.74, "label": "CLI-00143 (5% riesgo)"}, {"x": 91.4, "y": 764.16, "label": "CLI-00144 (20% riesgo)"}, {"x": 56.8, "y": 1803.39, "label": "CLI-00147 (5% riesgo)"}, {"x": 89.0, "y": 1301.79, "label": "CLI-00149 (17% riesgo)"}, {"x": 55.2, "y": 1934.11, "label": "CLI-00151 (5% riesgo)"}, {"x": 91.8, "y": 932.96, "label": "CLI-00153 (20% riesgo)"}, {"x": 54.0, "y": 872.33, "label": "CLI-00157 (5% riesgo)"}, {"x": 79.9, "y": 1259.0, "label": "CLI-00165 (10% riesgo)"}, {"x": 59.8, "y": 852.77, "label": "CLI-00166 (5% riesgo)"}, {"x": 90.0, "y": 996.7, "label": "CLI-00167 (18% riesgo)"}, {"x": 52.0, "y": 1092.53, "label": "CLI-00170 (4% riesgo)"}, {"x": 74.4, "y": 2957.15, "label": "CLI-00175 (8% riesgo)"}, {"x": 91.1, "y": 992.25, "label": "CLI-00178 (19% riesgo)"}, {"x": 85.0, "y": 1777.3, "label": "CLI-00180 (12% riesgo)"}, {"x": 98.7, "y": 1413.95, "label": "CLI-00182 (43% riesgo)"}, {"x": 64.9, "y": 796.6, "label": "CLI-00185 (6% riesgo)"}, {"x": 79.3, "y": 975.32, "label": "CLI-00186 (10% riesgo)"}, {"x": 71.8, "y": 790.3, "label": "CLI-00187 (8% riesgo)"}, {"x": 79.8, "y": 765.96, "label": "CLI-00189 (10% riesgo)"}, {"x": 53.8, "y": 1410.17, "label": "CLI-00193 (5% riesgo)"}, {"x": 78.8, "y": 1232.75, "label": "CLI-00194 (9% riesgo)"}, {"x": 69.8, "y": 820.66, "label": "CLI-00199 (7% riesgo)"}, {"x": 50.9, "y": 2067.62, "label": "CLI-00205 (4% riesgo)"}, {"x": 82.0, "y": 1383.81, "label": "CLI-00206 (11% riesgo)"}, {"x": 52.3, "y": 769.91, "label": "CLI-00207 (4% riesgo)"}, {"x": 50.2, "y": 1241.59, "label": "CLI-00214 (4% riesgo)"}, {"x": 65.2, "y": 1050.84, "label": "CLI-00219 (6% riesgo)"}, {"x": 92.7, "y": 1310.49, "label": "CLI-00220 (21% riesgo)"}, {"x": 86.7, "y": 1541.6, "label": "CLI-00221 (14% riesgo)"}, {"x": 58.2, "y": 1138.87, "label": "CLI-00243 (5% riesgo)"}, {"x": 96.5, "y": 1113.11, "label": "CLI-00244 (31% riesgo)"}, {"x": 93.6, "y": 1055.4, "label": "CLI-00246 (22% riesgo)"}, {"x": 91.6, "y": 827.2, "label": "CLI-00248 (20% riesgo)"}, {"x": 74.5, "y": 877.01, "label": "CLI-00271 (8% riesgo)"}, {"x": 91.7, "y": 862.35, "label": "CLI-00272 (20% riesgo)"}, {"x": 80.2, "y": 1587.37, "label": "CLI-00274 (10% riesgo)"}, {"x": 76.8, "y": 2398.64, "label": "CLI-00283 (9% riesgo)"}, {"x": 98.1, "y": 1614.07, "label": "CLI-00286 (39% riesgo)"}, {"x": 85.3, "y": 1408.56, "label": "CLI-00287 (13% riesgo)"}, {"x": 70.9, "y": 1014.35, "label": "CLI-00290 (8% riesgo)"}, {"x": 70.8, "y": 2106.46, "label": "CLI-00300 (8% riesgo)"}, {"x": 92.4, "y": 2229.52, "label": "CLI-00301 (21% riesgo)"}, {"x": 67.4, "y": 1220.21, "label": "CLI-00302 (7% riesgo)"}, {"x": 70.0, "y": 1009.09, "label": "CLI-00305 (7% riesgo)"}, {"x": 91.3, "y": 895.98, "label": "CLI-00308 (20% riesgo)"}, {"x": 89.7, "y": 967.14, "label": "CLI-00309 (17% riesgo)"}, {"x": 86.3, "y": 785.52, "label": "CLI-00312 (14% riesgo)"}, {"x": 52.9, "y": 941.32, "label": "CLI-00318 (4% riesgo)"}, {"x": 85.4, "y": 1015.13, "label": "CLI-00321 (13% riesgo)"}, {"x": 65.7, "y": 1116.42, "label": "CLI-00322 (6% riesgo)"}, {"x": 98.2, "y": 1041.43, "label": "CLI-00327 (40% riesgo)"}, {"x": 87.5, "y": 911.7, "label": "CLI-00329 (15% riesgo)"}, {"x": 96.4, "y": 1746.34, "label": "CLI-00330 (31% riesgo)"}, {"x": 76.0, "y": 1072.53, "label": "CLI-00332 (9% riesgo)"}, {"x": 92.5, "y": 1067.27, "label": "CLI-00337 (21% riesgo)"}, {"x": 80.9, "y": 2065.81, "label": "CLI-00341 (10% riesgo)"}, {"x": 59.8, "y": 795.17, "label": "CLI-00343 (5% riesgo)"}, {"x": 83.6, "y": 1330.67, "label": "CLI-00347 (11% riesgo)"}, {"x": 99.9, "y": 1220.56, "label": "CLI-00351 (73% riesgo)"}, {"x": 75.0, "y": 1437.13, "label": "CLI-00358 (8% riesgo)"}, {"x": 64.2, "y": 832.37, "label": "CLI-00359 (6% riesgo)"}, {"x": 81.7, "y": 909.79, "label": "CLI-00361 (10% riesgo)"}, {"x": 55.7, "y": 915.41, "label": "CLI-00362 (5% riesgo)"}, {"x": 63.1, "y": 1025.34, "label": "CLI-00363 (6% riesgo)"}, {"x": 89.1, "y": 778.08, "label": "CLI-00375 (17% riesgo)"}, {"x": 63.2, "y": 1051.93, "label": "CLI-00390 (6% riesgo)"}, {"x": 69.9, "y": 1006.91, "label": "CLI-00394 (7% riesgo)"}, {"x": 83.2, "y": 1349.68, "label": "CLI-00400 (11% riesgo)"}, {"x": 53.2, "y": 1095.45, "label": "CLI-00402 (5% riesgo)"}, {"x": 99.2, "y": 1224.31, "label": "CLI-00406 (51% riesgo)"}, {"x": 84.5, "y": 1065.47, "label": "CLI-00407 (12% riesgo)"}, {"x": 90.6, "y": 1253.28, "label": "CLI-00420 (19% riesgo)"}, {"x": 57.1, "y": 1163.67, "label": "CLI-00422 (5% riesgo)"}, {"x": 70.3, "y": 1433.93, "label": "CLI-00426 (7% riesgo)"}, {"x": 55.8, "y": 954.47, "label": "CLI-00428 (5% riesgo)"}, {"x": 67.7, "y": 2098.79, "label": "CLI-00430 (7% riesgo)"}, {"x": 57.7, "y": 1241.47, "label": "CLI-00431 (5% riesgo)"}, {"x": 72.8, "y": 1095.16, "label": "CLI-00441 (8% riesgo)"}, {"x": 93.8, "y": 1066.54, "label": "CLI-00442 (23% riesgo)"}, {"x": 84.6, "y": 791.69, "label": "CLI-00443 (12% riesgo)"}, {"x": 83.8, "y": 820.84, "label": "CLI-00444 (11% riesgo)"}, {"x": 88.6, "y": 904.65, "label": "CLI-00452 (16% riesgo)"}, {"x": 52.2, "y": 1647.0, "label": "CLI-00458 (4% riesgo)"}, {"x": 62.0, "y": 1482.18, "label": "CLI-00469 (6% riesgo)"}, {"x": 99.2, "y": 1377.24, "label": "CLI-00473 (51% riesgo)"}, {"x": 56.9, "y": 841.58, "label": "CLI-00476 (5% riesgo)"}, {"x": 89.8, "y": 1219.29, "label": "CLI-00478 (18% riesgo)"}, {"x": 92.8, "y": 1566.83, "label": "CLI-00482 (21% riesgo)"}, {"x": 67.2, "y": 826.44, "label": "CLI-00483 (7% riesgo)"}, {"x": 63.9, "y": 941.98, "label": "CLI-00485 (6% riesgo)"}, {"x": 92.1, "y": 1040.24, "label": "CLI-00487 (21% riesgo)"}, {"x": 72.9, "y": 1362.04, "label": "CLI-00491 (8% riesgo)"}, {"x": 80.6, "y": 770.95, "label": "CLI-00498 (10% riesgo)"}, {"x": 81.2, "y": 2439.57, "label": "CLI-00499 (10% riesgo)"}, {"x": 78.2, "y": 1033.37, "label": "CLI-00508 (9% riesgo)"}, {"x": 72.6, "y": 820.4, "label": "CLI-00517 (8% riesgo)"}, {"x": 84.1, "y": 885.39, "label": "CLI-00518 (11% riesgo)"}, {"x": 81.2, "y": 785.25, "label": "CLI-00520 (10% riesgo)"}, {"x": 67.2, "y": 891.12, "label": "CLI-00521 (7% riesgo)"}, {"x": 62.7, "y": 1636.77, "label": "CLI-00527 (6% riesgo)"}, {"x": 75.8, "y": 1827.03, "label": "CLI-00530 (9% riesgo)"}, {"x": 84.4, "y": 809.92, "label": "CLI-00533 (12% riesgo)"}, {"x": 95.5, "y": 1106.88, "label": "CLI-00535 (27% riesgo)"}, {"x": 80.4, "y": 1513.88, "label": "CLI-00550 (10% riesgo)"}, {"x": 94.5, "y": 820.65, "label": "CLI-00558 (25% riesgo)"}, {"x": 96.8, "y": 1319.12, "label": "CLI-00559 (33% riesgo)"}, {"x": 65.5, "y": 1034.06, "label": "CLI-00563 (6% riesgo)"}, {"x": 87.7, "y": 770.98, "label": "CLI-00566 (15% riesgo)"}, {"x": 81.9, "y": 778.07, "label": "CLI-00573 (11% riesgo)"}, {"x": 90.2, "y": 1422.68, "label": "CLI-00575 (19% riesgo)"}, {"x": 74.8, "y": 877.0, "label": "CLI-00580 (8% riesgo)"}, {"x": 70.5, "y": 784.28, "label": "CLI-00585 (7% riesgo)"}, {"x": 72.8, "y": 1182.39, "label": "CLI-00586 (8% riesgo)"}, {"x": 52.2, "y": 1811.58, "label": "CLI-00588 (4% riesgo)"}, {"x": 82.5, "y": 1770.22, "label": "CLI-00589 (11% riesgo)"}, {"x": 71.5, "y": 802.67, "label": "CLI-00602 (8% riesgo)"}, {"x": 77.3, "y": 797.76, "label": "CLI-00612 (9% riesgo)"}, {"x": 58.7, "y": 903.3, "label": "CLI-00615 (5% riesgo)"}, {"x": 75.5, "y": 1086.81, "label": "CLI-00616 (9% riesgo)"}, {"x": 68.3, "y": 1881.64, "label": "CLI-00619 (7% riesgo)"}, {"x": 61.3, "y": 1005.85, "label": "CLI-00621 (6% riesgo)"}, {"x": 75.8, "y": 1106.02, "label": "CLI-00627 (9% riesgo)"}, {"x": 62.3, "y": 1099.67, "label": "CLI-00632 (6% riesgo)"}, {"x": 94.0, "y": 1351.67, "label": "CLI-00648 (23% riesgo)"}, {"x": 79.8, "y": 1153.23, "label": "CLI-00655 (10% riesgo)"}, {"x": 64.1, "y": 1024.32, "label": "CLI-00660 (6% riesgo)"}, {"x": 55.5, "y": 1227.9, "label": "CLI-00661 (5% riesgo)"}, {"x": 69.5, "y": 1080.21, "label": "CLI-00664 (7% riesgo)"}, {"x": 55.8, "y": 773.44, "label": "CLI-00668 (5% riesgo)"}, {"x": 67.9, "y": 944.7, "label": "CLI-00671 (7% riesgo)"}, {"x": 60.3, "y": 827.8, "label": "CLI-00677 (5% riesgo)"}, {"x": 73.0, "y": 1058.05, "label": "CLI-00684 (8% riesgo)"}, {"x": 93.3, "y": 1058.6, "label": "CLI-00686 (22% riesgo)"}, {"x": 54.2, "y": 1008.92, "label": "CLI-00689 (5% riesgo)"}, {"x": 84.8, "y": 1728.18, "label": "CLI-00693 (12% riesgo)"}, {"x": 50.3, "y": 870.0, "label": "CLI-00694 (4% riesgo)"}, {"x": 98.4, "y": 1297.53, "label": "CLI-00700 (41% riesgo)"}, {"x": 71.1, "y": 883.11, "label": "CLI-00706 (8% riesgo)"}, {"x": 98.6, "y": 960.35, "label": "CLI-00710 (42% riesgo)"}, {"x": 88.8, "y": 974.55, "label": "CLI-00711 (16% riesgo)"}, {"x": 55.0, "y": 1234.2, "label": "CLI-00712 (5% riesgo)"}, {"x": 61.1, "y": 890.97, "label": "CLI-00717 (6% riesgo)"}, {"x": 63.4, "y": 896.7, "label": "CLI-00723 (6% riesgo)"}, {"x": 99.7, "y": 927.25, "label": "CLI-00724 (61% riesgo)"}, {"x": 90.4, "y": 1520.82, "label": "CLI-00725 (19% riesgo)"}, {"x": 82.4, "y": 1194.69, "label": "CLI-00726 (11% riesgo)"}, {"x": 73.2, "y": 767.7, "label": "CLI-00732 (8% riesgo)"}, {"x": 71.2, "y": 1543.13, "label": "CLI-00733 (8% riesgo)"}, {"x": 56.3, "y": 2048.94, "label": "CLI-00739 (5% riesgo)"}, {"x": 98.5, "y": 914.94, "label": "CLI-00742 (42% riesgo)"}, {"x": 56.4, "y": 962.16, "label": "CLI-00745 (5% riesgo)"}, {"x": 57.6, "y": 1622.09, "label": "CLI-00750 (5% riesgo)"}, {"x": 66.2, "y": 1065.36, "label": "CLI-00753 (6% riesgo)"}, {"x": 95.2, "y": 1682.38, "label": "CLI-00755 (27% riesgo)"}, {"x": 82.8, "y": 2008.3, "label": "CLI-00761 (11% riesgo)"}, {"x": 90.8, "y": 992.09, "label": "CLI-00762 (19% riesgo)"}, {"x": 61.2, "y": 838.14, "label": "CLI-00765 (6% riesgo)"}, {"x": 96.8, "y": 1116.52, "label": "CLI-00768 (32% riesgo)"}, {"x": 51.5, "y": 2142.55, "label": "CLI-00769 (4% riesgo)"}, {"x": 76.6, "y": 1385.85, "label": "CLI-00778 (9% riesgo)"}, {"x": 64.6, "y": 1068.27, "label": "CLI-00783 (6% riesgo)"}, {"x": 89.2, "y": 831.12, "label": "CLI-00786 (17% riesgo)"}, {"x": 83.3, "y": 803.93, "label": "CLI-00788 (11% riesgo)"}, {"x": 60.9, "y": 1064.54, "label": "CLI-00793 (6% riesgo)"}, {"x": 68.4, "y": 881.41, "label": "CLI-00794 (7% riesgo)"}, {"x": 80.0, "y": 886.56, "label": "CLI-00797 (10% riesgo)"}, {"x": 74.7, "y": 1938.01, "label": "CLI-00798 (8% riesgo)"}, {"x": 58.0, "y": 1339.36, "label": "CLI-00803 (5% riesgo)"}, {"x": 68.2, "y": 1453.82, "label": "CLI-00804 (7% riesgo)"}, {"x": 55.9, "y": 1368.46, "label": "CLI-00809 (5% riesgo)"}, {"x": 79.5, "y": 1104.96, "label": "CLI-00810 (10% riesgo)"}, {"x": 63.0, "y": 994.11, "label": "CLI-00813 (6% riesgo)"}, {"x": 68.2, "y": 2070.84, "label": "CLI-00815 (7% riesgo)"}, {"x": 84.8, "y": 1725.49, "label": "CLI-00818 (12% riesgo)"}, {"x": 78.1, "y": 978.45, "label": "CLI-00821 (9% riesgo)"}, {"x": 67.3, "y": 1122.36, "label": "CLI-00824 (7% riesgo)"}, {"x": 54.5, "y": 1050.25, "label": "CLI-00830 (5% riesgo)"}, {"x": 65.4, "y": 1589.37, "label": "CLI-00832 (6% riesgo)"}, {"x": 59.2, "y": 1854.63, "label": "CLI-00837 (5% riesgo)"}, {"x": 91.2, "y": 805.16, "label": "CLI-00839 (19% riesgo)"}, {"x": 56.8, "y": 926.63, "label": "CLI-00849 (5% riesgo)"}, {"x": 97.8, "y": 1414.83, "label": "CLI-00853 (36% riesgo)"}, {"x": 77.5, "y": 1495.14, "label": "CLI-00856 (9% riesgo)"}, {"x": 86.8, "y": 1002.79, "label": "CLI-00859 (14% riesgo)"}, {"x": 61.8, "y": 1974.39, "label": "CLI-00863 (6% riesgo)"}, {"x": 57.9, "y": 2305.36, "label": "CLI-00872 (5% riesgo)"}, {"x": 78.7, "y": 1535.42, "label": "CLI-00882 (9% riesgo)"}, {"x": 96.0, "y": 1036.67, "label": "CLI-00894 (29% riesgo)"}, {"x": 57.2, "y": 1387.7, "label": "CLI-00900 (5% riesgo)"}, {"x": 87.2, "y": 1404.46, "label": "CLI-00903 (14% riesgo)"}, {"x": 80.2, "y": 1207.21, "label": "CLI-00906 (10% riesgo)"}, {"x": 93.8, "y": 1367.24, "label": "CLI-00907 (23% riesgo)"}, {"x": 55.1, "y": 910.01, "label": "CLI-00908 (5% riesgo)"}, {"x": 65.3, "y": 968.68, "label": "CLI-00913 (6% riesgo)"}, {"x": 68.8, "y": 1629.23, "label": "CLI-00914 (7% riesgo)"}, {"x": 50.1, "y": 829.76, "label": "CLI-00915 (4% riesgo)"}, {"x": 94.9, "y": 1008.89, "label": "CLI-00922 (25% riesgo)"}, {"x": 78.4, "y": 1174.05, "label": "CLI-00923 (9% riesgo)"}, {"x": 90.1, "y": 814.29, "label": "CLI-00928 (18% riesgo)"}, {"x": 52.6, "y": 801.14, "label": "CLI-00929 (4% riesgo)"}, {"x": 68.7, "y": 1018.76, "label": "CLI-00931 (7% riesgo)"}, {"x": 53.3, "y": 786.67, "label": "CLI-00933 (5% riesgo)"}, {"x": 84.2, "y": 1451.55, "label": "CLI-00935 (12% riesgo)"}, {"x": 84.7, "y": 878.99, "label": "CLI-00940 (12% riesgo)"}, {"x": 57.3, "y": 1444.24, "label": "CLI-00947 (5% riesgo)"}, {"x": 83.9, "y": 1575.97, "label": "CLI-00955 (11% riesgo)"}, {"x": 80.5, "y": 1034.69, "label": "CLI-00971 (10% riesgo)"}, {"x": 92.2, "y": 1796.44, "label": "CLI-00977 (21% riesgo)"}, {"x": 68.6, "y": 1195.99, "label": "CLI-00980 (7% riesgo)"}, {"x": 85.2, "y": 1856.16, "label": "CLI-00991 (13% riesgo)"}, {"x": 74.2, "y": 1236.39, "label": "CLI-00995 (8% riesgo)"}, {"x": 76.2, "y": 773.58, "label": "CLI-00998 (9% riesgo)"}, {"x": 62.9, "y": 770.5, "label": "CLI-01000 (6% riesgo)"}, {"x": 75.6, "y": 1136.99, "label": "CLI-01002 (9% riesgo)"}, {"x": 61.3, "y": 1226.52, "label": "CLI-01007 (6% riesgo)"}, {"x": 61.9, "y": 1148.77, "label": "CLI-01013 (6% riesgo)"}, {"x": 99.3, "y": 1215.22, "label": "CLI-01021 (52% riesgo)"}, {"x": 64.0, "y": 1129.87, "label": "CLI-01024 (6% riesgo)"}, {"x": 82.7, "y": 821.37, "label": "CLI-01026 (11% riesgo)"}, {"x": 80.7, "y": 869.87, "label": "CLI-01028 (10% riesgo)"}, {"x": 63.8, "y": 1047.94, "label": "CLI-01033 (6% riesgo)"}, {"x": 94.7, "y": 879.92, "label": "CLI-01035 (25% riesgo)"}, {"x": 64.8, "y": 875.14, "label": "CLI-01036 (6% riesgo)"}, {"x": 74.2, "y": 1365.19, "label": "CLI-01040 (8% riesgo)"}, {"x": 76.8, "y": 888.72, "label": "CLI-01046 (9% riesgo)"}, {"x": 65.2, "y": 1200.1, "label": "CLI-01047 (6% riesgo)"}, {"x": 67.8, "y": 1042.63, "label": "CLI-01054 (7% riesgo)"}, {"x": 88.7, "y": 3435.33, "label": "CLI-01056 (16% riesgo)"}, {"x": 66.8, "y": 921.9, "label": "CLI-01066 (7% riesgo)"}, {"x": 60.0, "y": 1292.49, "label": "CLI-01068 (5% riesgo)"}, {"x": 82.6, "y": 915.04, "label": "CLI-01072 (11% riesgo)"}, {"x": 97.4, "y": 1409.18, "label": "CLI-01076 (35% riesgo)"}, {"x": 74.9, "y": 1197.79, "label": "CLI-01087 (8% riesgo)"}, {"x": 77.0, "y": 793.18, "label": "CLI-01088 (9% riesgo)"}, {"x": 58.2, "y": 900.05, "label": "CLI-01090 (5% riesgo)"}, {"x": 59.0, "y": 820.73, "label": "CLI-01092 (5% riesgo)"}, {"x": 61.0, "y": 1490.85, "label": "CLI-01099 (6% riesgo)"}, {"x": 87.2, "y": 2250.66, "label": "CLI-01103 (14% riesgo)"}, {"x": 69.1, "y": 1035.79, "label": "CLI-01106 (7% riesgo)"}, {"x": 51.2, "y": 807.16, "label": "CLI-01108 (4% riesgo)"}, {"x": 69.4, "y": 765.41, "label": "CLI-01109 (7% riesgo)"}, {"x": 67.0, "y": 1122.76, "label": "CLI-01110 (7% riesgo)"}, {"x": 86.2, "y": 3677.31, "label": "CLI-01119 (14% riesgo)"}, {"x": 100.0, "y": 1110.43, "label": "CLI-01121 (95% riesgo)"}, {"x": 92.6, "y": 970.77, "label": "CLI-01125 (21% riesgo)"}, {"x": 70.2, "y": 910.77, "label": "CLI-01130 (7% riesgo)"}, {"x": 51.7, "y": 980.34, "label": "CLI-01138 (4% riesgo)"}, {"x": 83.0, "y": 1381.15, "label": "CLI-01141 (11% riesgo)"}, {"x": 51.9, "y": 802.26, "label": "CLI-01142 (4% riesgo)"}, {"x": 73.7, "y": 1351.49, "label": "CLI-01154 (8% riesgo)"}, {"x": 54.2, "y": 1453.04, "label": "CLI-01156 (5% riesgo)"}, {"x": 74.8, "y": 1179.08, "label": "CLI-01157 (8% riesgo)"}, {"x": 54.3, "y": 955.78, "label": "CLI-01158 (5% riesgo)"}, {"x": 71.9, "y": 1732.71, "label": "CLI-01162 (8% riesgo)"}, {"x": 93.5, "y": 1467.99, "label": "CLI-01165 (22% riesgo)"}, {"x": 66.0, "y": 1393.94, "label": "CLI-01166 (6% riesgo)"}, {"x": 66.1, "y": 2433.42, "label": "CLI-01180 (6% riesgo)"}, {"x": 87.3, "y": 1085.0, "label": "CLI-01187 (15% riesgo)"}, {"x": 62.4, "y": 1110.91, "label": "CLI-01188 (6% riesgo)"}, {"x": 97.0, "y": 1991.52, "label": "CLI-01190 (33% riesgo)"}, {"x": 95.3, "y": 1449.01, "label": "CLI-01198 (27% riesgo)"}],
+            backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 0.55),
+            borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
+            pointRadius: 4,
+            pointHoverRadius: 6,
+        },
+{
+            label: "Clientes ancla",
+            data: [{"x": 9.2, "y": 1262.4, "label": "CLI-00009 (1% riesgo)"}, {"x": 8.4, "y": 912.2, "label": "CLI-00012 (1% riesgo)"}, {"x": 37.1, "y": 925.69, "label": "CLI-00013 (3% riesgo)"}, {"x": 1.8, "y": 1335.5, "label": "CLI-00020 (1% riesgo)"}, {"x": 25.2, "y": 1221.8, "label": "CLI-00029 (2% riesgo)"}, {"x": 24.5, "y": 939.58, "label": "CLI-00030 (2% riesgo)"}, {"x": 14.7, "y": 1255.53, "label": "CLI-00031 (2% riesgo)"}, {"x": 22.2, "y": 1386.56, "label": "CLI-00036 (2% riesgo)"}, {"x": 21.4, "y": 1139.21, "label": "CLI-00038 (2% riesgo)"}, {"x": 27.3, "y": 1077.51, "label": "CLI-00041 (2% riesgo)"}, {"x": 34.0, "y": 876.9, "label": "CLI-00047 (3% riesgo)"}, {"x": 14.8, "y": 1136.45, "label": "CLI-00049 (2% riesgo)"}, {"x": 0.2, "y": 1345.73, "label": "CLI-00051 (0% riesgo)"}, {"x": 6.8, "y": 1020.34, "label": "CLI-00057 (1% riesgo)"}, {"x": 31.5, "y": 979.29, "label": "CLI-00064 (3% riesgo)"}, {"x": 49.7, "y": 1555.88, "label": "CLI-00066 (4% riesgo)"}, {"x": 40.2, "y": 1170.2, "label": "CLI-00068 (3% riesgo)"}, {"x": 14.1, "y": 945.01, "label": "CLI-00080 (1% riesgo)"}, {"x": 24.3, "y": 759.45, "label": "CLI-00081 (2% riesgo)"}, {"x": 23.8, "y": 830.34, "label": "CLI-00082 (2% riesgo)"}, {"x": 34.2, "y": 1219.22, "label": "CLI-00092 (3% riesgo)"}, {"x": 43.6, "y": 1060.88, "label": "CLI-00097 (3% riesgo)"}, {"x": 8.2, "y": 1157.31, "label": "CLI-00110 (1% riesgo)"}, {"x": 43.4, "y": 913.0, "label": "CLI-00116 (3% riesgo)"}, {"x": 40.1, "y": 812.03, "label": "CLI-00126 (3% riesgo)"}, {"x": 10.8, "y": 792.59, "label": "CLI-00132 (1% riesgo)"}, {"x": 46.8, "y": 801.48, "label": "CLI-00140 (4% riesgo)"}, {"x": 27.8, "y": 1185.68, "label": "CLI-00142 (2% riesgo)"}, {"x": 32.9, "y": 975.66, "label": "CLI-00154 (3% riesgo)"}, {"x": 20.3, "y": 928.44, "label": "CLI-00161 (2% riesgo)"}, {"x": 4.1, "y": 1305.0, "label": "CLI-00162 (1% riesgo)"}, {"x": 33.2, "y": 1048.89, "label": "CLI-00164 (3% riesgo)"}, {"x": 21.2, "y": 977.12, "label": "CLI-00168 (2% riesgo)"}, {"x": 45.5, "y": 1863.62, "label": "CLI-00169 (4% riesgo)"}, {"x": 13.2, "y": 1669.11, "label": "CLI-00172 (1% riesgo)"}, {"x": 10.9, "y": 1019.62, "label": "CLI-00173 (1% riesgo)"}, {"x": 36.9, "y": 1960.89, "label": "CLI-00177 (3% riesgo)"}, {"x": 16.5, "y": 1018.72, "label": "CLI-00181 (2% riesgo)"}, {"x": 3.1, "y": 936.82, "label": "CLI-00183 (1% riesgo)"}, {"x": 36.6, "y": 930.04, "label": "CLI-00192 (3% riesgo)"}, {"x": 48.7, "y": 871.34, "label": "CLI-00197 (4% riesgo)"}, {"x": 38.2, "y": 1308.76, "label": "CLI-00202 (3% riesgo)"}, {"x": 15.5, "y": 982.94, "label": "CLI-00209 (2% riesgo)"}, {"x": 13.8, "y": 784.74, "label": "CLI-00212 (1% riesgo)"}, {"x": 28.1, "y": 1062.23, "label": "CLI-00213 (2% riesgo)"}, {"x": 41.5, "y": 1107.3, "label": "CLI-00216 (3% riesgo)"}, {"x": 30.7, "y": 1298.4, "label": "CLI-00217 (3% riesgo)"}, {"x": 39.4, "y": 1666.67, "label": "CLI-00223 (3% riesgo)"}, {"x": 43.0, "y": 1485.3, "label": "CLI-00224 (3% riesgo)"}, {"x": 34.1, "y": 1260.49, "label": "CLI-00225 (3% riesgo)"}, {"x": 33.9, "y": 970.56, "label": "CLI-00227 (3% riesgo)"}, {"x": 2.2, "y": 822.94, "label": "CLI-00229 (1% riesgo)"}, {"x": 14.0, "y": 915.18, "label": "CLI-00237 (1% riesgo)"}, {"x": 32.2, "y": 2298.48, "label": "CLI-00242 (3% riesgo)"}, {"x": 12.0, "y": 1154.66, "label": "CLI-00252 (1% riesgo)"}, {"x": 16.3, "y": 1829.92, "label": "CLI-00255 (2% riesgo)"}, {"x": 4.6, "y": 974.74, "label": "CLI-00256 (1% riesgo)"}, {"x": 7.0, "y": 1286.13, "label": "CLI-00266 (1% riesgo)"}, {"x": 3.0, "y": 1166.34, "label": "CLI-00267 (1% riesgo)"}, {"x": 13.5, "y": 771.41, "label": "CLI-00273 (1% riesgo)"}, {"x": 2.8, "y": 2008.35, "label": "CLI-00275 (1% riesgo)"}, {"x": 33.2, "y": 1883.35, "label": "CLI-00276 (3% riesgo)"}, {"x": 20.7, "y": 782.12, "label": "CLI-00281 (2% riesgo)"}, {"x": 37.3, "y": 1050.17, "label": "CLI-00284 (3% riesgo)"}, {"x": 0.9, "y": 1059.91, "label": "CLI-00288 (0% riesgo)"}, {"x": 11.2, "y": 1182.62, "label": "CLI-00292 (1% riesgo)"}, {"x": 31.0, "y": 1931.38, "label": "CLI-00295 (3% riesgo)"}, {"x": 8.9, "y": 1291.39, "label": "CLI-00296 (1% riesgo)"}, {"x": 44.8, "y": 1399.86, "label": "CLI-00303 (4% riesgo)"}, {"x": 18.4, "y": 1636.03, "label": "CLI-00304 (2% riesgo)"}, {"x": 23.2, "y": 1157.99, "label": "CLI-00306 (2% riesgo)"}, {"x": 29.6, "y": 782.18, "label": "CLI-00310 (3% riesgo)"}, {"x": 36.8, "y": 2228.42, "label": "CLI-00317 (3% riesgo)"}, {"x": 44.1, "y": 959.66, "label": "CLI-00326 (4% riesgo)"}, {"x": 30.4, "y": 1234.05, "label": "CLI-00334 (3% riesgo)"}, {"x": 30.2, "y": 1940.32, "label": "CLI-00344 (3% riesgo)"}, {"x": 45.0, "y": 762.45, "label": "CLI-00348 (4% riesgo)"}, {"x": 40.3, "y": 2428.41, "label": "CLI-00353 (3% riesgo)"}, {"x": 18.9, "y": 1203.44, "label": "CLI-00356 (2% riesgo)"}, {"x": 15.1, "y": 904.03, "label": "CLI-00357 (2% riesgo)"}, {"x": 38.8, "y": 864.6, "label": "CLI-00360 (3% riesgo)"}, {"x": 13.2, "y": 1122.44, "label": "CLI-00369 (1% riesgo)"}, {"x": 31.8, "y": 1372.81, "label": "CLI-00371 (3% riesgo)"}, {"x": 41.4, "y": 790.1, "label": "CLI-00379 (3% riesgo)"}, {"x": 39.8, "y": 912.23, "label": "CLI-00381 (3% riesgo)"}, {"x": 18.8, "y": 1264.21, "label": "CLI-00386 (2% riesgo)"}, {"x": 38.2, "y": 1560.97, "label": "CLI-00389 (3% riesgo)"}, {"x": 13.0, "y": 1363.99, "label": "CLI-00392 (1% riesgo)"}, {"x": 9.8, "y": 932.89, "label": "CLI-00395 (1% riesgo)"}, {"x": 0.8, "y": 1921.64, "label": "CLI-00398 (0% riesgo)"}, {"x": 15.6, "y": 1022.05, "label": "CLI-00399 (2% riesgo)"}, {"x": 29.8, "y": 1766.28, "label": "CLI-00410 (3% riesgo)"}, {"x": 30.2, "y": 1504.94, "label": "CLI-00414 (3% riesgo)"}, {"x": 22.6, "y": 1157.02, "label": "CLI-00415 (2% riesgo)"}, {"x": 49.1, "y": 994.54, "label": "CLI-00417 (4% riesgo)"}, {"x": 42.5, "y": 1000.04, "label": "CLI-00418 (3% riesgo)"}, {"x": 12.1, "y": 1200.07, "label": "CLI-00421 (1% riesgo)"}, {"x": 15.3, "y": 1124.42, "label": "CLI-00436 (2% riesgo)"}, {"x": 31.2, "y": 1176.72, "label": "CLI-00445 (3% riesgo)"}, {"x": 18.3, "y": 1059.01, "label": "CLI-00446 (2% riesgo)"}, {"x": 19.2, "y": 1369.58, "label": "CLI-00448 (2% riesgo)"}, {"x": 0.8, "y": 808.03, "label": "CLI-00451 (0% riesgo)"}, {"x": 27.9, "y": 1501.1, "label": "CLI-00459 (2% riesgo)"}, {"x": 4.3, "y": 1637.74, "label": "CLI-00460 (1% riesgo)"}, {"x": 7.1, "y": 1265.77, "label": "CLI-00462 (1% riesgo)"}, {"x": 23.1, "y": 1030.38, "label": "CLI-00463 (2% riesgo)"}, {"x": 44.7, "y": 2149.32, "label": "CLI-00475 (4% riesgo)"}, {"x": 41.0, "y": 872.47, "label": "CLI-00479 (3% riesgo)"}, {"x": 12.7, "y": 1228.79, "label": "CLI-00492 (1% riesgo)"}, {"x": 25.0, "y": 1023.68, "label": "CLI-00493 (2% riesgo)"}, {"x": 48.0, "y": 1607.77, "label": "CLI-00495 (4% riesgo)"}, {"x": 0.6, "y": 904.95, "label": "CLI-00496 (0% riesgo)"}, {"x": 19.5, "y": 1977.29, "label": "CLI-00500 (2% riesgo)"}, {"x": 3.2, "y": 786.24, "label": "CLI-00504 (1% riesgo)"}, {"x": 15.8, "y": 1388.37, "label": "CLI-00505 (2% riesgo)"}, {"x": 20.8, "y": 1225.56, "label": "CLI-00507 (2% riesgo)"}, {"x": 22.9, "y": 3053.01, "label": "CLI-00512 (2% riesgo)"}, {"x": 14.6, "y": 837.66, "label": "CLI-00516 (2% riesgo)"}, {"x": 34.9, "y": 2346.17, "label": "CLI-00524 (3% riesgo)"}, {"x": 35.6, "y": 1239.84, "label": "CLI-00526 (3% riesgo)"}, {"x": 40.5, "y": 1711.33, "label": "CLI-00531 (3% riesgo)"}, {"x": 6.6, "y": 1983.67, "label": "CLI-00532 (1% riesgo)"}, {"x": 26.6, "y": 1146.68, "label": "CLI-00534 (2% riesgo)"}, {"x": 12.6, "y": 872.02, "label": "CLI-00546 (1% riesgo)"}, {"x": 27.7, "y": 1048.66, "label": "CLI-00547 (2% riesgo)"}, {"x": 22.4, "y": 849.72, "label": "CLI-00555 (2% riesgo)"}, {"x": 2.0, "y": 1505.76, "label": "CLI-00565 (1% riesgo)"}, {"x": 4.9, "y": 1908.9, "label": "CLI-00567 (1% riesgo)"}, {"x": 8.7, "y": 1173.58, "label": "CLI-00568 (1% riesgo)"}, {"x": 13.6, "y": 1103.02, "label": "CLI-00572 (1% riesgo)"}, {"x": 9.9, "y": 1352.29, "label": "CLI-00590 (1% riesgo)"}, {"x": 35.2, "y": 1464.41, "label": "CLI-00592 (3% riesgo)"}, {"x": 41.3, "y": 1909.69, "label": "CLI-00593 (3% riesgo)"}, {"x": 10.0, "y": 830.28, "label": "CLI-00594 (1% riesgo)"}, {"x": 2.4, "y": 1271.01, "label": "CLI-00596 (1% riesgo)"}, {"x": 46.7, "y": 930.22, "label": "CLI-00597 (4% riesgo)"}, {"x": 22.2, "y": 821.5, "label": "CLI-00598 (2% riesgo)"}, {"x": 17.5, "y": 932.26, "label": "CLI-00600 (2% riesgo)"}, {"x": 45.3, "y": 1672.38, "label": "CLI-00604 (4% riesgo)"}, {"x": 47.9, "y": 1550.54, "label": "CLI-00605 (4% riesgo)"}, {"x": 33.6, "y": 1605.79, "label": "CLI-00611 (3% riesgo)"}, {"x": 5.4, "y": 1019.86, "label": "CLI-00617 (1% riesgo)"}, {"x": 0.4, "y": 1225.3, "label": "CLI-00626 (0% riesgo)"}, {"x": 20.9, "y": 1013.96, "label": "CLI-00631 (2% riesgo)"}, {"x": 41.7, "y": 933.84, "label": "CLI-00636 (3% riesgo)"}, {"x": 19.7, "y": 1695.49, "label": "CLI-00638 (2% riesgo)"}, {"x": 6.8, "y": 1412.26, "label": "CLI-00642 (1% riesgo)"}, {"x": 28.2, "y": 884.44, "label": "CLI-00643 (2% riesgo)"}, {"x": 32.5, "y": 1043.95, "label": "CLI-00645 (3% riesgo)"}, {"x": 32.3, "y": 1063.87, "label": "CLI-00646 (3% riesgo)"}, {"x": 36.8, "y": 1060.47, "label": "CLI-00651 (3% riesgo)"}, {"x": 39.9, "y": 1161.31, "label": "CLI-00652 (3% riesgo)"}, {"x": 16.7, "y": 1948.95, "label": "CLI-00653 (2% riesgo)"}, {"x": 0.7, "y": 1003.76, "label": "CLI-00658 (0% riesgo)"}, {"x": 29.5, "y": 970.43, "label": "CLI-00662 (3% riesgo)"}, {"x": 15.0, "y": 1010.15, "label": "CLI-00665 (2% riesgo)"}, {"x": 41.2, "y": 1484.44, "label": "CLI-00670 (3% riesgo)"}, {"x": 27.5, "y": 824.51, "label": "CLI-00673 (2% riesgo)"}, {"x": 9.3, "y": 841.71, "label": "CLI-00680 (1% riesgo)"}, {"x": 29.1, "y": 1677.97, "label": "CLI-00682 (3% riesgo)"}, {"x": 43.1, "y": 1262.0, "label": "CLI-00690 (3% riesgo)"}, {"x": 45.8, "y": 1167.84, "label": "CLI-00691 (4% riesgo)"}, {"x": 20.8, "y": 796.92, "label": "CLI-00695 (2% riesgo)"}, {"x": 27.2, "y": 766.32, "label": "CLI-00702 (2% riesgo)"}, {"x": 14.9, "y": 1699.8, "label": "CLI-00708 (2% riesgo)"}, {"x": 0.2, "y": 2044.39, "label": "CLI-00716 (0% riesgo)"}, {"x": 17.1, "y": 869.46, "label": "CLI-00719 (2% riesgo)"}, {"x": 31.2, "y": 1425.26, "label": "CLI-00720 (3% riesgo)"}, {"x": 10.3, "y": 1088.07, "label": "CLI-00721 (1% riesgo)"}, {"x": 16.6, "y": 1672.65, "label": "CLI-00722 (2% riesgo)"}, {"x": 28.3, "y": 1008.4, "label": "CLI-00727 (2% riesgo)"}, {"x": 44.8, "y": 764.89, "label": "CLI-00730 (4% riesgo)"}, {"x": 46.4, "y": 1162.92, "label": "CLI-00734 (4% riesgo)"}, {"x": 35.7, "y": 1572.71, "label": "CLI-00737 (3% riesgo)"}, {"x": 48.2, "y": 917.57, "label": "CLI-00741 (4% riesgo)"}, {"x": 11.9, "y": 921.39, "label": "CLI-00746 (1% riesgo)"}, {"x": 47.8, "y": 822.08, "label": "CLI-00756 (4% riesgo)"}, {"x": 38.1, "y": 1459.89, "label": "CLI-00758 (3% riesgo)"}, {"x": 49.2, "y": 1398.65, "label": "CLI-00760 (4% riesgo)"}, {"x": 5.6, "y": 1325.37, "label": "CLI-00763 (1% riesgo)"}, {"x": 18.6, "y": 777.22, "label": "CLI-00767 (2% riesgo)"}, {"x": 0.3, "y": 1153.57, "label": "CLI-00772 (0% riesgo)"}, {"x": 36.3, "y": 1459.52, "label": "CLI-00773 (3% riesgo)"}, {"x": 39.8, "y": 825.3, "label": "CLI-00774 (3% riesgo)"}, {"x": 20.4, "y": 853.9, "label": "CLI-00782 (2% riesgo)"}, {"x": 30.8, "y": 907.72, "label": "CLI-00785 (3% riesgo)"}, {"x": 3.7, "y": 1198.8, "label": "CLI-00787 (1% riesgo)"}, {"x": 11.6, "y": 2687.41, "label": "CLI-00790 (1% riesgo)"}, {"x": 17.0, "y": 1254.74, "label": "CLI-00792 (2% riesgo)"}, {"x": 39.1, "y": 1520.27, "label": "CLI-00795 (3% riesgo)"}, {"x": 17.3, "y": 831.25, "label": "CLI-00799 (2% riesgo)"}, {"x": 43.9, "y": 1138.72, "label": "CLI-00800 (4% riesgo)"}, {"x": 14.2, "y": 2249.16, "label": "CLI-00801 (2% riesgo)"}, {"x": 17.2, "y": 1221.21, "label": "CLI-00807 (2% riesgo)"}, {"x": 43.8, "y": 762.59, "label": "CLI-00817 (3% riesgo)"}, {"x": 45.2, "y": 798.99, "label": "CLI-00826 (4% riesgo)"}, {"x": 12.5, "y": 1114.42, "label": "CLI-00827 (1% riesgo)"}, {"x": 24.6, "y": 2312.04, "label": "CLI-00843 (2% riesgo)"}, {"x": 25.5, "y": 963.88, "label": "CLI-00844 (2% riesgo)"}, {"x": 2.5, "y": 1875.21, "label": "CLI-00845 (1% riesgo)"}, {"x": 26.5, "y": 1620.45, "label": "CLI-00847 (2% riesgo)"}, {"x": 44.4, "y": 1844.35, "label": "CLI-00848 (4% riesgo)"}, {"x": 42.8, "y": 930.74, "label": "CLI-00850 (3% riesgo)"}, {"x": 9.2, "y": 1184.18, "label": "CLI-00851 (1% riesgo)"}, {"x": 30.9, "y": 1083.69, "label": "CLI-00860 (3% riesgo)"}, {"x": 19.9, "y": 797.11, "label": "CLI-00862 (2% riesgo)"}, {"x": 24.2, "y": 1804.02, "label": "CLI-00864 (2% riesgo)"}, {"x": 9.6, "y": 1410.01, "label": "CLI-00871 (1% riesgo)"}, {"x": 4.8, "y": 827.43, "label": "CLI-00874 (1% riesgo)"}, {"x": 1.2, "y": 1020.06, "label": "CLI-00876 (0% riesgo)"}, {"x": 44.3, "y": 1029.19, "label": "CLI-00877 (4% riesgo)"}, {"x": 18.2, "y": 1038.6, "label": "CLI-00880 (2% riesgo)"}, {"x": 32.8, "y": 815.15, "label": "CLI-00884 (3% riesgo)"}, {"x": 45.7, "y": 831.19, "label": "CLI-00885 (4% riesgo)"}, {"x": 19.6, "y": 1089.6, "label": "CLI-00890 (2% riesgo)"}, {"x": 1.5, "y": 1694.01, "label": "CLI-00892 (1% riesgo)"}, {"x": 24.4, "y": 1626.78, "label": "CLI-00895 (2% riesgo)"}, {"x": 16.9, "y": 2326.28, "label": "CLI-00898 (2% riesgo)"}, {"x": 15.8, "y": 926.46, "label": "CLI-00899 (2% riesgo)"}, {"x": 47.7, "y": 1015.04, "label": "CLI-00904 (4% riesgo)"}, {"x": 19.1, "y": 1377.78, "label": "CLI-00905 (2% riesgo)"}, {"x": 26.4, "y": 1491.86, "label": "CLI-00916 (2% riesgo)"}, {"x": 47.1, "y": 1479.45, "label": "CLI-00919 (4% riesgo)"}, {"x": 40.2, "y": 1251.31, "label": "CLI-00920 (3% riesgo)"}, {"x": 36.7, "y": 1826.12, "label": "CLI-00921 (3% riesgo)"}, {"x": 17.4, "y": 927.39, "label": "CLI-00924 (2% riesgo)"}, {"x": 38.3, "y": 2534.5, "label": "CLI-00938 (3% riesgo)"}, {"x": 11.1, "y": 1033.32, "label": "CLI-00939 (1% riesgo)"}, {"x": 42.8, "y": 1435.32, "label": "CLI-00942 (3% riesgo)"}, {"x": 12.2, "y": 948.59, "label": "CLI-00944 (1% riesgo)"}, {"x": 1.4, "y": 1473.49, "label": "CLI-00945 (1% riesgo)"}, {"x": 20.0, "y": 1170.7, "label": "CLI-00958 (2% riesgo)"}, {"x": 47.2, "y": 827.34, "label": "CLI-00960 (4% riesgo)"}, {"x": 29.2, "y": 1561.87, "label": "CLI-00961 (3% riesgo)"}, {"x": 39.0, "y": 1287.06, "label": "CLI-00964 (3% riesgo)"}, {"x": 21.8, "y": 899.9, "label": "CLI-00968 (2% riesgo)"}, {"x": 19.3, "y": 914.3, "label": "CLI-00970 (2% riesgo)"}, {"x": 27.8, "y": 1034.37, "label": "CLI-00975 (2% riesgo)"}, {"x": 28.7, "y": 827.16, "label": "CLI-00976 (2% riesgo)"}, {"x": 8.6, "y": 1110.34, "label": "CLI-00978 (1% riesgo)"}, {"x": 22.1, "y": 1462.45, "label": "CLI-00986 (2% riesgo)"}, {"x": 35.1, "y": 1550.3, "label": "CLI-00987 (3% riesgo)"}, {"x": 5.3, "y": 854.54, "label": "CLI-00988 (1% riesgo)"}, {"x": 12.3, "y": 965.44, "label": "CLI-00990 (1% riesgo)"}, {"x": 3.2, "y": 1915.11, "label": "CLI-00992 (1% riesgo)"}, {"x": 20.6, "y": 1878.6, "label": "CLI-00996 (2% riesgo)"}, {"x": 43.2, "y": 955.35, "label": "CLI-00997 (3% riesgo)"}, {"x": 17.2, "y": 1661.54, "label": "CLI-01008 (2% riesgo)"}, {"x": 46.8, "y": 1159.53, "label": "CLI-01010 (4% riesgo)"}, {"x": 41.2, "y": 768.45, "label": "CLI-01014 (3% riesgo)"}, {"x": 48.5, "y": 1090.06, "label": "CLI-01015 (4% riesgo)"}, {"x": 3.4, "y": 1198.81, "label": "CLI-01031 (1% riesgo)"}, {"x": 24.2, "y": 2073.52, "label": "CLI-01037 (2% riesgo)"}, {"x": 3.3, "y": 2283.09, "label": "CLI-01039 (1% riesgo)"}, {"x": 40.4, "y": 1890.32, "label": "CLI-01041 (3% riesgo)"}, {"x": 15.7, "y": 849.03, "label": "CLI-01043 (2% riesgo)"}, {"x": 11.5, "y": 1206.32, "label": "CLI-01044 (1% riesgo)"}, {"x": 3.5, "y": 869.75, "label": "CLI-01045 (1% riesgo)"}, {"x": 26.7, "y": 1008.12, "label": "CLI-01051 (2% riesgo)"}, {"x": 28.5, "y": 1223.76, "label": "CLI-01058 (2% riesgo)"}, {"x": 5.0, "y": 1172.66, "label": "CLI-01059 (1% riesgo)"}, {"x": 22.3, "y": 761.1, "label": "CLI-01064 (2% riesgo)"}, {"x": 42.2, "y": 1072.12, "label": "CLI-01069 (3% riesgo)"}, {"x": 23.8, "y": 789.7, "label": "CLI-01073 (2% riesgo)"}, {"x": 14.4, "y": 1473.58, "label": "CLI-01074 (2% riesgo)"}, {"x": 37.8, "y": 1088.99, "label": "CLI-01077 (3% riesgo)"}, {"x": 16.0, "y": 1397.9, "label": "CLI-01078 (2% riesgo)"}, {"x": 25.2, "y": 912.16, "label": "CLI-01079 (2% riesgo)"}, {"x": 46.6, "y": 1038.5, "label": "CLI-01081 (4% riesgo)"}, {"x": 26.8, "y": 1890.47, "label": "CLI-01085 (2% riesgo)"}, {"x": 16.8, "y": 813.93, "label": "CLI-01096 (2% riesgo)"}, {"x": 22.8, "y": 1696.35, "label": "CLI-01097 (2% riesgo)"}, {"x": 4.5, "y": 1523.3, "label": "CLI-01101 (1% riesgo)"}, {"x": 37.5, "y": 873.37, "label": "CLI-01102 (3% riesgo)"}, {"x": 31.1, "y": 765.18, "label": "CLI-01105 (3% riesgo)"}, {"x": 2.1, "y": 2003.09, "label": "CLI-01112 (1% riesgo)"}, {"x": 41.8, "y": 843.37, "label": "CLI-01113 (3% riesgo)"}, {"x": 14.8, "y": 837.79, "label": "CLI-01118 (2% riesgo)"}, {"x": 1.0, "y": 835.49, "label": "CLI-01120 (0% riesgo)"}, {"x": 45.2, "y": 1067.89, "label": "CLI-01123 (4% riesgo)"}, {"x": 18.0, "y": 1127.9, "label": "CLI-01126 (2% riesgo)"}, {"x": 12.9, "y": 861.95, "label": "CLI-01129 (1% riesgo)"}, {"x": 39.2, "y": 846.09, "label": "CLI-01134 (3% riesgo)"}, {"x": 24.9, "y": 1711.36, "label": "CLI-01135 (2% riesgo)"}, {"x": 41.6, "y": 1053.18, "label": "CLI-01144 (3% riesgo)"}, {"x": 20.2, "y": 1307.26, "label": "CLI-01145 (2% riesgo)"}, {"x": 15.4, "y": 805.62, "label": "CLI-01149 (2% riesgo)"}, {"x": 35.5, "y": 1094.26, "label": "CLI-01151 (3% riesgo)"}, {"x": 42.0, "y": 1717.94, "label": "CLI-01152 (3% riesgo)"}, {"x": 46.2, "y": 1650.41, "label": "CLI-01153 (4% riesgo)"}, {"x": 49.6, "y": 1082.51, "label": "CLI-01155 (4% riesgo)"}, {"x": 31.8, "y": 837.44, "label": "CLI-01160 (3% riesgo)"}, {"x": 33.0, "y": 844.64, "label": "CLI-01167 (3% riesgo)"}, {"x": 4.2, "y": 1389.67, "label": "CLI-01170 (1% riesgo)"}, {"x": 1.8, "y": 1672.94, "label": "CLI-01171 (1% riesgo)"}, {"x": 17.9, "y": 852.48, "label": "CLI-01172 (2% riesgo)"}, {"x": 11.0, "y": 1128.69, "label": "CLI-01175 (1% riesgo)"}, {"x": 19.8, "y": 1663.01, "label": "CLI-01176 (2% riesgo)"}, {"x": 5.2, "y": 899.59, "label": "CLI-01181 (1% riesgo)"}, {"x": 1.2, "y": 800.01, "label": "CLI-01183 (1% riesgo)"}, {"x": 38.8, "y": 1603.46, "label": "CLI-01185 (3% riesgo)"}, {"x": 7.8, "y": 2387.38, "label": "CLI-01195 (1% riesgo)"}, {"x": 37.2, "y": 1241.64, "label": "CLI-01197 (3% riesgo)"}, {"x": 46.0, "y": 989.47, "label": "CLI-01199 (4% riesgo)"}, {"x": 4.0, "y": 985.3, "label": "CLI-01200 (1% riesgo)"}],
+            backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 0.55),
+            borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
+            pointRadius: 4,
+            pointHoverRadius: 6,
+        }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', align: 'start',
+                       labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+            tooltip: {
+              backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+              borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+              callbacks: {
+                label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)} pct, ${ctx.parsed.y.toFixed(1)} MXN`
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: "Riesgo relativo de churn (percentil)", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
+            y: { title: { display: true, text: "Gasto mensual (MXN)", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
+          }
+        },
+        plugins: [{
+          id: 'quadrantOverlay_chart_matriz',
+          afterDraw: (chartInstance) => {
+            const { ctx, chartArea } = chartInstance;
+            if (!chartArea) return;
+            const { left, right, top, bottom } = chartArea;
+            const scales = chartInstance.scales;
+            ctx.save();
+            if (quadrantLines_chart_matriz) {
+              ctx.strokeStyle = withAlpha(inkColor('grid'), 0.55);
+              ctx.setLineDash([4, 4]);
+              ctx.lineWidth = 1;
+              if (quadrantLines_chart_matriz.x !== undefined && quadrantLines_chart_matriz.x !== null) {
+                const xPix = scales.x.getPixelForValue(quadrantLines_chart_matriz.x);
+                ctx.beginPath(); ctx.moveTo(xPix, top); ctx.lineTo(xPix, bottom); ctx.stroke();
+              }
+              if (quadrantLines_chart_matriz.y !== undefined && quadrantLines_chart_matriz.y !== null) {
+                const yPix = scales.y.getPixelForValue(quadrantLines_chart_matriz.y);
+                ctx.beginPath(); ctx.moveTo(left, yPix); ctx.lineTo(right, yPix); ctx.stroke();
+              }
+              ctx.setLineDash([]);
+            }
+            if (quadrantLabels_chart_matriz.length) {
+              ctx.font = '700 10px -apple-system, sans-serif';
+              ctx.fillStyle = withAlpha(inkColor('muted'), 0.95);
+              const pad = 10;
+              quadrantLabels_chart_matriz.forEach((q) => {
+                let x, y, align;
+                if (q.corner === 'top-left') { x = left + pad; y = top + pad + 9; align = 'left'; }
+                else if (q.corner === 'top-right') { x = right - pad; y = top + pad + 9; align = 'right'; }
+                else if (q.corner === 'bottom-left') { x = left + pad; y = bottom - pad; align = 'left'; }
+                else { x = right - pad; y = bottom - pad; align = 'right'; }
+                ctx.textAlign = align;
+                ctx.fillText(q.text, x, y);
+              });
+            }
+            ctx.restore();
+          }
+        }]
+      });
+    })();
+    
+
+    new Chart(document.getElementById('chart_importance').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["Score de uso del producto", "Antigüedad (meses)", "Gasto mensual", "Tickets de soporte (90d)", "Contrato mensual (vs. anual)", "Días sin actividad"],
+        datasets: [{
+            label: "Efecto en el riesgo",
+            data: [-0.58, -0.3, -0.07, 0.28, 0.44, 0.69],
+            valueLabels: null,
+            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.85),
+            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_pyramid').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["$3,600-4,000", "$3,200-3,600", "$2,800-3,200", "$2,400-2,800", "$2,000-2,400", "$1,600-2,000", "$1,200-1,600", "$800-1,200", "$400-800", "$0-400"],
+        datasets: [{
+            label: "Base estable",
+            data: [0, 0, 0, 0, 0, 0, 0, 0, -206, -88],
+            valueLabels: null,
+            backgroundColor: "#9CB8B4",
+            borderColor: "#9CB8B4",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Clientes ancla",
+            data: [0, 0, -1, -3, -13, -44, -68, -156, -20, 0],
+            valueLabels: null,
+            backgroundColor: "#3E8F72",
+            borderColor: "#3E8F72",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Riesgo menor",
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 188, 118],
+            valueLabels: null,
+            backgroundColor: "#8C5A1E",
+            borderColor: "#8C5A1E",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Rescate prioritario",
+            data: [1, 1, 2, 2, 15, 26, 70, 153, 25, 0],
+            valueLabels: null,
+            backgroundColor: "#d03b3b",
+            borderColor: "#d03b3b",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: ${Math.abs(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y'])} clientes` } }
+        },
+        scales: {
+          y: { stacked: true, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          x: {
+            stacked: true,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted'), callback: (v) => Math.abs(v) },
+            title: { display: true, text: "Clientes", color: inkColor('secondary') }, suggestedMax: 237.3, suggestedMin: -237.3
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_hist_usage').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["0-10", "10-20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80-90", "90-100"],
+        datasets: [{
+            label: "Rescate prioritario",
+            data: [0, 9, 18, 39, 61, 69, 47, 36, 11, 5],
+            valueLabels: null,
+            backgroundColor: "#d03b3b",
+            borderColor: "#d03b3b",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Riesgo menor",
+            data: [1, 5, 23, 38, 58, 81, 61, 20, 14, 5],
+            valueLabels: null,
+            backgroundColor: "#8C5A1E",
+            borderColor: "#8C5A1E",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Clientes ancla",
+            data: [0, 0, 2, 13, 11, 35, 69, 83, 35, 57],
+            valueLabels: null,
+            backgroundColor: "#3E8F72",
+            borderColor: "#3E8F72",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Base estable",
+            data: [0, 0, 1, 8, 23, 37, 68, 62, 52, 43],
+            valueLabels: null,
+            backgroundColor: "#9CB8B4",
+            borderColor: "#9CB8B4",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: true,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Clientes", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_hist_antiguedad').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["0-6", "6-12", "12-18", "18-24", "24-30", "30-36", "36-42", "42-48", "48-54", "54-60"],
+        datasets: [{
+            label: "Rescate prioritario",
+            data: [69, 96, 48, 37, 18, 10, 13, 2, 2, 0],
+            valueLabels: null,
+            backgroundColor: "#d03b3b",
+            borderColor: "#d03b3b",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Riesgo menor",
+            data: [57, 85, 71, 48, 26, 8, 6, 3, 2, 0],
+            valueLabels: null,
+            backgroundColor: "#8C5A1E",
+            borderColor: "#8C5A1E",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Clientes ancla",
+            data: [35, 52, 57, 58, 38, 24, 13, 7, 7, 14],
+            valueLabels: null,
+            backgroundColor: "#3E8F72",
+            borderColor: "#3E8F72",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Base estable",
+            data: [35, 58, 49, 53, 30, 20, 19, 12, 9, 9],
+            valueLabels: null,
+            backgroundColor: "#9CB8B4",
+            borderColor: "#9CB8B4",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: true,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Clientes", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_hist_gasto').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["$0-400", "$400-800", "$800-1,200", "$1,200-1,600", "$1,600-2,000", "$2,000-2,400", "$2,400-2,800", "$2,800-3,200", "$3,200-3,600", "$3,600-4,000"],
+        datasets: [{
+            label: "Rescate prioritario",
+            data: [0, 25, 153, 70, 26, 15, 2, 2, 1, 1],
+            valueLabels: null,
+            backgroundColor: "#d03b3b",
+            borderColor: "#d03b3b",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Riesgo menor",
+            data: [118, 188, 0, 0, 0, 0, 0, 0, 0, 0],
+            valueLabels: null,
+            backgroundColor: "#8C5A1E",
+            borderColor: "#8C5A1E",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Clientes ancla",
+            data: [0, 20, 156, 68, 44, 13, 3, 1, 0, 0],
+            valueLabels: null,
+            backgroundColor: "#3E8F72",
+            borderColor: "#3E8F72",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Base estable",
+            data: [88, 206, 0, 0, 0, 0, 0, 0, 0, 0],
+            valueLabels: null,
+            backgroundColor: "#9CB8B4",
+            borderColor: "#9CB8B4",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: true,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Clientes", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_hist_tickets').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["0", "1", "2", "3", "4", "5"],
+        datasets: [{
+            label: "Rescate prioritario",
+            data: [85, 88, 80, 33, 8, 1],
+            valueLabels: null,
+            backgroundColor: "#d03b3b",
+            borderColor: "#d03b3b",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Riesgo menor",
+            data: [95, 110, 62, 27, 11, 1],
+            valueLabels: null,
+            backgroundColor: "#8C5A1E",
+            borderColor: "#8C5A1E",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Clientes ancla",
+            data: [123, 117, 45, 15, 5, 0],
+            valueLabels: null,
+            backgroundColor: "#3E8F72",
+            borderColor: "#3E8F72",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Base estable",
+            data: [115, 118, 50, 8, 3, 0],
+            valueLabels: null,
+            backgroundColor: "#9CB8B4",
+            borderColor: "#9CB8B4",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: true,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Clientes", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_hist_contrato').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["Mensual", "Anual"],
+        datasets: [{
+            label: "Rescate prioritario",
+            data: [243, 52],
+            valueLabels: null,
+            backgroundColor: "#d03b3b",
+            borderColor: "#d03b3b",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Riesgo menor",
+            data: [245, 61],
+            valueLabels: null,
+            backgroundColor: "#8C5A1E",
+            borderColor: "#8C5A1E",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Clientes ancla",
+            data: [160, 145],
+            valueLabels: null,
+            backgroundColor: "#3E8F72",
+            borderColor: "#3E8F72",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Base estable",
+            data: [139, 155],
+            valueLabels: null,
+            backgroundColor: "#9CB8B4",
+            borderColor: "#9CB8B4",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: true,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Clientes", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_hist_actividad').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["0-20", "20-40", "40-60", "60-80", "80-100", "100-120", "120-140", "140-160", "160-180"],
+        datasets: [{
+            label: "Rescate prioritario",
+            data: [143, 98, 33, 17, 3, 0, 1],
+            valueLabels: null,
+            backgroundColor: "#d03b3b",
+            borderColor: "#d03b3b",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Riesgo menor",
+            data: [150, 97, 39, 11, 8, 1, 0],
+            valueLabels: null,
+            backgroundColor: "#8C5A1E",
+            borderColor: "#8C5A1E",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Clientes ancla",
+            data: [260, 41, 4, 0, 0, 0, 0],
+            valueLabels: null,
+            backgroundColor: "#3E8F72",
+            borderColor: "#3E8F72",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Base estable",
+            data: [252, 37, 5, 0, 0, 0, 0],
+            valueLabels: null,
+            backgroundColor: "#9CB8B4",
+            borderColor: "#9CB8B4",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: true,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Clientes", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+</script>
+</body>
+</html>
