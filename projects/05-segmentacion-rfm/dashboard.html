@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XIA · Segmentación RFM y Priorización Comercial</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --brand-ink: #163832;
+    --brand-cream: #F6EFE1;
+    --gold: #B8842C;
+    --surface: #FFFFFF;
+    --page: #F6EFE1;
+    --text-primary: #163832;
+    --text-secondary: #4A625D;
+    --text-muted: #7E948F;
+    --grid: rgba(22,56,50,0.15);
+    --border: rgba(22,56,50,0.12);
+    --accent: #71A8A3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface: #163832;
+      --page: #0E1F1B;
+      --text-primary: #F6EFE1;
+      --text-secondary: #C7D9D5;
+      --text-muted: #8FA8A3;
+      --grid: rgba(246,239,225,0.14);
+      --border: rgba(246,239,225,0.12);
+      --accent: #8FC2BC;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #163832;
+    --page: #0E1F1B;
+    --text-primary: #F6EFE1;
+    --text-secondary: #C7D9D5;
+    --text-muted: #8FA8A3;
+    --grid: rgba(246,239,225,0.14);
+    --border: rgba(246,239,225,0.12);
+    --accent: #8FC2BC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--text-primary);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    padding: 32px 20px 60px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brand .mark { width:28px; height:28px; border-radius:7px; background: var(--brand-ink);
+                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px; }
+  .brand span { color: var(--text-muted); font-size:13px; letter-spacing: .04em; text-transform: uppercase; }
+  header.page-head { margin-bottom: 28px; }
+  header.page-head .tag { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  header.page-head h1 { font-size: 26px; margin: 0 0 8px; }
+  header.page-head p.tagline { color: var(--text-secondary); font-size: 15px; max-width: 720px; margin: 0; line-height:1.5; }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .top-row { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 14px; margin-bottom: 28px; align-items: stretch; }
+  .hero-widget { background: var(--surface); border: 1px solid var(--gold); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; }
+  .hero-widget .hero-value { color: var(--gold); }
+  .hero-chart-wrap { position: relative; flex: 1; min-height: 130px; margin-top: 12px; }
+  .kpi-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 1fr; gap: 14px; }
+  .kpi-grid-5 .kpi-card { padding: 12px 14px; }
+  .kpi-grid-5 .kpi-label { font-size: 10.5px; }
+  .kpi-grid-5 .kpi-value { font-size: 18px; }
+  @media (max-width: 860px) {
+    .top-row { grid-template-columns: 1fr; }
+    .kpi-grid-5 { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .kpi-grid-5 { grid-template-columns: repeat(2, 1fr); }
+    .drilldown-grid { grid-template-columns: 1fr !important; }
+  }
+  .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; position: relative; }
+  .kpi-hero { border: 1px solid var(--gold); }
+  .kpi-hero .kpi-value { color: var(--gold); }
+  .kpi-label { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 600; }
+  .kpi-delta { font-size: 13px; margin-top: 4px; font-weight: 600; }
+  .delta-up { color: #2f6e57; }
+  .delta-down { color: #d03b3b; }
+  .kpi-badge { display:inline-block; margin-top:8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+                letter-spacing: .03em; padding: 3px 8px; border-radius: 999px; }
+  .kpi-good { background: rgba(62,143,114,0.16); color: #2f6e57; }
+  .kpi-warning { background: rgba(184,132,44,0.18); color: #8c6220; }
+  .kpi-serious { background: rgba(140,90,30,0.18); color: #6b4517; }
+  .kpi-critical { background: rgba(208,59,59,0.14); color: #d03b3b; }
+  .minto-banner { background: var(--surface); border: 1px solid var(--border); border-left: 5px solid var(--gold);
+                   border-radius: 10px; padding: 18px 22px; margin-bottom: 22px; }
+  .minto-banner .minto-label { margin: 0 0 6px; color: var(--gold); font-size: 12px; font-weight: 700;
+                                 text-transform: uppercase; letter-spacing: .06em; }
+  .minto-banner h2 { margin: 0 0 8px; font-size: 21px; line-height: 1.35; color: var(--text-primary); }
+  .minto-banner p.minto-sub { margin: 0; color: var(--text-secondary); font-size: 14px; line-height: 1.55; max-width: 780px; }
+  .checklist-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+                      padding: 18px 22px; margin-bottom: 22px; }
+  .checklist-card h3 { margin: 0 0 2px; font-size: 16px; }
+  .checklist-card p.checklist-sub { margin: 0 0 14px; color: var(--text-muted); font-size: 13px; }
+  .checklist-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .progress-bar { flex: 1; max-width: 320px; height: 8px; border-radius: 999px; background: var(--grid); overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .2s ease; }
+  .checklist-progress span { color: var(--text-secondary); font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .checklist-table-wrap { overflow-x: auto; }
+  table.checklist-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.checklist-table th, table.checklist-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  table.checklist-table th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  table.checklist-table td.check-col { width: 30px; }
+  table.checklist-table input.xia-check { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+  table.checklist-table tr.done td { color: var(--text-muted); text-decoration: line-through; opacity: .7; }
+  table.checklist-table tr.done td.check-col { text-decoration: none; }
+  .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 26px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .chart-card-wide { grid-column: 1 / -1; }
+  .chart-head h3 { margin: 0 0 2px; font-size: 15px; }
+  .chart-head p { margin: 0 0 12px; color: var(--text-muted); font-size: 12.5px; }
+  .chart-canvas-wrap { position: relative; height: 280px; }
+  .section-label { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; }
+  .drilldown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 26px; }
+  .drilldown-grid .chart-card { padding: 14px 16px; }
+  .drilldown-grid .chart-head h3 { font-size: 13.5px; }
+  .drilldown-grid .chart-head p { margin: 0 0 8px; font-size: 11.5px; }
+  .drilldown-grid .chart-canvas-wrap { height: 190px; }
+  .insights-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 22px; }
+  .insights-card h3 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+  ul.insights { margin: 0; padding-left: 18px; color: var(--text-secondary); line-height: 1.65; font-size: 14.5px; }
+  ul.insights li::marker { color: var(--accent); }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 22px; }
+  .table-wrap summary { cursor: pointer; color: var(--text-secondary); font-size: 13.5px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  footer { color: var(--text-muted); font-size: 12px; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 16px; }
+  footer a { color: var(--text-primary); text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="mark">X</div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
+  <header class="page-head">
+    <div class="tag">Proyecto 05 · Portafolio de demostración</div>
+    <h1>Segmentación RFM y Priorización Comercial</h1>
+    <p class="tagline">No todos los clientes valen el mismo esfuerzo — la matriz de 4 cuadrantes dice a quién llamar hoy y a quién dejar de perseguir.</p>
+  </header>
+
+  
+    <div class="minto-banner">
+      <p class="minto-label">Esta semana</p>
+      <h2>40 llamadas de reactivación prioritaria — $367,789 MXN en valor histórico en juego</h2>
+      <p class="minto-sub">Ordenadas por valor histórico, 8 por día de lunes a viernes: empieza el lunes por el cliente que más ha gastado. Quedan 78 clientes en cola ($315,873 MXN adicionales) para la próxima semana.</p>
+    </div>
+    
+
+  <div class="kpi-row">
+    
+        <div class="kpi-card">
+          <div class="kpi-label">Clientes analizados</div>
+          <div class="kpi-value">600</div>
+          
+          
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Valor histórico total</div>
+          <div class="kpi-value">$4,352,269 MXN</div>
+          
+          
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Campeones</div>
+          <div class="kpi-value">183 clientes</div>
+          
+          <span class="kpi-badge kpi-good">good</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Valor en riesgo de fuga</div>
+          <div class="kpi-value">$683,662 MXN</div>
+          
+          <span class="kpi-badge kpi-critical">critical</span>
+        </div>
+  </div>
+
+  
+    <div class="table-wrap table-wrap-open">
+      <p class="section-label">Resumen por cuadrante</p>
+      <table>
+        <thead><tr><th>Cuadrante</th><th>Clientes</th><th>Valor promedio</th><th>Valor total</th><th>Acción recomendada</th></tr></thead>
+        <tbody><tr><td>Campeones</td><td>183</td><td>$19,054</td><td>$3,486,957</td><td>Programa VIP / referidos — proteger y convertir en embajadores.</td></tr>
+<tr><td>En riesgo</td><td>118</td><td>$5,794</td><td>$683,662</td><td>Contacto proactivo esta semana — compraban bien y se están yendo.</td></tr>
+<tr><td>Nuevos / Prometedores</td><td>117</td><td>$662</td><td>$77,425</td><td>Onboarding y segunda compra — el momento crítico de retención.</td></tr>
+<tr><td>Hibernando</td><td>182</td><td>$573</td><td>$104,224</td><td>Campaña de reactivación de bajo costo o descontinuar inversión de marketing.</td></tr>
+</tbody>
+      </table>
+    </div>
+    
+
+  <div class="charts-grid">
+    
+    <div class="chart-card chart-card-wide">
+      <div class="chart-head">
+        <h3>Matriz recencia x valor: qué acción corresponde a cada cliente</h3>
+        <p>600 clientes — días desde última compra vs. percentil de valor histórico, divididos en la mediana de cada eje</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_matriz"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Clientes por cuadrante</h3>
+        <p>Tamaño de cada grupo de acción</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_seg_count"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Valor histórico total por cuadrante</h3>
+        <p>MXN acumulados en los últimos 12 meses</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_seg_value"></canvas>
+      </div>
+    </div>
+    
+  </div>
+
+  <div>
+    <p class="section-label">Recencia, Frecuencia y Valor cruzados de a pares</p>
+    <div class="drilldown-grid">
+      
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Recencia vs. Frecuencia</h3>
+        <p>Días desde última compra vs. número de compras</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_rf"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Frecuencia vs. Valor histórico</h3>
+        <p>Número de compras vs. percentil de valor histórico</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_fv"></canvas>
+      </div>
+    </div>
+    
+    </div>
+  </div>
+
+  <div class="insights-card">
+    <h3>Lo que dice el dato</h3>
+    <ul class="insights"><li>El plan prioriza valor histórico dentro de "En riesgo": llamar primero al cliente de mayor gasto cada día protege el valor más grande con el mismo esfuerzo de llamada, en vez de contactar en el orden en que aparecen.</li>
+<li><b>En riesgo</b> (118 clientes) concentra $683,662 MXN de valor histórico que se puede perder si no hay contacto proactivo — son clientes que ya demostraron que gastan, solo dejaron de comprar.</li>
+<li><b>Hibernando</b> (182 clientes, bajo valor y sin actividad reciente) no debería recibir el mismo presupuesto de marketing que Campeones o Nuevos — la matriz evita gastar igual en todos.</li>
+<li>Cada cuadrante tiene una sola acción comercial asociada (columna de la tabla) — la matriz solo vale si esa acción se ejecuta distinto por grupo, no si termina tratándose a todos igual.</li></ul>
+  </div>
+
+  
+
+  
+    <div class="checklist-card">
+      <h3>Plan de llamadas de esta semana</h3>
+      <p class="checklist-sub">40 clientes de "En riesgo" repartidos en 5 días (8/día). Marca cada uno al contactarlo — el progreso se guarda en este navegador.</p>
+      <div class="checklist-progress">
+        <div class="progress-bar"><div class="progress-fill" id="riesgo_semana-fill" style="width:0%"></div></div>
+        <span id="riesgo_semana-count">0 / 40 contactados</span>
+      </div>
+      <div class="checklist-table-wrap">
+        <table class="checklist-table">
+          <thead><tr><th></th><th>Día</th><th>Cliente</th><th>Valor histórico</th><th>Compras</th><th>Última compra hace</th></tr></thead>
+          <tbody><tr data-row="C-0050"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0050"></td><td>Lunes</td><td>C-0050</td><td>$29,765</td><td>28</td><td>61 días</td></tr><tr data-row="C-0081"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0081"></td><td>Lunes</td><td>C-0081</td><td>$16,288</td><td>25</td><td>60 días</td></tr><tr data-row="C-0096"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0096"></td><td>Lunes</td><td>C-0096</td><td>$15,570</td><td>19</td><td>64 días</td></tr><tr data-row="C-0066"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0066"></td><td>Lunes</td><td>C-0066</td><td>$13,556</td><td>23</td><td>76 días</td></tr><tr data-row="C-0088"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0088"></td><td>Lunes</td><td>C-0088</td><td>$13,555</td><td>18</td><td>76 días</td></tr><tr data-row="C-0105"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0105"></td><td>Lunes</td><td>C-0105</td><td>$12,375</td><td>20</td><td>78 días</td></tr><tr data-row="C-0148"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0148"></td><td>Lunes</td><td>C-0148</td><td>$11,538</td><td>16</td><td>61 días</td></tr><tr data-row="C-0115"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0115"></td><td>Lunes</td><td>C-0115</td><td>$11,509</td><td>16</td><td>56 días</td></tr><tr data-row="C-0182"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0182"></td><td>Martes</td><td>C-0182</td><td>$11,416</td><td>13</td><td>121 días</td></tr><tr data-row="C-0209"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0209"></td><td>Martes</td><td>C-0209</td><td>$10,728</td><td>12</td><td>215 días</td></tr><tr data-row="C-0196"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0196"></td><td>Martes</td><td>C-0196</td><td>$10,479</td><td>12</td><td>128 días</td></tr><tr data-row="C-0184"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0184"></td><td>Martes</td><td>C-0184</td><td>$9,954</td><td>8</td><td>143 días</td></tr><tr data-row="C-0194"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0194"></td><td>Martes</td><td>C-0194</td><td>$8,622</td><td>9</td><td>123 días</td></tr><tr data-row="C-0126"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0126"></td><td>Martes</td><td>C-0126</td><td>$8,351</td><td>18</td><td>60 días</td></tr><tr data-row="C-0222"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0222"></td><td>Martes</td><td>C-0222</td><td>$8,246</td><td>7</td><td>184 días</td></tr><tr data-row="C-0251"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0251"></td><td>Martes</td><td>C-0251</td><td>$8,048</td><td>8</td><td>197 días</td></tr><tr data-row="C-0256"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0256"></td><td>Miércoles</td><td>C-0256</td><td>$7,699</td><td>6</td><td>193 días</td></tr><tr data-row="C-0205"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0205"></td><td>Miércoles</td><td>C-0205</td><td>$7,669</td><td>8</td><td>145 días</td></tr><tr data-row="C-0112"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0112"></td><td>Miércoles</td><td>C-0112</td><td>$7,667</td><td>13</td><td>147 días</td></tr><tr data-row="C-0267"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0267"></td><td>Miércoles</td><td>C-0267</td><td>$7,535</td><td>8</td><td>178 días</td></tr><tr data-row="C-0240"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0240"></td><td>Miércoles</td><td>C-0240</td><td>$7,529</td><td>9</td><td>190 días</td></tr><tr data-row="C-0203"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0203"></td><td>Miércoles</td><td>C-0203</td><td>$7,494</td><td>6</td><td>198 días</td></tr><tr data-row="C-0130"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0130"></td><td>Miércoles</td><td>C-0130</td><td>$7,475</td><td>13</td><td>66 días</td></tr><tr data-row="C-0252"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0252"></td><td>Miércoles</td><td>C-0252</td><td>$7,393</td><td>6</td><td>202 días</td></tr><tr data-row="C-0082"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0082"></td><td>Jueves</td><td>C-0082</td><td>$7,089</td><td>15</td><td>83 días</td></tr><tr data-row="C-0190"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0190"></td><td>Jueves</td><td>C-0190</td><td>$7,052</td><td>9</td><td>208 días</td></tr><tr data-row="C-0207"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0207"></td><td>Jueves</td><td>C-0207</td><td>$7,035</td><td>8</td><td>113 días</td></tr><tr data-row="C-0197"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0197"></td><td>Jueves</td><td>C-0197</td><td>$6,958</td><td>10</td><td>137 días</td></tr><tr data-row="C-0273"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0273"></td><td>Jueves</td><td>C-0273</td><td>$6,898</td><td>6</td><td>240 días</td></tr><tr data-row="C-0277"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0277"></td><td>Jueves</td><td>C-0277</td><td>$6,892</td><td>6</td><td>225 días</td></tr><tr data-row="C-0181"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0181"></td><td>Jueves</td><td>C-0181</td><td>$6,849</td><td>9</td><td>165 días</td></tr><tr data-row="C-0241"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0241"></td><td>Jueves</td><td>C-0241</td><td>$6,721</td><td>7</td><td>112 días</td></tr><tr data-row="C-0185"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0185"></td><td>Viernes</td><td>C-0185</td><td>$6,636</td><td>7</td><td>177 días</td></tr><tr data-row="C-0188"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0188"></td><td>Viernes</td><td>C-0188</td><td>$6,628</td><td>6</td><td>223 días</td></tr><tr data-row="C-0216"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0216"></td><td>Viernes</td><td>C-0216</td><td>$6,616</td><td>9</td><td>154 días</td></tr><tr data-row="C-0245"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0245"></td><td>Viernes</td><td>C-0245</td><td>$6,538</td><td>8</td><td>138 días</td></tr><tr data-row="C-0234"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0234"></td><td>Viernes</td><td>C-0234</td><td>$6,436</td><td>7</td><td>177 días</td></tr><tr data-row="C-0212"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0212"></td><td>Viernes</td><td>C-0212</td><td>$6,402</td><td>7</td><td>112 días</td></tr><tr data-row="C-0162"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0162"></td><td>Viernes</td><td>C-0162</td><td>$6,291</td><td>11</td><td>57 días</td></tr><tr data-row="C-0265"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="riesgo_semana" data-row="C-0265"></td><td>Viernes</td><td>C-0265</td><td>$6,287</td><td>8</td><td>242 días</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    
+
+  <footer>
+    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
+  </footer>
+</div>
+
+<script>
+function isDark() {
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t === 'dark') return true;
+  if (t === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function withAlpha(hex, alpha) {
+  if (alpha >= 1) return hex;
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function seriesColor(i, light, dark, alpha) {
+  const hex = isDark() ? dark : light;
+  return withAlpha(hex, alpha);
+}
+function seriesColorHex(light, dark) { return isDark() ? dark : light; }
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function inkColor(role) {
+  return { primary: cssVar('--text-primary'), secondary: cssVar('--text-secondary'),
+            muted: cssVar('--text-muted'), grid: cssVar('--grid') }[role];
+}
+function surfaceColor() { return cssVar('--surface'); }
+
+
+    (function() {
+      const scopeId = "riesgo_semana";
+      const total = 40;
+      const storageKey = 'xia_checklist_' + scopeId;
+      let state = {};
+      try { state = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (e) {}
+      const boxes = document.querySelectorAll(`input.xia-check[data-scope="${scopeId}"]`);
+      function updateProgress() {
+        const checked = document.querySelectorAll(`input.xia-check[data-scope="${scopeId}"]:checked`).length;
+        const fill = document.getElementById(scopeId + '-fill');
+        const count = document.getElementById(scopeId + '-count');
+        if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
+        if (count) count.textContent = `${checked} / ${total} ${"contactados"}`;
+      }
+      boxes.forEach((b) => {
+        const rowId = b.dataset.row;
+        if (state[rowId]) {
+          b.checked = true;
+          const tr = b.closest('tr');
+          if (tr) tr.classList.add('done');
+        }
+        b.addEventListener('change', () => {
+          state[rowId] = b.checked;
+          try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch (e) {}
+          const tr = b.closest('tr');
+          if (tr) tr.classList.toggle('done', b.checked);
+          updateProgress();
+        });
+      });
+      updateProgress();
+    })();
+    
+
+    (function() {
+      const quadrantLines_chart_matriz = {"x": 55.5, "y": 50.0};
+      const quadrantLabels_chart_matriz = [{"corner": "top-left", "text": "CAMPEONES"}, {"corner": "top-right", "text": "EN RIESGO"}, {"corner": "bottom-left", "text": "NUEVOS"}, {"corner": "bottom-right", "text": "HIBERNANDO"}];
+      new Chart(document.getElementById('chart_matriz').getContext('2d'), {
+        type: 'scatter',
+        data: { datasets: [{
+            label: "Campeones",
+            data: [{"x": 12, "y": 92.7, "label": "C-0001 · $32,161 MXN · 33 compras"}, {"x": 37, "y": 98.5, "label": "C-0002 · $42,665 MXN · 40 compras"}, {"x": 12, "y": 99.8, "label": "C-0003 · $50,245 MXN · 45 compras"}, {"x": 35, "y": 96.7, "label": "C-0004 · $39,032 MXN · 38 compras"}, {"x": 13, "y": 97.8, "label": "C-0005 · $41,661 MXN · 49 compras"}, {"x": 10, "y": 96.3, "label": "C-0006 · $37,947 MXN · 47 compras"}, {"x": 22, "y": 96.0, "label": "C-0007 · $37,393 MXN · 35 compras"}, {"x": 11, "y": 94.2, "label": "C-0008 · $35,675 MXN · 39 compras"}, {"x": 15, "y": 97.2, "label": "C-0009 · $40,481 MXN · 37 compras"}, {"x": 24, "y": 91.7, "label": "C-0010 · $28,915 MXN · 33 compras"}, {"x": 6, "y": 94.3, "label": "C-0011 · $35,724 MXN · 39 compras"}, {"x": 9, "y": 99.5, "label": "C-0012 · $46,266 MXN · 51 compras"}, {"x": 7, "y": 93.8, "label": "C-0013 · $33,811 MXN · 42 compras"}, {"x": 18, "y": 94.7, "label": "C-0014 · $36,383 MXN · 36 compras"}, {"x": 2, "y": 99.2, "label": "C-0015 · $44,592 MXN · 42 compras"}, {"x": 25, "y": 96.8, "label": "C-0016 · $39,787 MXN · 41 compras"}, {"x": 16, "y": 91.2, "label": "C-0017 · $27,313 MXN · 30 compras"}, {"x": 4, "y": 93.7, "label": "C-0018 · $33,505 MXN · 40 compras"}, {"x": 12, "y": 91.5, "label": "C-0019 · $28,684 MXN · 30 compras"}, {"x": 12, "y": 99.3, "label": "C-0020 · $45,126 MXN · 40 compras"}, {"x": 10, "y": 92.5, "label": "C-0021 · $31,174 MXN · 34 compras"}, {"x": 26, "y": 97.0, "label": "C-0022 · $39,853 MXN · 43 compras"}, {"x": 13, "y": 92.8, "label": "C-0023 · $32,193 MXN · 34 compras"}, {"x": 29, "y": 93.5, "label": "C-0024 · $33,354 MXN · 32 compras"}, {"x": 10, "y": 93.2, "label": "C-0025 · $32,421 MXN · 35 compras"}, {"x": 5, "y": 91.0, "label": "C-0026 · $27,217 MXN · 31 compras"}, {"x": 28, "y": 94.0, "label": "C-0027 · $34,537 MXN · 38 compras"}, {"x": 23, "y": 94.5, "label": "C-0028 · $36,151 MXN · 34 compras"}, {"x": 4, "y": 95.0, "label": "C-0029 · $36,550 MXN · 36 compras"}, {"x": 14, "y": 90.3, "label": "C-0030 · $23,672 MXN · 26 compras"}, {"x": 5, "y": 96.5, "label": "C-0031 · $38,929 MXN · 40 compras"}, {"x": 4, "y": 89.8, "label": "C-0032 · $21,524 MXN · 25 compras"}, {"x": 10, "y": 95.3, "label": "C-0033 · $36,697 MXN · 38 compras"}, {"x": 13, "y": 99.0, "label": "C-0034 · $44,248 MXN · 42 compras"}, {"x": 27, "y": 95.7, "label": "C-0035 · $36,844 MXN · 40 compras"}, {"x": 33, "y": 96.2, "label": "C-0036 · $37,919 MXN · 39 compras"}, {"x": 6, "y": 99.7, "label": "C-0037 · $46,516 MXN · 43 compras"}, {"x": 24, "y": 95.5, "label": "C-0038 · $36,802 MXN · 40 compras"}, {"x": 26, "y": 92.2, "label": "C-0039 · $30,172 MXN · 33 compras"}, {"x": 10, "y": 95.2, "label": "C-0040 · $36,678 MXN · 32 compras"}, {"x": 12, "y": 98.7, "label": "C-0041 · $42,985 MXN · 45 compras"}, {"x": 26, "y": 95.8, "label": "C-0042 · $37,000 MXN · 43 compras"}, {"x": 11, "y": 92.0, "label": "C-0043 · $29,857 MXN · 37 compras"}, {"x": 10, "y": 98.3, "label": "C-0044 · $42,540 MXN · 38 compras"}, {"x": 28, "y": 97.3, "label": "C-0045 · $40,765 MXN · 42 compras"}, {"x": 17, "y": 98.0, "label": "C-0046 · $41,781 MXN · 39 compras"}, {"x": 14, "y": 90.7, "label": "C-0047 · $25,977 MXN · 32 compras"}, {"x": 14, "y": 98.2, "label": "C-0048 · $42,012 MXN · 42 compras"}, {"x": 17, "y": 93.3, "label": "C-0049 · $32,801 MXN · 37 compras"}, {"x": 11, "y": 98.8, "label": "C-0051 · $43,208 MXN · 45 compras"}, {"x": 17, "y": 90.2, "label": "C-0052 · $23,568 MXN · 31 compras"}, {"x": 19, "y": 91.3, "label": "C-0053 · $27,535 MXN · 33 compras"}, {"x": 9, "y": 97.7, "label": "C-0054 · $41,569 MXN · 40 compras"}, {"x": 14, "y": 100.0, "label": "C-0055 · $54,368 MXN · 59 compras"}, {"x": 3, "y": 92.3, "label": "C-0056 · $30,227 MXN · 34 compras"}, {"x": 9, "y": 90.8, "label": "C-0057 · $26,295 MXN · 34 compras"}, {"x": 40, "y": 94.8, "label": "C-0058 · $36,473 MXN · 41 compras"}, {"x": 9, "y": 97.5, "label": "C-0059 · $41,473 MXN · 41 compras"}, {"x": 37, "y": 93.0, "label": "C-0060 · $32,343 MXN · 33 compras"}, {"x": 7, "y": 79.3, "label": "C-0061 · $11,649 MXN · 19 compras"}, {"x": 30, "y": 66.2, "label": "C-0062 · $6,233 MXN · 10 compras"}, {"x": 33, "y": 74.7, "label": "C-0063 · $9,437 MXN · 14 compras"}, {"x": 11, "y": 79.8, "label": "C-0064 · $11,769 MXN · 22 compras"}, {"x": 2, "y": 80.8, "label": "C-0065 · $12,060 MXN · 25 compras"}, {"x": 26, "y": 82.3, "label": "C-0067 · $12,805 MXN · 23 compras"}, {"x": 8, "y": 85.8, "label": "C-0068 · $14,190 MXN · 26 compras"}, {"x": 38, "y": 81.5, "label": "C-0069 · $12,310 MXN · 23 compras"}, {"x": 6, "y": 84.2, "label": "C-0070 · $13,450 MXN · 17 compras"}, {"x": 15, "y": 76.7, "label": "C-0071 · $10,907 MXN · 20 compras"}, {"x": 19, "y": 79.0, "label": "C-0072 · $11,600 MXN · 20 compras"}, {"x": 21, "y": 85.7, "label": "C-0073 · $14,161 MXN · 24 compras"}, {"x": 30, "y": 86.8, "label": "C-0074 · $15,140 MXN · 25 compras"}, {"x": 23, "y": 75.5, "label": "C-0075 · $10,365 MXN · 21 compras"}, {"x": 10, "y": 73.2, "label": "C-0076 · $8,876 MXN · 17 compras"}, {"x": 8, "y": 65.2, "label": "C-0077 · $5,839 MXN · 9 compras"}, {"x": 20, "y": 82.7, "label": "C-0078 · $12,930 MXN · 21 compras"}, {"x": 2, "y": 83.2, "label": "C-0079 · $13,210 MXN · 20 compras"}, {"x": 9, "y": 82.5, "label": "C-0080 · $12,881 MXN · 21 compras"}, {"x": 36, "y": 77.7, "label": "C-0083 · $11,438 MXN · 23 compras"}, {"x": 5, "y": 89.0, "label": "C-0084 · $17,330 MXN · 27 compras"}, {"x": 27, "y": 70.8, "label": "C-0085 · $7,852 MXN · 16 compras"}, {"x": 10, "y": 90.0, "label": "C-0087 · $22,045 MXN · 25 compras"}, {"x": 2, "y": 72.3, "label": "C-0089 · $8,581 MXN · 14 compras"}, {"x": 30, "y": 80.5, "label": "C-0090 · $12,009 MXN · 18 compras"}, {"x": 19, "y": 84.3, "label": "C-0091 · $13,455 MXN · 22 compras"}, {"x": 34, "y": 79.7, "label": "C-0092 · $11,749 MXN · 17 compras"}, {"x": 8, "y": 74.3, "label": "C-0093 · $9,182 MXN · 15 compras"}, {"x": 19, "y": 72.2, "label": "C-0094 · $8,525 MXN · 16 compras"}, {"x": 11, "y": 74.2, "label": "C-0095 · $9,157 MXN · 14 compras"}, {"x": 21, "y": 73.7, "label": "C-0097 · $8,990 MXN · 16 compras"}, {"x": 5, "y": 88.3, "label": "C-0098 · $16,647 MXN · 30 compras"}, {"x": 17, "y": 73.8, "label": "C-0099 · $9,106 MXN · 17 compras"}, {"x": 28, "y": 82.2, "label": "C-0100 · $12,481 MXN · 19 compras"}, {"x": 21, "y": 79.5, "label": "C-0101 · $11,672 MXN · 15 compras"}, {"x": 45, "y": 74.0, "label": "C-0102 · $9,145 MXN · 16 compras"}, {"x": 26, "y": 83.0, "label": "C-0103 · $12,967 MXN · 18 compras"}, {"x": 1, "y": 67.8, "label": "C-0104 · $6,704 MXN · 12 compras"}, {"x": 5, "y": 83.3, "label": "C-0106 · $13,270 MXN · 22 compras"}, {"x": 14, "y": 81.3, "label": "C-0107 · $12,297 MXN · 19 compras"}, {"x": 8, "y": 77.8, "label": "C-0108 · $11,463 MXN · 20 compras"}, {"x": 25, "y": 79.2, "label": "C-0109 · $11,624 MXN · 18 compras"}, {"x": 3, "y": 76.5, "label": "C-0110 · $10,831 MXN · 18 compras"}, {"x": 44, "y": 60.8, "label": "C-0111 · $4,694 MXN · 9 compras"}, {"x": 30, "y": 75.0, "label": "C-0113 · $9,472 MXN · 16 compras"}, {"x": 19, "y": 87.8, "label": "C-0114 · $16,236 MXN · 22 compras"}, {"x": 11, "y": 84.0, "label": "C-0116 · $13,394 MXN · 22 compras"}, {"x": 24, "y": 87.3, "label": "C-0117 · $15,456 MXN · 21 compras"}, {"x": 27, "y": 85.0, "label": "C-0118 · $13,730 MXN · 24 compras"}, {"x": 19, "y": 80.2, "label": "C-0119 · $11,957 MXN · 18 compras"}, {"x": 43, "y": 73.5, "label": "C-0120 · $8,940 MXN · 16 compras"}, {"x": 9, "y": 85.5, "label": "C-0121 · $13,962 MXN · 20 compras"}, {"x": 19, "y": 74.8, "label": "C-0122 · $9,445 MXN · 17 compras"}, {"x": 39, "y": 82.8, "label": "C-0123 · $12,949 MXN · 15 compras"}, {"x": 41, "y": 72.8, "label": "C-0124 · $8,722 MXN · 12 compras"}, {"x": 35, "y": 87.2, "label": "C-0125 · $15,409 MXN · 25 compras"}, {"x": 36, "y": 71.5, "label": "C-0127 · $8,179 MXN · 13 compras"}, {"x": 35, "y": 86.5, "label": "C-0128 · $14,863 MXN · 19 compras"}, {"x": 29, "y": 77.2, "label": "C-0129 · $11,240 MXN · 19 compras"}, {"x": 21, "y": 83.7, "label": "C-0131 · $13,328 MXN · 23 compras"}, {"x": 4, "y": 69.5, "label": "C-0132 · $7,397 MXN · 15 compras"}, {"x": 16, "y": 76.0, "label": "C-0133 · $10,548 MXN · 18 compras"}, {"x": 6, "y": 86.0, "label": "C-0134 · $14,356 MXN · 18 compras"}, {"x": 36, "y": 71.8, "label": "C-0135 · $8,301 MXN · 14 compras"}, {"x": 4, "y": 88.7, "label": "C-0136 · $16,885 MXN · 22 compras"}, {"x": 27, "y": 77.5, "label": "C-0137 · $11,425 MXN · 20 compras"}, {"x": 54, "y": 74.5, "label": "C-0138 · $9,288 MXN · 16 compras"}, {"x": 36, "y": 87.7, "label": "C-0139 · $16,230 MXN · 25 compras"}, {"x": 22, "y": 88.8, "label": "C-0140 · $16,905 MXN · 27 compras"}, {"x": 9, "y": 85.2, "label": "C-0141 · $13,896 MXN · 24 compras"}, {"x": 15, "y": 86.2, "label": "C-0142 · $14,460 MXN · 27 compras"}, {"x": 23, "y": 89.7, "label": "C-0143 · $20,634 MXN · 26 compras"}, {"x": 10, "y": 88.2, "label": "C-0144 · $16,535 MXN · 25 compras"}, {"x": 18, "y": 72.7, "label": "C-0145 · $8,645 MXN · 15 compras"}, {"x": 23, "y": 88.5, "label": "C-0146 · $16,671 MXN · 27 compras"}, {"x": 12, "y": 85.3, "label": "C-0147 · $13,903 MXN · 27 compras"}, {"x": 12, "y": 83.5, "label": "C-0149 · $13,275 MXN · 21 compras"}, {"x": 47, "y": 76.8, "label": "C-0150 · $11,010 MXN · 13 compras"}, {"x": 17, "y": 81.7, "label": "C-0151 · $12,350 MXN · 21 compras"}, {"x": 13, "y": 78.2, "label": "C-0152 · $11,485 MXN · 22 compras"}, {"x": 22, "y": 71.0, "label": "C-0153 · $7,977 MXN · 12 compras"}, {"x": 24, "y": 89.2, "label": "C-0154 · $17,649 MXN · 25 compras"}, {"x": 35, "y": 86.3, "label": "C-0155 · $14,576 MXN · 20 compras"}, {"x": 17, "y": 80.7, "label": "C-0156 · $12,057 MXN · 20 compras"}, {"x": 1, "y": 78.0, "label": "C-0157 · $11,476 MXN · 17 compras"}, {"x": 23, "y": 83.8, "label": "C-0158 · $13,389 MXN · 17 compras"}, {"x": 22, "y": 84.5, "label": "C-0159 · $13,504 MXN · 16 compras"}, {"x": 41, "y": 80.3, "label": "C-0160 · $11,962 MXN · 19 compras"}, {"x": 5, "y": 89.5, "label": "C-0161 · $20,357 MXN · 32 compras"}, {"x": 15, "y": 89.3, "label": "C-0163 · $18,824 MXN · 27 compras"}, {"x": 11, "y": 81.2, "label": "C-0164 · $12,236 MXN · 17 compras"}, {"x": 9, "y": 90.5, "label": "C-0165 · $25,302 MXN · 30 compras"}, {"x": 54, "y": 73.3, "label": "C-0166 · $8,887 MXN · 15 compras"}, {"x": 43, "y": 71.3, "label": "C-0167 · $8,167 MXN · 20 compras"}, {"x": 30, "y": 73.0, "label": "C-0168 · $8,854 MXN · 16 compras"}, {"x": 32, "y": 78.5, "label": "C-0169 · $11,531 MXN · 18 compras"}, {"x": 21, "y": 75.2, "label": "C-0170 · $9,855 MXN · 15 compras"}, {"x": 17, "y": 86.7, "label": "C-0171 · $15,090 MXN · 24 compras"}, {"x": 23, "y": 75.8, "label": "C-0172 · $10,514 MXN · 21 compras"}, {"x": 9, "y": 77.0, "label": "C-0173 · $11,079 MXN · 19 compras"}, {"x": 2, "y": 81.0, "label": "C-0174 · $12,093 MXN · 22 compras"}, {"x": 30, "y": 82.0, "label": "C-0175 · $12,407 MXN · 15 compras"}, {"x": 21, "y": 66.7, "label": "C-0176 · $6,359 MXN · 12 compras"}, {"x": 24, "y": 87.0, "label": "C-0177 · $15,351 MXN · 26 compras"}, {"x": 11, "y": 80.0, "label": "C-0178 · $11,942 MXN · 19 compras"}, {"x": 3, "y": 78.8, "label": "C-0179 · $11,562 MXN · 19 compras"}, {"x": 11, "y": 76.2, "label": "C-0180 · $10,706 MXN · 16 compras"}, {"x": 17, "y": 55.0, "label": "C-0445 · $2,643 MXN · 3 compras"}, {"x": 19, "y": 50.2, "label": "C-0455 · $1,793 MXN · 3 compras"}, {"x": 13, "y": 51.0, "label": "C-0456 · $1,938 MXN · 2 compras"}, {"x": 11, "y": 52.0, "label": "C-0469 · $2,042 MXN · 4 compras"}, {"x": 16, "y": 50.8, "label": "C-0495 · $1,931 MXN · 3 compras"}, {"x": 5, "y": 53.0, "label": "C-0501 · $2,234 MXN · 3 compras"}, {"x": 46, "y": 50.7, "label": "C-0516 · $1,894 MXN · 7 compras"}, {"x": 32, "y": 51.2, "label": "C-0517 · $1,969 MXN · 6 compras"}, {"x": 41, "y": 51.7, "label": "C-0519 · $1,992 MXN · 4 compras"}, {"x": 18, "y": 50.5, "label": "C-0523 · $1,883 MXN · 4 compras"}, {"x": 39, "y": 51.3, "label": "C-0532 · $1,974 MXN · 5 compras"}, {"x": 32, "y": 52.3, "label": "C-0538 · $2,063 MXN · 6 compras"}, {"x": 44, "y": 52.7, "label": "C-0547 · $2,171 MXN · 7 compras"}, {"x": 28, "y": 53.2, "label": "C-0558 · $2,268 MXN · 6 compras"}, {"x": 24, "y": 51.5, "label": "C-0564 · $1,983 MXN · 4 compras"}, {"x": 13, "y": 54.2, "label": "C-0578 · $2,511 MXN · 8 compras"}, {"x": 46, "y": 50.3, "label": "C-0580 · $1,862 MXN · 5 compras"}],
+            backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 0.6),
+            borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
+            pointRadius: 4,
+            pointHoverRadius: 6,
+        },
+{
+            label: "En riesgo",
+            data: [{"x": 61, "y": 91.8, "label": "C-0050 · $29,765 MXN · 28 compras"}, {"x": 76, "y": 84.8, "label": "C-0066 · $13,556 MXN · 23 compras"}, {"x": 60, "y": 88.0, "label": "C-0081 · $16,288 MXN · 25 compras"}, {"x": 83, "y": 69.2, "label": "C-0082 · $7,089 MXN · 15 compras"}, {"x": 80, "y": 65.5, "label": "C-0086 · $5,878 MXN · 13 compras"}, {"x": 76, "y": 84.7, "label": "C-0088 · $13,555 MXN · 18 compras"}, {"x": 64, "y": 87.5, "label": "C-0096 · $15,570 MXN · 19 compras"}, {"x": 78, "y": 81.8, "label": "C-0105 · $12,375 MXN · 20 compras"}, {"x": 147, "y": 70.3, "label": "C-0112 · $7,667 MXN · 13 compras"}, {"x": 56, "y": 78.3, "label": "C-0115 · $11,509 MXN · 16 compras"}, {"x": 60, "y": 72.0, "label": "C-0126 · $8,351 MXN · 18 compras"}, {"x": 66, "y": 69.7, "label": "C-0130 · $7,475 MXN · 13 compras"}, {"x": 61, "y": 78.7, "label": "C-0148 · $11,538 MXN · 16 compras"}, {"x": 57, "y": 66.5, "label": "C-0162 · $6,291 MXN · 11 compras"}, {"x": 165, "y": 68.2, "label": "C-0181 · $6,849 MXN · 9 compras"}, {"x": 121, "y": 77.3, "label": "C-0182 · $11,416 MXN · 13 compras"}, {"x": 211, "y": 56.3, "label": "C-0183 · $2,887 MXN · 5 compras"}, {"x": 143, "y": 75.3, "label": "C-0184 · $9,954 MXN · 8 compras"}, {"x": 177, "y": 67.7, "label": "C-0185 · $6,636 MXN · 7 compras"}, {"x": 129, "y": 57.2, "label": "C-0187 · $3,298 MXN · 6 compras"}, {"x": 223, "y": 67.5, "label": "C-0188 · $6,628 MXN · 6 compras"}, {"x": 181, "y": 65.8, "label": "C-0189 · $6,015 MXN · 6 compras"}, {"x": 208, "y": 69.0, "label": "C-0190 · $7,052 MXN · 9 compras"}, {"x": 175, "y": 58.0, "label": "C-0191 · $3,485 MXN · 5 compras"}, {"x": 112, "y": 64.2, "label": "C-0192 · $5,593 MXN · 9 compras"}, {"x": 128, "y": 55.2, "label": "C-0193 · $2,713 MXN · 5 compras"}, {"x": 123, "y": 72.5, "label": "C-0194 · $8,622 MXN · 9 compras"}, {"x": 150, "y": 62.7, "label": "C-0195 · $5,191 MXN · 9 compras"}, {"x": 128, "y": 75.7, "label": "C-0196 · $10,479 MXN · 12 compras"}, {"x": 137, "y": 68.7, "label": "C-0197 · $6,958 MXN · 10 compras"}, {"x": 199, "y": 61.3, "label": "C-0198 · $4,908 MXN · 7 compras"}, {"x": 149, "y": 57.8, "label": "C-0199 · $3,462 MXN · 7 compras"}, {"x": 225, "y": 55.5, "label": "C-0200 · $2,745 MXN · 3 compras"}, {"x": 230, "y": 59.7, "label": "C-0201 · $4,141 MXN · 7 compras"}, {"x": 154, "y": 55.3, "label": "C-0202 · $2,724 MXN · 4 compras"}, {"x": 198, "y": 69.8, "label": "C-0203 · $7,494 MXN · 6 compras"}, {"x": 174, "y": 64.0, "label": "C-0204 · $5,589 MXN · 9 compras"}, {"x": 145, "y": 70.5, "label": "C-0205 · $7,669 MXN · 8 compras"}, {"x": 209, "y": 63.5, "label": "C-0206 · $5,379 MXN · 7 compras"}, {"x": 113, "y": 68.8, "label": "C-0207 · $7,035 MXN · 8 compras"}, {"x": 215, "y": 76.3, "label": "C-0209 · $10,728 MXN · 12 compras"}, {"x": 115, "y": 63.7, "label": "C-0210 · $5,453 MXN · 6 compras"}, {"x": 245, "y": 56.8, "label": "C-0211 · $3,108 MXN · 5 compras"}, {"x": 112, "y": 66.8, "label": "C-0212 · $6,402 MXN · 7 compras"}, {"x": 110, "y": 57.0, "label": "C-0213 · $3,237 MXN · 5 compras"}, {"x": 165, "y": 61.0, "label": "C-0215 · $4,750 MXN · 6 compras"}, {"x": 154, "y": 67.3, "label": "C-0216 · $6,616 MXN · 9 compras"}, {"x": 193, "y": 62.8, "label": "C-0218 · $5,282 MXN · 6 compras"}, {"x": 282, "y": 59.5, "label": "C-0220 · $4,082 MXN · 3 compras"}, {"x": 242, "y": 54.3, "label": "C-0221 · $2,518 MXN · 3 compras"}, {"x": 184, "y": 71.7, "label": "C-0222 · $8,246 MXN · 7 compras"}, {"x": 122, "y": 53.5, "label": "C-0225 · $2,411 MXN · 3 compras"}, {"x": 108, "y": 54.8, "label": "C-0227 · $2,623 MXN · 5 compras"}, {"x": 256, "y": 53.7, "label": "C-0228 · $2,424 MXN · 4 compras"}, {"x": 222, "y": 54.5, "label": "C-0229 · $2,553 MXN · 5 compras"}, {"x": 185, "y": 59.2, "label": "C-0230 · $3,978 MXN · 5 compras"}, {"x": 230, "y": 64.3, "label": "C-0231 · $5,641 MXN · 10 compras"}, {"x": 130, "y": 56.0, "label": "C-0232 · $2,850 MXN · 6 compras"}, {"x": 170, "y": 63.3, "label": "C-0233 · $5,357 MXN · 6 compras"}, {"x": 177, "y": 67.0, "label": "C-0234 · $6,436 MXN · 7 compras"}, {"x": 216, "y": 58.2, "label": "C-0235 · $3,507 MXN · 4 compras"}, {"x": 186, "y": 61.8, "label": "C-0236 · $4,945 MXN · 7 compras"}, {"x": 170, "y": 59.8, "label": "C-0238 · $4,235 MXN · 8 compras"}, {"x": 186, "y": 63.8, "label": "C-0239 · $5,475 MXN · 6 compras"}, {"x": 190, "y": 70.0, "label": "C-0240 · $7,529 MXN · 9 compras"}, {"x": 112, "y": 68.0, "label": "C-0241 · $6,721 MXN · 7 compras"}, {"x": 121, "y": 58.7, "label": "C-0243 · $3,869 MXN · 6 compras"}, {"x": 143, "y": 62.3, "label": "C-0244 · $5,159 MXN · 7 compras"}, {"x": 138, "y": 67.2, "label": "C-0245 · $6,538 MXN · 8 compras"}, {"x": 206, "y": 60.2, "label": "C-0246 · $4,419 MXN · 6 compras"}, {"x": 195, "y": 57.5, "label": "C-0247 · $3,330 MXN · 5 compras"}, {"x": 177, "y": 66.0, "label": "C-0248 · $6,165 MXN · 8 compras"}, {"x": 175, "y": 64.8, "label": "C-0249 · $5,806 MXN · 7 compras"}, {"x": 101, "y": 53.3, "label": "C-0250 · $2,281 MXN · 4 compras"}, {"x": 197, "y": 71.2, "label": "C-0251 · $8,048 MXN · 8 compras"}, {"x": 202, "y": 69.3, "label": "C-0252 · $7,393 MXN · 6 compras"}, {"x": 169, "y": 61.7, "label": "C-0253 · $4,938 MXN · 6 compras"}, {"x": 189, "y": 62.0, "label": "C-0254 · $5,099 MXN · 6 compras"}, {"x": 165, "y": 65.7, "label": "C-0255 · $5,954 MXN · 7 compras"}, {"x": 193, "y": 70.7, "label": "C-0256 · $7,699 MXN · 6 compras"}, {"x": 223, "y": 63.0, "label": "C-0257 · $5,297 MXN · 8 compras"}, {"x": 110, "y": 60.0, "label": "C-0258 · $4,309 MXN · 6 compras"}, {"x": 162, "y": 56.5, "label": "C-0259 · $2,984 MXN · 4 compras"}, {"x": 155, "y": 58.5, "label": "C-0260 · $3,843 MXN · 4 compras"}, {"x": 145, "y": 54.7, "label": "C-0261 · $2,569 MXN · 7 compras"}, {"x": 209, "y": 61.2, "label": "C-0262 · $4,879 MXN · 9 compras"}, {"x": 143, "y": 64.5, "label": "C-0263 · $5,726 MXN · 10 compras"}, {"x": 200, "y": 58.3, "label": "C-0264 · $3,819 MXN · 4 compras"}, {"x": 242, "y": 66.3, "label": "C-0265 · $6,287 MXN · 8 compras"}, {"x": 195, "y": 62.2, "label": "C-0266 · $5,100 MXN · 6 compras"}, {"x": 178, "y": 70.2, "label": "C-0267 · $7,535 MXN · 8 compras"}, {"x": 124, "y": 52.5, "label": "C-0269 · $2,149 MXN · 4 compras"}, {"x": 179, "y": 59.0, "label": "C-0270 · $3,977 MXN · 4 compras"}, {"x": 230, "y": 63.2, "label": "C-0271 · $5,300 MXN · 8 compras"}, {"x": 240, "y": 68.5, "label": "C-0273 · $6,898 MXN · 6 compras"}, {"x": 138, "y": 61.5, "label": "C-0274 · $4,934 MXN · 6 compras"}, {"x": 159, "y": 64.7, "label": "C-0275 · $5,782 MXN · 8 compras"}, {"x": 139, "y": 60.5, "label": "C-0276 · $4,460 MXN · 5 compras"}, {"x": 225, "y": 68.3, "label": "C-0277 · $6,892 MXN · 6 compras"}, {"x": 127, "y": 58.8, "label": "C-0278 · $3,964 MXN · 5 compras"}, {"x": 141, "y": 62.5, "label": "C-0279 · $5,179 MXN · 5 compras"}, {"x": 136, "y": 60.3, "label": "C-0280 · $4,455 MXN · 6 compras"}, {"x": 221, "y": 55.7, "label": "C-0281 · $2,762 MXN · 4 compras"}, {"x": 229, "y": 59.3, "label": "C-0282 · $4,054 MXN · 6 compras"}, {"x": 202, "y": 56.2, "label": "C-0283 · $2,871 MXN · 5 compras"}, {"x": 233, "y": 60.7, "label": "C-0284 · $4,692 MXN · 7 compras"}, {"x": 229, "y": 65.0, "label": "C-0285 · $5,814 MXN · 4 compras"}, {"x": 247, "y": 56.7, "label": "C-0286 · $3,100 MXN · 3 compras"}, {"x": 109, "y": 65.3, "label": "C-0287 · $5,868 MXN · 9 compras"}, {"x": 165, "y": 57.3, "label": "C-0288 · $3,306 MXN · 5 compras"}, {"x": 194, "y": 55.8, "label": "C-0309 · $2,839 MXN · 3 compras"}, {"x": 113, "y": 53.8, "label": "C-0312 · $2,442 MXN · 3 compras"}, {"x": 228, "y": 52.2, "label": "C-0315 · $2,055 MXN · 6 compras"}, {"x": 167, "y": 52.8, "label": "C-0338 · $2,217 MXN · 3 compras"}, {"x": 211, "y": 57.7, "label": "C-0355 · $3,364 MXN · 4 compras"}, {"x": 93, "y": 50.0, "label": "C-0543 · $1,793 MXN · 5 compras"}, {"x": 67, "y": 54.0, "label": "C-0551 · $2,470 MXN · 7 compras"}, {"x": 104, "y": 51.8, "label": "C-0599 · $2,040 MXN · 4 compras"}],
+            backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 0.6),
+            borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
+            pointRadius: 4,
+            pointHoverRadius: 6,
+        },
+{
+            label: "Hibernando",
+            data: [{"x": 215, "y": 48.3, "label": "C-0186 · $1,631 MXN · 2 compras"}, {"x": 188, "y": 8.5, "label": "C-0208 · $259 MXN · 2 compras"}, {"x": 246, "y": 32.0, "label": "C-0214 · $654 MXN · 1 compras"}, {"x": 244, "y": 49.3, "label": "C-0217 · $1,771 MXN · 2 compras"}, {"x": 208, "y": 47.0, "label": "C-0219 · $1,406 MXN · 3 compras"}, {"x": 139, "y": 38.3, "label": "C-0223 · $820 MXN · 1 compras"}, {"x": 230, "y": 49.8, "label": "C-0224 · $1,788 MXN · 3 compras"}, {"x": 162, "y": 44.5, "label": "C-0226 · $1,107 MXN · 3 compras"}, {"x": 190, "y": 48.2, "label": "C-0237 · $1,620 MXN · 3 compras"}, {"x": 170, "y": 38.0, "label": "C-0242 · $817 MXN · 2 compras"}, {"x": 235, "y": 23.5, "label": "C-0268 · $509 MXN · 2 compras"}, {"x": 230, "y": 32.2, "label": "C-0272 · $654 MXN · 1 compras"}, {"x": 164, "y": 31.2, "label": "C-0289 · $636 MXN · 2 compras"}, {"x": 206, "y": 44.7, "label": "C-0290 · $1,113 MXN · 2 compras"}, {"x": 188, "y": 39.0, "label": "C-0291 · $855 MXN · 3 compras"}, {"x": 216, "y": 42.3, "label": "C-0292 · $1,006 MXN · 3 compras"}, {"x": 196, "y": 0.4, "label": "C-0293 · $80 MXN · 1 compras"}, {"x": 212, "y": 16.5, "label": "C-0294 · $383 MXN · 1 compras"}, {"x": 143, "y": 5.7, "label": "C-0295 · $198 MXN · 1 compras"}, {"x": 129, "y": 6.2, "label": "C-0296 · $204 MXN · 1 compras"}, {"x": 168, "y": 12.0, "label": "C-0297 · $291 MXN · 1 compras"}, {"x": 116, "y": 37.3, "label": "C-0298 · $804 MXN · 3 compras"}, {"x": 167, "y": 0.4, "label": "C-0299 · $80 MXN · 1 compras"}, {"x": 148, "y": 20.8, "label": "C-0300 · $461 MXN · 2 compras"}, {"x": 183, "y": 35.7, "label": "C-0301 · $735 MXN · 2 compras"}, {"x": 194, "y": 23.3, "label": "C-0302 · $508 MXN · 3 compras"}, {"x": 174, "y": 11.7, "label": "C-0303 · $289 MXN · 1 compras"}, {"x": 160, "y": 17.8, "label": "C-0304 · $406 MXN · 1 compras"}, {"x": 168, "y": 11.0, "label": "C-0305 · $281 MXN · 1 compras"}, {"x": 145, "y": 39.5, "label": "C-0306 · $866 MXN · 2 compras"}, {"x": 128, "y": 49.2, "label": "C-0307 · $1,736 MXN · 2 compras"}, {"x": 141, "y": 4.7, "label": "C-0308 · $174 MXN · 1 compras"}, {"x": 218, "y": 10.2, "label": "C-0310 · $276 MXN · 1 compras"}, {"x": 182, "y": 36.7, "label": "C-0311 · $766 MXN · 1 compras"}, {"x": 235, "y": 20.5, "label": "C-0313 · $451 MXN · 1 compras"}, {"x": 134, "y": 8.8, "label": "C-0314 · $262 MXN · 1 compras"}, {"x": 192, "y": 19.7, "label": "C-0316 · $436 MXN · 1 compras"}, {"x": 231, "y": 34.3, "label": "C-0317 · $708 MXN · 2 compras"}, {"x": 107, "y": 29.0, "label": "C-0318 · $582 MXN · 1 compras"}, {"x": 237, "y": 15.2, "label": "C-0319 · $352 MXN · 2 compras"}, {"x": 206, "y": 42.0, "label": "C-0320 · $976 MXN · 1 compras"}, {"x": 136, "y": 6.7, "label": "C-0321 · $218 MXN · 1 compras"}, {"x": 144, "y": 9.0, "label": "C-0322 · $269 MXN · 1 compras"}, {"x": 206, "y": 19.3, "label": "C-0323 · $433 MXN · 1 compras"}, {"x": 152, "y": 47.7, "label": "C-0324 · $1,555 MXN · 3 compras"}, {"x": 191, "y": 22.2, "label": "C-0325 · $480 MXN · 1 compras"}, {"x": 151, "y": 15.0, "label": "C-0326 · $352 MXN · 1 compras"}, {"x": 223, "y": 12.3, "label": "C-0327 · $294 MXN · 1 compras"}, {"x": 258, "y": 28.8, "label": "C-0328 · $582 MXN · 1 compras"}, {"x": 191, "y": 4.8, "label": "C-0329 · $176 MXN · 1 compras"}, {"x": 215, "y": 40.3, "label": "C-0330 · $899 MXN · 2 compras"}, {"x": 205, "y": 8.7, "label": "C-0331 · $261 MXN · 1 compras"}, {"x": 200, "y": 8.3, "label": "C-0332 · $253 MXN · 1 compras"}, {"x": 222, "y": 5.5, "label": "C-0333 · $190 MXN · 1 compras"}, {"x": 270, "y": 29.3, "label": "C-0334 · $585 MXN · 1 compras"}, {"x": 193, "y": 9.7, "label": "C-0335 · $272 MXN · 1 compras"}, {"x": 96, "y": 33.3, "label": "C-0336 · $685 MXN · 1 compras"}, {"x": 210, "y": 32.3, "label": "C-0337 · $664 MXN · 1 compras"}, {"x": 124, "y": 38.7, "label": "C-0339 · $831 MXN · 1 compras"}, {"x": 159, "y": 34.5, "label": "C-0340 · $711 MXN · 2 compras"}, {"x": 187, "y": 14.2, "label": "C-0341 · $339 MXN · 1 compras"}, {"x": 131, "y": 46.3, "label": "C-0342 · $1,322 MXN · 3 compras"}, {"x": 236, "y": 36.2, "label": "C-0343 · $756 MXN · 1 compras"}, {"x": 243, "y": 8.0, "label": "C-0344 · $251 MXN · 1 compras"}, {"x": 207, "y": 24.8, "label": "C-0345 · $534 MXN · 1 compras"}, {"x": 153, "y": 25.8, "label": "C-0346 · $539 MXN · 2 compras"}, {"x": 219, "y": 16.8, "label": "C-0347 · $390 MXN · 1 compras"}, {"x": 172, "y": 34.0, "label": "C-0348 · $696 MXN · 2 compras"}, {"x": 208, "y": 4.2, "label": "C-0349 · $163 MXN · 1 compras"}, {"x": 140, "y": 33.2, "label": "C-0350 · $684 MXN · 2 compras"}, {"x": 249, "y": 25.3, "label": "C-0351 · $536 MXN · 1 compras"}, {"x": 175, "y": 2.3, "label": "C-0352 · $117 MXN · 1 compras"}, {"x": 235, "y": 33.0, "label": "C-0353 · $673 MXN · 1 compras"}, {"x": 153, "y": 2.0, "label": "C-0354 · $104 MXN · 1 compras"}, {"x": 150, "y": 18.8, "label": "C-0356 · $427 MXN · 1 compras"}, {"x": 209, "y": 23.2, "label": "C-0357 · $508 MXN · 1 compras"}, {"x": 244, "y": 11.8, "label": "C-0358 · $289 MXN · 1 compras"}, {"x": 211, "y": 7.5, "label": "C-0359 · $239 MXN · 1 compras"}, {"x": 224, "y": 39.2, "label": "C-0360 · $860 MXN · 1 compras"}, {"x": 157, "y": 11.3, "label": "C-0361 · $285 MXN · 1 compras"}, {"x": 160, "y": 23.7, "label": "C-0362 · $510 MXN · 2 compras"}, {"x": 158, "y": 47.8, "label": "C-0363 · $1,574 MXN · 3 compras"}, {"x": 172, "y": 19.0, "label": "C-0364 · $427 MXN · 1 compras"}, {"x": 219, "y": 9.5, "label": "C-0365 · $271 MXN · 1 compras"}, {"x": 115, "y": 20.2, "label": "C-0366 · $445 MXN · 2 compras"}, {"x": 142, "y": 6.3, "label": "C-0367 · $208 MXN · 1 compras"}, {"x": 136, "y": 28.0, "label": "C-0368 · $574 MXN · 2 compras"}, {"x": 180, "y": 6.5, "label": "C-0369 · $211 MXN · 1 compras"}, {"x": 169, "y": 26.3, "label": "C-0370 · $543 MXN · 1 compras"}, {"x": 133, "y": 22.3, "label": "C-0371 · $491 MXN · 1 compras"}, {"x": 126, "y": 32.7, "label": "C-0372 · $671 MXN · 2 compras"}, {"x": 269, "y": 20.3, "label": "C-0373 · $445 MXN · 1 compras"}, {"x": 191, "y": 15.7, "label": "C-0374 · $366 MXN · 1 compras"}, {"x": 195, "y": 18.2, "label": "C-0375 · $417 MXN · 1 compras"}, {"x": 182, "y": 24.5, "label": "C-0376 · $532 MXN · 1 compras"}, {"x": 212, "y": 3.5, "label": "C-0377 · $135 MXN · 1 compras"}, {"x": 177, "y": 12.7, "label": "C-0378 · $295 MXN · 1 compras"}, {"x": 227, "y": 9.3, "label": "C-0379 · $271 MXN · 1 compras"}, {"x": 200, "y": 14.7, "label": "C-0380 · $342 MXN · 1 compras"}, {"x": 235, "y": 47.2, "label": "C-0381 · $1,406 MXN · 2 compras"}, {"x": 94, "y": 5.2, "label": "C-0382 · $182 MXN · 1 compras"}, {"x": 152, "y": 31.7, "label": "C-0383 · $652 MXN · 1 compras"}, {"x": 222, "y": 7.8, "label": "C-0384 · $246 MXN · 1 compras"}, {"x": 145, "y": 1.2, "label": "C-0385 · $86 MXN · 1 compras"}, {"x": 117, "y": 14.5, "label": "C-0386 · $340 MXN · 1 compras"}, {"x": 185, "y": 1.0, "label": "C-0387 · $84 MXN · 1 compras"}, {"x": 119, "y": 39.3, "label": "C-0388 · $860 MXN · 1 compras"}, {"x": 202, "y": 9.8, "label": "C-0389 · $272 MXN · 1 compras"}, {"x": 158, "y": 3.2, "label": "C-0390 · $134 MXN · 1 compras"}, {"x": 189, "y": 18.7, "label": "C-0391 · $424 MXN · 2 compras"}, {"x": 207, "y": 32.8, "label": "C-0392 · $672 MXN · 2 compras"}, {"x": 247, "y": 12.5, "label": "C-0393 · $295 MXN · 1 compras"}, {"x": 229, "y": 39.8, "label": "C-0394 · $872 MXN · 3 compras"}, {"x": 128, "y": 36.0, "label": "C-0395 · $747 MXN · 3 compras"}, {"x": 168, "y": 41.8, "label": "C-0396 · $967 MXN · 2 compras"}, {"x": 175, "y": 22.0, "label": "C-0397 · $477 MXN · 1 compras"}, {"x": 190, "y": 37.5, "label": "C-0398 · $808 MXN · 2 compras"}, {"x": 266, "y": 15.8, "label": "C-0399 · $372 MXN · 2 compras"}, {"x": 155, "y": 0.4, "label": "C-0400 · $80 MXN · 1 compras"}, {"x": 173, "y": 7.0, "label": "C-0401 · $232 MXN · 1 compras"}, {"x": 199, "y": 23.0, "label": "C-0402 · $506 MXN · 1 compras"}, {"x": 195, "y": 7.3, "label": "C-0403 · $238 MXN · 1 compras"}, {"x": 147, "y": 27.7, "label": "C-0404 · $571 MXN · 1 compras"}, {"x": 184, "y": 13.7, "label": "C-0405 · $321 MXN · 1 compras"}, {"x": 184, "y": 24.7, "label": "C-0406 · $532 MXN · 1 compras"}, {"x": 137, "y": 13.2, "label": "C-0407 · $296 MXN · 2 compras"}, {"x": 148, "y": 25.5, "label": "C-0408 · $537 MXN · 1 compras"}, {"x": 166, "y": 12.2, "label": "C-0409 · $292 MXN · 1 compras"}, {"x": 107, "y": 29.8, "label": "C-0410 · $593 MXN · 2 compras"}, {"x": 208, "y": 7.7, "label": "C-0411 · $239 MXN · 1 compras"}, {"x": 175, "y": 19.2, "label": "C-0412 · $429 MXN · 1 compras"}, {"x": 150, "y": 46.2, "label": "C-0413 · $1,306 MXN · 2 compras"}, {"x": 230, "y": 17.2, "label": "C-0414 · $394 MXN · 1 compras"}, {"x": 178, "y": 7.2, "label": "C-0415 · $234 MXN · 1 compras"}, {"x": 203, "y": 35.8, "label": "C-0416 · $743 MXN · 2 compras"}, {"x": 179, "y": 9.2, "label": "C-0417 · $270 MXN · 2 compras"}, {"x": 151, "y": 26.7, "label": "C-0418 · $557 MXN · 1 compras"}, {"x": 149, "y": 17.7, "label": "C-0419 · $401 MXN · 1 compras"}, {"x": 150, "y": 49.5, "label": "C-0420 · $1,773 MXN · 2 compras"}, {"x": 74, "y": 16.7, "label": "C-0512 · $388 MXN · 2 compras"}, {"x": 233, "y": 0.4, "label": "C-0513 · $80 MXN · 1 compras"}, {"x": 95, "y": 43.0, "label": "C-0514 · $1,039 MXN · 2 compras"}, {"x": 151, "y": 25.0, "label": "C-0515 · $534 MXN · 2 compras"}, {"x": 65, "y": 46.0, "label": "C-0518 · $1,297 MXN · 3 compras"}, {"x": 176, "y": 5.8, "label": "C-0521 · $202 MXN · 1 compras"}, {"x": 71, "y": 32.5, "label": "C-0522 · $669 MXN · 3 compras"}, {"x": 76, "y": 43.7, "label": "C-0524 · $1,072 MXN · 3 compras"}, {"x": 102, "y": 34.2, "label": "C-0529 · $700 MXN · 1 compras"}, {"x": 68, "y": 40.5, "label": "C-0531 · $901 MXN · 2 compras"}, {"x": 196, "y": 16.2, "label": "C-0533 · $375 MXN · 2 compras"}, {"x": 56, "y": 31.8, "label": "C-0534 · $652 MXN · 1 compras"}, {"x": 85, "y": 36.8, "label": "C-0535 · $770 MXN · 4 compras"}, {"x": 117, "y": 37.8, "label": "C-0537 · $811 MXN · 3 compras"}, {"x": 62, "y": 38.2, "label": "C-0541 · $819 MXN · 2 compras"}, {"x": 90, "y": 10.7, "label": "C-0545 · $280 MXN · 2 compras"}, {"x": 82, "y": 24.3, "label": "C-0546 · $523 MXN · 3 compras"}, {"x": 121, "y": 3.8, "label": "C-0548 · $136 MXN · 1 compras"}, {"x": 71, "y": 43.5, "label": "C-0549 · $1,066 MXN · 4 compras"}, {"x": 108, "y": 31.0, "label": "C-0556 · $633 MXN · 2 compras"}, {"x": 87, "y": 2.7, "label": "C-0557 · $127 MXN · 1 compras"}, {"x": 74, "y": 34.7, "label": "C-0560 · $719 MXN · 2 compras"}, {"x": 123, "y": 31.3, "label": "C-0563 · $641 MXN · 3 compras"}, {"x": 213, "y": 5.0, "label": "C-0566 · $179 MXN · 1 compras"}, {"x": 123, "y": 33.7, "label": "C-0568 · $694 MXN · 2 compras"}, {"x": 104, "y": 17.0, "label": "C-0571 · $394 MXN · 2 compras"}, {"x": 131, "y": 20.7, "label": "C-0575 · $455 MXN · 2 compras"}, {"x": 78, "y": 21.7, "label": "C-0576 · $475 MXN · 3 compras"}, {"x": 56, "y": 29.5, "label": "C-0579 · $586 MXN · 2 compras"}, {"x": 58, "y": 19.5, "label": "C-0582 · $434 MXN · 3 compras"}, {"x": 139, "y": 30.2, "label": "C-0583 · $597 MXN · 2 compras"}, {"x": 220, "y": 16.3, "label": "C-0584 · $377 MXN · 1 compras"}, {"x": 99, "y": 30.0, "label": "C-0586 · $595 MXN · 2 compras"}, {"x": 116, "y": 22.8, "label": "C-0587 · $502 MXN · 2 compras"}, {"x": 92, "y": 27.0, "label": "C-0588 · $560 MXN · 3 compras"}, {"x": 71, "y": 47.5, "label": "C-0589 · $1,423 MXN · 5 compras"}, {"x": 59, "y": 6.8, "label": "C-0590 · $221 MXN · 2 compras"}, {"x": 159, "y": 22.7, "label": "C-0591 · $499 MXN · 1 compras"}, {"x": 173, "y": 21.2, "label": "C-0592 · $469 MXN · 2 compras"}, {"x": 66, "y": 44.2, "label": "C-0594 · $1,075 MXN · 3 compras"}, {"x": 174, "y": 41.7, "label": "C-0595 · $962 MXN · 3 compras"}, {"x": 73, "y": 39.7, "label": "C-0597 · $869 MXN · 3 compras"}, {"x": 78, "y": 40.0, "label": "C-0598 · $879 MXN · 3 compras"}],
+            backgroundColor: withAlpha(seriesColorHex("#8C5A1E", "#8C5A1E"), 0.6),
+            borderColor: seriesColorHex("#8C5A1E", "#8C5A1E"),
+            pointRadius: 4,
+            pointHoverRadius: 6,
+        },
+{
+            label: "Nuevos / Prometedores",
+            data: [{"x": 17, "y": 18.0, "label": "C-0421 · $416 MXN · 1 compras"}, {"x": 19, "y": 20.0, "label": "C-0422 · $442 MXN · 2 compras"}, {"x": 30, "y": 19.8, "label": "C-0423 · $438 MXN · 1 compras"}, {"x": 22, "y": 28.3, "label": "C-0424 · $577 MXN · 1 compras"}, {"x": 5, "y": 3.3, "label": "C-0425 · $134 MXN · 1 compras"}, {"x": 11, "y": 30.3, "label": "C-0426 · $611 MXN · 2 compras"}, {"x": 28, "y": 14.0, "label": "C-0427 · $331 MXN · 1 compras"}, {"x": 22, "y": 12.8, "label": "C-0428 · $295 MXN · 1 compras"}, {"x": 11, "y": 44.8, "label": "C-0429 · $1,164 MXN · 2 compras"}, {"x": 25, "y": 1.5, "label": "C-0430 · $97 MXN · 1 compras"}, {"x": 20, "y": 26.2, "label": "C-0431 · $541 MXN · 2 compras"}, {"x": 9, "y": 47.3, "label": "C-0432 · $1,409 MXN · 4 compras"}, {"x": 15, "y": 4.3, "label": "C-0433 · $164 MXN · 1 compras"}, {"x": 19, "y": 46.8, "label": "C-0434 · $1,403 MXN · 1 compras"}, {"x": 30, "y": 34.8, "label": "C-0435 · $720 MXN · 1 compras"}, {"x": 22, "y": 45.0, "label": "C-0436 · $1,170 MXN · 2 compras"}, {"x": 19, "y": 30.5, "label": "C-0437 · $615 MXN · 1 compras"}, {"x": 30, "y": 10.8, "label": "C-0438 · $281 MXN · 1 compras"}, {"x": 19, "y": 37.2, "label": "C-0439 · $802 MXN · 1 compras"}, {"x": 16, "y": 16.0, "label": "C-0440 · $373 MXN · 1 compras"}, {"x": 23, "y": 14.3, "label": "C-0441 · $339 MXN · 1 compras"}, {"x": 26, "y": 45.8, "label": "C-0442 · $1,286 MXN · 1 compras"}, {"x": 29, "y": 24.0, "label": "C-0443 · $514 MXN · 1 compras"}, {"x": 22, "y": 37.0, "label": "C-0444 · $790 MXN · 1 compras"}, {"x": 20, "y": 41.3, "label": "C-0446 · $956 MXN · 2 compras"}, {"x": 14, "y": 8.2, "label": "C-0447 · $252 MXN · 1 compras"}, {"x": 21, "y": 45.2, "label": "C-0448 · $1,205 MXN · 2 compras"}, {"x": 29, "y": 2.2, "label": "C-0449 · $106 MXN · 1 compras"}, {"x": 14, "y": 5.3, "label": "C-0450 · $188 MXN · 1 compras"}, {"x": 8, "y": 4.5, "label": "C-0451 · $165 MXN · 1 compras"}, {"x": 25, "y": 13.0, "label": "C-0452 · $295 MXN · 1 compras"}, {"x": 13, "y": 17.3, "label": "C-0453 · $395 MXN · 2 compras"}, {"x": 18, "y": 22.5, "label": "C-0454 · $495 MXN · 1 compras"}, {"x": 22, "y": 15.3, "label": "C-0457 · $357 MXN · 1 compras"}, {"x": 26, "y": 31.5, "label": "C-0458 · $649 MXN · 1 compras"}, {"x": 16, "y": 41.2, "label": "C-0459 · $936 MXN · 2 compras"}, {"x": 17, "y": 29.7, "label": "C-0460 · $589 MXN · 1 compras"}, {"x": 27, "y": 2.8, "label": "C-0461 · $128 MXN · 1 compras"}, {"x": 9, "y": 40.2, "label": "C-0462 · $891 MXN · 2 compras"}, {"x": 22, "y": 21.0, "label": "C-0463 · $467 MXN · 1 compras"}, {"x": 13, "y": 40.8, "label": "C-0464 · $923 MXN · 2 compras"}, {"x": 16, "y": 26.8, "label": "C-0465 · $559 MXN · 1 compras"}, {"x": 26, "y": 13.3, "label": "C-0466 · $312 MXN · 1 compras"}, {"x": 5, "y": 14.8, "label": "C-0467 · $347 MXN · 1 compras"}, {"x": 25, "y": 35.5, "label": "C-0468 · $725 MXN · 2 compras"}, {"x": 24, "y": 28.7, "label": "C-0470 · $580 MXN · 1 compras"}, {"x": 29, "y": 21.5, "label": "C-0471 · $470 MXN · 1 compras"}, {"x": 9, "y": 26.5, "label": "C-0472 · $545 MXN · 2 compras"}, {"x": 24, "y": 28.2, "label": "C-0473 · $575 MXN · 1 compras"}, {"x": 25, "y": 27.8, "label": "C-0474 · $571 MXN · 1 compras"}, {"x": 16, "y": 0.8, "label": "C-0475 · $82 MXN · 1 compras"}, {"x": 10, "y": 42.7, "label": "C-0476 · $1,022 MXN · 2 compras"}, {"x": 24, "y": 21.8, "label": "C-0477 · $475 MXN · 1 compras"}, {"x": 13, "y": 1.7, "label": "C-0478 · $101 MXN · 1 compras"}, {"x": 20, "y": 3.0, "label": "C-0479 · $130 MXN · 1 compras"}, {"x": 29, "y": 11.5, "label": "C-0480 · $285 MXN · 1 compras"}, {"x": 29, "y": 1.3, "label": "C-0481 · $90 MXN · 1 compras"}, {"x": 24, "y": 48.0, "label": "C-0482 · $1,576 MXN · 1 compras"}, {"x": 6, "y": 10.3, "label": "C-0483 · $277 MXN · 1 compras"}, {"x": 11, "y": 17.5, "label": "C-0484 · $398 MXN · 1 compras"}, {"x": 15, "y": 4.0, "label": "C-0485 · $148 MXN · 1 compras"}, {"x": 9, "y": 27.2, "label": "C-0486 · $563 MXN · 1 compras"}, {"x": 17, "y": 38.5, "label": "C-0487 · $831 MXN · 1 compras"}, {"x": 16, "y": 2.5, "label": "C-0488 · $123 MXN · 1 compras"}, {"x": 16, "y": 10.5, "label": "C-0489 · $278 MXN · 1 compras"}, {"x": 24, "y": 36.5, "label": "C-0490 · $764 MXN · 1 compras"}, {"x": 13, "y": 49.0, "label": "C-0491 · $1,724 MXN · 3 compras"}, {"x": 18, "y": 41.0, "label": "C-0492 · $929 MXN · 2 compras"}, {"x": 13, "y": 29.2, "label": "C-0493 · $585 MXN · 2 compras"}, {"x": 17, "y": 42.5, "label": "C-0494 · $1,022 MXN · 1 compras"}, {"x": 14, "y": 11.2, "label": "C-0496 · $283 MXN · 2 compras"}, {"x": 16, "y": 45.3, "label": "C-0497 · $1,236 MXN · 2 compras"}, {"x": 19, "y": 15.5, "label": "C-0498 · $359 MXN · 2 compras"}, {"x": 30, "y": 35.2, "label": "C-0499 · $722 MXN · 1 compras"}, {"x": 17, "y": 25.2, "label": "C-0500 · $534 MXN · 1 compras"}, {"x": 12, "y": 21.3, "label": "C-0502 · $469 MXN · 1 compras"}, {"x": 27, "y": 13.8, "label": "C-0503 · $328 MXN · 1 compras"}, {"x": 12, "y": 13.5, "label": "C-0504 · $318 MXN · 1 compras"}, {"x": 7, "y": 26.0, "label": "C-0505 · $540 MXN · 2 compras"}, {"x": 6, "y": 42.2, "label": "C-0506 · $986 MXN · 1 compras"}, {"x": 27, "y": 23.8, "label": "C-0507 · $511 MXN · 1 compras"}, {"x": 25, "y": 1.8, "label": "C-0508 · $101 MXN · 1 compras"}, {"x": 29, "y": 10.0, "label": "C-0509 · $272 MXN · 1 compras"}, {"x": 25, "y": 24.2, "label": "C-0510 · $522 MXN · 1 compras"}, {"x": 19, "y": 30.7, "label": "C-0511 · $622 MXN · 3 compras"}, {"x": 10, "y": 35.0, "label": "C-0520 · $721 MXN · 2 compras"}, {"x": 13, "y": 43.2, "label": "C-0525 · $1,040 MXN · 3 compras"}, {"x": 9, "y": 18.5, "label": "C-0526 · $424 MXN · 1 compras"}, {"x": 9, "y": 48.5, "label": "C-0527 · $1,640 MXN · 5 compras"}, {"x": 41, "y": 40.7, "label": "C-0528 · $914 MXN · 3 compras"}, {"x": 12, "y": 30.8, "label": "C-0530 · $633 MXN · 2 compras"}, {"x": 12, "y": 46.5, "label": "C-0536 · $1,374 MXN · 6 compras"}, {"x": 41, "y": 25.7, "label": "C-0539 · $539 MXN · 3 compras"}, {"x": 49, "y": 6.0, "label": "C-0540 · $203 MXN · 1 compras"}, {"x": 13, "y": 45.5, "label": "C-0542 · $1,243 MXN · 4 compras"}, {"x": 14, "y": 41.5, "label": "C-0544 · $956 MXN · 4 compras"}, {"x": 31, "y": 27.3, "label": "C-0550 · $566 MXN · 1 compras"}, {"x": 44, "y": 48.8, "label": "C-0552 · $1,723 MXN · 4 compras"}, {"x": 30, "y": 33.8, "label": "C-0553 · $696 MXN · 2 compras"}, {"x": 42, "y": 3.7, "label": "C-0554 · $136 MXN · 1 compras"}, {"x": 8, "y": 43.3, "label": "C-0555 · $1,047 MXN · 3 compras"}, {"x": 42, "y": 33.5, "label": "C-0559 · $693 MXN · 2 compras"}, {"x": 23, "y": 42.8, "label": "C-0561 · $1,028 MXN · 4 compras"}, {"x": 2, "y": 49.7, "label": "C-0562 · $1,787 MXN · 6 compras"}, {"x": 11, "y": 35.3, "label": "C-0565 · $723 MXN · 3 compras"}, {"x": 15, "y": 27.5, "label": "C-0567 · $568 MXN · 1 compras"}, {"x": 17, "y": 46.7, "label": "C-0569 · $1,377 MXN · 6 compras"}, {"x": 54, "y": 45.7, "label": "C-0570 · $1,286 MXN · 6 compras"}, {"x": 25, "y": 38.8, "label": "C-0572 · $840 MXN · 3 compras"}, {"x": 50, "y": 36.3, "label": "C-0573 · $758 MXN · 3 compras"}, {"x": 6, "y": 18.3, "label": "C-0574 · $419 MXN · 2 compras"}, {"x": 55, "y": 44.0, "label": "C-0577 · $1,073 MXN · 2 compras"}, {"x": 31, "y": 43.8, "label": "C-0581 · $1,072 MXN · 3 compras"}, {"x": 55, "y": 28.5, "label": "C-0585 · $579 MXN · 4 compras"}, {"x": 28, "y": 37.7, "label": "C-0593 · $809 MXN · 4 compras"}, {"x": 38, "y": 48.7, "label": "C-0596 · $1,672 MXN · 5 compras"}, {"x": 23, "y": 44.3, "label": "C-0600 · $1,086 MXN · 3 compras"}],
+            backgroundColor: withAlpha(seriesColorHex("#9CB8B4", "#9CB8B4"), 0.6),
+            borderColor: seriesColorHex("#9CB8B4", "#9CB8B4"),
+            pointRadius: 4,
+            pointHoverRadius: 6,
+        }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', align: 'start',
+                       labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+            tooltip: {
+              backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+              borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+              callbacks: {
+                label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)} días, ${ctx.parsed.y.toFixed(1)} pct`
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: "Días desde última compra (recencia)", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
+            y: { title: { display: true, text: "Valor histórico (percentil de la cartera)", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
+          }
+        },
+        plugins: [{
+          id: 'quadrantOverlay_chart_matriz',
+          afterDraw: (chartInstance) => {
+            const { ctx, chartArea } = chartInstance;
+            if (!chartArea) return;
+            const { left, right, top, bottom } = chartArea;
+            const scales = chartInstance.scales;
+            ctx.save();
+            if (quadrantLines_chart_matriz) {
+              ctx.strokeStyle = withAlpha(inkColor('grid'), 0.55);
+              ctx.setLineDash([4, 4]);
+              ctx.lineWidth = 1;
+              if (quadrantLines_chart_matriz.x !== undefined && quadrantLines_chart_matriz.x !== null) {
+                const xPix = scales.x.getPixelForValue(quadrantLines_chart_matriz.x);
+                ctx.beginPath(); ctx.moveTo(xPix, top); ctx.lineTo(xPix, bottom); ctx.stroke();
+              }
+              if (quadrantLines_chart_matriz.y !== undefined && quadrantLines_chart_matriz.y !== null) {
+                const yPix = scales.y.getPixelForValue(quadrantLines_chart_matriz.y);
+                ctx.beginPath(); ctx.moveTo(left, yPix); ctx.lineTo(right, yPix); ctx.stroke();
+              }
+              ctx.setLineDash([]);
+            }
+            if (quadrantLabels_chart_matriz.length) {
+              ctx.font = '700 10px -apple-system, sans-serif';
+              ctx.fillStyle = withAlpha(inkColor('muted'), 0.95);
+              const pad = 10;
+              quadrantLabels_chart_matriz.forEach((q) => {
+                let x, y, align;
+                if (q.corner === 'top-left') { x = left + pad; y = top + pad + 9; align = 'left'; }
+                else if (q.corner === 'top-right') { x = right - pad; y = top + pad + 9; align = 'right'; }
+                else if (q.corner === 'bottom-left') { x = left + pad; y = bottom - pad; align = 'left'; }
+                else { x = right - pad; y = bottom - pad; align = 'right'; }
+                ctx.textAlign = align;
+                ctx.fillText(q.text, x, y);
+              });
+            }
+            ctx.restore();
+          }
+        }]
+      });
+    })();
+    
+
+    new Chart(document.getElementById('chart_seg_count').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["Campeones", "En riesgo", "Nuevos / Prometedores", "Hibernando"],
+        datasets: [{
+            label: "Clientes",
+            data: [183, 118, 117, 182],
+            valueLabels: null,
+            backgroundColor: ["#3E8F72", "#d03b3b", "#9CB8B4", "#8C5A1E"],
+            borderColor: ["#3E8F72", "#d03b3b", "#9CB8B4", "#8C5A1E"],
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Clientes", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_seg_value').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["Campeones", "En riesgo", "Nuevos / Prometedores", "Hibernando"],
+        datasets: [{
+            label: "Valor total",
+            data: [3486957.0, 683662.0, 77425.0, 104224.0],
+            valueLabels: null,
+            backgroundColor: ["#3E8F72", "#d03b3b", "#9CB8B4", "#8C5A1E"],
+            borderColor: ["#3E8F72", "#d03b3b", "#9CB8B4", "#8C5A1E"],
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "MXN", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    (function() {
+      const quadrantLines_chart_rf = null;
+      const quadrantLabels_chart_rf = [];
+      new Chart(document.getElementById('chart_rf').getContext('2d'), {
+        type: 'scatter',
+        data: { datasets: [{
+            label: "Campeones",
+            data: [{"x": 12, "y": 33, "label": "C-0001 · 33 compras"}, {"x": 37, "y": 40, "label": "C-0002 · 40 compras"}, {"x": 12, "y": 45, "label": "C-0003 · 45 compras"}, {"x": 35, "y": 38, "label": "C-0004 · 38 compras"}, {"x": 13, "y": 49, "label": "C-0005 · 49 compras"}, {"x": 10, "y": 47, "label": "C-0006 · 47 compras"}, {"x": 22, "y": 35, "label": "C-0007 · 35 compras"}, {"x": 11, "y": 39, "label": "C-0008 · 39 compras"}, {"x": 15, "y": 37, "label": "C-0009 · 37 compras"}, {"x": 24, "y": 33, "label": "C-0010 · 33 compras"}, {"x": 6, "y": 39, "label": "C-0011 · 39 compras"}, {"x": 9, "y": 51, "label": "C-0012 · 51 compras"}, {"x": 7, "y": 42, "label": "C-0013 · 42 compras"}, {"x": 18, "y": 36, "label": "C-0014 · 36 compras"}, {"x": 2, "y": 42, "label": "C-0015 · 42 compras"}, {"x": 25, "y": 41, "label": "C-0016 · 41 compras"}, {"x": 16, "y": 30, "label": "C-0017 · 30 compras"}, {"x": 4, "y": 40, "label": "C-0018 · 40 compras"}, {"x": 12, "y": 30, "label": "C-0019 · 30 compras"}, {"x": 12, "y": 40, "label": "C-0020 · 40 compras"}, {"x": 10, "y": 34, "label": "C-0021 · 34 compras"}, {"x": 26, "y": 43, "label": "C-0022 · 43 compras"}, {"x": 13, "y": 34, "label": "C-0023 · 34 compras"}, {"x": 29, "y": 32, "label": "C-0024 · 32 compras"}, {"x": 10, "y": 35, "label": "C-0025 · 35 compras"}, {"x": 5, "y": 31, "label": "C-0026 · 31 compras"}, {"x": 28, "y": 38, "label": "C-0027 · 38 compras"}, {"x": 23, "y": 34, "label": "C-0028 · 34 compras"}, {"x": 4, "y": 36, "label": "C-0029 · 36 compras"}, {"x": 14, "y": 26, "label": "C-0030 · 26 compras"}, {"x": 5, "y": 40, "label": "C-0031 · 40 compras"}, {"x": 4, "y": 25, "label": "C-0032 · 25 compras"}, {"x": 10, "y": 38, "label": "C-0033 · 38 compras"}, {"x": 13, "y": 42, "label": "C-0034 · 42 compras"}, {"x": 27, "y": 40, "label": "C-0035 · 40 compras"}, {"x": 33, "y": 39, "label": "C-0036 · 39 compras"}, {"x": 6, "y": 43, "label": "C-0037 · 43 compras"}, {"x": 24, "y": 40, "label": "C-0038 · 40 compras"}, {"x": 26, "y": 33, "label": "C-0039 · 33 compras"}, {"x": 10, "y": 32, "label": "C-0040 · 32 compras"}, {"x": 12, "y": 45, "label": "C-0041 · 45 compras"}, {"x": 26, "y": 43, "label": "C-0042 · 43 compras"}, {"x": 11, "y": 37, "label": "C-0043 · 37 compras"}, {"x": 10, "y": 38, "label": "C-0044 · 38 compras"}, {"x": 28, "y": 42, "label": "C-0045 · 42 compras"}, {"x": 17, "y": 39, "label": "C-0046 · 39 compras"}, {"x": 14, "y": 32, "label": "C-0047 · 32 compras"}, {"x": 14, "y": 42, "label": "C-0048 · 42 compras"}, {"x": 17, "y": 37, "label": "C-0049 · 37 compras"}, {"x": 11, "y": 45, "label": "C-0051 · 45 compras"}, {"x": 17, "y": 31, "label": "C-0052 · 31 compras"}, {"x": 19, "y": 33, "label": "C-0053 · 33 compras"}, {"x": 9, "y": 40, "label": "C-0054 · 40 compras"}, {"x": 14, "y": 59, "label": "C-0055 · 59 compras"}, {"x": 3, "y": 34, "label": "C-0056 · 34 compras"}, {"x": 9, "y": 34, "label": "C-0057 · 34 compras"}, {"x": 40, "y": 41, "label": "C-0058 · 41 compras"}, {"x": 9, "y": 41, "label": "C-0059 · 41 compras"}, {"x": 37, "y": 33, "label": "C-0060 · 33 compras"}, {"x": 7, "y": 19, "label": "C-0061 · 19 compras"}, {"x": 30, "y": 10, "label": "C-0062 · 10 compras"}, {"x": 33, "y": 14, "label": "C-0063 · 14 compras"}, {"x": 11, "y": 22, "label": "C-0064 · 22 compras"}, {"x": 2, "y": 25, "label": "C-0065 · 25 compras"}, {"x": 26, "y": 23, "label": "C-0067 · 23 compras"}, {"x": 8, "y": 26, "label": "C-0068 · 26 compras"}, {"x": 38, "y": 23, "label": "C-0069 · 23 compras"}, {"x": 6, "y": 17, "label": "C-0070 · 17 compras"}, {"x": 15, "y": 20, "label": "C-0071 · 20 compras"}, {"x": 19, "y": 20, "label": "C-0072 · 20 compras"}, {"x": 21, "y": 24, "label": "C-0073 · 24 compras"}, {"x": 30, "y": 25, "label": "C-0074 · 25 compras"}, {"x": 23, "y": 21, "label": "C-0075 · 21 compras"}, {"x": 10, "y": 17, "label": "C-0076 · 17 compras"}, {"x": 8, "y": 9, "label": "C-0077 · 9 compras"}, {"x": 20, "y": 21, "label": "C-0078 · 21 compras"}, {"x": 2, "y": 20, "label": "C-0079 · 20 compras"}, {"x": 9, "y": 21, "label": "C-0080 · 21 compras"}, {"x": 36, "y": 23, "label": "C-0083 · 23 compras"}, {"x": 5, "y": 27, "label": "C-0084 · 27 compras"}, {"x": 27, "y": 16, "label": "C-0085 · 16 compras"}, {"x": 10, "y": 25, "label": "C-0087 · 25 compras"}, {"x": 2, "y": 14, "label": "C-0089 · 14 compras"}, {"x": 30, "y": 18, "label": "C-0090 · 18 compras"}, {"x": 19, "y": 22, "label": "C-0091 · 22 compras"}, {"x": 34, "y": 17, "label": "C-0092 · 17 compras"}, {"x": 8, "y": 15, "label": "C-0093 · 15 compras"}, {"x": 19, "y": 16, "label": "C-0094 · 16 compras"}, {"x": 11, "y": 14, "label": "C-0095 · 14 compras"}, {"x": 21, "y": 16, "label": "C-0097 · 16 compras"}, {"x": 5, "y": 30, "label": "C-0098 · 30 compras"}, {"x": 17, "y": 17, "label": "C-0099 · 17 compras"}, {"x": 28, "y": 19, "label": "C-0100 · 19 compras"}, {"x": 21, "y": 15, "label": "C-0101 · 15 compras"}, {"x": 45, "y": 16, "label": "C-0102 · 16 compras"}, {"x": 26, "y": 18, "label": "C-0103 · 18 compras"}, {"x": 1, "y": 12, "label": "C-0104 · 12 compras"}, {"x": 5, "y": 22, "label": "C-0106 · 22 compras"}, {"x": 14, "y": 19, "label": "C-0107 · 19 compras"}, {"x": 8, "y": 20, "label": "C-0108 · 20 compras"}, {"x": 25, "y": 18, "label": "C-0109 · 18 compras"}, {"x": 3, "y": 18, "label": "C-0110 · 18 compras"}, {"x": 44, "y": 9, "label": "C-0111 · 9 compras"}, {"x": 30, "y": 16, "label": "C-0113 · 16 compras"}, {"x": 19, "y": 22, "label": "C-0114 · 22 compras"}, {"x": 11, "y": 22, "label": "C-0116 · 22 compras"}, {"x": 24, "y": 21, "label": "C-0117 · 21 compras"}, {"x": 27, "y": 24, "label": "C-0118 · 24 compras"}, {"x": 19, "y": 18, "label": "C-0119 · 18 compras"}, {"x": 43, "y": 16, "label": "C-0120 · 16 compras"}, {"x": 9, "y": 20, "label": "C-0121 · 20 compras"}, {"x": 19, "y": 17, "label": "C-0122 · 17 compras"}, {"x": 39, "y": 15, "label": "C-0123 · 15 compras"}, {"x": 41, "y": 12, "label": "C-0124 · 12 compras"}, {"x": 35, "y": 25, "label": "C-0125 · 25 compras"}, {"x": 36, "y": 13, "label": "C-0127 · 13 compras"}, {"x": 35, "y": 19, "label": "C-0128 · 19 compras"}, {"x": 29, "y": 19, "label": "C-0129 · 19 compras"}, {"x": 21, "y": 23, "label": "C-0131 · 23 compras"}, {"x": 4, "y": 15, "label": "C-0132 · 15 compras"}, {"x": 16, "y": 18, "label": "C-0133 · 18 compras"}, {"x": 6, "y": 18, "label": "C-0134 · 18 compras"}, {"x": 36, "y": 14, "label": "C-0135 · 14 compras"}, {"x": 4, "y": 22, "label": "C-0136 · 22 compras"}, {"x": 27, "y": 20, "label": "C-0137 · 20 compras"}, {"x": 54, "y": 16, "label": "C-0138 · 16 compras"}, {"x": 36, "y": 25, "label": "C-0139 · 25 compras"}, {"x": 22, "y": 27, "label": "C-0140 · 27 compras"}, {"x": 9, "y": 24, "label": "C-0141 · 24 compras"}, {"x": 15, "y": 27, "label": "C-0142 · 27 compras"}, {"x": 23, "y": 26, "label": "C-0143 · 26 compras"}, {"x": 10, "y": 25, "label": "C-0144 · 25 compras"}, {"x": 18, "y": 15, "label": "C-0145 · 15 compras"}, {"x": 23, "y": 27, "label": "C-0146 · 27 compras"}, {"x": 12, "y": 27, "label": "C-0147 · 27 compras"}, {"x": 12, "y": 21, "label": "C-0149 · 21 compras"}, {"x": 47, "y": 13, "label": "C-0150 · 13 compras"}, {"x": 17, "y": 21, "label": "C-0151 · 21 compras"}, {"x": 13, "y": 22, "label": "C-0152 · 22 compras"}, {"x": 22, "y": 12, "label": "C-0153 · 12 compras"}, {"x": 24, "y": 25, "label": "C-0154 · 25 compras"}, {"x": 35, "y": 20, "label": "C-0155 · 20 compras"}, {"x": 17, "y": 20, "label": "C-0156 · 20 compras"}, {"x": 1, "y": 17, "label": "C-0157 · 17 compras"}, {"x": 23, "y": 17, "label": "C-0158 · 17 compras"}, {"x": 22, "y": 16, "label": "C-0159 · 16 compras"}, {"x": 41, "y": 19, "label": "C-0160 · 19 compras"}, {"x": 5, "y": 32, "label": "C-0161 · 32 compras"}, {"x": 15, "y": 27, "label": "C-0163 · 27 compras"}, {"x": 11, "y": 17, "label": "C-0164 · 17 compras"}, {"x": 9, "y": 30, "label": "C-0165 · 30 compras"}, {"x": 54, "y": 15, "label": "C-0166 · 15 compras"}, {"x": 43, "y": 20, "label": "C-0167 · 20 compras"}, {"x": 30, "y": 16, "label": "C-0168 · 16 compras"}, {"x": 32, "y": 18, "label": "C-0169 · 18 compras"}, {"x": 21, "y": 15, "label": "C-0170 · 15 compras"}, {"x": 17, "y": 24, "label": "C-0171 · 24 compras"}, {"x": 23, "y": 21, "label": "C-0172 · 21 compras"}, {"x": 9, "y": 19, "label": "C-0173 · 19 compras"}, {"x": 2, "y": 22, "label": "C-0174 · 22 compras"}, {"x": 30, "y": 15, "label": "C-0175 · 15 compras"}, {"x": 21, "y": 12, "label": "C-0176 · 12 compras"}, {"x": 24, "y": 26, "label": "C-0177 · 26 compras"}, {"x": 11, "y": 19, "label": "C-0178 · 19 compras"}, {"x": 3, "y": 19, "label": "C-0179 · 19 compras"}, {"x": 11, "y": 16, "label": "C-0180 · 16 compras"}, {"x": 17, "y": 3, "label": "C-0445 · 3 compras"}, {"x": 19, "y": 3, "label": "C-0455 · 3 compras"}, {"x": 13, "y": 2, "label": "C-0456 · 2 compras"}, {"x": 11, "y": 4, "label": "C-0469 · 4 compras"}, {"x": 16, "y": 3, "label": "C-0495 · 3 compras"}, {"x": 5, "y": 3, "label": "C-0501 · 3 compras"}, {"x": 46, "y": 7, "label": "C-0516 · 7 compras"}, {"x": 32, "y": 6, "label": "C-0517 · 6 compras"}, {"x": 41, "y": 4, "label": "C-0519 · 4 compras"}, {"x": 18, "y": 4, "label": "C-0523 · 4 compras"}, {"x": 39, "y": 5, "label": "C-0532 · 5 compras"}, {"x": 32, "y": 6, "label": "C-0538 · 6 compras"}, {"x": 44, "y": 7, "label": "C-0547 · 7 compras"}, {"x": 28, "y": 6, "label": "C-0558 · 6 compras"}, {"x": 24, "y": 4, "label": "C-0564 · 4 compras"}, {"x": 13, "y": 8, "label": "C-0578 · 8 compras"}, {"x": 46, "y": 5, "label": "C-0580 · 5 compras"}],
+            backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 0.5),
+            borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "En riesgo",
+            data: [{"x": 61, "y": 28, "label": "C-0050 · 28 compras"}, {"x": 76, "y": 23, "label": "C-0066 · 23 compras"}, {"x": 60, "y": 25, "label": "C-0081 · 25 compras"}, {"x": 83, "y": 15, "label": "C-0082 · 15 compras"}, {"x": 80, "y": 13, "label": "C-0086 · 13 compras"}, {"x": 76, "y": 18, "label": "C-0088 · 18 compras"}, {"x": 64, "y": 19, "label": "C-0096 · 19 compras"}, {"x": 78, "y": 20, "label": "C-0105 · 20 compras"}, {"x": 147, "y": 13, "label": "C-0112 · 13 compras"}, {"x": 56, "y": 16, "label": "C-0115 · 16 compras"}, {"x": 60, "y": 18, "label": "C-0126 · 18 compras"}, {"x": 66, "y": 13, "label": "C-0130 · 13 compras"}, {"x": 61, "y": 16, "label": "C-0148 · 16 compras"}, {"x": 57, "y": 11, "label": "C-0162 · 11 compras"}, {"x": 165, "y": 9, "label": "C-0181 · 9 compras"}, {"x": 121, "y": 13, "label": "C-0182 · 13 compras"}, {"x": 211, "y": 5, "label": "C-0183 · 5 compras"}, {"x": 143, "y": 8, "label": "C-0184 · 8 compras"}, {"x": 177, "y": 7, "label": "C-0185 · 7 compras"}, {"x": 129, "y": 6, "label": "C-0187 · 6 compras"}, {"x": 223, "y": 6, "label": "C-0188 · 6 compras"}, {"x": 181, "y": 6, "label": "C-0189 · 6 compras"}, {"x": 208, "y": 9, "label": "C-0190 · 9 compras"}, {"x": 175, "y": 5, "label": "C-0191 · 5 compras"}, {"x": 112, "y": 9, "label": "C-0192 · 9 compras"}, {"x": 128, "y": 5, "label": "C-0193 · 5 compras"}, {"x": 123, "y": 9, "label": "C-0194 · 9 compras"}, {"x": 150, "y": 9, "label": "C-0195 · 9 compras"}, {"x": 128, "y": 12, "label": "C-0196 · 12 compras"}, {"x": 137, "y": 10, "label": "C-0197 · 10 compras"}, {"x": 199, "y": 7, "label": "C-0198 · 7 compras"}, {"x": 149, "y": 7, "label": "C-0199 · 7 compras"}, {"x": 225, "y": 3, "label": "C-0200 · 3 compras"}, {"x": 230, "y": 7, "label": "C-0201 · 7 compras"}, {"x": 154, "y": 4, "label": "C-0202 · 4 compras"}, {"x": 198, "y": 6, "label": "C-0203 · 6 compras"}, {"x": 174, "y": 9, "label": "C-0204 · 9 compras"}, {"x": 145, "y": 8, "label": "C-0205 · 8 compras"}, {"x": 209, "y": 7, "label": "C-0206 · 7 compras"}, {"x": 113, "y": 8, "label": "C-0207 · 8 compras"}, {"x": 215, "y": 12, "label": "C-0209 · 12 compras"}, {"x": 115, "y": 6, "label": "C-0210 · 6 compras"}, {"x": 245, "y": 5, "label": "C-0211 · 5 compras"}, {"x": 112, "y": 7, "label": "C-0212 · 7 compras"}, {"x": 110, "y": 5, "label": "C-0213 · 5 compras"}, {"x": 165, "y": 6, "label": "C-0215 · 6 compras"}, {"x": 154, "y": 9, "label": "C-0216 · 9 compras"}, {"x": 193, "y": 6, "label": "C-0218 · 6 compras"}, {"x": 282, "y": 3, "label": "C-0220 · 3 compras"}, {"x": 242, "y": 3, "label": "C-0221 · 3 compras"}, {"x": 184, "y": 7, "label": "C-0222 · 7 compras"}, {"x": 122, "y": 3, "label": "C-0225 · 3 compras"}, {"x": 108, "y": 5, "label": "C-0227 · 5 compras"}, {"x": 256, "y": 4, "label": "C-0228 · 4 compras"}, {"x": 222, "y": 5, "label": "C-0229 · 5 compras"}, {"x": 185, "y": 5, "label": "C-0230 · 5 compras"}, {"x": 230, "y": 10, "label": "C-0231 · 10 compras"}, {"x": 130, "y": 6, "label": "C-0232 · 6 compras"}, {"x": 170, "y": 6, "label": "C-0233 · 6 compras"}, {"x": 177, "y": 7, "label": "C-0234 · 7 compras"}, {"x": 216, "y": 4, "label": "C-0235 · 4 compras"}, {"x": 186, "y": 7, "label": "C-0236 · 7 compras"}, {"x": 170, "y": 8, "label": "C-0238 · 8 compras"}, {"x": 186, "y": 6, "label": "C-0239 · 6 compras"}, {"x": 190, "y": 9, "label": "C-0240 · 9 compras"}, {"x": 112, "y": 7, "label": "C-0241 · 7 compras"}, {"x": 121, "y": 6, "label": "C-0243 · 6 compras"}, {"x": 143, "y": 7, "label": "C-0244 · 7 compras"}, {"x": 138, "y": 8, "label": "C-0245 · 8 compras"}, {"x": 206, "y": 6, "label": "C-0246 · 6 compras"}, {"x": 195, "y": 5, "label": "C-0247 · 5 compras"}, {"x": 177, "y": 8, "label": "C-0248 · 8 compras"}, {"x": 175, "y": 7, "label": "C-0249 · 7 compras"}, {"x": 101, "y": 4, "label": "C-0250 · 4 compras"}, {"x": 197, "y": 8, "label": "C-0251 · 8 compras"}, {"x": 202, "y": 6, "label": "C-0252 · 6 compras"}, {"x": 169, "y": 6, "label": "C-0253 · 6 compras"}, {"x": 189, "y": 6, "label": "C-0254 · 6 compras"}, {"x": 165, "y": 7, "label": "C-0255 · 7 compras"}, {"x": 193, "y": 6, "label": "C-0256 · 6 compras"}, {"x": 223, "y": 8, "label": "C-0257 · 8 compras"}, {"x": 110, "y": 6, "label": "C-0258 · 6 compras"}, {"x": 162, "y": 4, "label": "C-0259 · 4 compras"}, {"x": 155, "y": 4, "label": "C-0260 · 4 compras"}, {"x": 145, "y": 7, "label": "C-0261 · 7 compras"}, {"x": 209, "y": 9, "label": "C-0262 · 9 compras"}, {"x": 143, "y": 10, "label": "C-0263 · 10 compras"}, {"x": 200, "y": 4, "label": "C-0264 · 4 compras"}, {"x": 242, "y": 8, "label": "C-0265 · 8 compras"}, {"x": 195, "y": 6, "label": "C-0266 · 6 compras"}, {"x": 178, "y": 8, "label": "C-0267 · 8 compras"}, {"x": 124, "y": 4, "label": "C-0269 · 4 compras"}, {"x": 179, "y": 4, "label": "C-0270 · 4 compras"}, {"x": 230, "y": 8, "label": "C-0271 · 8 compras"}, {"x": 240, "y": 6, "label": "C-0273 · 6 compras"}, {"x": 138, "y": 6, "label": "C-0274 · 6 compras"}, {"x": 159, "y": 8, "label": "C-0275 · 8 compras"}, {"x": 139, "y": 5, "label": "C-0276 · 5 compras"}, {"x": 225, "y": 6, "label": "C-0277 · 6 compras"}, {"x": 127, "y": 5, "label": "C-0278 · 5 compras"}, {"x": 141, "y": 5, "label": "C-0279 · 5 compras"}, {"x": 136, "y": 6, "label": "C-0280 · 6 compras"}, {"x": 221, "y": 4, "label": "C-0281 · 4 compras"}, {"x": 229, "y": 6, "label": "C-0282 · 6 compras"}, {"x": 202, "y": 5, "label": "C-0283 · 5 compras"}, {"x": 233, "y": 7, "label": "C-0284 · 7 compras"}, {"x": 229, "y": 4, "label": "C-0285 · 4 compras"}, {"x": 247, "y": 3, "label": "C-0286 · 3 compras"}, {"x": 109, "y": 9, "label": "C-0287 · 9 compras"}, {"x": 165, "y": 5, "label": "C-0288 · 5 compras"}, {"x": 194, "y": 3, "label": "C-0309 · 3 compras"}, {"x": 113, "y": 3, "label": "C-0312 · 3 compras"}, {"x": 228, "y": 6, "label": "C-0315 · 6 compras"}, {"x": 167, "y": 3, "label": "C-0338 · 3 compras"}, {"x": 211, "y": 4, "label": "C-0355 · 4 compras"}, {"x": 93, "y": 5, "label": "C-0543 · 5 compras"}, {"x": 67, "y": 7, "label": "C-0551 · 7 compras"}, {"x": 104, "y": 4, "label": "C-0599 · 4 compras"}],
+            backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 0.5),
+            borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Hibernando",
+            data: [{"x": 215, "y": 2, "label": "C-0186 · 2 compras"}, {"x": 188, "y": 2, "label": "C-0208 · 2 compras"}, {"x": 246, "y": 1, "label": "C-0214 · 1 compras"}, {"x": 244, "y": 2, "label": "C-0217 · 2 compras"}, {"x": 208, "y": 3, "label": "C-0219 · 3 compras"}, {"x": 139, "y": 1, "label": "C-0223 · 1 compras"}, {"x": 230, "y": 3, "label": "C-0224 · 3 compras"}, {"x": 162, "y": 3, "label": "C-0226 · 3 compras"}, {"x": 190, "y": 3, "label": "C-0237 · 3 compras"}, {"x": 170, "y": 2, "label": "C-0242 · 2 compras"}, {"x": 235, "y": 2, "label": "C-0268 · 2 compras"}, {"x": 230, "y": 1, "label": "C-0272 · 1 compras"}, {"x": 164, "y": 2, "label": "C-0289 · 2 compras"}, {"x": 206, "y": 2, "label": "C-0290 · 2 compras"}, {"x": 188, "y": 3, "label": "C-0291 · 3 compras"}, {"x": 216, "y": 3, "label": "C-0292 · 3 compras"}, {"x": 196, "y": 1, "label": "C-0293 · 1 compras"}, {"x": 212, "y": 1, "label": "C-0294 · 1 compras"}, {"x": 143, "y": 1, "label": "C-0295 · 1 compras"}, {"x": 129, "y": 1, "label": "C-0296 · 1 compras"}, {"x": 168, "y": 1, "label": "C-0297 · 1 compras"}, {"x": 116, "y": 3, "label": "C-0298 · 3 compras"}, {"x": 167, "y": 1, "label": "C-0299 · 1 compras"}, {"x": 148, "y": 2, "label": "C-0300 · 2 compras"}, {"x": 183, "y": 2, "label": "C-0301 · 2 compras"}, {"x": 194, "y": 3, "label": "C-0302 · 3 compras"}, {"x": 174, "y": 1, "label": "C-0303 · 1 compras"}, {"x": 160, "y": 1, "label": "C-0304 · 1 compras"}, {"x": 168, "y": 1, "label": "C-0305 · 1 compras"}, {"x": 145, "y": 2, "label": "C-0306 · 2 compras"}, {"x": 128, "y": 2, "label": "C-0307 · 2 compras"}, {"x": 141, "y": 1, "label": "C-0308 · 1 compras"}, {"x": 218, "y": 1, "label": "C-0310 · 1 compras"}, {"x": 182, "y": 1, "label": "C-0311 · 1 compras"}, {"x": 235, "y": 1, "label": "C-0313 · 1 compras"}, {"x": 134, "y": 1, "label": "C-0314 · 1 compras"}, {"x": 192, "y": 1, "label": "C-0316 · 1 compras"}, {"x": 231, "y": 2, "label": "C-0317 · 2 compras"}, {"x": 107, "y": 1, "label": "C-0318 · 1 compras"}, {"x": 237, "y": 2, "label": "C-0319 · 2 compras"}, {"x": 206, "y": 1, "label": "C-0320 · 1 compras"}, {"x": 136, "y": 1, "label": "C-0321 · 1 compras"}, {"x": 144, "y": 1, "label": "C-0322 · 1 compras"}, {"x": 206, "y": 1, "label": "C-0323 · 1 compras"}, {"x": 152, "y": 3, "label": "C-0324 · 3 compras"}, {"x": 191, "y": 1, "label": "C-0325 · 1 compras"}, {"x": 151, "y": 1, "label": "C-0326 · 1 compras"}, {"x": 223, "y": 1, "label": "C-0327 · 1 compras"}, {"x": 258, "y": 1, "label": "C-0328 · 1 compras"}, {"x": 191, "y": 1, "label": "C-0329 · 1 compras"}, {"x": 215, "y": 2, "label": "C-0330 · 2 compras"}, {"x": 205, "y": 1, "label": "C-0331 · 1 compras"}, {"x": 200, "y": 1, "label": "C-0332 · 1 compras"}, {"x": 222, "y": 1, "label": "C-0333 · 1 compras"}, {"x": 270, "y": 1, "label": "C-0334 · 1 compras"}, {"x": 193, "y": 1, "label": "C-0335 · 1 compras"}, {"x": 96, "y": 1, "label": "C-0336 · 1 compras"}, {"x": 210, "y": 1, "label": "C-0337 · 1 compras"}, {"x": 124, "y": 1, "label": "C-0339 · 1 compras"}, {"x": 159, "y": 2, "label": "C-0340 · 2 compras"}, {"x": 187, "y": 1, "label": "C-0341 · 1 compras"}, {"x": 131, "y": 3, "label": "C-0342 · 3 compras"}, {"x": 236, "y": 1, "label": "C-0343 · 1 compras"}, {"x": 243, "y": 1, "label": "C-0344 · 1 compras"}, {"x": 207, "y": 1, "label": "C-0345 · 1 compras"}, {"x": 153, "y": 2, "label": "C-0346 · 2 compras"}, {"x": 219, "y": 1, "label": "C-0347 · 1 compras"}, {"x": 172, "y": 2, "label": "C-0348 · 2 compras"}, {"x": 208, "y": 1, "label": "C-0349 · 1 compras"}, {"x": 140, "y": 2, "label": "C-0350 · 2 compras"}, {"x": 249, "y": 1, "label": "C-0351 · 1 compras"}, {"x": 175, "y": 1, "label": "C-0352 · 1 compras"}, {"x": 235, "y": 1, "label": "C-0353 · 1 compras"}, {"x": 153, "y": 1, "label": "C-0354 · 1 compras"}, {"x": 150, "y": 1, "label": "C-0356 · 1 compras"}, {"x": 209, "y": 1, "label": "C-0357 · 1 compras"}, {"x": 244, "y": 1, "label": "C-0358 · 1 compras"}, {"x": 211, "y": 1, "label": "C-0359 · 1 compras"}, {"x": 224, "y": 1, "label": "C-0360 · 1 compras"}, {"x": 157, "y": 1, "label": "C-0361 · 1 compras"}, {"x": 160, "y": 2, "label": "C-0362 · 2 compras"}, {"x": 158, "y": 3, "label": "C-0363 · 3 compras"}, {"x": 172, "y": 1, "label": "C-0364 · 1 compras"}, {"x": 219, "y": 1, "label": "C-0365 · 1 compras"}, {"x": 115, "y": 2, "label": "C-0366 · 2 compras"}, {"x": 142, "y": 1, "label": "C-0367 · 1 compras"}, {"x": 136, "y": 2, "label": "C-0368 · 2 compras"}, {"x": 180, "y": 1, "label": "C-0369 · 1 compras"}, {"x": 169, "y": 1, "label": "C-0370 · 1 compras"}, {"x": 133, "y": 1, "label": "C-0371 · 1 compras"}, {"x": 126, "y": 2, "label": "C-0372 · 2 compras"}, {"x": 269, "y": 1, "label": "C-0373 · 1 compras"}, {"x": 191, "y": 1, "label": "C-0374 · 1 compras"}, {"x": 195, "y": 1, "label": "C-0375 · 1 compras"}, {"x": 182, "y": 1, "label": "C-0376 · 1 compras"}, {"x": 212, "y": 1, "label": "C-0377 · 1 compras"}, {"x": 177, "y": 1, "label": "C-0378 · 1 compras"}, {"x": 227, "y": 1, "label": "C-0379 · 1 compras"}, {"x": 200, "y": 1, "label": "C-0380 · 1 compras"}, {"x": 235, "y": 2, "label": "C-0381 · 2 compras"}, {"x": 94, "y": 1, "label": "C-0382 · 1 compras"}, {"x": 152, "y": 1, "label": "C-0383 · 1 compras"}, {"x": 222, "y": 1, "label": "C-0384 · 1 compras"}, {"x": 145, "y": 1, "label": "C-0385 · 1 compras"}, {"x": 117, "y": 1, "label": "C-0386 · 1 compras"}, {"x": 185, "y": 1, "label": "C-0387 · 1 compras"}, {"x": 119, "y": 1, "label": "C-0388 · 1 compras"}, {"x": 202, "y": 1, "label": "C-0389 · 1 compras"}, {"x": 158, "y": 1, "label": "C-0390 · 1 compras"}, {"x": 189, "y": 2, "label": "C-0391 · 2 compras"}, {"x": 207, "y": 2, "label": "C-0392 · 2 compras"}, {"x": 247, "y": 1, "label": "C-0393 · 1 compras"}, {"x": 229, "y": 3, "label": "C-0394 · 3 compras"}, {"x": 128, "y": 3, "label": "C-0395 · 3 compras"}, {"x": 168, "y": 2, "label": "C-0396 · 2 compras"}, {"x": 175, "y": 1, "label": "C-0397 · 1 compras"}, {"x": 190, "y": 2, "label": "C-0398 · 2 compras"}, {"x": 266, "y": 2, "label": "C-0399 · 2 compras"}, {"x": 155, "y": 1, "label": "C-0400 · 1 compras"}, {"x": 173, "y": 1, "label": "C-0401 · 1 compras"}, {"x": 199, "y": 1, "label": "C-0402 · 1 compras"}, {"x": 195, "y": 1, "label": "C-0403 · 1 compras"}, {"x": 147, "y": 1, "label": "C-0404 · 1 compras"}, {"x": 184, "y": 1, "label": "C-0405 · 1 compras"}, {"x": 184, "y": 1, "label": "C-0406 · 1 compras"}, {"x": 137, "y": 2, "label": "C-0407 · 2 compras"}, {"x": 148, "y": 1, "label": "C-0408 · 1 compras"}, {"x": 166, "y": 1, "label": "C-0409 · 1 compras"}, {"x": 107, "y": 2, "label": "C-0410 · 2 compras"}, {"x": 208, "y": 1, "label": "C-0411 · 1 compras"}, {"x": 175, "y": 1, "label": "C-0412 · 1 compras"}, {"x": 150, "y": 2, "label": "C-0413 · 2 compras"}, {"x": 230, "y": 1, "label": "C-0414 · 1 compras"}, {"x": 178, "y": 1, "label": "C-0415 · 1 compras"}, {"x": 203, "y": 2, "label": "C-0416 · 2 compras"}, {"x": 179, "y": 2, "label": "C-0417 · 2 compras"}, {"x": 151, "y": 1, "label": "C-0418 · 1 compras"}, {"x": 149, "y": 1, "label": "C-0419 · 1 compras"}, {"x": 150, "y": 2, "label": "C-0420 · 2 compras"}, {"x": 74, "y": 2, "label": "C-0512 · 2 compras"}, {"x": 233, "y": 1, "label": "C-0513 · 1 compras"}, {"x": 95, "y": 2, "label": "C-0514 · 2 compras"}, {"x": 151, "y": 2, "label": "C-0515 · 2 compras"}, {"x": 65, "y": 3, "label": "C-0518 · 3 compras"}, {"x": 176, "y": 1, "label": "C-0521 · 1 compras"}, {"x": 71, "y": 3, "label": "C-0522 · 3 compras"}, {"x": 76, "y": 3, "label": "C-0524 · 3 compras"}, {"x": 102, "y": 1, "label": "C-0529 · 1 compras"}, {"x": 68, "y": 2, "label": "C-0531 · 2 compras"}, {"x": 196, "y": 2, "label": "C-0533 · 2 compras"}, {"x": 56, "y": 1, "label": "C-0534 · 1 compras"}, {"x": 85, "y": 4, "label": "C-0535 · 4 compras"}, {"x": 117, "y": 3, "label": "C-0537 · 3 compras"}, {"x": 62, "y": 2, "label": "C-0541 · 2 compras"}, {"x": 90, "y": 2, "label": "C-0545 · 2 compras"}, {"x": 82, "y": 3, "label": "C-0546 · 3 compras"}, {"x": 121, "y": 1, "label": "C-0548 · 1 compras"}, {"x": 71, "y": 4, "label": "C-0549 · 4 compras"}, {"x": 108, "y": 2, "label": "C-0556 · 2 compras"}, {"x": 87, "y": 1, "label": "C-0557 · 1 compras"}, {"x": 74, "y": 2, "label": "C-0560 · 2 compras"}, {"x": 123, "y": 3, "label": "C-0563 · 3 compras"}, {"x": 213, "y": 1, "label": "C-0566 · 1 compras"}, {"x": 123, "y": 2, "label": "C-0568 · 2 compras"}, {"x": 104, "y": 2, "label": "C-0571 · 2 compras"}, {"x": 131, "y": 2, "label": "C-0575 · 2 compras"}, {"x": 78, "y": 3, "label": "C-0576 · 3 compras"}, {"x": 56, "y": 2, "label": "C-0579 · 2 compras"}, {"x": 58, "y": 3, "label": "C-0582 · 3 compras"}, {"x": 139, "y": 2, "label": "C-0583 · 2 compras"}, {"x": 220, "y": 1, "label": "C-0584 · 1 compras"}, {"x": 99, "y": 2, "label": "C-0586 · 2 compras"}, {"x": 116, "y": 2, "label": "C-0587 · 2 compras"}, {"x": 92, "y": 3, "label": "C-0588 · 3 compras"}, {"x": 71, "y": 5, "label": "C-0589 · 5 compras"}, {"x": 59, "y": 2, "label": "C-0590 · 2 compras"}, {"x": 159, "y": 1, "label": "C-0591 · 1 compras"}, {"x": 173, "y": 2, "label": "C-0592 · 2 compras"}, {"x": 66, "y": 3, "label": "C-0594 · 3 compras"}, {"x": 174, "y": 3, "label": "C-0595 · 3 compras"}, {"x": 73, "y": 3, "label": "C-0597 · 3 compras"}, {"x": 78, "y": 3, "label": "C-0598 · 3 compras"}],
+            backgroundColor: withAlpha(seriesColorHex("#8C5A1E", "#8C5A1E"), 0.5),
+            borderColor: seriesColorHex("#8C5A1E", "#8C5A1E"),
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Nuevos / Prometedores",
+            data: [{"x": 17, "y": 1, "label": "C-0421 · 1 compras"}, {"x": 19, "y": 2, "label": "C-0422 · 2 compras"}, {"x": 30, "y": 1, "label": "C-0423 · 1 compras"}, {"x": 22, "y": 1, "label": "C-0424 · 1 compras"}, {"x": 5, "y": 1, "label": "C-0425 · 1 compras"}, {"x": 11, "y": 2, "label": "C-0426 · 2 compras"}, {"x": 28, "y": 1, "label": "C-0427 · 1 compras"}, {"x": 22, "y": 1, "label": "C-0428 · 1 compras"}, {"x": 11, "y": 2, "label": "C-0429 · 2 compras"}, {"x": 25, "y": 1, "label": "C-0430 · 1 compras"}, {"x": 20, "y": 2, "label": "C-0431 · 2 compras"}, {"x": 9, "y": 4, "label": "C-0432 · 4 compras"}, {"x": 15, "y": 1, "label": "C-0433 · 1 compras"}, {"x": 19, "y": 1, "label": "C-0434 · 1 compras"}, {"x": 30, "y": 1, "label": "C-0435 · 1 compras"}, {"x": 22, "y": 2, "label": "C-0436 · 2 compras"}, {"x": 19, "y": 1, "label": "C-0437 · 1 compras"}, {"x": 30, "y": 1, "label": "C-0438 · 1 compras"}, {"x": 19, "y": 1, "label": "C-0439 · 1 compras"}, {"x": 16, "y": 1, "label": "C-0440 · 1 compras"}, {"x": 23, "y": 1, "label": "C-0441 · 1 compras"}, {"x": 26, "y": 1, "label": "C-0442 · 1 compras"}, {"x": 29, "y": 1, "label": "C-0443 · 1 compras"}, {"x": 22, "y": 1, "label": "C-0444 · 1 compras"}, {"x": 20, "y": 2, "label": "C-0446 · 2 compras"}, {"x": 14, "y": 1, "label": "C-0447 · 1 compras"}, {"x": 21, "y": 2, "label": "C-0448 · 2 compras"}, {"x": 29, "y": 1, "label": "C-0449 · 1 compras"}, {"x": 14, "y": 1, "label": "C-0450 · 1 compras"}, {"x": 8, "y": 1, "label": "C-0451 · 1 compras"}, {"x": 25, "y": 1, "label": "C-0452 · 1 compras"}, {"x": 13, "y": 2, "label": "C-0453 · 2 compras"}, {"x": 18, "y": 1, "label": "C-0454 · 1 compras"}, {"x": 22, "y": 1, "label": "C-0457 · 1 compras"}, {"x": 26, "y": 1, "label": "C-0458 · 1 compras"}, {"x": 16, "y": 2, "label": "C-0459 · 2 compras"}, {"x": 17, "y": 1, "label": "C-0460 · 1 compras"}, {"x": 27, "y": 1, "label": "C-0461 · 1 compras"}, {"x": 9, "y": 2, "label": "C-0462 · 2 compras"}, {"x": 22, "y": 1, "label": "C-0463 · 1 compras"}, {"x": 13, "y": 2, "label": "C-0464 · 2 compras"}, {"x": 16, "y": 1, "label": "C-0465 · 1 compras"}, {"x": 26, "y": 1, "label": "C-0466 · 1 compras"}, {"x": 5, "y": 1, "label": "C-0467 · 1 compras"}, {"x": 25, "y": 2, "label": "C-0468 · 2 compras"}, {"x": 24, "y": 1, "label": "C-0470 · 1 compras"}, {"x": 29, "y": 1, "label": "C-0471 · 1 compras"}, {"x": 9, "y": 2, "label": "C-0472 · 2 compras"}, {"x": 24, "y": 1, "label": "C-0473 · 1 compras"}, {"x": 25, "y": 1, "label": "C-0474 · 1 compras"}, {"x": 16, "y": 1, "label": "C-0475 · 1 compras"}, {"x": 10, "y": 2, "label": "C-0476 · 2 compras"}, {"x": 24, "y": 1, "label": "C-0477 · 1 compras"}, {"x": 13, "y": 1, "label": "C-0478 · 1 compras"}, {"x": 20, "y": 1, "label": "C-0479 · 1 compras"}, {"x": 29, "y": 1, "label": "C-0480 · 1 compras"}, {"x": 29, "y": 1, "label": "C-0481 · 1 compras"}, {"x": 24, "y": 1, "label": "C-0482 · 1 compras"}, {"x": 6, "y": 1, "label": "C-0483 · 1 compras"}, {"x": 11, "y": 1, "label": "C-0484 · 1 compras"}, {"x": 15, "y": 1, "label": "C-0485 · 1 compras"}, {"x": 9, "y": 1, "label": "C-0486 · 1 compras"}, {"x": 17, "y": 1, "label": "C-0487 · 1 compras"}, {"x": 16, "y": 1, "label": "C-0488 · 1 compras"}, {"x": 16, "y": 1, "label": "C-0489 · 1 compras"}, {"x": 24, "y": 1, "label": "C-0490 · 1 compras"}, {"x": 13, "y": 3, "label": "C-0491 · 3 compras"}, {"x": 18, "y": 2, "label": "C-0492 · 2 compras"}, {"x": 13, "y": 2, "label": "C-0493 · 2 compras"}, {"x": 17, "y": 1, "label": "C-0494 · 1 compras"}, {"x": 14, "y": 2, "label": "C-0496 · 2 compras"}, {"x": 16, "y": 2, "label": "C-0497 · 2 compras"}, {"x": 19, "y": 2, "label": "C-0498 · 2 compras"}, {"x": 30, "y": 1, "label": "C-0499 · 1 compras"}, {"x": 17, "y": 1, "label": "C-0500 · 1 compras"}, {"x": 12, "y": 1, "label": "C-0502 · 1 compras"}, {"x": 27, "y": 1, "label": "C-0503 · 1 compras"}, {"x": 12, "y": 1, "label": "C-0504 · 1 compras"}, {"x": 7, "y": 2, "label": "C-0505 · 2 compras"}, {"x": 6, "y": 1, "label": "C-0506 · 1 compras"}, {"x": 27, "y": 1, "label": "C-0507 · 1 compras"}, {"x": 25, "y": 1, "label": "C-0508 · 1 compras"}, {"x": 29, "y": 1, "label": "C-0509 · 1 compras"}, {"x": 25, "y": 1, "label": "C-0510 · 1 compras"}, {"x": 19, "y": 3, "label": "C-0511 · 3 compras"}, {"x": 10, "y": 2, "label": "C-0520 · 2 compras"}, {"x": 13, "y": 3, "label": "C-0525 · 3 compras"}, {"x": 9, "y": 1, "label": "C-0526 · 1 compras"}, {"x": 9, "y": 5, "label": "C-0527 · 5 compras"}, {"x": 41, "y": 3, "label": "C-0528 · 3 compras"}, {"x": 12, "y": 2, "label": "C-0530 · 2 compras"}, {"x": 12, "y": 6, "label": "C-0536 · 6 compras"}, {"x": 41, "y": 3, "label": "C-0539 · 3 compras"}, {"x": 49, "y": 1, "label": "C-0540 · 1 compras"}, {"x": 13, "y": 4, "label": "C-0542 · 4 compras"}, {"x": 14, "y": 4, "label": "C-0544 · 4 compras"}, {"x": 31, "y": 1, "label": "C-0550 · 1 compras"}, {"x": 44, "y": 4, "label": "C-0552 · 4 compras"}, {"x": 30, "y": 2, "label": "C-0553 · 2 compras"}, {"x": 42, "y": 1, "label": "C-0554 · 1 compras"}, {"x": 8, "y": 3, "label": "C-0555 · 3 compras"}, {"x": 42, "y": 2, "label": "C-0559 · 2 compras"}, {"x": 23, "y": 4, "label": "C-0561 · 4 compras"}, {"x": 2, "y": 6, "label": "C-0562 · 6 compras"}, {"x": 11, "y": 3, "label": "C-0565 · 3 compras"}, {"x": 15, "y": 1, "label": "C-0567 · 1 compras"}, {"x": 17, "y": 6, "label": "C-0569 · 6 compras"}, {"x": 54, "y": 6, "label": "C-0570 · 6 compras"}, {"x": 25, "y": 3, "label": "C-0572 · 3 compras"}, {"x": 50, "y": 3, "label": "C-0573 · 3 compras"}, {"x": 6, "y": 2, "label": "C-0574 · 2 compras"}, {"x": 55, "y": 2, "label": "C-0577 · 2 compras"}, {"x": 31, "y": 3, "label": "C-0581 · 3 compras"}, {"x": 55, "y": 4, "label": "C-0585 · 4 compras"}, {"x": 28, "y": 4, "label": "C-0593 · 4 compras"}, {"x": 38, "y": 5, "label": "C-0596 · 5 compras"}, {"x": 23, "y": 3, "label": "C-0600 · 3 compras"}],
+            backgroundColor: withAlpha(seriesColorHex("#9CB8B4", "#9CB8B4"), 0.5),
+            borderColor: seriesColorHex("#9CB8B4", "#9CB8B4"),
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', align: 'start',
+                       labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+            tooltip: {
+              backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+              borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+              callbacks: {
+                label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)} días, ${ctx.parsed.y.toFixed(1)} compras`
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: "Días desde última compra", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
+            y: { title: { display: true, text: "Frecuencia (compras)", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
+          }
+        },
+        plugins: [{
+          id: 'quadrantOverlay_chart_rf',
+          afterDraw: (chartInstance) => {
+            const { ctx, chartArea } = chartInstance;
+            if (!chartArea) return;
+            const { left, right, top, bottom } = chartArea;
+            const scales = chartInstance.scales;
+            ctx.save();
+            if (quadrantLines_chart_rf) {
+              ctx.strokeStyle = withAlpha(inkColor('grid'), 0.55);
+              ctx.setLineDash([4, 4]);
+              ctx.lineWidth = 1;
+              if (quadrantLines_chart_rf.x !== undefined && quadrantLines_chart_rf.x !== null) {
+                const xPix = scales.x.getPixelForValue(quadrantLines_chart_rf.x);
+                ctx.beginPath(); ctx.moveTo(xPix, top); ctx.lineTo(xPix, bottom); ctx.stroke();
+              }
+              if (quadrantLines_chart_rf.y !== undefined && quadrantLines_chart_rf.y !== null) {
+                const yPix = scales.y.getPixelForValue(quadrantLines_chart_rf.y);
+                ctx.beginPath(); ctx.moveTo(left, yPix); ctx.lineTo(right, yPix); ctx.stroke();
+              }
+              ctx.setLineDash([]);
+            }
+            if (quadrantLabels_chart_rf.length) {
+              ctx.font = '700 10px -apple-system, sans-serif';
+              ctx.fillStyle = withAlpha(inkColor('muted'), 0.95);
+              const pad = 10;
+              quadrantLabels_chart_rf.forEach((q) => {
+                let x, y, align;
+                if (q.corner === 'top-left') { x = left + pad; y = top + pad + 9; align = 'left'; }
+                else if (q.corner === 'top-right') { x = right - pad; y = top + pad + 9; align = 'right'; }
+                else if (q.corner === 'bottom-left') { x = left + pad; y = bottom - pad; align = 'left'; }
+                else { x = right - pad; y = bottom - pad; align = 'right'; }
+                ctx.textAlign = align;
+                ctx.fillText(q.text, x, y);
+              });
+            }
+            ctx.restore();
+          }
+        }]
+      });
+    })();
+    
+
+    (function() {
+      const quadrantLines_chart_fv = null;
+      const quadrantLabels_chart_fv = [];
+      new Chart(document.getElementById('chart_fv').getContext('2d'), {
+        type: 'scatter',
+        data: { datasets: [{
+            label: "Campeones",
+            data: [{"x": 33, "y": 92.7, "label": "C-0001 · $32,161 MXN"}, {"x": 40, "y": 98.5, "label": "C-0002 · $42,665 MXN"}, {"x": 45, "y": 99.8, "label": "C-0003 · $50,245 MXN"}, {"x": 38, "y": 96.7, "label": "C-0004 · $39,032 MXN"}, {"x": 49, "y": 97.8, "label": "C-0005 · $41,661 MXN"}, {"x": 47, "y": 96.3, "label": "C-0006 · $37,947 MXN"}, {"x": 35, "y": 96.0, "label": "C-0007 · $37,393 MXN"}, {"x": 39, "y": 94.2, "label": "C-0008 · $35,675 MXN"}, {"x": 37, "y": 97.2, "label": "C-0009 · $40,481 MXN"}, {"x": 33, "y": 91.7, "label": "C-0010 · $28,915 MXN"}, {"x": 39, "y": 94.3, "label": "C-0011 · $35,724 MXN"}, {"x": 51, "y": 99.5, "label": "C-0012 · $46,266 MXN"}, {"x": 42, "y": 93.8, "label": "C-0013 · $33,811 MXN"}, {"x": 36, "y": 94.7, "label": "C-0014 · $36,383 MXN"}, {"x": 42, "y": 99.2, "label": "C-0015 · $44,592 MXN"}, {"x": 41, "y": 96.8, "label": "C-0016 · $39,787 MXN"}, {"x": 30, "y": 91.2, "label": "C-0017 · $27,313 MXN"}, {"x": 40, "y": 93.7, "label": "C-0018 · $33,505 MXN"}, {"x": 30, "y": 91.5, "label": "C-0019 · $28,684 MXN"}, {"x": 40, "y": 99.3, "label": "C-0020 · $45,126 MXN"}, {"x": 34, "y": 92.5, "label": "C-0021 · $31,174 MXN"}, {"x": 43, "y": 97.0, "label": "C-0022 · $39,853 MXN"}, {"x": 34, "y": 92.8, "label": "C-0023 · $32,193 MXN"}, {"x": 32, "y": 93.5, "label": "C-0024 · $33,354 MXN"}, {"x": 35, "y": 93.2, "label": "C-0025 · $32,421 MXN"}, {"x": 31, "y": 91.0, "label": "C-0026 · $27,217 MXN"}, {"x": 38, "y": 94.0, "label": "C-0027 · $34,537 MXN"}, {"x": 34, "y": 94.5, "label": "C-0028 · $36,151 MXN"}, {"x": 36, "y": 95.0, "label": "C-0029 · $36,550 MXN"}, {"x": 26, "y": 90.3, "label": "C-0030 · $23,672 MXN"}, {"x": 40, "y": 96.5, "label": "C-0031 · $38,929 MXN"}, {"x": 25, "y": 89.8, "label": "C-0032 · $21,524 MXN"}, {"x": 38, "y": 95.3, "label": "C-0033 · $36,697 MXN"}, {"x": 42, "y": 99.0, "label": "C-0034 · $44,248 MXN"}, {"x": 40, "y": 95.7, "label": "C-0035 · $36,844 MXN"}, {"x": 39, "y": 96.2, "label": "C-0036 · $37,919 MXN"}, {"x": 43, "y": 99.7, "label": "C-0037 · $46,516 MXN"}, {"x": 40, "y": 95.5, "label": "C-0038 · $36,802 MXN"}, {"x": 33, "y": 92.2, "label": "C-0039 · $30,172 MXN"}, {"x": 32, "y": 95.2, "label": "C-0040 · $36,678 MXN"}, {"x": 45, "y": 98.7, "label": "C-0041 · $42,985 MXN"}, {"x": 43, "y": 95.8, "label": "C-0042 · $37,000 MXN"}, {"x": 37, "y": 92.0, "label": "C-0043 · $29,857 MXN"}, {"x": 38, "y": 98.3, "label": "C-0044 · $42,540 MXN"}, {"x": 42, "y": 97.3, "label": "C-0045 · $40,765 MXN"}, {"x": 39, "y": 98.0, "label": "C-0046 · $41,781 MXN"}, {"x": 32, "y": 90.7, "label": "C-0047 · $25,977 MXN"}, {"x": 42, "y": 98.2, "label": "C-0048 · $42,012 MXN"}, {"x": 37, "y": 93.3, "label": "C-0049 · $32,801 MXN"}, {"x": 45, "y": 98.8, "label": "C-0051 · $43,208 MXN"}, {"x": 31, "y": 90.2, "label": "C-0052 · $23,568 MXN"}, {"x": 33, "y": 91.3, "label": "C-0053 · $27,535 MXN"}, {"x": 40, "y": 97.7, "label": "C-0054 · $41,569 MXN"}, {"x": 59, "y": 100.0, "label": "C-0055 · $54,368 MXN"}, {"x": 34, "y": 92.3, "label": "C-0056 · $30,227 MXN"}, {"x": 34, "y": 90.8, "label": "C-0057 · $26,295 MXN"}, {"x": 41, "y": 94.8, "label": "C-0058 · $36,473 MXN"}, {"x": 41, "y": 97.5, "label": "C-0059 · $41,473 MXN"}, {"x": 33, "y": 93.0, "label": "C-0060 · $32,343 MXN"}, {"x": 19, "y": 79.3, "label": "C-0061 · $11,649 MXN"}, {"x": 10, "y": 66.2, "label": "C-0062 · $6,233 MXN"}, {"x": 14, "y": 74.7, "label": "C-0063 · $9,437 MXN"}, {"x": 22, "y": 79.8, "label": "C-0064 · $11,769 MXN"}, {"x": 25, "y": 80.8, "label": "C-0065 · $12,060 MXN"}, {"x": 23, "y": 82.3, "label": "C-0067 · $12,805 MXN"}, {"x": 26, "y": 85.8, "label": "C-0068 · $14,190 MXN"}, {"x": 23, "y": 81.5, "label": "C-0069 · $12,310 MXN"}, {"x": 17, "y": 84.2, "label": "C-0070 · $13,450 MXN"}, {"x": 20, "y": 76.7, "label": "C-0071 · $10,907 MXN"}, {"x": 20, "y": 79.0, "label": "C-0072 · $11,600 MXN"}, {"x": 24, "y": 85.7, "label": "C-0073 · $14,161 MXN"}, {"x": 25, "y": 86.8, "label": "C-0074 · $15,140 MXN"}, {"x": 21, "y": 75.5, "label": "C-0075 · $10,365 MXN"}, {"x": 17, "y": 73.2, "label": "C-0076 · $8,876 MXN"}, {"x": 9, "y": 65.2, "label": "C-0077 · $5,839 MXN"}, {"x": 21, "y": 82.7, "label": "C-0078 · $12,930 MXN"}, {"x": 20, "y": 83.2, "label": "C-0079 · $13,210 MXN"}, {"x": 21, "y": 82.5, "label": "C-0080 · $12,881 MXN"}, {"x": 23, "y": 77.7, "label": "C-0083 · $11,438 MXN"}, {"x": 27, "y": 89.0, "label": "C-0084 · $17,330 MXN"}, {"x": 16, "y": 70.8, "label": "C-0085 · $7,852 MXN"}, {"x": 25, "y": 90.0, "label": "C-0087 · $22,045 MXN"}, {"x": 14, "y": 72.3, "label": "C-0089 · $8,581 MXN"}, {"x": 18, "y": 80.5, "label": "C-0090 · $12,009 MXN"}, {"x": 22, "y": 84.3, "label": "C-0091 · $13,455 MXN"}, {"x": 17, "y": 79.7, "label": "C-0092 · $11,749 MXN"}, {"x": 15, "y": 74.3, "label": "C-0093 · $9,182 MXN"}, {"x": 16, "y": 72.2, "label": "C-0094 · $8,525 MXN"}, {"x": 14, "y": 74.2, "label": "C-0095 · $9,157 MXN"}, {"x": 16, "y": 73.7, "label": "C-0097 · $8,990 MXN"}, {"x": 30, "y": 88.3, "label": "C-0098 · $16,647 MXN"}, {"x": 17, "y": 73.8, "label": "C-0099 · $9,106 MXN"}, {"x": 19, "y": 82.2, "label": "C-0100 · $12,481 MXN"}, {"x": 15, "y": 79.5, "label": "C-0101 · $11,672 MXN"}, {"x": 16, "y": 74.0, "label": "C-0102 · $9,145 MXN"}, {"x": 18, "y": 83.0, "label": "C-0103 · $12,967 MXN"}, {"x": 12, "y": 67.8, "label": "C-0104 · $6,704 MXN"}, {"x": 22, "y": 83.3, "label": "C-0106 · $13,270 MXN"}, {"x": 19, "y": 81.3, "label": "C-0107 · $12,297 MXN"}, {"x": 20, "y": 77.8, "label": "C-0108 · $11,463 MXN"}, {"x": 18, "y": 79.2, "label": "C-0109 · $11,624 MXN"}, {"x": 18, "y": 76.5, "label": "C-0110 · $10,831 MXN"}, {"x": 9, "y": 60.8, "label": "C-0111 · $4,694 MXN"}, {"x": 16, "y": 75.0, "label": "C-0113 · $9,472 MXN"}, {"x": 22, "y": 87.8, "label": "C-0114 · $16,236 MXN"}, {"x": 22, "y": 84.0, "label": "C-0116 · $13,394 MXN"}, {"x": 21, "y": 87.3, "label": "C-0117 · $15,456 MXN"}, {"x": 24, "y": 85.0, "label": "C-0118 · $13,730 MXN"}, {"x": 18, "y": 80.2, "label": "C-0119 · $11,957 MXN"}, {"x": 16, "y": 73.5, "label": "C-0120 · $8,940 MXN"}, {"x": 20, "y": 85.5, "label": "C-0121 · $13,962 MXN"}, {"x": 17, "y": 74.8, "label": "C-0122 · $9,445 MXN"}, {"x": 15, "y": 82.8, "label": "C-0123 · $12,949 MXN"}, {"x": 12, "y": 72.8, "label": "C-0124 · $8,722 MXN"}, {"x": 25, "y": 87.2, "label": "C-0125 · $15,409 MXN"}, {"x": 13, "y": 71.5, "label": "C-0127 · $8,179 MXN"}, {"x": 19, "y": 86.5, "label": "C-0128 · $14,863 MXN"}, {"x": 19, "y": 77.2, "label": "C-0129 · $11,240 MXN"}, {"x": 23, "y": 83.7, "label": "C-0131 · $13,328 MXN"}, {"x": 15, "y": 69.5, "label": "C-0132 · $7,397 MXN"}, {"x": 18, "y": 76.0, "label": "C-0133 · $10,548 MXN"}, {"x": 18, "y": 86.0, "label": "C-0134 · $14,356 MXN"}, {"x": 14, "y": 71.8, "label": "C-0135 · $8,301 MXN"}, {"x": 22, "y": 88.7, "label": "C-0136 · $16,885 MXN"}, {"x": 20, "y": 77.5, "label": "C-0137 · $11,425 MXN"}, {"x": 16, "y": 74.5, "label": "C-0138 · $9,288 MXN"}, {"x": 25, "y": 87.7, "label": "C-0139 · $16,230 MXN"}, {"x": 27, "y": 88.8, "label": "C-0140 · $16,905 MXN"}, {"x": 24, "y": 85.2, "label": "C-0141 · $13,896 MXN"}, {"x": 27, "y": 86.2, "label": "C-0142 · $14,460 MXN"}, {"x": 26, "y": 89.7, "label": "C-0143 · $20,634 MXN"}, {"x": 25, "y": 88.2, "label": "C-0144 · $16,535 MXN"}, {"x": 15, "y": 72.7, "label": "C-0145 · $8,645 MXN"}, {"x": 27, "y": 88.5, "label": "C-0146 · $16,671 MXN"}, {"x": 27, "y": 85.3, "label": "C-0147 · $13,903 MXN"}, {"x": 21, "y": 83.5, "label": "C-0149 · $13,275 MXN"}, {"x": 13, "y": 76.8, "label": "C-0150 · $11,010 MXN"}, {"x": 21, "y": 81.7, "label": "C-0151 · $12,350 MXN"}, {"x": 22, "y": 78.2, "label": "C-0152 · $11,485 MXN"}, {"x": 12, "y": 71.0, "label": "C-0153 · $7,977 MXN"}, {"x": 25, "y": 89.2, "label": "C-0154 · $17,649 MXN"}, {"x": 20, "y": 86.3, "label": "C-0155 · $14,576 MXN"}, {"x": 20, "y": 80.7, "label": "C-0156 · $12,057 MXN"}, {"x": 17, "y": 78.0, "label": "C-0157 · $11,476 MXN"}, {"x": 17, "y": 83.8, "label": "C-0158 · $13,389 MXN"}, {"x": 16, "y": 84.5, "label": "C-0159 · $13,504 MXN"}, {"x": 19, "y": 80.3, "label": "C-0160 · $11,962 MXN"}, {"x": 32, "y": 89.5, "label": "C-0161 · $20,357 MXN"}, {"x": 27, "y": 89.3, "label": "C-0163 · $18,824 MXN"}, {"x": 17, "y": 81.2, "label": "C-0164 · $12,236 MXN"}, {"x": 30, "y": 90.5, "label": "C-0165 · $25,302 MXN"}, {"x": 15, "y": 73.3, "label": "C-0166 · $8,887 MXN"}, {"x": 20, "y": 71.3, "label": "C-0167 · $8,167 MXN"}, {"x": 16, "y": 73.0, "label": "C-0168 · $8,854 MXN"}, {"x": 18, "y": 78.5, "label": "C-0169 · $11,531 MXN"}, {"x": 15, "y": 75.2, "label": "C-0170 · $9,855 MXN"}, {"x": 24, "y": 86.7, "label": "C-0171 · $15,090 MXN"}, {"x": 21, "y": 75.8, "label": "C-0172 · $10,514 MXN"}, {"x": 19, "y": 77.0, "label": "C-0173 · $11,079 MXN"}, {"x": 22, "y": 81.0, "label": "C-0174 · $12,093 MXN"}, {"x": 15, "y": 82.0, "label": "C-0175 · $12,407 MXN"}, {"x": 12, "y": 66.7, "label": "C-0176 · $6,359 MXN"}, {"x": 26, "y": 87.0, "label": "C-0177 · $15,351 MXN"}, {"x": 19, "y": 80.0, "label": "C-0178 · $11,942 MXN"}, {"x": 19, "y": 78.8, "label": "C-0179 · $11,562 MXN"}, {"x": 16, "y": 76.2, "label": "C-0180 · $10,706 MXN"}, {"x": 3, "y": 55.0, "label": "C-0445 · $2,643 MXN"}, {"x": 3, "y": 50.2, "label": "C-0455 · $1,793 MXN"}, {"x": 2, "y": 51.0, "label": "C-0456 · $1,938 MXN"}, {"x": 4, "y": 52.0, "label": "C-0469 · $2,042 MXN"}, {"x": 3, "y": 50.8, "label": "C-0495 · $1,931 MXN"}, {"x": 3, "y": 53.0, "label": "C-0501 · $2,234 MXN"}, {"x": 7, "y": 50.7, "label": "C-0516 · $1,894 MXN"}, {"x": 6, "y": 51.2, "label": "C-0517 · $1,969 MXN"}, {"x": 4, "y": 51.7, "label": "C-0519 · $1,992 MXN"}, {"x": 4, "y": 50.5, "label": "C-0523 · $1,883 MXN"}, {"x": 5, "y": 51.3, "label": "C-0532 · $1,974 MXN"}, {"x": 6, "y": 52.3, "label": "C-0538 · $2,063 MXN"}, {"x": 7, "y": 52.7, "label": "C-0547 · $2,171 MXN"}, {"x": 6, "y": 53.2, "label": "C-0558 · $2,268 MXN"}, {"x": 4, "y": 51.5, "label": "C-0564 · $1,983 MXN"}, {"x": 8, "y": 54.2, "label": "C-0578 · $2,511 MXN"}, {"x": 5, "y": 50.3, "label": "C-0580 · $1,862 MXN"}],
+            backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 0.5),
+            borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "En riesgo",
+            data: [{"x": 28, "y": 91.8, "label": "C-0050 · $29,765 MXN"}, {"x": 23, "y": 84.8, "label": "C-0066 · $13,556 MXN"}, {"x": 25, "y": 88.0, "label": "C-0081 · $16,288 MXN"}, {"x": 15, "y": 69.2, "label": "C-0082 · $7,089 MXN"}, {"x": 13, "y": 65.5, "label": "C-0086 · $5,878 MXN"}, {"x": 18, "y": 84.7, "label": "C-0088 · $13,555 MXN"}, {"x": 19, "y": 87.5, "label": "C-0096 · $15,570 MXN"}, {"x": 20, "y": 81.8, "label": "C-0105 · $12,375 MXN"}, {"x": 13, "y": 70.3, "label": "C-0112 · $7,667 MXN"}, {"x": 16, "y": 78.3, "label": "C-0115 · $11,509 MXN"}, {"x": 18, "y": 72.0, "label": "C-0126 · $8,351 MXN"}, {"x": 13, "y": 69.7, "label": "C-0130 · $7,475 MXN"}, {"x": 16, "y": 78.7, "label": "C-0148 · $11,538 MXN"}, {"x": 11, "y": 66.5, "label": "C-0162 · $6,291 MXN"}, {"x": 9, "y": 68.2, "label": "C-0181 · $6,849 MXN"}, {"x": 13, "y": 77.3, "label": "C-0182 · $11,416 MXN"}, {"x": 5, "y": 56.3, "label": "C-0183 · $2,887 MXN"}, {"x": 8, "y": 75.3, "label": "C-0184 · $9,954 MXN"}, {"x": 7, "y": 67.7, "label": "C-0185 · $6,636 MXN"}, {"x": 6, "y": 57.2, "label": "C-0187 · $3,298 MXN"}, {"x": 6, "y": 67.5, "label": "C-0188 · $6,628 MXN"}, {"x": 6, "y": 65.8, "label": "C-0189 · $6,015 MXN"}, {"x": 9, "y": 69.0, "label": "C-0190 · $7,052 MXN"}, {"x": 5, "y": 58.0, "label": "C-0191 · $3,485 MXN"}, {"x": 9, "y": 64.2, "label": "C-0192 · $5,593 MXN"}, {"x": 5, "y": 55.2, "label": "C-0193 · $2,713 MXN"}, {"x": 9, "y": 72.5, "label": "C-0194 · $8,622 MXN"}, {"x": 9, "y": 62.7, "label": "C-0195 · $5,191 MXN"}, {"x": 12, "y": 75.7, "label": "C-0196 · $10,479 MXN"}, {"x": 10, "y": 68.7, "label": "C-0197 · $6,958 MXN"}, {"x": 7, "y": 61.3, "label": "C-0198 · $4,908 MXN"}, {"x": 7, "y": 57.8, "label": "C-0199 · $3,462 MXN"}, {"x": 3, "y": 55.5, "label": "C-0200 · $2,745 MXN"}, {"x": 7, "y": 59.7, "label": "C-0201 · $4,141 MXN"}, {"x": 4, "y": 55.3, "label": "C-0202 · $2,724 MXN"}, {"x": 6, "y": 69.8, "label": "C-0203 · $7,494 MXN"}, {"x": 9, "y": 64.0, "label": "C-0204 · $5,589 MXN"}, {"x": 8, "y": 70.5, "label": "C-0205 · $7,669 MXN"}, {"x": 7, "y": 63.5, "label": "C-0206 · $5,379 MXN"}, {"x": 8, "y": 68.8, "label": "C-0207 · $7,035 MXN"}, {"x": 12, "y": 76.3, "label": "C-0209 · $10,728 MXN"}, {"x": 6, "y": 63.7, "label": "C-0210 · $5,453 MXN"}, {"x": 5, "y": 56.8, "label": "C-0211 · $3,108 MXN"}, {"x": 7, "y": 66.8, "label": "C-0212 · $6,402 MXN"}, {"x": 5, "y": 57.0, "label": "C-0213 · $3,237 MXN"}, {"x": 6, "y": 61.0, "label": "C-0215 · $4,750 MXN"}, {"x": 9, "y": 67.3, "label": "C-0216 · $6,616 MXN"}, {"x": 6, "y": 62.8, "label": "C-0218 · $5,282 MXN"}, {"x": 3, "y": 59.5, "label": "C-0220 · $4,082 MXN"}, {"x": 3, "y": 54.3, "label": "C-0221 · $2,518 MXN"}, {"x": 7, "y": 71.7, "label": "C-0222 · $8,246 MXN"}, {"x": 3, "y": 53.5, "label": "C-0225 · $2,411 MXN"}, {"x": 5, "y": 54.8, "label": "C-0227 · $2,623 MXN"}, {"x": 4, "y": 53.7, "label": "C-0228 · $2,424 MXN"}, {"x": 5, "y": 54.5, "label": "C-0229 · $2,553 MXN"}, {"x": 5, "y": 59.2, "label": "C-0230 · $3,978 MXN"}, {"x": 10, "y": 64.3, "label": "C-0231 · $5,641 MXN"}, {"x": 6, "y": 56.0, "label": "C-0232 · $2,850 MXN"}, {"x": 6, "y": 63.3, "label": "C-0233 · $5,357 MXN"}, {"x": 7, "y": 67.0, "label": "C-0234 · $6,436 MXN"}, {"x": 4, "y": 58.2, "label": "C-0235 · $3,507 MXN"}, {"x": 7, "y": 61.8, "label": "C-0236 · $4,945 MXN"}, {"x": 8, "y": 59.8, "label": "C-0238 · $4,235 MXN"}, {"x": 6, "y": 63.8, "label": "C-0239 · $5,475 MXN"}, {"x": 9, "y": 70.0, "label": "C-0240 · $7,529 MXN"}, {"x": 7, "y": 68.0, "label": "C-0241 · $6,721 MXN"}, {"x": 6, "y": 58.7, "label": "C-0243 · $3,869 MXN"}, {"x": 7, "y": 62.3, "label": "C-0244 · $5,159 MXN"}, {"x": 8, "y": 67.2, "label": "C-0245 · $6,538 MXN"}, {"x": 6, "y": 60.2, "label": "C-0246 · $4,419 MXN"}, {"x": 5, "y": 57.5, "label": "C-0247 · $3,330 MXN"}, {"x": 8, "y": 66.0, "label": "C-0248 · $6,165 MXN"}, {"x": 7, "y": 64.8, "label": "C-0249 · $5,806 MXN"}, {"x": 4, "y": 53.3, "label": "C-0250 · $2,281 MXN"}, {"x": 8, "y": 71.2, "label": "C-0251 · $8,048 MXN"}, {"x": 6, "y": 69.3, "label": "C-0252 · $7,393 MXN"}, {"x": 6, "y": 61.7, "label": "C-0253 · $4,938 MXN"}, {"x": 6, "y": 62.0, "label": "C-0254 · $5,099 MXN"}, {"x": 7, "y": 65.7, "label": "C-0255 · $5,954 MXN"}, {"x": 6, "y": 70.7, "label": "C-0256 · $7,699 MXN"}, {"x": 8, "y": 63.0, "label": "C-0257 · $5,297 MXN"}, {"x": 6, "y": 60.0, "label": "C-0258 · $4,309 MXN"}, {"x": 4, "y": 56.5, "label": "C-0259 · $2,984 MXN"}, {"x": 4, "y": 58.5, "label": "C-0260 · $3,843 MXN"}, {"x": 7, "y": 54.7, "label": "C-0261 · $2,569 MXN"}, {"x": 9, "y": 61.2, "label": "C-0262 · $4,879 MXN"}, {"x": 10, "y": 64.5, "label": "C-0263 · $5,726 MXN"}, {"x": 4, "y": 58.3, "label": "C-0264 · $3,819 MXN"}, {"x": 8, "y": 66.3, "label": "C-0265 · $6,287 MXN"}, {"x": 6, "y": 62.2, "label": "C-0266 · $5,100 MXN"}, {"x": 8, "y": 70.2, "label": "C-0267 · $7,535 MXN"}, {"x": 4, "y": 52.5, "label": "C-0269 · $2,149 MXN"}, {"x": 4, "y": 59.0, "label": "C-0270 · $3,977 MXN"}, {"x": 8, "y": 63.2, "label": "C-0271 · $5,300 MXN"}, {"x": 6, "y": 68.5, "label": "C-0273 · $6,898 MXN"}, {"x": 6, "y": 61.5, "label": "C-0274 · $4,934 MXN"}, {"x": 8, "y": 64.7, "label": "C-0275 · $5,782 MXN"}, {"x": 5, "y": 60.5, "label": "C-0276 · $4,460 MXN"}, {"x": 6, "y": 68.3, "label": "C-0277 · $6,892 MXN"}, {"x": 5, "y": 58.8, "label": "C-0278 · $3,964 MXN"}, {"x": 5, "y": 62.5, "label": "C-0279 · $5,179 MXN"}, {"x": 6, "y": 60.3, "label": "C-0280 · $4,455 MXN"}, {"x": 4, "y": 55.7, "label": "C-0281 · $2,762 MXN"}, {"x": 6, "y": 59.3, "label": "C-0282 · $4,054 MXN"}, {"x": 5, "y": 56.2, "label": "C-0283 · $2,871 MXN"}, {"x": 7, "y": 60.7, "label": "C-0284 · $4,692 MXN"}, {"x": 4, "y": 65.0, "label": "C-0285 · $5,814 MXN"}, {"x": 3, "y": 56.7, "label": "C-0286 · $3,100 MXN"}, {"x": 9, "y": 65.3, "label": "C-0287 · $5,868 MXN"}, {"x": 5, "y": 57.3, "label": "C-0288 · $3,306 MXN"}, {"x": 3, "y": 55.8, "label": "C-0309 · $2,839 MXN"}, {"x": 3, "y": 53.8, "label": "C-0312 · $2,442 MXN"}, {"x": 6, "y": 52.2, "label": "C-0315 · $2,055 MXN"}, {"x": 3, "y": 52.8, "label": "C-0338 · $2,217 MXN"}, {"x": 4, "y": 57.7, "label": "C-0355 · $3,364 MXN"}, {"x": 5, "y": 50.0, "label": "C-0543 · $1,793 MXN"}, {"x": 7, "y": 54.0, "label": "C-0551 · $2,470 MXN"}, {"x": 4, "y": 51.8, "label": "C-0599 · $2,040 MXN"}],
+            backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 0.5),
+            borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Hibernando",
+            data: [{"x": 2, "y": 48.3, "label": "C-0186 · $1,631 MXN"}, {"x": 2, "y": 8.5, "label": "C-0208 · $259 MXN"}, {"x": 1, "y": 32.0, "label": "C-0214 · $654 MXN"}, {"x": 2, "y": 49.3, "label": "C-0217 · $1,771 MXN"}, {"x": 3, "y": 47.0, "label": "C-0219 · $1,406 MXN"}, {"x": 1, "y": 38.3, "label": "C-0223 · $820 MXN"}, {"x": 3, "y": 49.8, "label": "C-0224 · $1,788 MXN"}, {"x": 3, "y": 44.5, "label": "C-0226 · $1,107 MXN"}, {"x": 3, "y": 48.2, "label": "C-0237 · $1,620 MXN"}, {"x": 2, "y": 38.0, "label": "C-0242 · $817 MXN"}, {"x": 2, "y": 23.5, "label": "C-0268 · $509 MXN"}, {"x": 1, "y": 32.2, "label": "C-0272 · $654 MXN"}, {"x": 2, "y": 31.2, "label": "C-0289 · $636 MXN"}, {"x": 2, "y": 44.7, "label": "C-0290 · $1,113 MXN"}, {"x": 3, "y": 39.0, "label": "C-0291 · $855 MXN"}, {"x": 3, "y": 42.3, "label": "C-0292 · $1,006 MXN"}, {"x": 1, "y": 0.4, "label": "C-0293 · $80 MXN"}, {"x": 1, "y": 16.5, "label": "C-0294 · $383 MXN"}, {"x": 1, "y": 5.7, "label": "C-0295 · $198 MXN"}, {"x": 1, "y": 6.2, "label": "C-0296 · $204 MXN"}, {"x": 1, "y": 12.0, "label": "C-0297 · $291 MXN"}, {"x": 3, "y": 37.3, "label": "C-0298 · $804 MXN"}, {"x": 1, "y": 0.4, "label": "C-0299 · $80 MXN"}, {"x": 2, "y": 20.8, "label": "C-0300 · $461 MXN"}, {"x": 2, "y": 35.7, "label": "C-0301 · $735 MXN"}, {"x": 3, "y": 23.3, "label": "C-0302 · $508 MXN"}, {"x": 1, "y": 11.7, "label": "C-0303 · $289 MXN"}, {"x": 1, "y": 17.8, "label": "C-0304 · $406 MXN"}, {"x": 1, "y": 11.0, "label": "C-0305 · $281 MXN"}, {"x": 2, "y": 39.5, "label": "C-0306 · $866 MXN"}, {"x": 2, "y": 49.2, "label": "C-0307 · $1,736 MXN"}, {"x": 1, "y": 4.7, "label": "C-0308 · $174 MXN"}, {"x": 1, "y": 10.2, "label": "C-0310 · $276 MXN"}, {"x": 1, "y": 36.7, "label": "C-0311 · $766 MXN"}, {"x": 1, "y": 20.5, "label": "C-0313 · $451 MXN"}, {"x": 1, "y": 8.8, "label": "C-0314 · $262 MXN"}, {"x": 1, "y": 19.7, "label": "C-0316 · $436 MXN"}, {"x": 2, "y": 34.3, "label": "C-0317 · $708 MXN"}, {"x": 1, "y": 29.0, "label": "C-0318 · $582 MXN"}, {"x": 2, "y": 15.2, "label": "C-0319 · $352 MXN"}, {"x": 1, "y": 42.0, "label": "C-0320 · $976 MXN"}, {"x": 1, "y": 6.7, "label": "C-0321 · $218 MXN"}, {"x": 1, "y": 9.0, "label": "C-0322 · $269 MXN"}, {"x": 1, "y": 19.3, "label": "C-0323 · $433 MXN"}, {"x": 3, "y": 47.7, "label": "C-0324 · $1,555 MXN"}, {"x": 1, "y": 22.2, "label": "C-0325 · $480 MXN"}, {"x": 1, "y": 15.0, "label": "C-0326 · $352 MXN"}, {"x": 1, "y": 12.3, "label": "C-0327 · $294 MXN"}, {"x": 1, "y": 28.8, "label": "C-0328 · $582 MXN"}, {"x": 1, "y": 4.8, "label": "C-0329 · $176 MXN"}, {"x": 2, "y": 40.3, "label": "C-0330 · $899 MXN"}, {"x": 1, "y": 8.7, "label": "C-0331 · $261 MXN"}, {"x": 1, "y": 8.3, "label": "C-0332 · $253 MXN"}, {"x": 1, "y": 5.5, "label": "C-0333 · $190 MXN"}, {"x": 1, "y": 29.3, "label": "C-0334 · $585 MXN"}, {"x": 1, "y": 9.7, "label": "C-0335 · $272 MXN"}, {"x": 1, "y": 33.3, "label": "C-0336 · $685 MXN"}, {"x": 1, "y": 32.3, "label": "C-0337 · $664 MXN"}, {"x": 1, "y": 38.7, "label": "C-0339 · $831 MXN"}, {"x": 2, "y": 34.5, "label": "C-0340 · $711 MXN"}, {"x": 1, "y": 14.2, "label": "C-0341 · $339 MXN"}, {"x": 3, "y": 46.3, "label": "C-0342 · $1,322 MXN"}, {"x": 1, "y": 36.2, "label": "C-0343 · $756 MXN"}, {"x": 1, "y": 8.0, "label": "C-0344 · $251 MXN"}, {"x": 1, "y": 24.8, "label": "C-0345 · $534 MXN"}, {"x": 2, "y": 25.8, "label": "C-0346 · $539 MXN"}, {"x": 1, "y": 16.8, "label": "C-0347 · $390 MXN"}, {"x": 2, "y": 34.0, "label": "C-0348 · $696 MXN"}, {"x": 1, "y": 4.2, "label": "C-0349 · $163 MXN"}, {"x": 2, "y": 33.2, "label": "C-0350 · $684 MXN"}, {"x": 1, "y": 25.3, "label": "C-0351 · $536 MXN"}, {"x": 1, "y": 2.3, "label": "C-0352 · $117 MXN"}, {"x": 1, "y": 33.0, "label": "C-0353 · $673 MXN"}, {"x": 1, "y": 2.0, "label": "C-0354 · $104 MXN"}, {"x": 1, "y": 18.8, "label": "C-0356 · $427 MXN"}, {"x": 1, "y": 23.2, "label": "C-0357 · $508 MXN"}, {"x": 1, "y": 11.8, "label": "C-0358 · $289 MXN"}, {"x": 1, "y": 7.5, "label": "C-0359 · $239 MXN"}, {"x": 1, "y": 39.2, "label": "C-0360 · $860 MXN"}, {"x": 1, "y": 11.3, "label": "C-0361 · $285 MXN"}, {"x": 2, "y": 23.7, "label": "C-0362 · $510 MXN"}, {"x": 3, "y": 47.8, "label": "C-0363 · $1,574 MXN"}, {"x": 1, "y": 19.0, "label": "C-0364 · $427 MXN"}, {"x": 1, "y": 9.5, "label": "C-0365 · $271 MXN"}, {"x": 2, "y": 20.2, "label": "C-0366 · $445 MXN"}, {"x": 1, "y": 6.3, "label": "C-0367 · $208 MXN"}, {"x": 2, "y": 28.0, "label": "C-0368 · $574 MXN"}, {"x": 1, "y": 6.5, "label": "C-0369 · $211 MXN"}, {"x": 1, "y": 26.3, "label": "C-0370 · $543 MXN"}, {"x": 1, "y": 22.3, "label": "C-0371 · $491 MXN"}, {"x": 2, "y": 32.7, "label": "C-0372 · $671 MXN"}, {"x": 1, "y": 20.3, "label": "C-0373 · $445 MXN"}, {"x": 1, "y": 15.7, "label": "C-0374 · $366 MXN"}, {"x": 1, "y": 18.2, "label": "C-0375 · $417 MXN"}, {"x": 1, "y": 24.5, "label": "C-0376 · $532 MXN"}, {"x": 1, "y": 3.5, "label": "C-0377 · $135 MXN"}, {"x": 1, "y": 12.7, "label": "C-0378 · $295 MXN"}, {"x": 1, "y": 9.3, "label": "C-0379 · $271 MXN"}, {"x": 1, "y": 14.7, "label": "C-0380 · $342 MXN"}, {"x": 2, "y": 47.2, "label": "C-0381 · $1,406 MXN"}, {"x": 1, "y": 5.2, "label": "C-0382 · $182 MXN"}, {"x": 1, "y": 31.7, "label": "C-0383 · $652 MXN"}, {"x": 1, "y": 7.8, "label": "C-0384 · $246 MXN"}, {"x": 1, "y": 1.2, "label": "C-0385 · $86 MXN"}, {"x": 1, "y": 14.5, "label": "C-0386 · $340 MXN"}, {"x": 1, "y": 1.0, "label": "C-0387 · $84 MXN"}, {"x": 1, "y": 39.3, "label": "C-0388 · $860 MXN"}, {"x": 1, "y": 9.8, "label": "C-0389 · $272 MXN"}, {"x": 1, "y": 3.2, "label": "C-0390 · $134 MXN"}, {"x": 2, "y": 18.7, "label": "C-0391 · $424 MXN"}, {"x": 2, "y": 32.8, "label": "C-0392 · $672 MXN"}, {"x": 1, "y": 12.5, "label": "C-0393 · $295 MXN"}, {"x": 3, "y": 39.8, "label": "C-0394 · $872 MXN"}, {"x": 3, "y": 36.0, "label": "C-0395 · $747 MXN"}, {"x": 2, "y": 41.8, "label": "C-0396 · $967 MXN"}, {"x": 1, "y": 22.0, "label": "C-0397 · $477 MXN"}, {"x": 2, "y": 37.5, "label": "C-0398 · $808 MXN"}, {"x": 2, "y": 15.8, "label": "C-0399 · $372 MXN"}, {"x": 1, "y": 0.4, "label": "C-0400 · $80 MXN"}, {"x": 1, "y": 7.0, "label": "C-0401 · $232 MXN"}, {"x": 1, "y": 23.0, "label": "C-0402 · $506 MXN"}, {"x": 1, "y": 7.3, "label": "C-0403 · $238 MXN"}, {"x": 1, "y": 27.7, "label": "C-0404 · $571 MXN"}, {"x": 1, "y": 13.7, "label": "C-0405 · $321 MXN"}, {"x": 1, "y": 24.7, "label": "C-0406 · $532 MXN"}, {"x": 2, "y": 13.2, "label": "C-0407 · $296 MXN"}, {"x": 1, "y": 25.5, "label": "C-0408 · $537 MXN"}, {"x": 1, "y": 12.2, "label": "C-0409 · $292 MXN"}, {"x": 2, "y": 29.8, "label": "C-0410 · $593 MXN"}, {"x": 1, "y": 7.7, "label": "C-0411 · $239 MXN"}, {"x": 1, "y": 19.2, "label": "C-0412 · $429 MXN"}, {"x": 2, "y": 46.2, "label": "C-0413 · $1,306 MXN"}, {"x": 1, "y": 17.2, "label": "C-0414 · $394 MXN"}, {"x": 1, "y": 7.2, "label": "C-0415 · $234 MXN"}, {"x": 2, "y": 35.8, "label": "C-0416 · $743 MXN"}, {"x": 2, "y": 9.2, "label": "C-0417 · $270 MXN"}, {"x": 1, "y": 26.7, "label": "C-0418 · $557 MXN"}, {"x": 1, "y": 17.7, "label": "C-0419 · $401 MXN"}, {"x": 2, "y": 49.5, "label": "C-0420 · $1,773 MXN"}, {"x": 2, "y": 16.7, "label": "C-0512 · $388 MXN"}, {"x": 1, "y": 0.4, "label": "C-0513 · $80 MXN"}, {"x": 2, "y": 43.0, "label": "C-0514 · $1,039 MXN"}, {"x": 2, "y": 25.0, "label": "C-0515 · $534 MXN"}, {"x": 3, "y": 46.0, "label": "C-0518 · $1,297 MXN"}, {"x": 1, "y": 5.8, "label": "C-0521 · $202 MXN"}, {"x": 3, "y": 32.5, "label": "C-0522 · $669 MXN"}, {"x": 3, "y": 43.7, "label": "C-0524 · $1,072 MXN"}, {"x": 1, "y": 34.2, "label": "C-0529 · $700 MXN"}, {"x": 2, "y": 40.5, "label": "C-0531 · $901 MXN"}, {"x": 2, "y": 16.2, "label": "C-0533 · $375 MXN"}, {"x": 1, "y": 31.8, "label": "C-0534 · $652 MXN"}, {"x": 4, "y": 36.8, "label": "C-0535 · $770 MXN"}, {"x": 3, "y": 37.8, "label": "C-0537 · $811 MXN"}, {"x": 2, "y": 38.2, "label": "C-0541 · $819 MXN"}, {"x": 2, "y": 10.7, "label": "C-0545 · $280 MXN"}, {"x": 3, "y": 24.3, "label": "C-0546 · $523 MXN"}, {"x": 1, "y": 3.8, "label": "C-0548 · $136 MXN"}, {"x": 4, "y": 43.5, "label": "C-0549 · $1,066 MXN"}, {"x": 2, "y": 31.0, "label": "C-0556 · $633 MXN"}, {"x": 1, "y": 2.7, "label": "C-0557 · $127 MXN"}, {"x": 2, "y": 34.7, "label": "C-0560 · $719 MXN"}, {"x": 3, "y": 31.3, "label": "C-0563 · $641 MXN"}, {"x": 1, "y": 5.0, "label": "C-0566 · $179 MXN"}, {"x": 2, "y": 33.7, "label": "C-0568 · $694 MXN"}, {"x": 2, "y": 17.0, "label": "C-0571 · $394 MXN"}, {"x": 2, "y": 20.7, "label": "C-0575 · $455 MXN"}, {"x": 3, "y": 21.7, "label": "C-0576 · $475 MXN"}, {"x": 2, "y": 29.5, "label": "C-0579 · $586 MXN"}, {"x": 3, "y": 19.5, "label": "C-0582 · $434 MXN"}, {"x": 2, "y": 30.2, "label": "C-0583 · $597 MXN"}, {"x": 1, "y": 16.3, "label": "C-0584 · $377 MXN"}, {"x": 2, "y": 30.0, "label": "C-0586 · $595 MXN"}, {"x": 2, "y": 22.8, "label": "C-0587 · $502 MXN"}, {"x": 3, "y": 27.0, "label": "C-0588 · $560 MXN"}, {"x": 5, "y": 47.5, "label": "C-0589 · $1,423 MXN"}, {"x": 2, "y": 6.8, "label": "C-0590 · $221 MXN"}, {"x": 1, "y": 22.7, "label": "C-0591 · $499 MXN"}, {"x": 2, "y": 21.2, "label": "C-0592 · $469 MXN"}, {"x": 3, "y": 44.2, "label": "C-0594 · $1,075 MXN"}, {"x": 3, "y": 41.7, "label": "C-0595 · $962 MXN"}, {"x": 3, "y": 39.7, "label": "C-0597 · $869 MXN"}, {"x": 3, "y": 40.0, "label": "C-0598 · $879 MXN"}],
+            backgroundColor: withAlpha(seriesColorHex("#8C5A1E", "#8C5A1E"), 0.5),
+            borderColor: seriesColorHex("#8C5A1E", "#8C5A1E"),
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Nuevos / Prometedores",
+            data: [{"x": 1, "y": 18.0, "label": "C-0421 · $416 MXN"}, {"x": 2, "y": 20.0, "label": "C-0422 · $442 MXN"}, {"x": 1, "y": 19.8, "label": "C-0423 · $438 MXN"}, {"x": 1, "y": 28.3, "label": "C-0424 · $577 MXN"}, {"x": 1, "y": 3.3, "label": "C-0425 · $134 MXN"}, {"x": 2, "y": 30.3, "label": "C-0426 · $611 MXN"}, {"x": 1, "y": 14.0, "label": "C-0427 · $331 MXN"}, {"x": 1, "y": 12.8, "label": "C-0428 · $295 MXN"}, {"x": 2, "y": 44.8, "label": "C-0429 · $1,164 MXN"}, {"x": 1, "y": 1.5, "label": "C-0430 · $97 MXN"}, {"x": 2, "y": 26.2, "label": "C-0431 · $541 MXN"}, {"x": 4, "y": 47.3, "label": "C-0432 · $1,409 MXN"}, {"x": 1, "y": 4.3, "label": "C-0433 · $164 MXN"}, {"x": 1, "y": 46.8, "label": "C-0434 · $1,403 MXN"}, {"x": 1, "y": 34.8, "label": "C-0435 · $720 MXN"}, {"x": 2, "y": 45.0, "label": "C-0436 · $1,170 MXN"}, {"x": 1, "y": 30.5, "label": "C-0437 · $615 MXN"}, {"x": 1, "y": 10.8, "label": "C-0438 · $281 MXN"}, {"x": 1, "y": 37.2, "label": "C-0439 · $802 MXN"}, {"x": 1, "y": 16.0, "label": "C-0440 · $373 MXN"}, {"x": 1, "y": 14.3, "label": "C-0441 · $339 MXN"}, {"x": 1, "y": 45.8, "label": "C-0442 · $1,286 MXN"}, {"x": 1, "y": 24.0, "label": "C-0443 · $514 MXN"}, {"x": 1, "y": 37.0, "label": "C-0444 · $790 MXN"}, {"x": 2, "y": 41.3, "label": "C-0446 · $956 MXN"}, {"x": 1, "y": 8.2, "label": "C-0447 · $252 MXN"}, {"x": 2, "y": 45.2, "label": "C-0448 · $1,205 MXN"}, {"x": 1, "y": 2.2, "label": "C-0449 · $106 MXN"}, {"x": 1, "y": 5.3, "label": "C-0450 · $188 MXN"}, {"x": 1, "y": 4.5, "label": "C-0451 · $165 MXN"}, {"x": 1, "y": 13.0, "label": "C-0452 · $295 MXN"}, {"x": 2, "y": 17.3, "label": "C-0453 · $395 MXN"}, {"x": 1, "y": 22.5, "label": "C-0454 · $495 MXN"}, {"x": 1, "y": 15.3, "label": "C-0457 · $357 MXN"}, {"x": 1, "y": 31.5, "label": "C-0458 · $649 MXN"}, {"x": 2, "y": 41.2, "label": "C-0459 · $936 MXN"}, {"x": 1, "y": 29.7, "label": "C-0460 · $589 MXN"}, {"x": 1, "y": 2.8, "label": "C-0461 · $128 MXN"}, {"x": 2, "y": 40.2, "label": "C-0462 · $891 MXN"}, {"x": 1, "y": 21.0, "label": "C-0463 · $467 MXN"}, {"x": 2, "y": 40.8, "label": "C-0464 · $923 MXN"}, {"x": 1, "y": 26.8, "label": "C-0465 · $559 MXN"}, {"x": 1, "y": 13.3, "label": "C-0466 · $312 MXN"}, {"x": 1, "y": 14.8, "label": "C-0467 · $347 MXN"}, {"x": 2, "y": 35.5, "label": "C-0468 · $725 MXN"}, {"x": 1, "y": 28.7, "label": "C-0470 · $580 MXN"}, {"x": 1, "y": 21.5, "label": "C-0471 · $470 MXN"}, {"x": 2, "y": 26.5, "label": "C-0472 · $545 MXN"}, {"x": 1, "y": 28.2, "label": "C-0473 · $575 MXN"}, {"x": 1, "y": 27.8, "label": "C-0474 · $571 MXN"}, {"x": 1, "y": 0.8, "label": "C-0475 · $82 MXN"}, {"x": 2, "y": 42.7, "label": "C-0476 · $1,022 MXN"}, {"x": 1, "y": 21.8, "label": "C-0477 · $475 MXN"}, {"x": 1, "y": 1.7, "label": "C-0478 · $101 MXN"}, {"x": 1, "y": 3.0, "label": "C-0479 · $130 MXN"}, {"x": 1, "y": 11.5, "label": "C-0480 · $285 MXN"}, {"x": 1, "y": 1.3, "label": "C-0481 · $90 MXN"}, {"x": 1, "y": 48.0, "label": "C-0482 · $1,576 MXN"}, {"x": 1, "y": 10.3, "label": "C-0483 · $277 MXN"}, {"x": 1, "y": 17.5, "label": "C-0484 · $398 MXN"}, {"x": 1, "y": 4.0, "label": "C-0485 · $148 MXN"}, {"x": 1, "y": 27.2, "label": "C-0486 · $563 MXN"}, {"x": 1, "y": 38.5, "label": "C-0487 · $831 MXN"}, {"x": 1, "y": 2.5, "label": "C-0488 · $123 MXN"}, {"x": 1, "y": 10.5, "label": "C-0489 · $278 MXN"}, {"x": 1, "y": 36.5, "label": "C-0490 · $764 MXN"}, {"x": 3, "y": 49.0, "label": "C-0491 · $1,724 MXN"}, {"x": 2, "y": 41.0, "label": "C-0492 · $929 MXN"}, {"x": 2, "y": 29.2, "label": "C-0493 · $585 MXN"}, {"x": 1, "y": 42.5, "label": "C-0494 · $1,022 MXN"}, {"x": 2, "y": 11.2, "label": "C-0496 · $283 MXN"}, {"x": 2, "y": 45.3, "label": "C-0497 · $1,236 MXN"}, {"x": 2, "y": 15.5, "label": "C-0498 · $359 MXN"}, {"x": 1, "y": 35.2, "label": "C-0499 · $722 MXN"}, {"x": 1, "y": 25.2, "label": "C-0500 · $534 MXN"}, {"x": 1, "y": 21.3, "label": "C-0502 · $469 MXN"}, {"x": 1, "y": 13.8, "label": "C-0503 · $328 MXN"}, {"x": 1, "y": 13.5, "label": "C-0504 · $318 MXN"}, {"x": 2, "y": 26.0, "label": "C-0505 · $540 MXN"}, {"x": 1, "y": 42.2, "label": "C-0506 · $986 MXN"}, {"x": 1, "y": 23.8, "label": "C-0507 · $511 MXN"}, {"x": 1, "y": 1.8, "label": "C-0508 · $101 MXN"}, {"x": 1, "y": 10.0, "label": "C-0509 · $272 MXN"}, {"x": 1, "y": 24.2, "label": "C-0510 · $522 MXN"}, {"x": 3, "y": 30.7, "label": "C-0511 · $622 MXN"}, {"x": 2, "y": 35.0, "label": "C-0520 · $721 MXN"}, {"x": 3, "y": 43.2, "label": "C-0525 · $1,040 MXN"}, {"x": 1, "y": 18.5, "label": "C-0526 · $424 MXN"}, {"x": 5, "y": 48.5, "label": "C-0527 · $1,640 MXN"}, {"x": 3, "y": 40.7, "label": "C-0528 · $914 MXN"}, {"x": 2, "y": 30.8, "label": "C-0530 · $633 MXN"}, {"x": 6, "y": 46.5, "label": "C-0536 · $1,374 MXN"}, {"x": 3, "y": 25.7, "label": "C-0539 · $539 MXN"}, {"x": 1, "y": 6.0, "label": "C-0540 · $203 MXN"}, {"x": 4, "y": 45.5, "label": "C-0542 · $1,243 MXN"}, {"x": 4, "y": 41.5, "label": "C-0544 · $956 MXN"}, {"x": 1, "y": 27.3, "label": "C-0550 · $566 MXN"}, {"x": 4, "y": 48.8, "label": "C-0552 · $1,723 MXN"}, {"x": 2, "y": 33.8, "label": "C-0553 · $696 MXN"}, {"x": 1, "y": 3.7, "label": "C-0554 · $136 MXN"}, {"x": 3, "y": 43.3, "label": "C-0555 · $1,047 MXN"}, {"x": 2, "y": 33.5, "label": "C-0559 · $693 MXN"}, {"x": 4, "y": 42.8, "label": "C-0561 · $1,028 MXN"}, {"x": 6, "y": 49.7, "label": "C-0562 · $1,787 MXN"}, {"x": 3, "y": 35.3, "label": "C-0565 · $723 MXN"}, {"x": 1, "y": 27.5, "label": "C-0567 · $568 MXN"}, {"x": 6, "y": 46.7, "label": "C-0569 · $1,377 MXN"}, {"x": 6, "y": 45.7, "label": "C-0570 · $1,286 MXN"}, {"x": 3, "y": 38.8, "label": "C-0572 · $840 MXN"}, {"x": 3, "y": 36.3, "label": "C-0573 · $758 MXN"}, {"x": 2, "y": 18.3, "label": "C-0574 · $419 MXN"}, {"x": 2, "y": 44.0, "label": "C-0577 · $1,073 MXN"}, {"x": 3, "y": 43.8, "label": "C-0581 · $1,072 MXN"}, {"x": 4, "y": 28.5, "label": "C-0585 · $579 MXN"}, {"x": 4, "y": 37.7, "label": "C-0593 · $809 MXN"}, {"x": 5, "y": 48.7, "label": "C-0596 · $1,672 MXN"}, {"x": 3, "y": 44.3, "label": "C-0600 · $1,086 MXN"}],
+            backgroundColor: withAlpha(seriesColorHex("#9CB8B4", "#9CB8B4"), 0.5),
+            borderColor: seriesColorHex("#9CB8B4", "#9CB8B4"),
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', align: 'start',
+                       labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+            tooltip: {
+              backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+              borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+              callbacks: {
+                label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)} compras, ${ctx.parsed.y.toFixed(1)} pct`
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: "Frecuencia (compras)", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
+            y: { title: { display: true, text: "Valor histórico (percentil)", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
+          }
+        },
+        plugins: [{
+          id: 'quadrantOverlay_chart_fv',
+          afterDraw: (chartInstance) => {
+            const { ctx, chartArea } = chartInstance;
+            if (!chartArea) return;
+            const { left, right, top, bottom } = chartArea;
+            const scales = chartInstance.scales;
+            ctx.save();
+            if (quadrantLines_chart_fv) {
+              ctx.strokeStyle = withAlpha(inkColor('grid'), 0.55);
+              ctx.setLineDash([4, 4]);
+              ctx.lineWidth = 1;
+              if (quadrantLines_chart_fv.x !== undefined && quadrantLines_chart_fv.x !== null) {
+                const xPix = scales.x.getPixelForValue(quadrantLines_chart_fv.x);
+                ctx.beginPath(); ctx.moveTo(xPix, top); ctx.lineTo(xPix, bottom); ctx.stroke();
+              }
+              if (quadrantLines_chart_fv.y !== undefined && quadrantLines_chart_fv.y !== null) {
+                const yPix = scales.y.getPixelForValue(quadrantLines_chart_fv.y);
+                ctx.beginPath(); ctx.moveTo(left, yPix); ctx.lineTo(right, yPix); ctx.stroke();
+              }
+              ctx.setLineDash([]);
+            }
+            if (quadrantLabels_chart_fv.length) {
+              ctx.font = '700 10px -apple-system, sans-serif';
+              ctx.fillStyle = withAlpha(inkColor('muted'), 0.95);
+              const pad = 10;
+              quadrantLabels_chart_fv.forEach((q) => {
+                let x, y, align;
+                if (q.corner === 'top-left') { x = left + pad; y = top + pad + 9; align = 'left'; }
+                else if (q.corner === 'top-right') { x = right - pad; y = top + pad + 9; align = 'right'; }
+                else if (q.corner === 'bottom-left') { x = left + pad; y = bottom - pad; align = 'left'; }
+                else { x = right - pad; y = bottom - pad; align = 'right'; }
+                ctx.textAlign = align;
+                ctx.fillText(q.text, x, y);
+              });
+            }
+            ctx.restore();
+          }
+        }]
+      });
+    })();
+    
+</script>
+</body>
+</html>

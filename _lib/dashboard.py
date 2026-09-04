@@ -106,8 +106,10 @@ def _table_html(table, open=False):
         <tbody>{rows}</tbody>
       </table>"""
     if open:
+        title_html = f'<p class="section-label">{table["title"]}</p>' if table.get("title") else ""
         return f"""
     <div class="table-wrap table-wrap-open">
+      {title_html}
       {table_markup}
     </div>
     """
@@ -116,6 +118,99 @@ def _table_html(table, open=False):
       <summary>Ver tabla de datos</summary>
       {table_markup}
     </details>
+    """
+
+
+def _banner_html(banner):
+    """Banner de 'la respuesta primero' (principio de la pirámide de Minto):
+    va arriba de todo, antes incluso de los KPIs, para que la conclusión
+    accionable de la semana se lea sin tener que interpretar ningún gráfico."""
+    if not banner:
+        return ""
+    label = banner.get("label", "Esta semana")
+    return f"""
+    <div class="minto-banner">
+      <p class="minto-label">{label}</p>
+      <h2>{banner["headline"]}</h2>
+      <p class="minto-sub">{banner.get("subtext", "")}</p>
+    </div>
+    """
+
+
+def _checklist_html(checklist):
+    """Lista de tareas con checkboxes persistidos en localStorage (por
+    navegador, sin backend) -- convierte la tabla estática de 'top clientes'
+    en una herramienta de seguimiento diario real: marcar, ver progreso,
+    y que quede marcado la próxima vez que se abra el dashboard."""
+    if not checklist:
+        return ""
+    cid = checklist["id"]
+    headers = "".join(f"<th>{h}</th>" for h in checklist["headers"])
+    rows_html = []
+    for row in checklist["rows"]:
+        cells = "".join(f"<td>{c}</td>" for c in row["cells"])
+        rows_html.append(
+            f'<tr data-row="{row["id"]}">'
+            f'<td class="check-col"><input type="checkbox" class="xia-check" data-scope="{cid}" data-row="{row["id"]}"></td>'
+            f'{cells}</tr>'
+        )
+    total = len(checklist["rows"])
+    return f"""
+    <div class="checklist-card">
+      <h3>{checklist["title"]}</h3>
+      <p class="checklist-sub">{checklist.get("subtitle", "")}</p>
+      <div class="checklist-progress">
+        <div class="progress-bar"><div class="progress-fill" id="{cid}-fill" style="width:0%"></div></div>
+        <span id="{cid}-count">0 / {total} {checklist.get("progress_noun", "contactados")}</span>
+      </div>
+      <div class="checklist-table-wrap">
+        <table class="checklist-table">
+          <thead><tr><th></th>{headers}</tr></thead>
+          <tbody>{"".join(rows_html)}</tbody>
+        </table>
+      </div>
+    </div>
+    """
+
+
+def _checklist_js(checklist):
+    if not checklist:
+        return ""
+    cid = checklist["id"]
+    total = len(checklist["rows"])
+    noun = json.dumps(checklist.get("progress_noun", "contactados"), ensure_ascii=False)
+    return f"""
+    (function() {{
+      const scopeId = {json.dumps(cid)};
+      const total = {total};
+      const storageKey = 'xia_checklist_' + scopeId;
+      let state = {{}};
+      try {{ state = JSON.parse(localStorage.getItem(storageKey) || '{{}}'); }} catch (e) {{}}
+      const boxes = document.querySelectorAll(`input.xia-check[data-scope="${{scopeId}}"]`);
+      function updateProgress() {{
+        const checked = document.querySelectorAll(`input.xia-check[data-scope="${{scopeId}}"]:checked`).length;
+        const fill = document.getElementById(scopeId + '-fill');
+        const count = document.getElementById(scopeId + '-count');
+        if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
+        if (count) count.textContent = `${{checked}} / ${{total}} ${{{noun}}}`;
+      }}
+      boxes.forEach((b) => {{
+        const rowId = b.dataset.row;
+        if (state[rowId]) {{
+          b.checked = true;
+          const tr = b.closest('tr');
+          if (tr) tr.classList.add('done');
+        }}
+        b.addEventListener('change', () => {{
+          state[rowId] = b.checked;
+          try {{ localStorage.setItem(storageKey, JSON.stringify(state)); }} catch (e) {{}}
+          const tr = b.closest('tr');
+          if (tr) tr.classList.toggle('done', b.checked);
+          updateProgress();
+        }});
+      }});
+      updateProgress();
+    }})();
     """
 
 
