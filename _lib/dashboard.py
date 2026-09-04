@@ -867,7 +867,7 @@ def _explorer_js(explorer):
 
 
 TEMPLATE = """<!doctype html>
-<html lang="es">
+<html lang="es"{html_theme_attr}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1095,8 +1095,14 @@ function surfaceColor() {{ return cssVar('--surface'); }}
 
 def render(filename, project_no, title, tagline, kpis, charts, insights, table=None, chart_cols=2,
            hero_kpi=None, hero_chart=None, drilldown_charts=None, drilldown_title=None,
-           banner=None, checklist=None, table_position="bottom", explorer=None):
+           banner=None, checklist=None, table_position="bottom", explorer=None, default_theme=None):
     tag = f"Proyecto {project_no:02d} · Portafolio de demostración"
+    # default_theme stamps data-theme on <html> so the page ignores the
+    # viewer's OS/browser preference and always opens in that theme (still
+    # toggleable by whatever in-page control reads/writes the attribute).
+    # Leave it None (every other project's current behavior) to follow
+    # prefers-color-scheme instead.
+    html_theme_attr = f' data-theme="{default_theme}"' if default_theme else ""
 
     banner_html = _banner_html(banner)
     checklist_html = _checklist_html(checklist)
@@ -1140,6 +1146,7 @@ def render(filename, project_no, title, tagline, kpis, charts, insights, table=N
 
     html = TEMPLATE.format(
         page_title=f"XIA · {title}",
+        html_theme_attr=html_theme_attr,
         chartjs_url=CHARTJS_URL,
         tag=tag,
         title=title,

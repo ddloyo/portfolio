@@ -411,6 +411,7 @@ dash.render(
     drilldown_title="Estacionalidad por categoría, tendencia de ingreso y el costo del error de pronóstico",
     banner=banner,
     explorer=explorer,
+    default_theme="light",
 )
 
 print(f"SKUs: {total_sku} | Ingreso anual: ${ingreso_anual_total:,.0f} | En riesgo: {n_en_riesgo} SKUs / ${ingreso_anual_riesgo:,.0f} MXN ({pct_ingreso_en_riesgo:.0f}% de venta)")
