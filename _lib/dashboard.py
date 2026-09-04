@@ -579,10 +579,16 @@ def _chart_js(chart):
     y_label = chart.get("y_label", "")
     stacked = "true" if chart.get("stacked") else "false"
     value_max = chart.get("value_max")
-    tick_callback = ", callback: (v) => v + '%'" if value_format == "percent" else ""
+    value_min = chart.get("value_min")
+    tick_callback = (
+        ", callback: (v) => v + '%'" if value_format == "percent" else
+        ", callback: (v) => Math.abs(v)" if value_format == "abs_count" else
+        ""
+    )
     tooltip_callback = (
         "label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}%`" if value_format == "percent" else
         "label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('es-MX')}`" if value_format == "currency" else
+        "label: (ctx) => `${ctx.dataset.label}: ${Math.abs(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y'])} clientes`" if value_format == "abs_count" else
         ""
     )
     value_axis = "x" if horizontal else "y"
@@ -590,6 +596,7 @@ def _chart_js(chart):
     index_axis_opt = "indexAxis: 'y'," if horizontal else ""
     tooltip_callbacks_js = f",\n                      callbacks: {{ {tooltip_callback} }}" if tooltip_callback else ""
     suggested_max_js = f", suggestedMax: {json.dumps(value_max)}" if value_max is not None else ""
+    suggested_min_js = f", suggestedMin: {json.dumps(value_min)}" if value_min is not None else ""
 
     annotate_parts = []
     if chart.get("value_labels"):
@@ -696,12 +703,105 @@ def _chart_js(chart):
           {value_axis}: {{
             stacked: {stacked},
             grid: {{ color: inkColor('grid') }},
-            ticks: {{ color: inkColor('muted') }}{tick_callback},
-            title: {{ display: {str(bool(y_label)).lower()}, text: {json.dumps(y_label, ensure_ascii=False)}, color: inkColor('secondary') }}{suggested_max_js}
+            ticks: {{ color: inkColor('muted'){tick_callback} }},
+            title: {{ display: {str(bool(y_label)).lower()}, text: {json.dumps(y_label, ensure_ascii=False)}, color: inkColor('secondary') }}{suggested_max_js}{suggested_min_js}
           }}
         }}
       }}
     }});
+    """
+
+
+def _banner_html(banner):
+    """Banner de 'la respuesta primero' (principio de la pirámide de Minto):
+    va arriba de todo, antes incluso de los KPIs, para que la conclusión
+    accionable de la semana se lea sin tener que interpretar ningún gráfico."""
+    if not banner:
+        return ""
+    label = banner.get("label", "Esta semana")
+    return f"""
+    <div class="minto-banner">
+      <p class="minto-label">{label}</p>
+      <h2>{banner["headline"]}</h2>
+      <p class="minto-sub">{banner.get("subtext", "")}</p>
+    </div>
+    """
+
+
+def _checklist_html(checklist):
+    """Lista de tareas con checkboxes persistidos en localStorage (por
+    navegador, sin backend) -- convierte la tabla estática de 'top clientes'
+    en una herramienta de seguimiento diario real: marcar, ver progreso,
+    y que quede marcado la próxima vez que se abra el dashboard."""
+    if not checklist:
+        return ""
+    cid = checklist["id"]
+    headers = "".join(f"<th>{h}</th>" for h in checklist["headers"])
+    rows_html = []
+    for row in checklist["rows"]:
+        cells = "".join(f"<td>{c}</td>" for c in row["cells"])
+        rows_html.append(
+            f'<tr data-row="{row["id"]}">'
+            f'<td class="check-col"><input type="checkbox" class="xia-check" data-scope="{cid}" data-row="{row["id"]}"></td>'
+            f'{cells}</tr>'
+        )
+    total = len(checklist["rows"])
+    return f"""
+    <div class="checklist-card">
+      <h3>{checklist["title"]}</h3>
+      <p class="checklist-sub">{checklist.get("subtitle", "")}</p>
+      <div class="checklist-progress">
+        <div class="progress-bar"><div class="progress-fill" id="{cid}-fill" style="width:0%"></div></div>
+        <span id="{cid}-count">0 / {total} {checklist.get("progress_noun", "contactados")}</span>
+      </div>
+      <div class="checklist-table-wrap">
+        <table class="checklist-table">
+          <thead><tr><th></th>{headers}</tr></thead>
+          <tbody>{"".join(rows_html)}</tbody>
+        </table>
+      </div>
+    </div>
+    """
+
+
+def _checklist_js(checklist):
+    if not checklist:
+        return ""
+    cid = checklist["id"]
+    total = len(checklist["rows"])
+    noun = json.dumps(checklist.get("progress_noun", "contactados"), ensure_ascii=False)
+    return f"""
+    (function() {{
+      const scopeId = {json.dumps(cid)};
+      const total = {total};
+      const storageKey = 'xia_checklist_' + scopeId;
+      let state = {{}};
+      try {{ state = JSON.parse(localStorage.getItem(storageKey) || '{{}}'); }} catch (e) {{}}
+      const boxes = document.querySelectorAll(`input.xia-check[data-scope="${{scopeId}}"]`);
+      function updateProgress() {{
+        const checked = document.querySelectorAll(`input.xia-check[data-scope="${{scopeId}}"]:checked`).length;
+        const fill = document.getElementById(scopeId + '-fill');
+        const count = document.getElementById(scopeId + '-count');
+        if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
+        if (count) count.textContent = `${{checked}} / ${{total}} ${{{noun}}}`;
+      }}
+      boxes.forEach((b) => {{
+        const rowId = b.dataset.row;
+        if (state[rowId]) {{
+          b.checked = true;
+          const tr = b.closest('tr');
+          if (tr) tr.classList.add('done');
+        }}
+        b.addEventListener('change', () => {{
+          state[rowId] = b.checked;
+          try {{ localStorage.setItem(storageKey, JSON.stringify(state)); }} catch (e) {{}}
+          const tr = b.closest('tr');
+          if (tr) tr.classList.toggle('done', b.checked);
+          updateProgress();
+        }});
+      }});
+      updateProgress();
+    }})();
     """
 
 
