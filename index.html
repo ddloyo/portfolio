@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XIA Insights × Analytics — Portafolio</title>
+<meta name="description" content="12 proyectos de demostración: datos, análisis y dashboards interactivos que muestran lo que un equipo de datos a demanda resuelve en semanas.">
+<style>
+  :root {
+    color-scheme: light;
+    --brand-ink: #163832;
+    --brand-cream: #F6EFE1;
+    --gold: #B8842C;
+    --teal: #71A8A3;
+    --surface: #FFFFFF;
+    --page: #F6EFE1;
+    --text-primary: #163832;
+    --text-secondary: #4A625D;
+    --text-muted: #7E948F;
+    --grid: rgba(22,56,50,0.15);
+    --border: rgba(22,56,50,0.12);
+    --accent: #71A8A3;
+    --chip-bg: rgba(113,168,163,0.14);
+    --chip-bg-gold: rgba(184,132,44,0.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface: #163832;
+      --page: #0E1F1B;
+      --text-primary: #F6EFE1;
+      --text-secondary: #C7D9D5;
+      --text-muted: #8FA8A3;
+      --grid: rgba(246,239,225,0.14);
+      --border: rgba(246,239,225,0.12);
+      --accent: #8FC2BC;
+      --chip-bg: rgba(143,194,188,0.16);
+      --chip-bg-gold: rgba(184,132,44,0.22);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #163832;
+    --page: #0E1F1B;
+    --text-primary: #F6EFE1;
+    --text-secondary: #C7D9D5;
+    --text-muted: #8FA8A3;
+    --grid: rgba(246,239,225,0.14);
+    --border: rgba(246,239,225,0.12);
+    --accent: #8FC2BC;
+    --chip-bg: rgba(143,194,188,0.16);
+    --chip-bg-gold: rgba(184,132,44,0.22);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--text-primary);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    padding: 32px 20px 60px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; margin-bottom:28px; }
+  .brand .mark { width:28px; height:28px; border-radius:7px; background: var(--brand-ink);
+                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px; }
+  .brand span { color: var(--text-muted); font-size:13px; letter-spacing: .04em; text-transform: uppercase; }
+
+  header.hero { margin-bottom: 30px; max-width: 780px; }
+  header.hero .tag { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+  header.hero h1 { font-size: 30px; line-height: 1.25; margin: 0 0 12px; }
+  header.hero h1 em { color: var(--gold); font-style: normal; }
+  header.hero p { color: var(--text-secondary); font-size: 15.5px; line-height: 1.6; margin: 0 0 6px; }
+
+  .services { display:flex; flex-wrap:wrap; gap:12px; margin: 26px 0 30px; }
+  .service-card { flex: 1 1 260px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .service-card h3 { margin: 0 0 4px; font-size: 14px; }
+  .service-card p { margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
+  .service-card.express { border-left: 3px solid var(--gold); }
+  .service-card.office { border-left: 3px solid var(--teal); }
+
+  .filters { display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 22px; }
+  .filter-btn {
+    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text-secondary);
+  }
+  .filter-btn.active { background: var(--brand-ink); border-color: var(--brand-ink); color: var(--brand-cream); }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px; margin-bottom: 40px;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; display: flex; flex-direction: column; text-decoration: none; color: inherit;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(22,56,50,0.14); }
+  .card .thumb { position: relative; aspect-ratio: 16 / 10; background: var(--page); overflow: hidden; }
+  .card .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; display:block; }
+  .card .thumb .num {
+    position: absolute; top: 10px; left: 10px; background: rgba(22,56,50,0.82); color: var(--brand-cream);
+    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; letter-spacing: .03em;
+  }
+  .card .body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .card .chip {
+    align-self: flex-start; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+    padding: 3px 9px; border-radius: 999px; background: var(--chip-bg); color: var(--text-secondary);
+  }
+  .card .chip.express { background: var(--chip-bg-gold); color: var(--gold); }
+  .card .chip.office { background: var(--chip-bg); color: var(--accent); }
+  .card h2 { margin: 0; font-size: 15.5px; line-height: 1.35; color: var(--text-primary); }
+  .card p.blurb { margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5; flex: 1; }
+  .card .cta { font-size: 13px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+
+  footer { border-top: 1px solid var(--border); padding-top: 20px; color: var(--text-muted); font-size: 13px; line-height: 1.6; }
+  footer a { color: var(--text-secondary); }
+  footer .contact { margin-top: 4px; }
+
+  @media (max-width: 520px) {
+    header.hero h1 { font-size: 24px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand"><div class="mark">X</div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
+
+  <header class="hero">
+    <div class="tag">Portafolio de demostración &middot; 12 proyectos</div>
+    <h1>Preguntas un lunes. Respuesta el jueves. <em>El viernes ya decidiste sin ella.</em></h1>
+    <p>Datos sintéticos, código funcional real. Cada tarjeta es un caso de negocio completo — datos, análisis y un dashboard interactivo — listo para explorarse en el navegador, sin instalar nada.</p>
+  </header>
+
+  <div class="services">
+    <div class="service-card express">
+      <h3>Data Storytelling Express</h3>
+      <p>Proyecto puntual, primera versión en días. Un reporte convertido en la decisión.</p>
+    </div>
+    <div class="service-card office">
+      <h3>Micro Data Office</h3>
+      <p>Suscripción mensual sin mínimos. El equipo de datos que aún no se justifica contratar.</p>
+    </div>
+  </div>
+
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">Todos</button>
+    <button class="filter-btn" data-filter="express">Data Storytelling Express</button>
+    <button class="filter-btn" data-filter="office">Micro Data Office</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <div>XIA pone un dueño fraccional a los datos de PyMEs en crecimiento, equipos comerciales y direcciones que aún no justifican un equipo de datos interno.</div>
+    <div class="contact">Diagnóstico inicial de 30 minutos, sin costo &middot; 📧 <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; 💬 WhatsApp +52 55 3566 6166</div>
+  </footer>
+
+</div>
+
+<script>
+  // Add a new project by appending one object here — the grid renders itself.
+  const PROJECTS = [
+    { num: "01", slug: "01-sales-performance-dashboard", title: "Ventas por Equipo en Tiempo Real", service: "office", blurb: "Deja de esperar el cierre de mes para saber qué equipo va bien y cuál no.", img: "assets/dashboard_preview.png" },
+    { num: "02", slug: "02-funnel-fuga-ventas", title: "Funnel de Ventas con Alertas de Fuga", service: "office", blurb: "Detecta una fuga de conversión con semanas de anticipación, no al cierre.", img: "assets/dashboard_preview.png" },
+    { num: "03", slug: "03-scorecard-metas-vs-resultados", title: "Scorecard Ejecutivo: Metas vs. Resultados", service: "express", blurb: "Una pantalla, una conclusión, un responsable por indicador — cruzando áreas.", img: "assets/dashboard_preview.png" },
+    { num: "04", slug: "04-prediccion-churn", title: "Predicción de Riesgo de Churn", service: "office", blurb: "Modelo de ML que dice qué cliente se va y por qué, con tiempo para retenerlo.", img: "assets/dashboard_preview.png" },
+    { num: "05", slug: "05-segmentacion-rfm", title: "Segmentación RFM y Priorización Comercial", service: "express", blurb: "A quién llamar hoy y a quién dejar de perseguir.", img: "assets/dashboard_preview.png" },
+    { num: "06", slug: "06-elasticidad-precios", title: "Elasticidad de Precios y Price Intelligence", service: "office", blurb: "Qué productos aguantan subir de precio sin perder ingreso.", img: "assets/dashboard_preview.png" },
+    { num: "07", slug: "07-forecast-demanda-inventario", title: "Forecasting de Demanda e Inventario", service: "office", blurb: "Cuántos días de inventario quedan realmente, antes del quiebre de stock.", img: "assets/chart_overview.png" },
+    { num: "08", slug: "08-flujo-caja-cartera", title: "Flujo de Caja y Cartera Vencida", service: "express", blurb: "Cuánto de la cartera es cobrable de verdad en las próximas 4 semanas.", img: "assets/chart_overview.png" },
+    { num: "09", slug: "09-roi-marketing-canal", title: "ROI de Marketing: CAC vs. LTV por Canal", service: "express", blurb: "Qué canal escalar y cuál replantear, más allá del gasto.", img: "assets/chart_overview.png" },
+    { num: "10", slug: "10-reporte-ejecutivo-mensual", title: "Reporte Ejecutivo Mensual", service: "express", blurb: "El entregable insignia: qué pasó, por qué, y qué hacer — en una sesión de 15 min.", img: "assets/chart_overview.png" },
+    { num: "11", slug: "11-consolidacion-fuente-verdad", title: "Consolidación de Datos Dispersos", service: "office", blurb: "Tres Excels de tres sucursales, un solo número correcto.", img: "assets/chart_overview.png" },
+    { num: "12", slug: "12-nps-causa-raiz", title: "NPS y Análisis de Causa Raíz", service: "express", blurb: "De “el NPS bajó” a “sabemos exactamente qué corregir”.", img: "assets/chart_overview.png" },
+  ];
+
+  const SERVICE_LABEL = { express: "Data Storytelling Express", office: "Micro Data Office" };
+
+  function render(filter) {
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
+    PROJECTS
+      .filter(p => filter === "all" || p.service === filter)
+      .forEach(p => {
+        const a = document.createElement("a");
+        a.className = "card";
+        a.href = `projects/${p.slug}/dashboard.html`;
+        a.innerHTML = `
+          <div class="thumb">
+            <span class="num">${p.num}</span>
+            <img src="projects/${p.slug}/${p.img}" alt="Preview: ${p.title}" loading="lazy">
+          </div>
+          <div class="body">
+            <span class="chip ${p.service}">${SERVICE_LABEL[p.service]}</span>
+            <h2>${p.title}</h2>
+            <p class="blurb">${p.blurb}</p>
+            <span class="cta">Ver dashboard →</span>
+          </div>`;
+        grid.appendChild(a);
+      });
+  }
+
+  document.getElementById("filters").addEventListener("click", (e) => {
+    const btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    render(btn.dataset.filter);
+  });
+
+  render("all");
+</script>
+</body>
+</html>
