@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XIA · Elasticidad de Precios y Price Intelligence</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --brand-ink: #163832;
+    --brand-cream: #F6EFE1;
+    --gold: #B8842C;
+    --surface: #FFFFFF;
+    --page: #F6EFE1;
+    --text-primary: #163832;
+    --text-secondary: #4A625D;
+    --text-muted: #7E948F;
+    --grid: rgba(22,56,50,0.15);
+    --border: rgba(22,56,50,0.12);
+    --accent: #71A8A3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface: #163832;
+      --page: #0E1F1B;
+      --text-primary: #F6EFE1;
+      --text-secondary: #C7D9D5;
+      --text-muted: #8FA8A3;
+      --grid: rgba(246,239,225,0.14);
+      --border: rgba(246,239,225,0.12);
+      --accent: #8FC2BC;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #163832;
+    --page: #0E1F1B;
+    --text-primary: #F6EFE1;
+    --text-secondary: #C7D9D5;
+    --text-muted: #8FA8A3;
+    --grid: rgba(246,239,225,0.14);
+    --border: rgba(246,239,225,0.12);
+    --accent: #8FC2BC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--text-primary);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    padding: 32px 20px 60px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brand .mark { width:28px; height:28px; border-radius:7px; background: var(--brand-ink);
+                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px; }
+  .brand span { color: var(--text-muted); font-size:13px; letter-spacing: .04em; text-transform: uppercase; }
+  header.page-head { margin-bottom: 28px; }
+  header.page-head .tag { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  header.page-head h1 { font-size: 26px; margin: 0 0 8px; }
+  header.page-head p.tagline { color: var(--text-secondary); font-size: 15px; max-width: 720px; margin: 0; line-height:1.5; }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .top-row { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 14px; margin-bottom: 28px; align-items: stretch; }
+  .hero-widget { background: var(--surface); border: 1px solid var(--gold); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; }
+  .hero-widget .hero-value { color: var(--gold); }
+  .hero-chart-wrap { position: relative; flex: 1; min-height: 130px; margin-top: 12px; }
+  .kpi-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 1fr; gap: 14px; }
+  .kpi-grid-5 .kpi-card { padding: 12px 14px; }
+  .kpi-grid-5 .kpi-label { font-size: 10.5px; }
+  .kpi-grid-5 .kpi-value { font-size: 18px; }
+  @media (max-width: 860px) {
+    .top-row { grid-template-columns: 1fr; }
+    .kpi-grid-5 { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .kpi-grid-5 { grid-template-columns: repeat(2, 1fr); }
+    .drilldown-grid { grid-template-columns: 1fr !important; }
+  }
+  .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; position: relative; }
+  .kpi-hero { border: 1px solid var(--gold); }
+  .kpi-hero .kpi-value { color: var(--gold); }
+  .kpi-label { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 600; }
+  .kpi-delta { font-size: 13px; margin-top: 4px; font-weight: 600; }
+  .delta-up { color: #2f6e57; }
+  .delta-down { color: #d03b3b; }
+  .kpi-badge { display:inline-block; margin-top:8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+                letter-spacing: .03em; padding: 3px 8px; border-radius: 999px; }
+  .kpi-good { background: rgba(62,143,114,0.16); color: #2f6e57; }
+  .kpi-warning { background: rgba(184,132,44,0.18); color: #8c6220; }
+  .kpi-serious { background: rgba(140,90,30,0.18); color: #6b4517; }
+  .kpi-critical { background: rgba(208,59,59,0.14); color: #d03b3b; }
+  .minto-banner { background: var(--surface); border: 1px solid var(--border); border-left: 5px solid var(--gold);
+                   border-radius: 10px; padding: 18px 22px; margin-bottom: 22px; }
+  .minto-banner .minto-label { margin: 0 0 6px; color: var(--gold); font-size: 12px; font-weight: 700;
+                                 text-transform: uppercase; letter-spacing: .06em; }
+  .minto-banner h2 { margin: 0 0 8px; font-size: 21px; line-height: 1.35; color: var(--text-primary); }
+  .minto-banner p.minto-sub { margin: 0; color: var(--text-secondary); font-size: 14px; line-height: 1.55; max-width: 780px; }
+  .checklist-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+                      padding: 18px 22px; margin-bottom: 22px; }
+  .checklist-card h3 { margin: 0 0 2px; font-size: 16px; }
+  .checklist-card p.checklist-sub { margin: 0 0 14px; color: var(--text-muted); font-size: 13px; }
+  .checklist-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .progress-bar { flex: 1; max-width: 320px; height: 8px; border-radius: 999px; background: var(--grid); overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .2s ease; }
+  .checklist-progress span { color: var(--text-secondary); font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .checklist-table-wrap { overflow-x: auto; }
+  table.checklist-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.checklist-table th, table.checklist-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  table.checklist-table th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  table.checklist-table td.check-col { width: 30px; }
+  table.checklist-table input.xia-check { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+  table.checklist-table tr.done td { color: var(--text-muted); text-decoration: line-through; opacity: .7; }
+  table.checklist-table tr.done td.check-col { text-decoration: none; }
+  .charts-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-bottom: 26px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .chart-card-wide { grid-column: 1 / -1; }
+  .chart-head h3 { margin: 0 0 2px; font-size: 15px; }
+  .chart-head p { margin: 0 0 12px; color: var(--text-muted); font-size: 12.5px; }
+  .chart-canvas-wrap { position: relative; height: 280px; }
+  .section-label { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; }
+  .drilldown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 26px; }
+  .drilldown-grid .chart-card { padding: 14px 16px; }
+  .drilldown-grid .chart-head h3 { font-size: 13.5px; }
+  .drilldown-grid .chart-head p { margin: 0 0 8px; font-size: 11.5px; }
+  .drilldown-grid .chart-canvas-wrap { height: 190px; }
+  .insights-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 22px; }
+  .insights-card h3 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+  ul.insights { margin: 0; padding-left: 18px; color: var(--text-secondary); line-height: 1.65; font-size: 14.5px; }
+  ul.insights li::marker { color: var(--accent); }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 22px; }
+  .table-wrap summary { cursor: pointer; color: var(--text-secondary); font-size: 13.5px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  footer { color: var(--text-muted); font-size: 12px; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 16px; }
+  footer a { color: var(--text-primary); text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="mark">X</div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
+  <header class="page-head">
+    <div class="tag">Proyecto 06 · Portafolio de demostración</div>
+    <h1>Elasticidad de Precios y Price Intelligence</h1>
+    <p class="tagline">No todos los productos reaccionan igual a un cambio de precio — la matriz dice a cuáles subirles precio ya, a cuáles con prueba piloto primero, y a cuáles no tocar.</p>
+  </header>
+
+  
+    <div class="minto-banner">
+      <p class="minto-label">Próxima actualización de lista de precios</p>
+      <h2>1 de 8 productos listo para subir precio ya (+$234,648 MXN/año) — 3 más apuntan en la misma dirección pero necesitan una prueba piloto primero.</h2>
+      <p class="minto-sub">La evidencia es sólida en 3 productos para NO subir precio: hacerlo destruiría $2,173,463 MXN/año de ingreso. 1 producto no tiene suficiente señal (R² bajo) para decidir en ningún sentido todavía.</p>
+    </div>
+    
+
+  <div class="kpi-row">
+    
+        <div class="kpi-card">
+          <div class="kpi-label">Productos analizados</div>
+          <div class="kpi-value">8</div>
+          
+          
+        </div>
+
+        <div class="kpi-card kpi-hero">
+          <div class="kpi-label">Impacto anual si se ejecutan las subidas recomendadas</div>
+          <div class="kpi-value">$1,560,290 MXN</div>
+          
+          
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Ejecutar ya (alta confianza)</div>
+          <div class="kpi-value">1 producto</div>
+          
+          <span class="kpi-badge kpi-good">good</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Requieren piloto antes de escalar</div>
+          <div class="kpi-value">4 productos</div>
+          
+          <span class="kpi-badge kpi-warning">warning</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Ingreso protegido al no subir precio</div>
+          <div class="kpi-value">$2,173,463 MXN</div>
+          
+          <span class="kpi-badge kpi-critical">critical</span>
+        </div>
+  </div>
+
+  
+    <div class="table-wrap table-wrap-open">
+      <p class="section-label">Resumen por cuadrante de acción</p>
+      <table>
+        <thead><tr><th>Cuadrante</th><th>Productos</th><th>Elasticidad promedio</th><th>R² promedio</th><th>Impacto anual</th><th>Acción recomendada</th></tr></thead>
+        <tbody><tr><td>Subir precio — ejecutar ya</td><td>1</td><td>-0.6</td><td>0.56</td><td>$234,648</td><td>Aplicar el incremento en la próxima actualización de lista — demanda inelástica y el modelo explica bien la variación de unidades: bajo riesgo de sorpresa.</td></tr>
+<tr><td>Subir precio — probar antes de escalar</td><td>3</td><td>-0.3</td><td>0.07</td><td>$1,325,642</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr>
+<tr><td>No subir precio — evidencia sólida</td><td>3</td><td>-2.0</td><td>0.75</td><td>-$2,173,463</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr>
+<tr><td>Recolectar más datos</td><td>1</td><td>-0.95</td><td>0.39</td><td>-$36,551</td><td>Ni la dirección ni la magnitud son confiables todavía (R² bajo) — no tomar una decisión de precio con este dato; ampliar el histórico o correr una prueba controlada primero.</td></tr>
+</tbody>
+      </table>
+    </div>
+    
+
+  <div class="charts-grid">
+    
+    <div class="chart-card chart-card-wide">
+      <div class="chart-head">
+        <h3>Matriz elasticidad x confianza: qué acción de precio corresponde a cada producto</h3>
+        <p>8 productos — elasticidad estimada vs. R² del modelo, divididos en la mediana de cada eje</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_matriz"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card chart-card-wide">
+      <div class="chart-head">
+        <h3>Impacto anual proyectado por producto (+10% de precio)</h3>
+        <p>MXN/año — positivo donde subir precio conviene, negativo donde destruye ingreso</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_impacto"></canvas>
+      </div>
+    </div>
+    
+  </div>
+
+  
+
+  <div class="insights-card">
+    <h3>Lo que dice el dato</h3>
+    <ul class="insights"><li><b>Repuesto especializado X</b> es el único producto con evidencia suficiente (R²=0.56, elasticidad -0.6) para subir precio en la próxima lista sin necesidad de prueba piloto — impacto estimado +$234,648 MXN/año.</li>
+<li><b>3 productos</b> (Repuesto especializado Y, Servicio de instalación, Refacción crítica) apuntan a subir precio (+$1,325,642 MXN/año combinado) pero con R² por debajo de 0.48 — antes de aplicarlo a todo el catálogo conviene una prueba piloto en una región o segmento de clientes.</li>
+<li><b>3 productos</b> (Componente A, Accesorio estándar, Componente B) tienen evidencia sólida (R² 0.56–0.92) de ser altamente elásticos — subir su precio destruiría $2,173,463 MXN/año; no deben tocarse en esta ronda.</li>
+<li>La confianza estadística (R²) importa tanto como la dirección de la elasticidad: dos productos con la misma elasticidad estimada pueden merecer una acción distinta si uno tiene mucha más señal que ruido que el otro — por eso la matriz cruza ambos ejes en vez de ordenar solo por elasticidad.</li></ul>
+  </div>
+
+  
+
+  
+    <div class="checklist-card">
+      <h3>Plan de repricing — próxima actualización de lista</h3>
+      <p class="checklist-sub">Los 8 productos ordenados por prioridad de acción. Marca cada uno al aplicarlo (o al confirmar que se deja igual) en el ERP — el progreso se guarda en este navegador.</p>
+      <div class="checklist-progress">
+        <div class="progress-bar"><div class="progress-fill" id="plan_repricing-fill" style="width:0%"></div></div>
+        <span id="plan_repricing-count">0 / 8 revisados</span>
+      </div>
+      <div class="checklist-table-wrap">
+        <table class="checklist-table">
+          <thead><tr><th></th><th>Producto</th><th>Elasticidad</th><th>Confianza</th><th>Impacto anual estimado</th><th>Acción</th></tr></thead>
+          <tbody><tr data-row="Repuesto especializado X"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Repuesto especializado X"></td><td>Repuesto especializado X</td><td>-0.6</td><td>Alta (R²=0.56)</td><td>$234,648</td><td>Aplicar el incremento en la próxima actualización de lista — demanda inelástica y el modelo explica bien la variación de unidades: bajo riesgo de sorpresa.</td></tr><tr data-row="Repuesto especializado Y"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Repuesto especializado Y"></td><td>Repuesto especializado Y</td><td>-0.48</td><td>Baja (R²=0.13)</td><td>$333,864</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Servicio de instalación"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Servicio de instalación"></td><td>Servicio de instalación</td><td>-0.27</td><td>Baja (R²=0.04)</td><td>$502,760</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Refacción crítica (sin sustituto)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Refacción crítica (sin sustituto)"></td><td>Refacción crítica (sin sustituto)</td><td>-0.15</td><td>Baja (R²=0.04)</td><td>$489,018</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Componente A (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Componente A (commodity)"></td><td>Componente A (commodity)</td><td>-2.18</td><td>Alta (R²=0.92)</td><td>-$770,804</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Accesorio estándar"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Accesorio estándar"></td><td>Accesorio estándar</td><td>-1.96</td><td>Alta (R²=0.56)</td><td>-$743,260</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Componente B (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Componente B (commodity)"></td><td>Componente B (commodity)</td><td>-1.85</td><td>Alta (R²=0.78)</td><td>-$659,399</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Kit de mantenimiento"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Kit de mantenimiento"></td><td>Kit de mantenimiento</td><td>-0.95</td><td>Baja (R²=0.39)</td><td>-$36,551</td><td>Ni la dirección ni la magnitud son confiables todavía (R² bajo) — no tomar una decisión de precio con este dato; ampliar el histórico o correr una prueba controlada primero.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    
+
+  <footer>
+    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
+  </footer>
+</div>
+
+<script>
+function isDark() {
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t === 'dark') return true;
+  if (t === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function withAlpha(hex, alpha) {
+  if (alpha >= 1) return hex;
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function seriesColor(i, light, dark, alpha) {
+  const hex = isDark() ? dark : light;
+  return withAlpha(hex, alpha);
+}
+function seriesColorHex(light, dark) { return isDark() ? dark : light; }
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function inkColor(role) {
+  return { primary: cssVar('--text-primary'), secondary: cssVar('--text-secondary'),
+            muted: cssVar('--text-muted'), grid: cssVar('--grid') }[role];
+}
+function surfaceColor() { return cssVar('--surface'); }
+
+
+    (function() {
+      const scopeId = "plan_repricing";
+      const total = 8;
+      const storageKey = 'xia_checklist_' + scopeId;
+      let state = {};
+      try { state = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (e) {}
+      const boxes = document.querySelectorAll(`input.xia-check[data-scope="${scopeId}"]`);
+      function updateProgress() {
+        const checked = document.querySelectorAll(`input.xia-check[data-scope="${scopeId}"]:checked`).length;
+        const fill = document.getElementById(scopeId + '-fill');
+        const count = document.getElementById(scopeId + '-count');
+        if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
+        if (count) count.textContent = `${checked} / ${total} ${"revisados"}`;
+      }
+      boxes.forEach((b) => {
+        const rowId = b.dataset.row;
+        if (state[rowId]) {
+          b.checked = true;
+          const tr = b.closest('tr');
+          if (tr) tr.classList.add('done');
+        }
+        b.addEventListener('change', () => {
+          state[rowId] = b.checked;
+          try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch (e) {}
+          const tr = b.closest('tr');
+          if (tr) tr.classList.toggle('done', b.checked);
+          updateProgress();
+        });
+      });
+      updateProgress();
+    })();
+    
+
+    (function() {
+      const quadrantLines_chart_matriz = {"x": -0.77, "y": 0.478};
+      const quadrantLabels_chart_matriz = [{"corner": "top-left", "text": "NO SUBIR — EVIDENCIA SÓLIDA"}, {"corner": "top-right", "text": "EJECUTAR YA"}, {"corner": "bottom-left", "text": "RECOLECTAR MÁS DATOS"}, {"corner": "bottom-right", "text": "PROBAR ANTES DE ESCALAR"}];
+      new Chart(document.getElementById('chart_matriz').getContext('2d'), {
+        type: 'scatter',
+        data: { datasets: [{
+            label: "No subir — evidencia sólida",
+            data: [{"x": -2.18, "y": 0.917, "label": "Componente A (commodity) · elasticidad -2.18 · R²=0.92"}, {"x": -1.96, "y": 0.563, "label": "Accesorio estándar · elasticidad -1.96 · R²=0.56"}, {"x": -1.85, "y": 0.78, "label": "Componente B (commodity) · elasticidad -1.85 · R²=0.78"}],
+            backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 0.85),
+            borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
+            pointRadius: 7,
+            pointHoverRadius: 9,
+        },
+{
+            label: "Recolectar más datos",
+            data: [{"x": -0.95, "y": 0.394, "label": "Kit de mantenimiento · elasticidad -0.95 · R²=0.39"}],
+            backgroundColor: withAlpha(seriesColorHex("#B8842C", "#B8842C"), 0.85),
+            borderColor: seriesColorHex("#B8842C", "#B8842C"),
+            pointRadius: 7,
+            pointHoverRadius: 9,
+        },
+{
+            label: "Subir — ejecutar ya",
+            data: [{"x": -0.6, "y": 0.563, "label": "Repuesto especializado X · elasticidad -0.6 · R²=0.56"}],
+            backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 0.85),
+            borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
+            pointRadius: 7,
+            pointHoverRadius: 9,
+        },
+{
+            label: "Subir — probar antes",
+            data: [{"x": -0.48, "y": 0.13, "label": "Repuesto especializado Y · elasticidad -0.48 · R²=0.13"}, {"x": -0.27, "y": 0.043, "label": "Servicio de instalación · elasticidad -0.27 · R²=0.04"}, {"x": -0.15, "y": 0.044, "label": "Refacción crítica (sin sustituto) · elasticidad -0.15 · R²=0.04"}],
+            backgroundColor: withAlpha(seriesColorHex("#9CB8B4", "#9CB8B4"), 0.85),
+            borderColor: seriesColorHex("#9CB8B4", "#9CB8B4"),
+            pointRadius: 7,
+            pointHoverRadius: 9,
+        }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', align: 'start',
+                       labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+            tooltip: {
+              backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+              borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+              callbacks: {
+                label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)}, ${ctx.parsed.y.toFixed(1)} R²`
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: "Elasticidad-precio (más negativo = más sensible al precio)", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
+            y: { title: { display: true, text: "Confianza del modelo (R²)", color: inkColor('secondary') },
+                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
+          }
+        },
+        plugins: [{
+          id: 'quadrantOverlay_chart_matriz',
+          afterDraw: (chartInstance) => {
+            const { ctx, chartArea } = chartInstance;
+            if (!chartArea) return;
+            const { left, right, top, bottom } = chartArea;
+            const scales = chartInstance.scales;
+            ctx.save();
+            if (quadrantLines_chart_matriz) {
+              ctx.strokeStyle = withAlpha(inkColor('grid'), 0.55);
+              ctx.setLineDash([4, 4]);
+              ctx.lineWidth = 1;
+              if (quadrantLines_chart_matriz.x !== undefined && quadrantLines_chart_matriz.x !== null) {
+                const xPix = scales.x.getPixelForValue(quadrantLines_chart_matriz.x);
+                ctx.beginPath(); ctx.moveTo(xPix, top); ctx.lineTo(xPix, bottom); ctx.stroke();
+              }
+              if (quadrantLines_chart_matriz.y !== undefined && quadrantLines_chart_matriz.y !== null) {
+                const yPix = scales.y.getPixelForValue(quadrantLines_chart_matriz.y);
+                ctx.beginPath(); ctx.moveTo(left, yPix); ctx.lineTo(right, yPix); ctx.stroke();
+              }
+              ctx.setLineDash([]);
+            }
+            if (quadrantLabels_chart_matriz.length) {
+              ctx.font = '700 10px -apple-system, sans-serif';
+              ctx.fillStyle = withAlpha(inkColor('muted'), 0.95);
+              const pad = 10;
+              quadrantLabels_chart_matriz.forEach((q) => {
+                let x, y, align;
+                if (q.corner === 'top-left') { x = left + pad; y = top + pad + 9; align = 'left'; }
+                else if (q.corner === 'top-right') { x = right - pad; y = top + pad + 9; align = 'right'; }
+                else if (q.corner === 'bottom-left') { x = left + pad; y = bottom - pad; align = 'left'; }
+                else { x = right - pad; y = bottom - pad; align = 'right'; }
+                ctx.textAlign = align;
+                ctx.fillText(q.text, x, y);
+              });
+            }
+            ctx.restore();
+          }
+        }]
+      });
+    })();
+    
+
+    new Chart(document.getElementById('chart_impacto').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["Componente A (commodity)", "Accesorio estándar", "Componente B (commodity)", "Kit de mantenimiento", "Repuesto especializado X", "Repuesto especializado Y", "Servicio de instalación", "Refacción crítica (sin sustituto)"],
+        datasets: [{
+            label: "Impacto anual",
+            data: [-770804, -743260, -659399, -36551, 234648, 333864, 502760, 489018],
+            valueLabels: null,
+            backgroundColor: ["#d03b3b", "#d03b3b", "#d03b3b", "#B8842C", "#3E8F72", "#9CB8B4", "#9CB8B4", "#9CB8B4"],
+            borderColor: ["#d03b3b", "#d03b3b", "#d03b3b", "#B8842C", "#3E8F72", "#9CB8B4", "#9CB8B4", "#9CB8B4"],
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('es-MX')}` } }
+        },
+        scales: {
+          y: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          x: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "MXN/año", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+</script>
+</body>
+</html>
