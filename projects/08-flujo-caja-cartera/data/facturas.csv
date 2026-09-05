@@ -1,0 +1,85 @@
+factura_id,cliente,fecha_emision,fecha_vencimiento,monto_mxn,estatus,fecha_pago
+F-0001,Grupo Ferretero del Bajío,2026-07-26,2026-08-25,57596.33,Pagada,2026-08-01
+F-0002,Grupo Ferretero del Bajío,2026-07-10,2026-08-09,36308.12,Pagada,2026-07-20
+F-0003,Grupo Ferretero del Bajío,2026-05-26,2026-06-25,38275.78,Pagada,2026-06-02
+F-0004,Grupo Ferretero del Bajío,2026-08-16,2026-09-15,70338.23,Pagada,2026-08-30
+F-0005,Grupo Ferretero del Bajío,2026-05-26,2026-06-25,228786.93,Pagada,2026-06-03
+F-0006,Grupo Ferretero del Bajío,2026-08-17,2026-09-16,100538.75,Pagada,2026-08-30
+F-0007,Grupo Ferretero del Bajío,2026-08-10,2026-09-09,38364.14,Pagada,2026-08-15
+F-0008,Grupo Ferretero del Bajío,2026-08-07,2026-09-06,59916.63,Pagada,2026-08-19
+F-0009,Grupo Ferretero del Bajío,2026-08-13,2026-09-12,114293.33,Pagada,2026-08-21
+F-0010,Grupo Ferretero del Bajío,2026-08-16,2026-09-15,70954.33,Pagada,2026-08-22
+F-0011,Grupo Ferretero del Bajío,2026-07-31,2026-08-30,109119.56,Pagada,2026-08-14
+F-0012,Grupo Ferretero del Bajío,2026-07-31,2026-08-30,67860.6,Pagada,2026-08-06
+F-0013,Grupo Ferretero del Bajío,2026-03-12,2026-04-11,51889.01,Pagada,2026-03-22
+F-0014,Grupo Ferretero del Bajío,2026-04-16,2026-05-16,60405.76,Pagada,2026-04-28
+F-0015,Distribuidora Maple,2026-05-02,2026-06-01,122359.49,Pagada,2026-05-14
+F-0016,Distribuidora Maple,2026-07-07,2026-08-06,19171.23,Pagada,2026-07-20
+F-0017,Distribuidora Maple,2026-08-15,2026-09-14,12470.99,Pagada,2026-08-25
+F-0018,Distribuidora Maple,2026-06-30,2026-07-30,92144.95,Pagada,2026-07-07
+F-0019,Distribuidora Maple,2026-04-04,2026-05-04,167131.58,Pagada,2026-04-13
+F-0020,Distribuidora Maple,2026-03-22,2026-04-21,84955.04,Pagada,2026-04-02
+F-0021,Distribuidora Maple,2026-06-29,2026-07-29,98988.68,Pagada,2026-07-04
+F-0022,Distribuidora Maple,2026-07-13,2026-08-12,86105.72,Pagada,2026-07-22
+F-0023,Distribuidora Maple,2026-07-18,2026-08-17,76772.14,Pagada,2026-07-30
+F-0024,Distribuidora Maple,2026-06-15,2026-07-15,64072.1,Pagada,2026-06-25
+F-0025,Comercial Alfa y Omega,2026-06-15,2026-07-15,65699.21,Pagada,2026-07-20
+F-0026,Comercial Alfa y Omega,2026-05-18,2026-06-17,109323.44,Pagada,2026-06-30
+F-0027,Comercial Alfa y Omega,2026-07-16,2026-08-15,52002.92,Pendiente,
+F-0028,Comercial Alfa y Omega,2026-08-19,2026-09-18,21568.68,Pendiente,
+F-0029,Comercial Alfa y Omega,2026-04-16,2026-05-16,31874.72,Pagada,2026-06-14
+F-0030,Comercial Alfa y Omega,2026-04-04,2026-05-04,58480.04,Pagada,2026-05-15
+F-0031,Comercial Alfa y Omega,2026-06-03,2026-07-03,71242.48,Pagada,2026-07-16
+F-0032,Comercial Alfa y Omega,2026-06-26,2026-07-26,15550.47,Pagada,2026-08-12
+F-0033,Comercial Alfa y Omega,2026-07-18,2026-08-17,64463.12,Pagada,2026-08-22
+F-0034,Comercial Alfa y Omega,2026-06-20,2026-07-20,155920.25,Pagada,2026-08-02
+F-0035,Comercial Alfa y Omega,2026-03-25,2026-04-24,8359.4,Pagada,2026-05-28
+F-0036,Comercial Alfa y Omega,2026-03-09,2026-04-08,51658.93,Pagada,2026-05-10
+F-0037,Constructora del Valle,2026-08-15,2026-09-14,29489.5,Pendiente,
+F-0038,Constructora del Valle,2026-04-17,2026-05-17,56137.43,Pagada,2026-05-29
+F-0039,Constructora del Valle,2026-03-26,2026-04-25,136811.55,Pagada,2026-05-29
+F-0040,Constructora del Valle,2026-08-03,2026-09-02,88654.15,Pendiente,
+F-0041,Constructora del Valle,2026-05-07,2026-06-06,105491.27,Pagada,2026-07-09
+F-0042,Constructora del Valle,2026-07-03,2026-08-02,168140.68,Pagada,2026-08-25
+F-0043,Constructora del Valle,2026-07-29,2026-08-28,107345.11,Pendiente,
+F-0044,Constructora del Valle,2026-08-17,2026-09-16,70008.71,Pendiente,
+F-0045,Constructora del Valle,2026-06-27,2026-07-27,88148.86,Pagada,2026-08-17
+F-0046,Servicios Integrales Roble,2026-04-24,2026-05-24,66815.48,Pagada,2026-08-13
+F-0047,Servicios Integrales Roble,2026-07-08,2026-08-07,75951.09,Pendiente,
+F-0048,Servicios Integrales Roble,2026-03-21,2026-04-20,100400.49,Pagada,2026-07-12
+F-0049,Servicios Integrales Roble,2026-06-09,2026-07-09,38236.47,Pendiente,
+F-0050,Servicios Integrales Roble,2026-06-28,2026-07-28,23125.28,Pendiente,
+F-0051,Servicios Integrales Roble,2026-06-26,2026-07-26,82985.73,Pendiente,
+F-0052,Servicios Integrales Roble,2026-03-24,2026-04-23,88224.99,Pagada,2026-07-15
+F-0053,Servicios Integrales Roble,2026-04-19,2026-05-19,129162.28,Pagada,2026-07-17
+F-0054,Importadora Tres Ríos,2026-04-10,2026-05-10,81633.81,Pagada,2026-07-26
+F-0055,Importadora Tres Ríos,2026-05-16,2026-06-15,140684.14,Pendiente,
+F-0056,Importadora Tres Ríos,2026-03-25,2026-04-24,83369.8,Pagada,2026-06-26
+F-0057,Importadora Tres Ríos,2026-06-15,2026-07-15,44861.75,Pendiente,
+F-0058,Importadora Tres Ríos,2026-06-12,2026-07-12,193291.0,Pendiente,
+F-0059,Importadora Tres Ríos,2026-07-22,2026-08-21,354670.67,Pendiente,
+F-0060,Importadora Tres Ríos,2026-07-19,2026-08-18,235993.19,Pendiente,
+F-0061,Grupo Industrial Norte,2026-03-12,2026-04-11,165872.87,Pagada,2026-03-24
+F-0062,Grupo Industrial Norte,2026-03-30,2026-04-29,287336.35,Pagada,2026-04-06
+F-0063,Grupo Industrial Norte,2026-08-06,2026-09-05,264299.33,Pagada,2026-08-17
+F-0064,Grupo Industrial Norte,2026-03-10,2026-04-09,180408.29,Pagada,2026-03-21
+F-0065,Grupo Industrial Norte,2026-04-07,2026-05-07,95988.17,Pagada,2026-04-16
+F-0066,Grupo Industrial Norte,2026-07-12,2026-08-11,56301.09,Pagada,2026-07-18
+F-0067,Grupo Industrial Norte,2026-05-29,2026-06-28,66113.15,Pagada,2026-06-09
+F-0068,Grupo Industrial Norte,2026-06-08,2026-07-08,144918.34,Pagada,2026-06-15
+F-0069,Grupo Industrial Norte,2026-06-02,2026-07-02,130012.61,Pagada,2026-06-16
+F-0070,Grupo Industrial Norte,2026-05-31,2026-06-30,34024.76,Pagada,2026-06-10
+F-0071,Grupo Industrial Norte,2026-05-26,2026-06-25,147567.84,Pagada,2026-06-09
+F-0072,Refaccionaria Central,2026-03-20,2026-04-19,49158.65,Pagada,2026-05-02
+F-0073,Refaccionaria Central,2026-04-22,2026-05-22,25206.06,Pagada,2026-05-30
+F-0074,Refaccionaria Central,2026-04-20,2026-05-20,6137.23,Pagada,2026-06-12
+F-0075,Refaccionaria Central,2026-04-20,2026-05-20,17793.64,Pagada,2026-06-23
+F-0076,Refaccionaria Central,2026-06-06,2026-07-06,9477.06,Pagada,2026-07-11
+F-0077,Refaccionaria Central,2026-07-25,2026-08-24,43185.11,Pendiente,
+F-0078,Refaccionaria Central,2026-04-05,2026-05-05,20699.47,Pagada,2026-05-26
+F-0079,Refaccionaria Central,2026-06-23,2026-07-23,22097.17,Pagada,2026-08-10
+F-0080,Refaccionaria Central,2026-08-18,2026-09-17,10167.6,Pendiente,
+F-0081,Refaccionaria Central,2026-04-25,2026-05-25,13814.2,Pagada,2026-06-01
+F-0082,Refaccionaria Central,2026-06-22,2026-07-22,22132.03,Pagada,2026-08-13
+F-0083,Refaccionaria Central,2026-03-14,2026-04-13,13152.94,Pagada,2026-04-25
+F-0084,Refaccionaria Central,2026-07-14,2026-08-13,57522.42,Pagada,2026-08-21
