@@ -1000,11 +1000,12 @@ TEMPLATE = """<!doctype html>
   .explorer-chart-card .chart-head p {{ margin: 0 0 10px; color: var(--text-muted); font-size: 12px; }}
   @media (max-width: 760px) {{ .explorer-grid {{ grid-template-columns: 1fr; }} }}
   .charts-grid {{ display: grid; grid-template-columns: {chart_grid_cols}; gap: 18px; margin-bottom: 26px; }}
-  .chart-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }}
+  .chart-card {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; min-width: 0; }}
   .chart-card-wide {{ grid-column: 1 / -1; }}
   .chart-head h3 {{ margin: 0 0 2px; font-size: 15px; }}
   .chart-head p {{ margin: 0 0 12px; color: var(--text-muted); font-size: 12.5px; }}
-  .chart-canvas-wrap {{ position: relative; height: 280px; }}
+  .chart-canvas-wrap {{ position: relative; height: 280px; overflow: hidden; }}
+  .chart-canvas-wrap canvas {{ max-width: 100%; }}
   .section-label {{ color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; }}
   .drilldown-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 26px; }}
   .drilldown-grid .chart-card {{ padding: 14px 16px; }}
@@ -1015,9 +1016,9 @@ TEMPLATE = """<!doctype html>
   .insights-card h3 {{ margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }}
   ul.insights {{ margin: 0; padding-left: 18px; color: var(--text-secondary); line-height: 1.65; font-size: 14.5px; }}
   ul.insights li::marker {{ color: var(--accent); }}
-  .table-wrap {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 22px; }}
+  .table-wrap {{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 22px; overflow-x: auto; }}
   .table-wrap summary {{ cursor: pointer; color: var(--text-secondary); font-size: 13.5px; font-weight: 600; }}
-  table {{ width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }}
+  table {{ width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; min-width: 560px; }}
   th, td {{ text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }}
   th {{ color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }}
   footer {{ color: var(--text-muted); font-size: 12px; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 16px; }}
