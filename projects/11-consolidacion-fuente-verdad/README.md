@@ -15,9 +15,17 @@ Tres sucursales, tres Excels, tres formatos. CDMX manda fechas en `DD/MM/YYYY` c
 - Separa (no inventa) los registros con datos faltantes en una cola de revisión manual explícita.
 - Entrega un único archivo limpio (`data/fuente_unica.csv`) del que parte cualquier reporte posterior.
 
+## Métricas
+
+- **Fuentes consolidadas:** número de exports distintos (columnas, formato de fecha y catálogo de sucursal propios) que se unificaron en el archivo único.
+- **Filas crudas ingeridas:** total de registros de las 3 fuentes combinadas, antes de cualquier limpieza.
+- **Duplicados eliminados:** filas con misma fecha, sucursal y monto presentes más de una vez entre las fuentes — se cuentan una sola vez en la fuente única para no inflar el total de ventas.
+- **En cola de revisión manual:** filas sin monto que se separan a `revision_manual_monto_faltante.csv` en vez de imputarse con un valor inventado.
+- **Ventas consolidadas por sucursal:** suma de `monto_mxn` ya limpio, agrupada por sucursal normalizada — el número que cualquier reporte posterior debe usar como base.
+
 ## Cómo se ve
 
-![Embudo de calidad de datos y ventas consolidadas](assets/chart_overview.png)
+![Dashboard de consolidación de fuentes, con segmentación de riesgo por sucursal y tendencia de ventas](assets/dashboard_preview.png)
 
 Abre `dashboard.html` para la versión interactiva.
 
