@@ -455,6 +455,95 @@ def _heatmap_js(chart):
     """
 
 
+def _progress_bars_js(chart):
+    """Lista de barras horizontales 0-max estilo 'progress bar' (track tenue
+    + relleno proporcional), dibujada en canvas -- no hay tipo nativo de
+    Chart.js para esto. Pensada para scores/porcentajes por categoría donde
+    el punto de referencia (el máximo) importa tanto como el valor mismo,
+    p.ej. un score de calidad 0-100 por tabla."""
+    cid = chart["id"]
+    labels = json.dumps(chart["labels"], ensure_ascii=False)
+    values = json.dumps(chart["values"])
+    max_val = chart.get("max", 100)
+    colors = chart.get("colors")
+    colors_js = json.dumps(colors) if colors else "null"
+    value_suffix = json.dumps(chart.get("value_suffix", ""))
+    default_light, default_dark = CATEGORICAL_LIGHT[0], CATEGORICAL_DARK[0]
+    return f"""
+    (function() {{
+      const canvas = document.getElementById('{cid}');
+      const wrap = canvas.parentElement;
+      const labels = {labels};
+      const values = {values};
+      const maxVal = {max_val};
+      const colors = {colors_js};
+      const valueSuffix = {value_suffix};
+      const defaultColor = {{ light: {json.dumps(default_light)}, dark: {json.dumps(default_dark)} }};
+
+      function roundRect(ctx, x, y, w, h, r) {{
+        const rr = Math.max(Math.min(r, h / 2, Math.max(w, 0) / 2), 0);
+        ctx.beginPath();
+        ctx.moveTo(x + rr, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rr);
+        ctx.arcTo(x + w, y + h, x, y + h, rr);
+        ctx.arcTo(x, y + h, x, y, rr);
+        ctx.arcTo(x, y, x + w, y, rr);
+        ctx.closePath();
+      }}
+
+      function draw() {{
+        const dpr = window.devicePixelRatio || 1;
+        const w = wrap.clientWidth, h = wrap.clientHeight;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+
+        const n = labels.length;
+        const padLeft = Math.min(190, w * 0.34);
+        const padRight = 54;
+        const barAreaW = Math.max(w - padLeft - padRight, 20);
+        const rowH = h / n;
+        const barH = Math.max(Math.min(16, rowH * 0.42), 6);
+
+        for (let i = 0; i < n; i++) {{
+          const cy = i * rowH + rowH / 2;
+          const barY = cy - barH / 2;
+          const val = values[i];
+          const pct = Math.max(0, Math.min(val / maxVal, 1));
+          const color = (colors && colors[i]) ? colors[i] : (isDark() ? defaultColor.dark : defaultColor.light);
+
+          ctx.fillStyle = inkColor('primary');
+          ctx.font = '600 12px -apple-system, sans-serif';
+          ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+          ctx.fillText(labels[i], 0, cy);
+
+          ctx.fillStyle = withAlpha(inkColor('muted'), 0.22);
+          roundRect(ctx, padLeft, barY, barAreaW, barH, barH / 2);
+          ctx.fill();
+
+          if (pct > 0) {{
+            ctx.fillStyle = color;
+            roundRect(ctx, padLeft, barY, barAreaW * pct, barH, barH / 2);
+            ctx.fill();
+          }}
+
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '700 12px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(`${{val.toFixed(1)}}${{valueSuffix}}`, padLeft + barAreaW + 8, cy);
+        }}
+      }}
+
+      draw();
+      window.addEventListener('resize', draw);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+      new ResizeObserver(draw).observe(wrap);
+    }})();
+    """
+
+
 def _chart_js(chart):
     if chart["type"] == "funnel":
         return _funnel_js(chart)
@@ -462,6 +551,8 @@ def _chart_js(chart):
         return _scatter_js(chart)
     if chart["type"] == "heatmap":
         return _heatmap_js(chart)
+    if chart["type"] == "progress_bars":
+        return _progress_bars_js(chart)
     cid = chart["id"]
     ctype = chart["type"]
     horizontal = bool(chart.get("horizontal"))
