@@ -1,0 +1,34 @@
+prioridad,tabla,campo,tipo,severidad,filas_afectadas,pct_filas,impacto_pts,accion_recomendada
+1,facturas,fecha,Validez/Formato,Alta,1024,28.48,11.39,Agregar validación de formato/rango en el punto de captura para `fecha`; poner en cuarentena o corregir las 1024 filas fuera de rango.
+2,clientes,fecha_alta,Validez/Formato,Alta,129,24.62,9.85,Agregar validación de formato/rango en el punto de captura para `fecha_alta`; poner en cuarentena o corregir las 129 filas fuera de rango.
+3,productos,sku,Unicidad,Crítica,16,10.0,6.5,Definir `sku` (o la combinación de campos) como llave única en la base; deduplicar las 16 filas detectadas antes de usar la tabla en cualquier agregado.
+4,facturas,total,Consistencia de cálculo,Crítica,332,9.48,6.16,Recalcular `total` desde sus componentes en vez de aceptar el valor capturado manualmente; revisar las 332 filas donde no cuadra con la fórmula esperada.
+5,clientes,ciudad,Validez/Formato,Media,132,25.19,5.04,Agregar validación de formato/rango en el punto de captura para `ciudad`; poner en cuarentena o corregir las 132 filas fuera de rango.
+6,clientes,email,Unicidad,Alta,43,8.83,3.53,Definir `email` (o la combinación de campos) como llave única en la base; deduplicar las 43 filas detectadas antes de usar la tabla en cualquier agregado.
+7,clientes,cliente_id,Unicidad,Crítica,28,5.34,3.47,Definir `cliente_id` (o la combinación de campos) como llave única en la base; deduplicar las 28 filas detectadas antes de usar la tabla en cualquier agregado.
+8,productos,precio_unitario,Validez/Formato,Alta,13,8.12,3.25,Agregar validación de formato/rango en el punto de captura para `precio_unitario`; poner en cuarentena o corregir las 13 filas fuera de rango.
+9,facturas,cliente_id,Integridad referencial,Crítica,158,4.55,2.96,Bloquear la inserción de filas cuyo `cliente_id` no exista en el catálogo maestro; investigar el origen de las 158 referencias huérfanas (¿catálogo desactualizado o borrado sin cascada?).
+10,clientes,segmento,Validez/Formato,Media,77,14.69,2.94,Agregar validación de formato/rango en el punto de captura para `segmento`; poner en cuarentena o corregir las 77 filas fuera de rango.
+11,clientes,email,Completitud,Alta,37,7.06,2.82,"Hacer obligatorio `email` en el formulario/ETL de origen; las 37 filas ya capturadas van a una cola de revisión manual, no a imputación automática."
+12,productos,categoria,Validez/Formato,Media,21,13.12,2.62,Agregar validación de formato/rango en el punto de captura para `categoria`; poner en cuarentena o corregir las 21 filas fuera de rango.
+13,productos,precio_unitario,Completitud,Alta,9,5.62,2.25,"Hacer obligatorio `precio_unitario` en el formulario/ETL de origen; las 9 filas ya capturadas van a una cola de revisión manual, no a imputación automática."
+14,facturas,sku,Integridad referencial,Crítica,124,3.45,2.24,Bloquear la inserción de filas cuyo `sku` no exista en el catálogo maestro; investigar el origen de las 124 referencias huérfanas (¿catálogo desactualizado o borrado sin cascada?).
+15,facturas,factura_id,Unicidad,Alta,190,5.29,2.11,Definir `factura_id` (o la combinación de campos) como llave única en la base; deduplicar las 190 filas detectadas antes de usar la tabla en cualquier agregado.
+16,facturas,precio_unitario,Validez/Formato,Alta,178,4.95,1.98,Agregar validación de formato/rango en el punto de captura para `precio_unitario`; poner en cuarentena o corregir las 178 filas fuera de rango.
+17,facturas,moneda,Validez/Formato,Media,288,8.01,1.6,Agregar validación de formato/rango en el punto de captura para `moneda`; poner en cuarentena o corregir las 288 filas fuera de rango.
+18,clientes,email,Validez/Formato,Alta,17,3.49,1.4,Agregar validación de formato/rango en el punto de captura para `email`; poner en cuarentena o corregir las 17 filas fuera de rango.
+19,facturas,cliente_id,Completitud,Alta,124,3.45,1.38,"Hacer obligatorio `cliente_id` en el formulario/ETL de origen; las 124 filas ya capturadas van a una cola de revisión manual, no a imputación automática."
+20,clientes,telefono,Completitud,Media,33,6.3,1.26,"Hacer obligatorio `telefono` en el formulario/ETL de origen; las 33 filas ya capturadas van a una cola de revisión manual, no a imputación automática."
+21,productos,precio_unitario,Validez/Formato,Alta,4,2.65,1.06,Agregar validación de formato/rango en el punto de captura para `precio_unitario`; poner en cuarentena o corregir las 4 filas fuera de rango.
+22,facturas,total,Completitud,Alta,92,2.56,1.02,"Hacer obligatorio `total` en el formulario/ETL de origen; las 92 filas ya capturadas van a una cola de revisión manual, no a imputación automática."
+23,facturas,cantidad,Validez/Formato,Alta,92,2.56,1.02,Agregar validación de formato/rango en el punto de captura para `cantidad`; poner en cuarentena o corregir las 92 filas fuera de rango.
+24,productos,categoria,Completitud,Media,6,3.75,0.75,"Hacer obligatorio `categoria` en el formulario/ETL de origen; las 6 filas ya capturadas van a una cola de revisión manual, no a imputación automática."
+25,calendario,fecha,Unicidad,Alta,12,1.65,0.66,Definir `fecha` (o la combinación de campos) como llave única en la base; deduplicar las 12 filas detectadas antes de usar la tabla en cualquier agregado.
+26,calendario,nombre_mes,Validez/Formato,Baja,43,5.91,0.53,Agregar validación de formato/rango en el punto de captura para `nombre_mes`; poner en cuarentena o corregir las 43 filas fuera de rango.
+27,calendario,dia_semana,Validez/Formato,Baja,37,5.08,0.46,Agregar validación de formato/rango en el punto de captura para `dia_semana`; poner en cuarentena o corregir las 37 filas fuera de rango.
+28,clientes,nombre_completo,Validez/Formato,Baja,26,4.96,0.45,Agregar validación de formato/rango en el punto de captura para `nombre_completo`; poner en cuarentena o corregir las 26 filas fuera de rango.
+29,productos,nombre_producto,Validez/Formato,Baja,7,4.38,0.39,Agregar validación de formato/rango en el punto de captura para `nombre_producto`; poner en cuarentena o corregir las 7 filas fuera de rango.
+30,calendario,fecha,Validez/Formato,Media,9,1.23,0.25,Agregar validación de formato/rango en el punto de captura para `fecha`; poner en cuarentena o corregir las 9 filas fuera de rango.
+31,calendario,es_feriado,Campo huérfano,Limpieza de esquema,728,100.0,0.0,"Confirmar con el dueño del sistema si `es_feriado` sigue en uso; si no, retirarlo del esquema para que ningún reporte futuro asuma que existe."
+32,clientes,campo_legacy_crm_id,Campo huérfano,Limpieza de esquema,524,100.0,0.0,"Confirmar con el dueño del sistema si `campo_legacy_crm_id` sigue en uso; si no, retirarlo del esquema para que ningún reporte futuro asuma que existe."
+33,productos,campo_obsoleto_bodega_2019,Campo huérfano,Limpieza de esquema,160,100.0,0.0,"Confirmar con el dueño del sistema si `campo_obsoleto_bodega_2019` sigue en uso; si no, retirarlo del esquema para que ningún reporte futuro asuma que existe."

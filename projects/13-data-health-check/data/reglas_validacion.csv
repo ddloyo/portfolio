@@ -1,0 +1,34 @@
+tabla,campo,tipo,tipo_label,severidad,severidad_label,descripcion,n_filas,n_fallas,pct_fallas,impacto_pts
+calendario,fecha,uniqueness,Unicidad,high,Alta,fecha debe ser única -- es la llave de la dimensión de tiempo.,728,12,1.65,0.66
+calendario,nombre_mes,validity,Validez/Formato,low,Baja,"nombre_mes debe respetar la capitalización estándar (p.ej. 'Enero', no 'enero' ni ' Enero ').",728,43,5.91,0.53
+calendario,dia_semana,validity,Validez/Formato,low,Baja,dia_semana debe respetar la capitalización estándar.,728,37,5.08,0.46
+calendario,fecha,validity,Validez/Formato,medium,Media,El rango de fechas no debe tener huecos -- cada día del periodo debe existir exactamente una vez.,731,9,1.23,0.25
+calendario,es_feriado,orphan_field,Campo huérfano,info,Informativa,"Columna planeada para el calendario oficial de feriados MX, 100% vacía -- nunca se pobló.",728,728,100.0,0.0
+clientes,fecha_alta,validity,Validez/Formato,high,Alta,"fecha_alta debe capturarse en formato estándar ISO (YYYY-MM-DD), no mezclado con DD/MM/YYYY o MM/DD/YYYY.",524,129,24.62,9.85
+clientes,ciudad,validity,Validez/Formato,medium,Media,ciudad debe respetar la capitalización del catálogo maestro (evita fragmentar el mismo valor en variantes).,524,132,25.19,5.04
+clientes,email,uniqueness,Unicidad,high,Alta,El mismo email no debería repetirse en dos cliente_id distintos (alta duplicada).,487,43,8.83,3.53
+clientes,cliente_id,uniqueness,Unicidad,critical,Crítica,cliente_id debe ser único -- llave primaria del catálogo.,524,28,5.34,3.47
+clientes,segmento,validity,Validez/Formato,medium,Media,"segmento debe ser uno de {Premium, Estándar, Básico} con capitalización exacta.",524,77,14.69,2.94
+clientes,email,completeness,Completitud,high,Alta,El email no debe estar vacío -- es el canal principal de retención/cobranza.,524,37,7.06,2.82
+clientes,email,validity,Validez/Formato,high,Alta,"El email debe tener formato válido (usuario@dominio.tld), sin espacios.",487,17,3.49,1.4
+clientes,telefono,completeness,Completitud,medium,Media,El teléfono no debe estar vacío.,524,33,6.3,1.26
+clientes,nombre_completo,validity,Validez/Formato,low,Baja,nombre_completo no debe traer espacios al inicio/final ni dobles espacios.,524,26,4.96,0.45
+clientes,campo_legacy_crm_id,orphan_field,Campo huérfano,info,Informativa,"Columna heredada de un CRM anterior, 100% vacía -- nunca se migró ni se usa en ningún reporte.",524,524,100.0,0.0
+facturas,fecha,validity,Validez/Formato,high,Alta,"fecha debe capturarse en formato estándar ISO (YYYY-MM-DD), no mezclado con DD/MM/YYYY o MM/DD/YYYY.",3595,1024,28.48,11.39
+facturas,total,consistency,Consistencia de cálculo,critical,Crítica,total debe ser igual a cantidad × precio_unitario (tolerancia $1) -- un valor distinto implica un override manual sin recalcular (p.ej. un descuento no reflejado).,3503,332,9.48,6.16
+facturas,cliente_id,integrity,Integridad referencial,critical,Crítica,"cliente_id debe existir en el catálogo de clientes (integridad referencial) -- si no, la venta queda huérfana en cualquier reporte por cliente.",3471,158,4.55,2.96
+facturas,sku,integrity,Integridad referencial,critical,Crítica,"sku debe existir en el catálogo de productos (integridad referencial) -- si no, la venta queda huérfana en cualquier reporte por producto/categoría.",3595,124,3.45,2.24
+facturas,factura_id,uniqueness,Unicidad,high,Alta,No debe existir la misma línea de factura (fecha + cliente + sku + cantidad + precio) capturada más de una vez.,3595,190,5.29,2.11
+facturas,precio_unitario,validity,Validez/Formato,high,Alta,"precio_unitario debe almacenarse como número plano, no como texto de moneda.",3595,178,4.95,1.98
+facturas,moneda,validity,Validez/Formato,medium,Media,moneda debe ser 'MXN' o 'USD' con capitalización exacta.,3595,288,8.01,1.6
+facturas,cliente_id,completeness,Completitud,high,Alta,cliente_id no debe estar vacío -- sin él la venta no se puede atribuir a ningún cliente.,3595,124,3.45,1.38
+facturas,total,completeness,Completitud,high,Alta,total no debe estar vacío.,3595,92,2.56,1.02
+facturas,cantidad,validity,Validez/Formato,high,Alta,cantidad debe ser mayor a cero (una devolución/nota de crédito no debería capturarse como venta negativa).,3595,92,2.56,1.02
+productos,sku,uniqueness,Unicidad,critical,Crítica,sku debe ser único -- llave primaria del catálogo de productos.,160,16,10.0,6.5
+productos,precio_unitario,validity,Validez/Formato,high,Alta,"precio_unitario debe almacenarse como número plano, no como texto de moneda ('$1,234.50').",160,13,8.12,3.25
+productos,categoria,validity,Validez/Formato,medium,Media,categoria debe respetar la capitalización del catálogo maestro (8 categorías fijas).,160,21,13.12,2.62
+productos,precio_unitario,completeness,Completitud,high,Alta,precio_unitario no debe estar vacío -- sin él no se puede facturar ni auditar el total.,160,9,5.62,2.25
+productos,precio_unitario,validity,Validez/Formato,high,Alta,precio_unitario debe ser mayor a cero.,151,4,2.65,1.06
+productos,categoria,completeness,Completitud,medium,Media,categoria no debe estar vacía -- se usa para reportes de mezcla de producto.,160,6,3.75,0.75
+productos,nombre_producto,validity,Validez/Formato,low,Baja,nombre_producto no debe traer espacios al inicio/final.,160,7,4.38,0.39
+productos,campo_obsoleto_bodega_2019,orphan_field,Campo huérfano,info,Informativa,"Columna de una bodega que ya no opera, 100% vacía -- candidata a eliminarse del esquema.",160,160,100.0,0.0

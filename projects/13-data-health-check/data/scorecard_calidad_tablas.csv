@@ -1,0 +1,5 @@
+tabla,filas,score,status,status_label,reglas_evaluadas,reglas_con_hallazgo
+clientes,524,69.2,serious,En riesgo,10,9
+productos,160,83.2,warning,Atención,8,7
+calendario,728,98.1,good,Sano,5,4
+facturas,3595,68.1,serious,En riesgo,10,10
