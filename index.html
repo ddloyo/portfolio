@@ -117,10 +117,6 @@
   .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(22,56,50,0.14); }
   .card .thumb { position: relative; aspect-ratio: 16 / 10; background: var(--page); overflow: hidden; }
   .card .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; display:block; }
-  .card .thumb .num {
-    position: absolute; top: 10px; left: 10px; background: rgba(22,56,50,0.82); color: var(--brand-cream);
-    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; letter-spacing: .03em;
-  }
   .card .body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
   .card .chip {
     align-self: flex-start; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
@@ -229,8 +225,8 @@
     { num: "08", slug: "08-flujo-caja-cartera", title: "Flujo de Caja y Cartera Vencida", title_en: "Cash Flow & Overdue Receivables", service: "express", category: "analysis", blurb: "Cuánto de la cartera es cobrable de verdad en las próximas 4 semanas.", blurb_en: "How much of the receivables is actually collectible in the next 4 weeks.", img: "assets/dashboard_preview.png" },
     { num: "09", slug: "09-roi-marketing-canal", title: "ROI de Marketing: CAC vs. LTV por Canal", title_en: "Marketing ROI: CAC vs. LTV by Channel", service: "express", category: "analysis", blurb: "Qué canal escalar y cuál replantear, más allá del gasto.", blurb_en: "Which channel to scale and which to rethink, beyond ad spend.", img: "assets/dashboard_preview.png" },
     { num: "10", slug: "10-reporte-ejecutivo-mensual", title: "Reporte Ejecutivo Mensual", title_en: "Monthly Executive Report", service: "express", category: "analysis", blurb: "El entregable insignia: qué pasó, por qué, y qué hacer — en una sesión de 15 min.", blurb_en: "The flagship deliverable: what happened, why, and what to do — in a 15-minute session.", img: "assets/dashboard_preview.png" },
-    { num: "11", slug: "11-consolidacion-fuente-verdad", title: "Consolidación de Datos Dispersos", service: "office", category: "foundation", blurb: "Tres Excels de tres sucursales, un solo número correcto.", img: "assets/chart_overview.png" },
-    //{ num: "12", slug: "12-nps-causa-raiz", title: "NPS y Análisis de Causa Raíz", service: "express", category: "analysis", blurb: "De “el NPS bajó” a “sabemos exactamente qué corregir”.", img: "assets/chart_overview.png" },
+    { num: "11", slug: "11-consolidacion-fuente-verdad", title: "Consolidación de Datos Dispersos", service: "office", category: "foundation", blurb: "Tres Excels de tres sucursales, un solo número correcto.", img: "assets/dashboard_preview.png" },
+    { num: "12", slug: "12-nps-causa-raiz", title: "NPS y Análisis de Causa Raíz", service: "express", category: "analysis", blurb: "De “el NPS bajó” a “sabemos exactamente qué corregir”.", img: "assets/dashboard_preview.png" },
     { num: "13", slug: "13-data-health-check", title: "Data Health Check: Auditoría de Calidad de Datos", title_en: "Data Health Check: Data Quality Audit", service: "office", category: "foundation", blurb: "Un score de calidad por tabla y el plan de qué corregir primero — y por qué.", blurb_en: "A quality score per table and the plan for what to fix first — and why.", img: "assets/dashboard_preview.png" },
   ];
 
@@ -332,7 +328,6 @@
       a.href = `projects/${p.slug}/dashboard.html`;
       a.innerHTML = `
         <div class="thumb">
-          <span class="num">${p.num}</span>
           <img src="projects/${p.slug}/${p.img}" alt="${t.previewAlt(title)}" loading="lazy">
         </div>
         <div class="body">

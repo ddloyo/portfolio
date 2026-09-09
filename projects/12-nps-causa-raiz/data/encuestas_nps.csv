@@ -1,0 +1,1719 @@
+respuesta_id,mes,score,categoria,motivo_detractor
+R-00001,2025-09,8,Pasivo,
+R-00002,2025-09,10,Promotor,
+R-00003,2025-09,7,Pasivo,
+R-00004,2025-09,10,Promotor,
+R-00005,2025-09,8,Pasivo,
+R-00006,2025-09,10,Promotor,
+R-00007,2025-09,6,Detractor,Tiempo de respuesta
+R-00008,2025-09,7,Pasivo,
+R-00009,2025-09,9,Promotor,
+R-00010,2025-09,6,Detractor,Calidad del producto
+R-00011,2025-09,10,Promotor,
+R-00012,2025-09,7,Pasivo,
+R-00013,2025-09,9,Promotor,
+R-00014,2025-09,9,Promotor,
+R-00015,2025-09,6,Detractor,Precio
+R-00016,2025-09,8,Pasivo,
+R-00017,2025-09,10,Promotor,
+R-00018,2025-09,9,Promotor,
+R-00019,2025-09,8,Pasivo,
+R-00020,2025-09,10,Promotor,
+R-00021,2025-09,7,Pasivo,
+R-00022,2025-09,7,Pasivo,
+R-00023,2025-09,8,Pasivo,
+R-00024,2025-09,8,Pasivo,
+R-00025,2025-09,7,Pasivo,
+R-00026,2025-09,8,Pasivo,
+R-00027,2025-09,9,Promotor,
+R-00028,2025-09,9,Promotor,
+R-00029,2025-09,7,Pasivo,
+R-00030,2025-09,10,Promotor,
+R-00031,2025-09,6,Detractor,Precio
+R-00032,2025-09,9,Promotor,
+R-00033,2025-09,8,Pasivo,
+R-00034,2025-09,10,Promotor,
+R-00035,2025-09,9,Promotor,
+R-00036,2025-09,6,Detractor,Facilidad de uso
+R-00037,2025-09,9,Promotor,
+R-00038,2025-09,10,Promotor,
+R-00039,2025-09,7,Pasivo,
+R-00040,2025-09,5,Detractor,Calidad del producto
+R-00041,2025-09,7,Pasivo,
+R-00042,2025-09,8,Pasivo,
+R-00043,2025-09,9,Promotor,
+R-00044,2025-09,10,Promotor,
+R-00045,2025-09,9,Promotor,
+R-00046,2025-09,6,Detractor,Tiempo de respuesta
+R-00047,2025-09,6,Detractor,Atención al cliente
+R-00048,2025-09,10,Promotor,
+R-00049,2025-09,9,Promotor,
+R-00050,2025-09,8,Pasivo,
+R-00051,2025-09,10,Promotor,
+R-00052,2025-09,9,Promotor,
+R-00053,2025-09,8,Pasivo,
+R-00054,2025-09,8,Pasivo,
+R-00055,2025-09,7,Pasivo,
+R-00056,2025-09,8,Pasivo,
+R-00057,2025-09,8,Pasivo,
+R-00058,2025-09,10,Promotor,
+R-00059,2025-09,8,Pasivo,
+R-00060,2025-09,8,Pasivo,
+R-00061,2025-09,8,Pasivo,
+R-00062,2025-09,9,Promotor,
+R-00063,2025-09,10,Promotor,
+R-00064,2025-09,10,Promotor,
+R-00065,2025-09,8,Pasivo,
+R-00066,2025-09,8,Pasivo,
+R-00067,2025-09,8,Pasivo,
+R-00068,2025-09,9,Promotor,
+R-00069,2025-09,10,Promotor,
+R-00070,2025-09,6,Detractor,Facilidad de uso
+R-00071,2025-09,8,Pasivo,
+R-00072,2025-09,7,Pasivo,
+R-00073,2025-09,7,Pasivo,
+R-00074,2025-09,9,Promotor,
+R-00075,2025-09,10,Promotor,
+R-00076,2025-09,10,Promotor,
+R-00077,2025-09,7,Pasivo,
+R-00078,2025-09,6,Detractor,Precio
+R-00079,2025-09,8,Pasivo,
+R-00080,2025-09,8,Pasivo,
+R-00081,2025-09,10,Promotor,
+R-00082,2025-09,9,Promotor,
+R-00083,2025-09,9,Promotor,
+R-00084,2025-09,7,Pasivo,
+R-00085,2025-09,9,Promotor,
+R-00086,2025-09,10,Promotor,
+R-00087,2025-09,7,Pasivo,
+R-00088,2025-09,7,Pasivo,
+R-00089,2025-09,8,Pasivo,
+R-00090,2025-09,7,Pasivo,
+R-00091,2025-09,9,Promotor,
+R-00092,2025-09,7,Pasivo,
+R-00093,2025-09,6,Detractor,Facilidad de uso
+R-00094,2025-09,10,Promotor,
+R-00095,2025-09,8,Pasivo,
+R-00096,2025-09,5,Detractor,Precio
+R-00097,2025-09,10,Promotor,
+R-00098,2025-09,9,Promotor,
+R-00099,2025-09,7,Pasivo,
+R-00100,2025-09,9,Promotor,
+R-00101,2025-09,8,Pasivo,
+R-00102,2025-09,7,Pasivo,
+R-00103,2025-09,9,Promotor,
+R-00104,2025-09,10,Promotor,
+R-00105,2025-09,6,Detractor,Tiempo de respuesta
+R-00106,2025-09,8,Pasivo,
+R-00107,2025-09,10,Promotor,
+R-00108,2025-09,10,Promotor,
+R-00109,2025-09,6,Detractor,Calidad del producto
+R-00110,2025-09,10,Promotor,
+R-00111,2025-09,10,Promotor,
+R-00112,2025-09,10,Promotor,
+R-00113,2025-09,9,Promotor,
+R-00114,2025-09,8,Pasivo,
+R-00115,2025-09,10,Promotor,
+R-00116,2025-09,7,Pasivo,
+R-00117,2025-09,6,Detractor,Atención al cliente
+R-00118,2025-09,8,Pasivo,
+R-00119,2025-09,8,Pasivo,
+R-00120,2025-09,10,Promotor,
+R-00121,2025-09,6,Detractor,Tiempo de respuesta
+R-00122,2025-09,9,Promotor,
+R-00123,2025-09,9,Promotor,
+R-00124,2025-09,6,Detractor,Precio
+R-00125,2025-09,7,Pasivo,
+R-00126,2025-09,7,Pasivo,
+R-00127,2025-09,7,Pasivo,
+R-00128,2025-09,9,Promotor,
+R-00129,2025-09,8,Pasivo,
+R-00130,2025-09,9,Promotor,
+R-00131,2025-09,10,Promotor,
+R-00132,2025-09,10,Promotor,
+R-00133,2025-09,7,Pasivo,
+R-00134,2025-09,9,Promotor,
+R-00135,2025-09,7,Pasivo,
+R-00136,2025-09,9,Promotor,
+R-00137,2025-09,7,Pasivo,
+R-00138,2025-09,7,Pasivo,
+R-00139,2025-10,8,Pasivo,
+R-00140,2025-10,10,Promotor,
+R-00141,2025-10,8,Pasivo,
+R-00142,2025-10,9,Promotor,
+R-00143,2025-10,8,Pasivo,
+R-00144,2025-10,10,Promotor,
+R-00145,2025-10,9,Promotor,
+R-00146,2025-10,6,Detractor,Precio
+R-00147,2025-10,5,Detractor,Calidad del producto
+R-00148,2025-10,9,Promotor,
+R-00149,2025-10,8,Pasivo,
+R-00150,2025-10,10,Promotor,
+R-00151,2025-10,7,Pasivo,
+R-00152,2025-10,7,Pasivo,
+R-00153,2025-10,9,Promotor,
+R-00154,2025-10,8,Pasivo,
+R-00155,2025-10,8,Pasivo,
+R-00156,2025-10,9,Promotor,
+R-00157,2025-10,8,Pasivo,
+R-00158,2025-10,5,Detractor,Tiempo de respuesta
+R-00159,2025-10,10,Promotor,
+R-00160,2025-10,7,Pasivo,
+R-00161,2025-10,8,Pasivo,
+R-00162,2025-10,10,Promotor,
+R-00163,2025-10,8,Pasivo,
+R-00164,2025-10,5,Detractor,Precio
+R-00165,2025-10,7,Pasivo,
+R-00166,2025-10,7,Pasivo,
+R-00167,2025-10,7,Pasivo,
+R-00168,2025-10,6,Detractor,Precio
+R-00169,2025-10,7,Pasivo,
+R-00170,2025-10,8,Pasivo,
+R-00171,2025-10,7,Pasivo,
+R-00172,2025-10,6,Detractor,Calidad del producto
+R-00173,2025-10,9,Promotor,
+R-00174,2025-10,7,Pasivo,
+R-00175,2025-10,7,Pasivo,
+R-00176,2025-10,7,Pasivo,
+R-00177,2025-10,8,Pasivo,
+R-00178,2025-10,9,Promotor,
+R-00179,2025-10,7,Pasivo,
+R-00180,2025-10,8,Pasivo,
+R-00181,2025-10,8,Pasivo,
+R-00182,2025-10,10,Promotor,
+R-00183,2025-10,8,Pasivo,
+R-00184,2025-10,8,Pasivo,
+R-00185,2025-10,8,Pasivo,
+R-00186,2025-10,6,Detractor,Calidad del producto
+R-00187,2025-10,7,Pasivo,
+R-00188,2025-10,9,Promotor,
+R-00189,2025-10,8,Pasivo,
+R-00190,2025-10,7,Pasivo,
+R-00191,2025-10,6,Detractor,Precio
+R-00192,2025-10,7,Pasivo,
+R-00193,2025-10,6,Detractor,Calidad del producto
+R-00194,2025-10,8,Pasivo,
+R-00195,2025-10,7,Pasivo,
+R-00196,2025-10,3,Detractor,Calidad del producto
+R-00197,2025-10,8,Pasivo,
+R-00198,2025-10,10,Promotor,
+R-00199,2025-10,7,Pasivo,
+R-00200,2025-10,10,Promotor,
+R-00201,2025-10,8,Pasivo,
+R-00202,2025-10,9,Promotor,
+R-00203,2025-10,10,Promotor,
+R-00204,2025-10,9,Promotor,
+R-00205,2025-10,7,Pasivo,
+R-00206,2025-10,9,Promotor,
+R-00207,2025-10,8,Pasivo,
+R-00208,2025-10,10,Promotor,
+R-00209,2025-10,8,Pasivo,
+R-00210,2025-10,9,Promotor,
+R-00211,2025-10,9,Promotor,
+R-00212,2025-10,10,Promotor,
+R-00213,2025-10,10,Promotor,
+R-00214,2025-10,7,Pasivo,
+R-00215,2025-10,9,Promotor,
+R-00216,2025-10,8,Pasivo,
+R-00217,2025-10,10,Promotor,
+R-00218,2025-10,7,Pasivo,
+R-00219,2025-10,9,Promotor,
+R-00220,2025-10,7,Pasivo,
+R-00221,2025-10,6,Detractor,Calidad del producto
+R-00222,2025-10,10,Promotor,
+R-00223,2025-10,10,Promotor,
+R-00224,2025-10,8,Pasivo,
+R-00225,2025-10,7,Pasivo,
+R-00226,2025-10,9,Promotor,
+R-00227,2025-10,10,Promotor,
+R-00228,2025-10,6,Detractor,Calidad del producto
+R-00229,2025-10,9,Promotor,
+R-00230,2025-10,9,Promotor,
+R-00231,2025-10,8,Pasivo,
+R-00232,2025-10,10,Promotor,
+R-00233,2025-10,9,Promotor,
+R-00234,2025-10,10,Promotor,
+R-00235,2025-10,9,Promotor,
+R-00236,2025-10,10,Promotor,
+R-00237,2025-10,7,Pasivo,
+R-00238,2025-10,7,Pasivo,
+R-00239,2025-10,6,Detractor,Precio
+R-00240,2025-10,8,Pasivo,
+R-00241,2025-10,8,Pasivo,
+R-00242,2025-10,10,Promotor,
+R-00243,2025-10,8,Pasivo,
+R-00244,2025-10,6,Detractor,Calidad del producto
+R-00245,2025-10,10,Promotor,
+R-00246,2025-10,10,Promotor,
+R-00247,2025-10,6,Detractor,Facilidad de uso
+R-00248,2025-10,6,Detractor,Precio
+R-00249,2025-10,3,Detractor,Precio
+R-00250,2025-10,8,Pasivo,
+R-00251,2025-10,8,Pasivo,
+R-00252,2025-10,7,Pasivo,
+R-00253,2025-10,10,Promotor,
+R-00254,2025-10,6,Detractor,Precio
+R-00255,2025-10,7,Pasivo,
+R-00256,2025-10,9,Promotor,
+R-00257,2025-10,10,Promotor,
+R-00258,2025-10,10,Promotor,
+R-00259,2025-10,6,Detractor,Atención al cliente
+R-00260,2025-10,8,Pasivo,
+R-00261,2025-10,10,Promotor,
+R-00262,2025-10,9,Promotor,
+R-00263,2025-11,6,Detractor,Calidad del producto
+R-00264,2025-11,6,Detractor,Calidad del producto
+R-00265,2025-11,7,Pasivo,
+R-00266,2025-11,8,Pasivo,
+R-00267,2025-11,9,Promotor,
+R-00268,2025-11,9,Promotor,
+R-00269,2025-11,6,Detractor,Precio
+R-00270,2025-11,7,Pasivo,
+R-00271,2025-11,8,Pasivo,
+R-00272,2025-11,7,Pasivo,
+R-00273,2025-11,8,Pasivo,
+R-00274,2025-11,9,Promotor,
+R-00275,2025-11,6,Detractor,Precio
+R-00276,2025-11,6,Detractor,Precio
+R-00277,2025-11,10,Promotor,
+R-00278,2025-11,9,Promotor,
+R-00279,2025-11,6,Detractor,Precio
+R-00280,2025-11,8,Pasivo,
+R-00281,2025-11,10,Promotor,
+R-00282,2025-11,6,Detractor,Calidad del producto
+R-00283,2025-11,6,Detractor,Calidad del producto
+R-00284,2025-11,9,Promotor,
+R-00285,2025-11,7,Pasivo,
+R-00286,2025-11,9,Promotor,
+R-00287,2025-11,5,Detractor,Precio
+R-00288,2025-11,6,Detractor,Facilidad de uso
+R-00289,2025-11,7,Pasivo,
+R-00290,2025-11,4,Detractor,Atención al cliente
+R-00291,2025-11,4,Detractor,Precio
+R-00292,2025-11,6,Detractor,Facilidad de uso
+R-00293,2025-11,7,Pasivo,
+R-00294,2025-11,10,Promotor,
+R-00295,2025-11,10,Promotor,
+R-00296,2025-11,10,Promotor,
+R-00297,2025-11,7,Pasivo,
+R-00298,2025-11,9,Promotor,
+R-00299,2025-11,4,Detractor,Precio
+R-00300,2025-11,10,Promotor,
+R-00301,2025-11,9,Promotor,
+R-00302,2025-11,9,Promotor,
+R-00303,2025-11,5,Detractor,Tiempo de respuesta
+R-00304,2025-11,10,Promotor,
+R-00305,2025-11,6,Detractor,Facilidad de uso
+R-00306,2025-11,8,Pasivo,
+R-00307,2025-11,7,Pasivo,
+R-00308,2025-11,7,Pasivo,
+R-00309,2025-11,9,Promotor,
+R-00310,2025-11,6,Detractor,Precio
+R-00311,2025-11,7,Pasivo,
+R-00312,2025-11,3,Detractor,Precio
+R-00313,2025-11,6,Detractor,Precio
+R-00314,2025-11,6,Detractor,Calidad del producto
+R-00315,2025-11,8,Pasivo,
+R-00316,2025-11,8,Pasivo,
+R-00317,2025-11,7,Pasivo,
+R-00318,2025-11,8,Pasivo,
+R-00319,2025-11,10,Promotor,
+R-00320,2025-11,7,Pasivo,
+R-00321,2025-11,5,Detractor,Calidad del producto
+R-00322,2025-11,7,Pasivo,
+R-00323,2025-11,10,Promotor,
+R-00324,2025-11,9,Promotor,
+R-00325,2025-11,10,Promotor,
+R-00326,2025-11,7,Pasivo,
+R-00327,2025-11,8,Pasivo,
+R-00328,2025-11,8,Pasivo,
+R-00329,2025-11,7,Pasivo,
+R-00330,2025-11,6,Detractor,Atención al cliente
+R-00331,2025-11,9,Promotor,
+R-00332,2025-11,8,Pasivo,
+R-00333,2025-11,5,Detractor,Precio
+R-00334,2025-11,10,Promotor,
+R-00335,2025-11,9,Promotor,
+R-00336,2025-11,7,Pasivo,
+R-00337,2025-11,6,Detractor,Calidad del producto
+R-00338,2025-11,9,Promotor,
+R-00339,2025-11,10,Promotor,
+R-00340,2025-11,9,Promotor,
+R-00341,2025-11,7,Pasivo,
+R-00342,2025-11,9,Promotor,
+R-00343,2025-11,8,Pasivo,
+R-00344,2025-11,10,Promotor,
+R-00345,2025-11,6,Detractor,Facilidad de uso
+R-00346,2025-11,10,Promotor,
+R-00347,2025-11,9,Promotor,
+R-00348,2025-11,7,Pasivo,
+R-00349,2025-11,8,Pasivo,
+R-00350,2025-11,6,Detractor,Precio
+R-00351,2025-11,8,Pasivo,
+R-00352,2025-11,4,Detractor,Precio
+R-00353,2025-11,10,Promotor,
+R-00354,2025-11,10,Promotor,
+R-00355,2025-11,8,Pasivo,
+R-00356,2025-11,10,Promotor,
+R-00357,2025-11,9,Promotor,
+R-00358,2025-11,5,Detractor,Precio
+R-00359,2025-11,6,Detractor,Tiempo de respuesta
+R-00360,2025-11,10,Promotor,
+R-00361,2025-11,8,Pasivo,
+R-00362,2025-11,6,Detractor,Facilidad de uso
+R-00363,2025-11,10,Promotor,
+R-00364,2025-11,10,Promotor,
+R-00365,2025-11,8,Pasivo,
+R-00366,2025-11,10,Promotor,
+R-00367,2025-11,9,Promotor,
+R-00368,2025-11,8,Pasivo,
+R-00369,2025-11,9,Promotor,
+R-00370,2025-11,7,Pasivo,
+R-00371,2025-11,8,Pasivo,
+R-00372,2025-11,8,Pasivo,
+R-00373,2025-11,8,Pasivo,
+R-00374,2025-11,9,Promotor,
+R-00375,2025-11,10,Promotor,
+R-00376,2025-11,6,Detractor,Tiempo de respuesta
+R-00377,2025-11,6,Detractor,Tiempo de respuesta
+R-00378,2025-11,10,Promotor,
+R-00379,2025-11,7,Pasivo,
+R-00380,2025-11,9,Promotor,
+R-00381,2025-11,7,Pasivo,
+R-00382,2025-11,9,Promotor,
+R-00383,2025-11,9,Promotor,
+R-00384,2025-11,9,Promotor,
+R-00385,2025-11,8,Pasivo,
+R-00386,2025-11,7,Pasivo,
+R-00387,2025-11,8,Pasivo,
+R-00388,2025-11,8,Pasivo,
+R-00389,2025-11,7,Pasivo,
+R-00390,2025-11,6,Detractor,Tiempo de respuesta
+R-00391,2025-11,8,Pasivo,
+R-00392,2025-11,6,Detractor,Tiempo de respuesta
+R-00393,2025-11,5,Detractor,Facilidad de uso
+R-00394,2025-11,8,Pasivo,
+R-00395,2025-11,9,Promotor,
+R-00396,2025-11,9,Promotor,
+R-00397,2025-11,10,Promotor,
+R-00398,2025-11,9,Promotor,
+R-00399,2025-11,9,Promotor,
+R-00400,2025-11,10,Promotor,
+R-00401,2025-11,6,Detractor,Atención al cliente
+R-00402,2025-11,5,Detractor,Calidad del producto
+R-00403,2025-11,7,Pasivo,
+R-00404,2025-11,5,Detractor,Tiempo de respuesta
+R-00405,2025-11,8,Pasivo,
+R-00406,2025-11,10,Promotor,
+R-00407,2025-11,10,Promotor,
+R-00408,2025-11,8,Pasivo,
+R-00409,2025-11,7,Pasivo,
+R-00410,2025-11,10,Promotor,
+R-00411,2025-11,8,Pasivo,
+R-00412,2025-11,8,Pasivo,
+R-00413,2025-11,10,Promotor,
+R-00414,2025-11,8,Pasivo,
+R-00415,2025-11,10,Promotor,
+R-00416,2025-11,10,Promotor,
+R-00417,2025-11,9,Promotor,
+R-00418,2025-11,8,Pasivo,
+R-00419,2025-11,8,Pasivo,
+R-00420,2025-11,7,Pasivo,
+R-00421,2025-11,10,Promotor,
+R-00422,2025-11,6,Detractor,Precio
+R-00423,2025-11,8,Pasivo,
+R-00424,2025-11,8,Pasivo,
+R-00425,2025-12,6,Detractor,Tiempo de respuesta
+R-00426,2025-12,10,Promotor,
+R-00427,2025-12,5,Detractor,Atención al cliente
+R-00428,2025-12,7,Pasivo,
+R-00429,2025-12,7,Pasivo,
+R-00430,2025-12,10,Promotor,
+R-00431,2025-12,7,Pasivo,
+R-00432,2025-12,10,Promotor,
+R-00433,2025-12,9,Promotor,
+R-00434,2025-12,9,Promotor,
+R-00435,2025-12,10,Promotor,
+R-00436,2025-12,7,Pasivo,
+R-00437,2025-12,10,Promotor,
+R-00438,2025-12,9,Promotor,
+R-00439,2025-12,9,Promotor,
+R-00440,2025-12,10,Promotor,
+R-00441,2025-12,10,Promotor,
+R-00442,2025-12,10,Promotor,
+R-00443,2025-12,6,Detractor,Atención al cliente
+R-00444,2025-12,5,Detractor,Calidad del producto
+R-00445,2025-12,8,Pasivo,
+R-00446,2025-12,8,Pasivo,
+R-00447,2025-12,8,Pasivo,
+R-00448,2025-12,7,Pasivo,
+R-00449,2025-12,10,Promotor,
+R-00450,2025-12,7,Pasivo,
+R-00451,2025-12,10,Promotor,
+R-00452,2025-12,10,Promotor,
+R-00453,2025-12,9,Promotor,
+R-00454,2025-12,6,Detractor,Precio
+R-00455,2025-12,8,Pasivo,
+R-00456,2025-12,7,Pasivo,
+R-00457,2025-12,10,Promotor,
+R-00458,2025-12,10,Promotor,
+R-00459,2025-12,5,Detractor,Atención al cliente
+R-00460,2025-12,6,Detractor,Atención al cliente
+R-00461,2025-12,10,Promotor,
+R-00462,2025-12,6,Detractor,Facilidad de uso
+R-00463,2025-12,7,Pasivo,
+R-00464,2025-12,9,Promotor,
+R-00465,2025-12,8,Pasivo,
+R-00466,2025-12,10,Promotor,
+R-00467,2025-12,6,Detractor,Tiempo de respuesta
+R-00468,2025-12,8,Pasivo,
+R-00469,2025-12,7,Pasivo,
+R-00470,2025-12,7,Pasivo,
+R-00471,2025-12,8,Pasivo,
+R-00472,2025-12,9,Promotor,
+R-00473,2025-12,6,Detractor,Atención al cliente
+R-00474,2025-12,8,Pasivo,
+R-00475,2025-12,7,Pasivo,
+R-00476,2025-12,10,Promotor,
+R-00477,2025-12,10,Promotor,
+R-00478,2025-12,8,Pasivo,
+R-00479,2025-12,10,Promotor,
+R-00480,2025-12,9,Promotor,
+R-00481,2025-12,7,Pasivo,
+R-00482,2025-12,9,Promotor,
+R-00483,2025-12,10,Promotor,
+R-00484,2025-12,10,Promotor,
+R-00485,2025-12,10,Promotor,
+R-00486,2025-12,10,Promotor,
+R-00487,2025-12,9,Promotor,
+R-00488,2025-12,10,Promotor,
+R-00489,2025-12,10,Promotor,
+R-00490,2025-12,8,Pasivo,
+R-00491,2025-12,8,Pasivo,
+R-00492,2025-12,7,Pasivo,
+R-00493,2025-12,7,Pasivo,
+R-00494,2025-12,7,Pasivo,
+R-00495,2025-12,9,Promotor,
+R-00496,2025-12,10,Promotor,
+R-00497,2025-12,9,Promotor,
+R-00498,2025-12,8,Pasivo,
+R-00499,2025-12,8,Pasivo,
+R-00500,2025-12,4,Detractor,Tiempo de respuesta
+R-00501,2025-12,8,Pasivo,
+R-00502,2025-12,10,Promotor,
+R-00503,2025-12,8,Pasivo,
+R-00504,2025-12,5,Detractor,Atención al cliente
+R-00505,2025-12,9,Promotor,
+R-00506,2025-12,10,Promotor,
+R-00507,2025-12,8,Pasivo,
+R-00508,2025-12,10,Promotor,
+R-00509,2025-12,7,Pasivo,
+R-00510,2025-12,10,Promotor,
+R-00511,2025-12,6,Detractor,Precio
+R-00512,2025-12,9,Promotor,
+R-00513,2025-12,8,Pasivo,
+R-00514,2025-12,10,Promotor,
+R-00515,2025-12,8,Pasivo,
+R-00516,2025-12,10,Promotor,
+R-00517,2025-12,7,Pasivo,
+R-00518,2025-12,8,Pasivo,
+R-00519,2025-12,7,Pasivo,
+R-00520,2025-12,7,Pasivo,
+R-00521,2025-12,5,Detractor,Facilidad de uso
+R-00522,2025-12,9,Promotor,
+R-00523,2025-12,9,Promotor,
+R-00524,2025-12,8,Pasivo,
+R-00525,2025-12,9,Promotor,
+R-00526,2025-12,8,Pasivo,
+R-00527,2025-12,8,Pasivo,
+R-00528,2025-12,9,Promotor,
+R-00529,2025-12,10,Promotor,
+R-00530,2025-12,8,Pasivo,
+R-00531,2025-12,9,Promotor,
+R-00532,2025-12,8,Pasivo,
+R-00533,2025-12,8,Pasivo,
+R-00534,2025-12,5,Detractor,Calidad del producto
+R-00535,2025-12,8,Pasivo,
+R-00536,2025-12,7,Pasivo,
+R-00537,2025-12,9,Promotor,
+R-00538,2025-12,7,Pasivo,
+R-00539,2025-12,10,Promotor,
+R-00540,2025-12,9,Promotor,
+R-00541,2025-12,7,Pasivo,
+R-00542,2025-12,7,Pasivo,
+R-00543,2025-12,10,Promotor,
+R-00544,2025-12,10,Promotor,
+R-00545,2025-12,7,Pasivo,
+R-00546,2025-12,9,Promotor,
+R-00547,2025-12,7,Pasivo,
+R-00548,2025-12,8,Pasivo,
+R-00549,2025-12,7,Pasivo,
+R-00550,2025-12,7,Pasivo,
+R-00551,2025-12,8,Pasivo,
+R-00552,2025-12,6,Detractor,Calidad del producto
+R-00553,2025-12,9,Promotor,
+R-00554,2026-01,9,Promotor,
+R-00555,2026-01,6,Detractor,Precio
+R-00556,2026-01,8,Pasivo,
+R-00557,2026-01,6,Detractor,Calidad del producto
+R-00558,2026-01,7,Pasivo,
+R-00559,2026-01,7,Pasivo,
+R-00560,2026-01,7,Pasivo,
+R-00561,2026-01,7,Pasivo,
+R-00562,2026-01,8,Pasivo,
+R-00563,2026-01,8,Pasivo,
+R-00564,2026-01,9,Promotor,
+R-00565,2026-01,9,Promotor,
+R-00566,2026-01,7,Pasivo,
+R-00567,2026-01,7,Pasivo,
+R-00568,2026-01,8,Pasivo,
+R-00569,2026-01,8,Pasivo,
+R-00570,2026-01,7,Pasivo,
+R-00571,2026-01,10,Promotor,
+R-00572,2026-01,9,Promotor,
+R-00573,2026-01,8,Pasivo,
+R-00574,2026-01,10,Promotor,
+R-00575,2026-01,7,Pasivo,
+R-00576,2026-01,9,Promotor,
+R-00577,2026-01,8,Pasivo,
+R-00578,2026-01,9,Promotor,
+R-00579,2026-01,8,Pasivo,
+R-00580,2026-01,6,Detractor,Tiempo de respuesta
+R-00581,2026-01,9,Promotor,
+R-00582,2026-01,7,Pasivo,
+R-00583,2026-01,7,Pasivo,
+R-00584,2026-01,10,Promotor,
+R-00585,2026-01,9,Promotor,
+R-00586,2026-01,10,Promotor,
+R-00587,2026-01,9,Promotor,
+R-00588,2026-01,10,Promotor,
+R-00589,2026-01,7,Pasivo,
+R-00590,2026-01,10,Promotor,
+R-00591,2026-01,10,Promotor,
+R-00592,2026-01,5,Detractor,Tiempo de respuesta
+R-00593,2026-01,9,Promotor,
+R-00594,2026-01,9,Promotor,
+R-00595,2026-01,4,Detractor,Precio
+R-00596,2026-01,5,Detractor,Atención al cliente
+R-00597,2026-01,10,Promotor,
+R-00598,2026-01,10,Promotor,
+R-00599,2026-01,9,Promotor,
+R-00600,2026-01,7,Pasivo,
+R-00601,2026-01,8,Pasivo,
+R-00602,2026-01,6,Detractor,Precio
+R-00603,2026-01,9,Promotor,
+R-00604,2026-01,8,Pasivo,
+R-00605,2026-01,8,Pasivo,
+R-00606,2026-01,7,Pasivo,
+R-00607,2026-01,10,Promotor,
+R-00608,2026-01,8,Pasivo,
+R-00609,2026-01,9,Promotor,
+R-00610,2026-01,10,Promotor,
+R-00611,2026-01,5,Detractor,Facilidad de uso
+R-00612,2026-01,5,Detractor,Atención al cliente
+R-00613,2026-01,6,Detractor,Atención al cliente
+R-00614,2026-01,6,Detractor,Calidad del producto
+R-00615,2026-01,8,Pasivo,
+R-00616,2026-01,10,Promotor,
+R-00617,2026-01,8,Pasivo,
+R-00618,2026-01,8,Pasivo,
+R-00619,2026-01,7,Pasivo,
+R-00620,2026-01,5,Detractor,Atención al cliente
+R-00621,2026-01,7,Pasivo,
+R-00622,2026-01,4,Detractor,Precio
+R-00623,2026-01,8,Pasivo,
+R-00624,2026-01,6,Detractor,Facilidad de uso
+R-00625,2026-01,9,Promotor,
+R-00626,2026-01,8,Pasivo,
+R-00627,2026-01,8,Pasivo,
+R-00628,2026-01,7,Pasivo,
+R-00629,2026-01,7,Pasivo,
+R-00630,2026-01,7,Pasivo,
+R-00631,2026-01,9,Promotor,
+R-00632,2026-01,9,Promotor,
+R-00633,2026-01,6,Detractor,Precio
+R-00634,2026-01,10,Promotor,
+R-00635,2026-01,6,Detractor,Tiempo de respuesta
+R-00636,2026-01,8,Pasivo,
+R-00637,2026-01,10,Promotor,
+R-00638,2026-01,5,Detractor,Tiempo de respuesta
+R-00639,2026-01,9,Promotor,
+R-00640,2026-01,7,Pasivo,
+R-00641,2026-01,8,Pasivo,
+R-00642,2026-01,7,Pasivo,
+R-00643,2026-01,10,Promotor,
+R-00644,2026-01,7,Pasivo,
+R-00645,2026-01,10,Promotor,
+R-00646,2026-01,5,Detractor,Calidad del producto
+R-00647,2026-01,6,Detractor,Tiempo de respuesta
+R-00648,2026-01,10,Promotor,
+R-00649,2026-01,6,Detractor,Tiempo de respuesta
+R-00650,2026-01,10,Promotor,
+R-00651,2026-01,8,Pasivo,
+R-00652,2026-01,10,Promotor,
+R-00653,2026-01,8,Pasivo,
+R-00654,2026-01,7,Pasivo,
+R-00655,2026-01,10,Promotor,
+R-00656,2026-01,4,Detractor,Atención al cliente
+R-00657,2026-01,5,Detractor,Precio
+R-00658,2026-01,7,Pasivo,
+R-00659,2026-01,8,Pasivo,
+R-00660,2026-01,10,Promotor,
+R-00661,2026-01,9,Promotor,
+R-00662,2026-01,10,Promotor,
+R-00663,2026-01,8,Pasivo,
+R-00664,2026-01,6,Detractor,Calidad del producto
+R-00665,2026-01,7,Pasivo,
+R-00666,2026-01,8,Pasivo,
+R-00667,2026-01,6,Detractor,Calidad del producto
+R-00668,2026-01,9,Promotor,
+R-00669,2026-01,10,Promotor,
+R-00670,2026-01,7,Pasivo,
+R-00671,2026-01,8,Pasivo,
+R-00672,2026-01,10,Promotor,
+R-00673,2026-01,9,Promotor,
+R-00674,2026-01,10,Promotor,
+R-00675,2026-01,10,Promotor,
+R-00676,2026-01,9,Promotor,
+R-00677,2026-01,8,Pasivo,
+R-00678,2026-01,5,Detractor,Atención al cliente
+R-00679,2026-01,7,Pasivo,
+R-00680,2026-02,7,Pasivo,
+R-00681,2026-02,9,Promotor,
+R-00682,2026-02,8,Pasivo,
+R-00683,2026-02,5,Detractor,Tiempo de respuesta
+R-00684,2026-02,10,Promotor,
+R-00685,2026-02,7,Pasivo,
+R-00686,2026-02,9,Promotor,
+R-00687,2026-02,8,Pasivo,
+R-00688,2026-02,10,Promotor,
+R-00689,2026-02,9,Promotor,
+R-00690,2026-02,5,Detractor,Atención al cliente
+R-00691,2026-02,2,Detractor,Facilidad de uso
+R-00692,2026-02,10,Promotor,
+R-00693,2026-02,6,Detractor,Precio
+R-00694,2026-02,8,Pasivo,
+R-00695,2026-02,8,Pasivo,
+R-00696,2026-02,5,Detractor,Tiempo de respuesta
+R-00697,2026-02,9,Promotor,
+R-00698,2026-02,9,Promotor,
+R-00699,2026-02,8,Pasivo,
+R-00700,2026-02,10,Promotor,
+R-00701,2026-02,6,Detractor,Atención al cliente
+R-00702,2026-02,8,Pasivo,
+R-00703,2026-02,10,Promotor,
+R-00704,2026-02,10,Promotor,
+R-00705,2026-02,6,Detractor,Tiempo de respuesta
+R-00706,2026-02,9,Promotor,
+R-00707,2026-02,7,Pasivo,
+R-00708,2026-02,7,Pasivo,
+R-00709,2026-02,9,Promotor,
+R-00710,2026-02,7,Pasivo,
+R-00711,2026-02,10,Promotor,
+R-00712,2026-02,7,Pasivo,
+R-00713,2026-02,9,Promotor,
+R-00714,2026-02,9,Promotor,
+R-00715,2026-02,8,Pasivo,
+R-00716,2026-02,9,Promotor,
+R-00717,2026-02,9,Promotor,
+R-00718,2026-02,9,Promotor,
+R-00719,2026-02,9,Promotor,
+R-00720,2026-02,8,Pasivo,
+R-00721,2026-02,4,Detractor,Tiempo de respuesta
+R-00722,2026-02,8,Pasivo,
+R-00723,2026-02,6,Detractor,Atención al cliente
+R-00724,2026-02,10,Promotor,
+R-00725,2026-02,7,Pasivo,
+R-00726,2026-02,9,Promotor,
+R-00727,2026-02,7,Pasivo,
+R-00728,2026-02,9,Promotor,
+R-00729,2026-02,7,Pasivo,
+R-00730,2026-02,8,Pasivo,
+R-00731,2026-02,7,Pasivo,
+R-00732,2026-02,9,Promotor,
+R-00733,2026-02,7,Pasivo,
+R-00734,2026-02,8,Pasivo,
+R-00735,2026-02,9,Promotor,
+R-00736,2026-02,7,Pasivo,
+R-00737,2026-02,8,Pasivo,
+R-00738,2026-02,4,Detractor,Calidad del producto
+R-00739,2026-02,3,Detractor,Atención al cliente
+R-00740,2026-02,5,Detractor,Precio
+R-00741,2026-02,10,Promotor,
+R-00742,2026-02,10,Promotor,
+R-00743,2026-02,8,Pasivo,
+R-00744,2026-02,9,Promotor,
+R-00745,2026-02,7,Pasivo,
+R-00746,2026-02,6,Detractor,Precio
+R-00747,2026-02,7,Pasivo,
+R-00748,2026-02,6,Detractor,Calidad del producto
+R-00749,2026-02,10,Promotor,
+R-00750,2026-02,6,Detractor,Calidad del producto
+R-00751,2026-02,7,Pasivo,
+R-00752,2026-02,8,Pasivo,
+R-00753,2026-02,7,Pasivo,
+R-00754,2026-02,7,Pasivo,
+R-00755,2026-02,8,Pasivo,
+R-00756,2026-02,7,Pasivo,
+R-00757,2026-02,8,Pasivo,
+R-00758,2026-02,8,Pasivo,
+R-00759,2026-02,9,Promotor,
+R-00760,2026-02,8,Pasivo,
+R-00761,2026-02,8,Pasivo,
+R-00762,2026-02,10,Promotor,
+R-00763,2026-02,8,Pasivo,
+R-00764,2026-02,10,Promotor,
+R-00765,2026-02,9,Promotor,
+R-00766,2026-02,8,Pasivo,
+R-00767,2026-02,10,Promotor,
+R-00768,2026-02,8,Pasivo,
+R-00769,2026-02,8,Pasivo,
+R-00770,2026-02,8,Pasivo,
+R-00771,2026-02,8,Pasivo,
+R-00772,2026-02,7,Pasivo,
+R-00773,2026-02,10,Promotor,
+R-00774,2026-02,9,Promotor,
+R-00775,2026-02,5,Detractor,Precio
+R-00776,2026-02,10,Promotor,
+R-00777,2026-02,10,Promotor,
+R-00778,2026-02,7,Pasivo,
+R-00779,2026-02,9,Promotor,
+R-00780,2026-02,10,Promotor,
+R-00781,2026-02,7,Pasivo,
+R-00782,2026-02,7,Pasivo,
+R-00783,2026-02,6,Detractor,Facilidad de uso
+R-00784,2026-02,4,Detractor,Precio
+R-00785,2026-02,6,Detractor,Precio
+R-00786,2026-02,9,Promotor,
+R-00787,2026-02,6,Detractor,Tiempo de respuesta
+R-00788,2026-02,6,Detractor,Tiempo de respuesta
+R-00789,2026-02,7,Pasivo,
+R-00790,2026-02,7,Pasivo,
+R-00791,2026-02,9,Promotor,
+R-00792,2026-02,10,Promotor,
+R-00793,2026-02,5,Detractor,Tiempo de respuesta
+R-00794,2026-02,10,Promotor,
+R-00795,2026-02,9,Promotor,
+R-00796,2026-02,6,Detractor,Tiempo de respuesta
+R-00797,2026-02,8,Pasivo,
+R-00798,2026-02,10,Promotor,
+R-00799,2026-02,7,Pasivo,
+R-00800,2026-02,10,Promotor,
+R-00801,2026-02,6,Detractor,Precio
+R-00802,2026-02,9,Promotor,
+R-00803,2026-02,9,Promotor,
+R-00804,2026-02,7,Pasivo,
+R-00805,2026-02,10,Promotor,
+R-00806,2026-02,8,Pasivo,
+R-00807,2026-02,8,Pasivo,
+R-00808,2026-02,8,Pasivo,
+R-00809,2026-02,9,Promotor,
+R-00810,2026-02,10,Promotor,
+R-00811,2026-02,10,Promotor,
+R-00812,2026-02,9,Promotor,
+R-00813,2026-02,9,Promotor,
+R-00814,2026-02,8,Pasivo,
+R-00815,2026-02,6,Detractor,Atención al cliente
+R-00816,2026-02,10,Promotor,
+R-00817,2026-02,7,Pasivo,
+R-00818,2026-02,8,Pasivo,
+R-00819,2026-02,10,Promotor,
+R-00820,2026-02,10,Promotor,
+R-00821,2026-02,5,Detractor,Calidad del producto
+R-00822,2026-02,8,Pasivo,
+R-00823,2026-02,9,Promotor,
+R-00824,2026-02,8,Pasivo,
+R-00825,2026-02,10,Promotor,
+R-00826,2026-02,8,Pasivo,
+R-00827,2026-02,8,Pasivo,
+R-00828,2026-02,10,Promotor,
+R-00829,2026-02,8,Pasivo,
+R-00830,2026-02,8,Pasivo,
+R-00831,2026-02,10,Promotor,
+R-00832,2026-02,9,Promotor,
+R-00833,2026-02,8,Pasivo,
+R-00834,2026-02,9,Promotor,
+R-00835,2026-02,9,Promotor,
+R-00836,2026-02,10,Promotor,
+R-00837,2026-02,7,Pasivo,
+R-00838,2026-02,10,Promotor,
+R-00839,2026-02,7,Pasivo,
+R-00840,2026-02,10,Promotor,
+R-00841,2026-02,10,Promotor,
+R-00842,2026-03,7,Pasivo,
+R-00843,2026-03,7,Pasivo,
+R-00844,2026-03,6,Detractor,Precio
+R-00845,2026-03,10,Promotor,
+R-00846,2026-03,10,Promotor,
+R-00847,2026-03,6,Detractor,Precio
+R-00848,2026-03,7,Pasivo,
+R-00849,2026-03,10,Promotor,
+R-00850,2026-03,5,Detractor,Calidad del producto
+R-00851,2026-03,9,Promotor,
+R-00852,2026-03,7,Pasivo,
+R-00853,2026-03,8,Pasivo,
+R-00854,2026-03,6,Detractor,Atención al cliente
+R-00855,2026-03,7,Pasivo,
+R-00856,2026-03,10,Promotor,
+R-00857,2026-03,9,Promotor,
+R-00858,2026-03,6,Detractor,Tiempo de respuesta
+R-00859,2026-03,8,Pasivo,
+R-00860,2026-03,10,Promotor,
+R-00861,2026-03,10,Promotor,
+R-00862,2026-03,5,Detractor,Calidad del producto
+R-00863,2026-03,8,Pasivo,
+R-00864,2026-03,8,Pasivo,
+R-00865,2026-03,7,Pasivo,
+R-00866,2026-03,8,Pasivo,
+R-00867,2026-03,8,Pasivo,
+R-00868,2026-03,6,Detractor,Atención al cliente
+R-00869,2026-03,9,Promotor,
+R-00870,2026-03,7,Pasivo,
+R-00871,2026-03,4,Detractor,Atención al cliente
+R-00872,2026-03,7,Pasivo,
+R-00873,2026-03,7,Pasivo,
+R-00874,2026-03,9,Promotor,
+R-00875,2026-03,8,Pasivo,
+R-00876,2026-03,9,Promotor,
+R-00877,2026-03,7,Pasivo,
+R-00878,2026-03,6,Detractor,Atención al cliente
+R-00879,2026-03,10,Promotor,
+R-00880,2026-03,7,Pasivo,
+R-00881,2026-03,10,Promotor,
+R-00882,2026-03,7,Pasivo,
+R-00883,2026-03,8,Pasivo,
+R-00884,2026-03,6,Detractor,Calidad del producto
+R-00885,2026-03,5,Detractor,Facilidad de uso
+R-00886,2026-03,10,Promotor,
+R-00887,2026-03,7,Pasivo,
+R-00888,2026-03,9,Promotor,
+R-00889,2026-03,9,Promotor,
+R-00890,2026-03,9,Promotor,
+R-00891,2026-03,9,Promotor,
+R-00892,2026-03,10,Promotor,
+R-00893,2026-03,6,Detractor,Atención al cliente
+R-00894,2026-03,8,Pasivo,
+R-00895,2026-03,5,Detractor,Precio
+R-00896,2026-03,10,Promotor,
+R-00897,2026-03,9,Promotor,
+R-00898,2026-03,8,Pasivo,
+R-00899,2026-03,10,Promotor,
+R-00900,2026-03,9,Promotor,
+R-00901,2026-03,7,Pasivo,
+R-00902,2026-03,9,Promotor,
+R-00903,2026-03,7,Pasivo,
+R-00904,2026-03,9,Promotor,
+R-00905,2026-03,7,Pasivo,
+R-00906,2026-03,9,Promotor,
+R-00907,2026-03,6,Detractor,Calidad del producto
+R-00908,2026-03,10,Promotor,
+R-00909,2026-03,8,Pasivo,
+R-00910,2026-03,8,Pasivo,
+R-00911,2026-03,10,Promotor,
+R-00912,2026-03,8,Pasivo,
+R-00913,2026-03,7,Pasivo,
+R-00914,2026-03,9,Promotor,
+R-00915,2026-03,8,Pasivo,
+R-00916,2026-03,6,Detractor,Calidad del producto
+R-00917,2026-03,9,Promotor,
+R-00918,2026-03,8,Pasivo,
+R-00919,2026-03,9,Promotor,
+R-00920,2026-03,5,Detractor,Calidad del producto
+R-00921,2026-03,10,Promotor,
+R-00922,2026-03,6,Detractor,Calidad del producto
+R-00923,2026-03,10,Promotor,
+R-00924,2026-03,9,Promotor,
+R-00925,2026-03,9,Promotor,
+R-00926,2026-03,5,Detractor,Precio
+R-00927,2026-03,9,Promotor,
+R-00928,2026-03,8,Pasivo,
+R-00929,2026-03,8,Pasivo,
+R-00930,2026-03,8,Pasivo,
+R-00931,2026-03,10,Promotor,
+R-00932,2026-03,7,Pasivo,
+R-00933,2026-03,10,Promotor,
+R-00934,2026-03,6,Detractor,Precio
+R-00935,2026-03,8,Pasivo,
+R-00936,2026-03,6,Detractor,Atención al cliente
+R-00937,2026-03,10,Promotor,
+R-00938,2026-03,6,Detractor,Atención al cliente
+R-00939,2026-03,8,Pasivo,
+R-00940,2026-03,7,Pasivo,
+R-00941,2026-03,7,Pasivo,
+R-00942,2026-03,9,Promotor,
+R-00943,2026-03,10,Promotor,
+R-00944,2026-03,8,Pasivo,
+R-00945,2026-03,7,Pasivo,
+R-00946,2026-03,8,Pasivo,
+R-00947,2026-03,10,Promotor,
+R-00948,2026-03,7,Pasivo,
+R-00949,2026-03,8,Pasivo,
+R-00950,2026-03,9,Promotor,
+R-00951,2026-03,8,Pasivo,
+R-00952,2026-03,6,Detractor,Facilidad de uso
+R-00953,2026-03,10,Promotor,
+R-00954,2026-03,8,Pasivo,
+R-00955,2026-03,9,Promotor,
+R-00956,2026-03,6,Detractor,Calidad del producto
+R-00957,2026-03,10,Promotor,
+R-00958,2026-03,6,Detractor,Facilidad de uso
+R-00959,2026-03,8,Pasivo,
+R-00960,2026-03,8,Pasivo,
+R-00961,2026-03,5,Detractor,Precio
+R-00962,2026-03,9,Promotor,
+R-00963,2026-03,10,Promotor,
+R-00964,2026-03,10,Promotor,
+R-00965,2026-03,9,Promotor,
+R-00966,2026-03,10,Promotor,
+R-00967,2026-03,9,Promotor,
+R-00968,2026-03,7,Pasivo,
+R-00969,2026-03,7,Pasivo,
+R-00970,2026-03,9,Promotor,
+R-00971,2026-03,5,Detractor,Facilidad de uso
+R-00972,2026-03,8,Pasivo,
+R-00973,2026-03,7,Pasivo,
+R-00974,2026-03,7,Pasivo,
+R-00975,2026-03,7,Pasivo,
+R-00976,2026-03,8,Pasivo,
+R-00977,2026-03,7,Pasivo,
+R-00978,2026-03,7,Pasivo,
+R-00979,2026-03,9,Promotor,
+R-00980,2026-03,8,Pasivo,
+R-00981,2026-03,10,Promotor,
+R-00982,2026-03,9,Promotor,
+R-00983,2026-03,4,Detractor,Atención al cliente
+R-00984,2026-03,8,Pasivo,
+R-00985,2026-03,5,Detractor,Precio
+R-00986,2026-03,5,Detractor,Tiempo de respuesta
+R-00987,2026-03,10,Promotor,
+R-00988,2026-03,10,Promotor,
+R-00989,2026-04,2,Detractor,Facilidad de uso
+R-00990,2026-04,7,Pasivo,
+R-00991,2026-04,9,Promotor,
+R-00992,2026-04,6,Detractor,Tiempo de respuesta
+R-00993,2026-04,7,Pasivo,
+R-00994,2026-04,4,Detractor,Precio
+R-00995,2026-04,7,Pasivo,
+R-00996,2026-04,8,Pasivo,
+R-00997,2026-04,8,Pasivo,
+R-00998,2026-04,7,Pasivo,
+R-00999,2026-04,10,Promotor,
+R-01000,2026-04,9,Promotor,
+R-01001,2026-04,6,Detractor,Tiempo de respuesta
+R-01002,2026-04,9,Promotor,
+R-01003,2026-04,10,Promotor,
+R-01004,2026-04,4,Detractor,Atención al cliente
+R-01005,2026-04,7,Pasivo,
+R-01006,2026-04,8,Pasivo,
+R-01007,2026-04,10,Promotor,
+R-01008,2026-04,7,Pasivo,
+R-01009,2026-04,9,Promotor,
+R-01010,2026-04,10,Promotor,
+R-01011,2026-04,5,Detractor,Precio
+R-01012,2026-04,9,Promotor,
+R-01013,2026-04,10,Promotor,
+R-01014,2026-04,10,Promotor,
+R-01015,2026-04,6,Detractor,Tiempo de respuesta
+R-01016,2026-04,9,Promotor,
+R-01017,2026-04,8,Pasivo,
+R-01018,2026-04,9,Promotor,
+R-01019,2026-04,9,Promotor,
+R-01020,2026-04,7,Pasivo,
+R-01021,2026-04,9,Promotor,
+R-01022,2026-04,9,Promotor,
+R-01023,2026-04,10,Promotor,
+R-01024,2026-04,7,Pasivo,
+R-01025,2026-04,6,Detractor,Precio
+R-01026,2026-04,7,Pasivo,
+R-01027,2026-04,8,Pasivo,
+R-01028,2026-04,9,Promotor,
+R-01029,2026-04,8,Pasivo,
+R-01030,2026-04,6,Detractor,Precio
+R-01031,2026-04,9,Promotor,
+R-01032,2026-04,8,Pasivo,
+R-01033,2026-04,6,Detractor,Precio
+R-01034,2026-04,7,Pasivo,
+R-01035,2026-04,7,Pasivo,
+R-01036,2026-04,10,Promotor,
+R-01037,2026-04,9,Promotor,
+R-01038,2026-04,8,Pasivo,
+R-01039,2026-04,10,Promotor,
+R-01040,2026-04,8,Pasivo,
+R-01041,2026-04,7,Pasivo,
+R-01042,2026-04,7,Pasivo,
+R-01043,2026-04,8,Pasivo,
+R-01044,2026-04,7,Pasivo,
+R-01045,2026-04,9,Promotor,
+R-01046,2026-04,8,Pasivo,
+R-01047,2026-04,8,Pasivo,
+R-01048,2026-04,8,Pasivo,
+R-01049,2026-04,7,Pasivo,
+R-01050,2026-04,5,Detractor,Calidad del producto
+R-01051,2026-04,10,Promotor,
+R-01052,2026-04,7,Pasivo,
+R-01053,2026-04,5,Detractor,Calidad del producto
+R-01054,2026-04,6,Detractor,Atención al cliente
+R-01055,2026-04,6,Detractor,Facilidad de uso
+R-01056,2026-04,8,Pasivo,
+R-01057,2026-04,8,Pasivo,
+R-01058,2026-04,8,Pasivo,
+R-01059,2026-04,8,Pasivo,
+R-01060,2026-04,6,Detractor,Precio
+R-01061,2026-04,7,Pasivo,
+R-01062,2026-04,8,Pasivo,
+R-01063,2026-04,7,Pasivo,
+R-01064,2026-04,10,Promotor,
+R-01065,2026-04,9,Promotor,
+R-01066,2026-04,10,Promotor,
+R-01067,2026-04,6,Detractor,Calidad del producto
+R-01068,2026-04,10,Promotor,
+R-01069,2026-04,7,Pasivo,
+R-01070,2026-04,6,Detractor,Tiempo de respuesta
+R-01071,2026-04,8,Pasivo,
+R-01072,2026-04,6,Detractor,Facilidad de uso
+R-01073,2026-04,8,Pasivo,
+R-01074,2026-04,10,Promotor,
+R-01075,2026-04,7,Pasivo,
+R-01076,2026-04,9,Promotor,
+R-01077,2026-04,4,Detractor,Facilidad de uso
+R-01078,2026-04,9,Promotor,
+R-01079,2026-04,10,Promotor,
+R-01080,2026-04,9,Promotor,
+R-01081,2026-04,10,Promotor,
+R-01082,2026-04,8,Pasivo,
+R-01083,2026-04,10,Promotor,
+R-01084,2026-04,9,Promotor,
+R-01085,2026-04,8,Pasivo,
+R-01086,2026-04,6,Detractor,Calidad del producto
+R-01087,2026-04,10,Promotor,
+R-01088,2026-04,9,Promotor,
+R-01089,2026-04,9,Promotor,
+R-01090,2026-04,6,Detractor,Facilidad de uso
+R-01091,2026-04,8,Pasivo,
+R-01092,2026-04,8,Pasivo,
+R-01093,2026-04,10,Promotor,
+R-01094,2026-04,8,Pasivo,
+R-01095,2026-04,10,Promotor,
+R-01096,2026-04,8,Pasivo,
+R-01097,2026-04,7,Pasivo,
+R-01098,2026-04,8,Pasivo,
+R-01099,2026-04,8,Pasivo,
+R-01100,2026-04,9,Promotor,
+R-01101,2026-04,8,Pasivo,
+R-01102,2026-04,10,Promotor,
+R-01103,2026-04,8,Pasivo,
+R-01104,2026-04,5,Detractor,Atención al cliente
+R-01105,2026-04,7,Pasivo,
+R-01106,2026-04,8,Pasivo,
+R-01107,2026-04,10,Promotor,
+R-01108,2026-04,8,Pasivo,
+R-01109,2026-04,6,Detractor,Calidad del producto
+R-01110,2026-04,8,Pasivo,
+R-01111,2026-04,9,Promotor,
+R-01112,2026-04,6,Detractor,Precio
+R-01113,2026-04,5,Detractor,Facilidad de uso
+R-01114,2026-04,4,Detractor,Precio
+R-01115,2026-04,5,Detractor,Atención al cliente
+R-01116,2026-04,9,Promotor,
+R-01117,2026-04,8,Pasivo,
+R-01118,2026-04,7,Pasivo,
+R-01119,2026-04,9,Promotor,
+R-01120,2026-04,7,Pasivo,
+R-01121,2026-05,10,Promotor,
+R-01122,2026-05,8,Pasivo,
+R-01123,2026-05,6,Detractor,Calidad del producto
+R-01124,2026-05,8,Pasivo,
+R-01125,2026-05,10,Promotor,
+R-01126,2026-05,8,Pasivo,
+R-01127,2026-05,10,Promotor,
+R-01128,2026-05,6,Detractor,Atención al cliente
+R-01129,2026-05,9,Promotor,
+R-01130,2026-05,9,Promotor,
+R-01131,2026-05,8,Pasivo,
+R-01132,2026-05,6,Detractor,Atención al cliente
+R-01133,2026-05,6,Detractor,Tiempo de respuesta
+R-01134,2026-05,8,Pasivo,
+R-01135,2026-05,9,Promotor,
+R-01136,2026-05,6,Detractor,Calidad del producto
+R-01137,2026-05,10,Promotor,
+R-01138,2026-05,9,Promotor,
+R-01139,2026-05,8,Pasivo,
+R-01140,2026-05,6,Detractor,Calidad del producto
+R-01141,2026-05,9,Promotor,
+R-01142,2026-05,9,Promotor,
+R-01143,2026-05,7,Pasivo,
+R-01144,2026-05,6,Detractor,Precio
+R-01145,2026-05,9,Promotor,
+R-01146,2026-05,6,Detractor,Precio
+R-01147,2026-05,10,Promotor,
+R-01148,2026-05,8,Pasivo,
+R-01149,2026-05,7,Pasivo,
+R-01150,2026-05,9,Promotor,
+R-01151,2026-05,10,Promotor,
+R-01152,2026-05,10,Promotor,
+R-01153,2026-05,5,Detractor,Tiempo de respuesta
+R-01154,2026-05,10,Promotor,
+R-01155,2026-05,5,Detractor,Calidad del producto
+R-01156,2026-05,8,Pasivo,
+R-01157,2026-05,10,Promotor,
+R-01158,2026-05,6,Detractor,Facilidad de uso
+R-01159,2026-05,6,Detractor,Tiempo de respuesta
+R-01160,2026-05,8,Pasivo,
+R-01161,2026-05,8,Pasivo,
+R-01162,2026-05,10,Promotor,
+R-01163,2026-05,6,Detractor,Precio
+R-01164,2026-05,8,Pasivo,
+R-01165,2026-05,7,Pasivo,
+R-01166,2026-05,9,Promotor,
+R-01167,2026-05,8,Pasivo,
+R-01168,2026-05,9,Promotor,
+R-01169,2026-05,10,Promotor,
+R-01170,2026-05,6,Detractor,Precio
+R-01171,2026-05,8,Pasivo,
+R-01172,2026-05,7,Pasivo,
+R-01173,2026-05,8,Pasivo,
+R-01174,2026-05,9,Promotor,
+R-01175,2026-05,7,Pasivo,
+R-01176,2026-05,9,Promotor,
+R-01177,2026-05,6,Detractor,Calidad del producto
+R-01178,2026-05,8,Pasivo,
+R-01179,2026-05,9,Promotor,
+R-01180,2026-05,7,Pasivo,
+R-01181,2026-05,10,Promotor,
+R-01182,2026-05,10,Promotor,
+R-01183,2026-05,10,Promotor,
+R-01184,2026-05,7,Pasivo,
+R-01185,2026-05,8,Pasivo,
+R-01186,2026-05,10,Promotor,
+R-01187,2026-05,9,Promotor,
+R-01188,2026-05,6,Detractor,Tiempo de respuesta
+R-01189,2026-05,8,Pasivo,
+R-01190,2026-05,7,Pasivo,
+R-01191,2026-05,5,Detractor,Facilidad de uso
+R-01192,2026-05,7,Pasivo,
+R-01193,2026-05,8,Pasivo,
+R-01194,2026-05,9,Promotor,
+R-01195,2026-05,10,Promotor,
+R-01196,2026-05,7,Pasivo,
+R-01197,2026-05,8,Pasivo,
+R-01198,2026-05,5,Detractor,Tiempo de respuesta
+R-01199,2026-05,4,Detractor,Atención al cliente
+R-01200,2026-05,6,Detractor,Tiempo de respuesta
+R-01201,2026-05,9,Promotor,
+R-01202,2026-05,10,Promotor,
+R-01203,2026-05,9,Promotor,
+R-01204,2026-05,5,Detractor,Atención al cliente
+R-01205,2026-05,10,Promotor,
+R-01206,2026-05,6,Detractor,Facilidad de uso
+R-01207,2026-05,8,Pasivo,
+R-01208,2026-05,10,Promotor,
+R-01209,2026-05,7,Pasivo,
+R-01210,2026-05,7,Pasivo,
+R-01211,2026-05,7,Pasivo,
+R-01212,2026-05,6,Detractor,Tiempo de respuesta
+R-01213,2026-05,9,Promotor,
+R-01214,2026-05,6,Detractor,Precio
+R-01215,2026-05,5,Detractor,Calidad del producto
+R-01216,2026-05,10,Promotor,
+R-01217,2026-05,6,Detractor,Calidad del producto
+R-01218,2026-05,6,Detractor,Tiempo de respuesta
+R-01219,2026-05,6,Detractor,Precio
+R-01220,2026-05,9,Promotor,
+R-01221,2026-05,10,Promotor,
+R-01222,2026-05,9,Promotor,
+R-01223,2026-05,6,Detractor,Atención al cliente
+R-01224,2026-05,6,Detractor,Precio
+R-01225,2026-05,4,Detractor,Precio
+R-01226,2026-05,9,Promotor,
+R-01227,2026-05,8,Pasivo,
+R-01228,2026-05,8,Pasivo,
+R-01229,2026-05,10,Promotor,
+R-01230,2026-05,8,Pasivo,
+R-01231,2026-05,9,Promotor,
+R-01232,2026-05,8,Pasivo,
+R-01233,2026-05,10,Promotor,
+R-01234,2026-05,8,Pasivo,
+R-01235,2026-05,10,Promotor,
+R-01236,2026-05,7,Pasivo,
+R-01237,2026-05,9,Promotor,
+R-01238,2026-05,6,Detractor,Precio
+R-01239,2026-05,6,Detractor,Atención al cliente
+R-01240,2026-05,7,Pasivo,
+R-01241,2026-05,8,Pasivo,
+R-01242,2026-05,5,Detractor,Calidad del producto
+R-01243,2026-05,10,Promotor,
+R-01244,2026-05,8,Pasivo,
+R-01245,2026-05,9,Promotor,
+R-01246,2026-05,10,Promotor,
+R-01247,2026-05,10,Promotor,
+R-01248,2026-05,9,Promotor,
+R-01249,2026-05,8,Pasivo,
+R-01250,2026-05,8,Pasivo,
+R-01251,2026-05,7,Pasivo,
+R-01252,2026-05,8,Pasivo,
+R-01253,2026-05,7,Pasivo,
+R-01254,2026-05,7,Pasivo,
+R-01255,2026-05,7,Pasivo,
+R-01256,2026-05,9,Promotor,
+R-01257,2026-05,8,Pasivo,
+R-01258,2026-05,10,Promotor,
+R-01259,2026-05,9,Promotor,
+R-01260,2026-05,9,Promotor,
+R-01261,2026-05,10,Promotor,
+R-01262,2026-05,6,Detractor,Tiempo de respuesta
+R-01263,2026-05,9,Promotor,
+R-01264,2026-05,10,Promotor,
+R-01265,2026-05,9,Promotor,
+R-01266,2026-05,8,Pasivo,
+R-01267,2026-05,8,Pasivo,
+R-01268,2026-05,7,Pasivo,
+R-01269,2026-06,9,Promotor,
+R-01270,2026-06,10,Promotor,
+R-01271,2026-06,9,Promotor,
+R-01272,2026-06,9,Promotor,
+R-01273,2026-06,7,Pasivo,
+R-01274,2026-06,10,Promotor,
+R-01275,2026-06,9,Promotor,
+R-01276,2026-06,8,Pasivo,
+R-01277,2026-06,5,Detractor,Atención al cliente
+R-01278,2026-06,7,Pasivo,
+R-01279,2026-06,8,Pasivo,
+R-01280,2026-06,8,Pasivo,
+R-01281,2026-06,10,Promotor,
+R-01282,2026-06,8,Pasivo,
+R-01283,2026-06,7,Pasivo,
+R-01284,2026-06,8,Pasivo,
+R-01285,2026-06,6,Detractor,Atención al cliente
+R-01286,2026-06,5,Detractor,Calidad del producto
+R-01287,2026-06,8,Pasivo,
+R-01288,2026-06,8,Pasivo,
+R-01289,2026-06,9,Promotor,
+R-01290,2026-06,9,Promotor,
+R-01291,2026-06,9,Promotor,
+R-01292,2026-06,8,Pasivo,
+R-01293,2026-06,7,Pasivo,
+R-01294,2026-06,10,Promotor,
+R-01295,2026-06,8,Pasivo,
+R-01296,2026-06,10,Promotor,
+R-01297,2026-06,5,Detractor,Tiempo de respuesta
+R-01298,2026-06,7,Pasivo,
+R-01299,2026-06,9,Promotor,
+R-01300,2026-06,10,Promotor,
+R-01301,2026-06,10,Promotor,
+R-01302,2026-06,7,Pasivo,
+R-01303,2026-06,7,Pasivo,
+R-01304,2026-06,8,Pasivo,
+R-01305,2026-06,8,Pasivo,
+R-01306,2026-06,7,Pasivo,
+R-01307,2026-06,5,Detractor,Calidad del producto
+R-01308,2026-06,9,Promotor,
+R-01309,2026-06,8,Pasivo,
+R-01310,2026-06,7,Pasivo,
+R-01311,2026-06,10,Promotor,
+R-01312,2026-06,10,Promotor,
+R-01313,2026-06,7,Pasivo,
+R-01314,2026-06,10,Promotor,
+R-01315,2026-06,9,Promotor,
+R-01316,2026-06,7,Pasivo,
+R-01317,2026-06,9,Promotor,
+R-01318,2026-06,8,Pasivo,
+R-01319,2026-06,10,Promotor,
+R-01320,2026-06,8,Pasivo,
+R-01321,2026-06,8,Pasivo,
+R-01322,2026-06,10,Promotor,
+R-01323,2026-06,8,Pasivo,
+R-01324,2026-06,7,Pasivo,
+R-01325,2026-06,4,Detractor,Tiempo de respuesta
+R-01326,2026-06,5,Detractor,Calidad del producto
+R-01327,2026-06,10,Promotor,
+R-01328,2026-06,8,Pasivo,
+R-01329,2026-06,10,Promotor,
+R-01330,2026-06,9,Promotor,
+R-01331,2026-06,8,Pasivo,
+R-01332,2026-06,9,Promotor,
+R-01333,2026-06,6,Detractor,Facilidad de uso
+R-01334,2026-06,9,Promotor,
+R-01335,2026-06,5,Detractor,Facilidad de uso
+R-01336,2026-06,4,Detractor,Calidad del producto
+R-01337,2026-06,10,Promotor,
+R-01338,2026-06,10,Promotor,
+R-01339,2026-06,8,Pasivo,
+R-01340,2026-06,8,Pasivo,
+R-01341,2026-06,8,Pasivo,
+R-01342,2026-06,8,Pasivo,
+R-01343,2026-06,9,Promotor,
+R-01344,2026-06,10,Promotor,
+R-01345,2026-06,9,Promotor,
+R-01346,2026-06,7,Pasivo,
+R-01347,2026-06,5,Detractor,Tiempo de respuesta
+R-01348,2026-06,7,Pasivo,
+R-01349,2026-06,4,Detractor,Atención al cliente
+R-01350,2026-06,8,Pasivo,
+R-01351,2026-06,10,Promotor,
+R-01352,2026-06,7,Pasivo,
+R-01353,2026-06,8,Pasivo,
+R-01354,2026-06,8,Pasivo,
+R-01355,2026-06,10,Promotor,
+R-01356,2026-06,6,Detractor,Atención al cliente
+R-01357,2026-06,10,Promotor,
+R-01358,2026-06,4,Detractor,Tiempo de respuesta
+R-01359,2026-06,6,Detractor,Precio
+R-01360,2026-06,10,Promotor,
+R-01361,2026-06,9,Promotor,
+R-01362,2026-06,6,Detractor,Facilidad de uso
+R-01363,2026-06,8,Pasivo,
+R-01364,2026-06,6,Detractor,Tiempo de respuesta
+R-01365,2026-06,9,Promotor,
+R-01366,2026-06,8,Pasivo,
+R-01367,2026-06,10,Promotor,
+R-01368,2026-06,6,Detractor,Atención al cliente
+R-01369,2026-06,5,Detractor,Facilidad de uso
+R-01370,2026-06,10,Promotor,
+R-01371,2026-06,7,Pasivo,
+R-01372,2026-06,7,Pasivo,
+R-01373,2026-06,10,Promotor,
+R-01374,2026-06,8,Pasivo,
+R-01375,2026-06,10,Promotor,
+R-01376,2026-06,6,Detractor,Precio
+R-01377,2026-06,7,Pasivo,
+R-01378,2026-06,7,Pasivo,
+R-01379,2026-06,10,Promotor,
+R-01380,2026-06,5,Detractor,Calidad del producto
+R-01381,2026-06,6,Detractor,Precio
+R-01382,2026-06,10,Promotor,
+R-01383,2026-06,8,Pasivo,
+R-01384,2026-06,10,Promotor,
+R-01385,2026-06,4,Detractor,Facilidad de uso
+R-01386,2026-06,10,Promotor,
+R-01387,2026-06,9,Promotor,
+R-01388,2026-06,10,Promotor,
+R-01389,2026-06,7,Pasivo,
+R-01390,2026-06,6,Detractor,Precio
+R-01391,2026-06,8,Pasivo,
+R-01392,2026-06,9,Promotor,
+R-01393,2026-06,7,Pasivo,
+R-01394,2026-06,10,Promotor,
+R-01395,2026-06,10,Promotor,
+R-01396,2026-06,8,Pasivo,
+R-01397,2026-06,5,Detractor,Facilidad de uso
+R-01398,2026-06,10,Promotor,
+R-01399,2026-06,9,Promotor,
+R-01400,2026-06,7,Pasivo,
+R-01401,2026-06,8,Pasivo,
+R-01402,2026-06,5,Detractor,Precio
+R-01403,2026-06,10,Promotor,
+R-01404,2026-06,8,Pasivo,
+R-01405,2026-06,8,Pasivo,
+R-01406,2026-06,9,Promotor,
+R-01407,2026-06,8,Pasivo,
+R-01408,2026-06,6,Detractor,Facilidad de uso
+R-01409,2026-06,10,Promotor,
+R-01410,2026-07,5,Detractor,Tiempo de respuesta
+R-01411,2026-07,6,Detractor,Tiempo de respuesta
+R-01412,2026-07,8,Pasivo,
+R-01413,2026-07,9,Promotor,
+R-01414,2026-07,9,Promotor,
+R-01415,2026-07,6,Detractor,Tiempo de respuesta
+R-01416,2026-07,4,Detractor,Precio
+R-01417,2026-07,7,Pasivo,
+R-01418,2026-07,6,Detractor,Tiempo de respuesta
+R-01419,2026-07,5,Detractor,Tiempo de respuesta
+R-01420,2026-07,10,Promotor,
+R-01421,2026-07,7,Pasivo,
+R-01422,2026-07,6,Detractor,Tiempo de respuesta
+R-01423,2026-07,8,Pasivo,
+R-01424,2026-07,10,Promotor,
+R-01425,2026-07,10,Promotor,
+R-01426,2026-07,7,Pasivo,
+R-01427,2026-07,10,Promotor,
+R-01428,2026-07,5,Detractor,Atención al cliente
+R-01429,2026-07,8,Pasivo,
+R-01430,2026-07,9,Promotor,
+R-01431,2026-07,8,Pasivo,
+R-01432,2026-07,8,Pasivo,
+R-01433,2026-07,6,Detractor,Tiempo de respuesta
+R-01434,2026-07,9,Promotor,
+R-01435,2026-07,5,Detractor,Atención al cliente
+R-01436,2026-07,6,Detractor,Precio
+R-01437,2026-07,4,Detractor,Tiempo de respuesta
+R-01438,2026-07,10,Promotor,
+R-01439,2026-07,3,Detractor,Tiempo de respuesta
+R-01440,2026-07,6,Detractor,Facilidad de uso
+R-01441,2026-07,6,Detractor,Precio
+R-01442,2026-07,8,Pasivo,
+R-01443,2026-07,10,Promotor,
+R-01444,2026-07,8,Pasivo,
+R-01445,2026-07,8,Pasivo,
+R-01446,2026-07,4,Detractor,Tiempo de respuesta
+R-01447,2026-07,5,Detractor,Tiempo de respuesta
+R-01448,2026-07,8,Pasivo,
+R-01449,2026-07,8,Pasivo,
+R-01450,2026-07,5,Detractor,Calidad del producto
+R-01451,2026-07,6,Detractor,Tiempo de respuesta
+R-01452,2026-07,7,Pasivo,
+R-01453,2026-07,10,Promotor,
+R-01454,2026-07,8,Pasivo,
+R-01455,2026-07,7,Pasivo,
+R-01456,2026-07,10,Promotor,
+R-01457,2026-07,10,Promotor,
+R-01458,2026-07,10,Promotor,
+R-01459,2026-07,7,Pasivo,
+R-01460,2026-07,9,Promotor,
+R-01461,2026-07,7,Pasivo,
+R-01462,2026-07,8,Pasivo,
+R-01463,2026-07,8,Pasivo,
+R-01464,2026-07,8,Pasivo,
+R-01465,2026-07,7,Pasivo,
+R-01466,2026-07,8,Pasivo,
+R-01467,2026-07,7,Pasivo,
+R-01468,2026-07,9,Promotor,
+R-01469,2026-07,6,Detractor,Calidad del producto
+R-01470,2026-07,8,Pasivo,
+R-01471,2026-07,10,Promotor,
+R-01472,2026-07,8,Pasivo,
+R-01473,2026-07,7,Pasivo,
+R-01474,2026-07,8,Pasivo,
+R-01475,2026-07,8,Pasivo,
+R-01476,2026-07,6,Detractor,Tiempo de respuesta
+R-01477,2026-07,6,Detractor,Facilidad de uso
+R-01478,2026-07,6,Detractor,Tiempo de respuesta
+R-01479,2026-07,9,Promotor,
+R-01480,2026-07,10,Promotor,
+R-01481,2026-07,9,Promotor,
+R-01482,2026-07,6,Detractor,Tiempo de respuesta
+R-01483,2026-07,8,Pasivo,
+R-01484,2026-07,8,Pasivo,
+R-01485,2026-07,8,Pasivo,
+R-01486,2026-07,6,Detractor,Tiempo de respuesta
+R-01487,2026-07,5,Detractor,Tiempo de respuesta
+R-01488,2026-07,7,Pasivo,
+R-01489,2026-07,4,Detractor,Tiempo de respuesta
+R-01490,2026-07,6,Detractor,Tiempo de respuesta
+R-01491,2026-07,6,Detractor,Tiempo de respuesta
+R-01492,2026-07,8,Pasivo,
+R-01493,2026-07,3,Detractor,Tiempo de respuesta
+R-01494,2026-07,6,Detractor,Tiempo de respuesta
+R-01495,2026-07,8,Pasivo,
+R-01496,2026-07,9,Promotor,
+R-01497,2026-07,9,Promotor,
+R-01498,2026-07,10,Promotor,
+R-01499,2026-07,6,Detractor,Tiempo de respuesta
+R-01500,2026-07,7,Pasivo,
+R-01501,2026-07,6,Detractor,Tiempo de respuesta
+R-01502,2026-07,8,Pasivo,
+R-01503,2026-07,7,Pasivo,
+R-01504,2026-07,7,Pasivo,
+R-01505,2026-07,7,Pasivo,
+R-01506,2026-07,6,Detractor,Precio
+R-01507,2026-07,5,Detractor,Facilidad de uso
+R-01508,2026-07,6,Detractor,Tiempo de respuesta
+R-01509,2026-07,9,Promotor,
+R-01510,2026-07,7,Pasivo,
+R-01511,2026-07,7,Pasivo,
+R-01512,2026-07,7,Pasivo,
+R-01513,2026-07,8,Pasivo,
+R-01514,2026-07,9,Promotor,
+R-01515,2026-07,4,Detractor,Tiempo de respuesta
+R-01516,2026-07,10,Promotor,
+R-01517,2026-07,7,Pasivo,
+R-01518,2026-07,8,Pasivo,
+R-01519,2026-07,6,Detractor,Calidad del producto
+R-01520,2026-07,5,Detractor,Facilidad de uso
+R-01521,2026-07,6,Detractor,Tiempo de respuesta
+R-01522,2026-07,8,Pasivo,
+R-01523,2026-07,9,Promotor,
+R-01524,2026-07,6,Detractor,Tiempo de respuesta
+R-01525,2026-07,5,Detractor,Calidad del producto
+R-01526,2026-07,6,Detractor,Tiempo de respuesta
+R-01527,2026-07,7,Pasivo,
+R-01528,2026-07,6,Detractor,Tiempo de respuesta
+R-01529,2026-07,4,Detractor,Tiempo de respuesta
+R-01530,2026-07,8,Pasivo,
+R-01531,2026-07,8,Pasivo,
+R-01532,2026-07,10,Promotor,
+R-01533,2026-07,9,Promotor,
+R-01534,2026-07,5,Detractor,Atención al cliente
+R-01535,2026-07,9,Promotor,
+R-01536,2026-07,8,Pasivo,
+R-01537,2026-07,6,Detractor,Tiempo de respuesta
+R-01538,2026-07,8,Pasivo,
+R-01539,2026-07,7,Pasivo,
+R-01540,2026-07,9,Promotor,
+R-01541,2026-07,5,Detractor,Tiempo de respuesta
+R-01542,2026-07,9,Promotor,
+R-01543,2026-07,9,Promotor,
+R-01544,2026-07,6,Detractor,Atención al cliente
+R-01545,2026-07,8,Pasivo,
+R-01546,2026-07,7,Pasivo,
+R-01547,2026-07,9,Promotor,
+R-01548,2026-07,8,Pasivo,
+R-01549,2026-07,6,Detractor,Facilidad de uso
+R-01550,2026-07,7,Pasivo,
+R-01551,2026-07,10,Promotor,
+R-01552,2026-07,8,Pasivo,
+R-01553,2026-07,7,Pasivo,
+R-01554,2026-07,9,Promotor,
+R-01555,2026-07,7,Pasivo,
+R-01556,2026-07,8,Pasivo,
+R-01557,2026-07,8,Pasivo,
+R-01558,2026-07,9,Promotor,
+R-01559,2026-07,8,Pasivo,
+R-01560,2026-07,8,Pasivo,
+R-01561,2026-07,6,Detractor,Facilidad de uso
+R-01562,2026-07,9,Promotor,
+R-01563,2026-07,10,Promotor,
+R-01564,2026-07,7,Pasivo,
+R-01565,2026-07,5,Detractor,Tiempo de respuesta
+R-01566,2026-07,7,Pasivo,
+R-01567,2026-07,7,Pasivo,
+R-01568,2026-07,8,Pasivo,
+R-01569,2026-07,10,Promotor,
+R-01570,2026-07,5,Detractor,Tiempo de respuesta
+R-01571,2026-07,10,Promotor,
+R-01572,2026-07,8,Pasivo,
+R-01573,2026-08,6,Detractor,Tiempo de respuesta
+R-01574,2026-08,7,Pasivo,
+R-01575,2026-08,10,Promotor,
+R-01576,2026-08,8,Pasivo,
+R-01577,2026-08,6,Detractor,Tiempo de respuesta
+R-01578,2026-08,6,Detractor,Tiempo de respuesta
+R-01579,2026-08,5,Detractor,Calidad del producto
+R-01580,2026-08,8,Pasivo,
+R-01581,2026-08,10,Promotor,
+R-01582,2026-08,8,Pasivo,
+R-01583,2026-08,7,Pasivo,
+R-01584,2026-08,8,Pasivo,
+R-01585,2026-08,6,Detractor,Tiempo de respuesta
+R-01586,2026-08,8,Pasivo,
+R-01587,2026-08,7,Pasivo,
+R-01588,2026-08,5,Detractor,Tiempo de respuesta
+R-01589,2026-08,9,Promotor,
+R-01590,2026-08,5,Detractor,Precio
+R-01591,2026-08,6,Detractor,Calidad del producto
+R-01592,2026-08,7,Pasivo,
+R-01593,2026-08,7,Pasivo,
+R-01594,2026-08,9,Promotor,
+R-01595,2026-08,6,Detractor,Tiempo de respuesta
+R-01596,2026-08,8,Pasivo,
+R-01597,2026-08,8,Pasivo,
+R-01598,2026-08,9,Promotor,
+R-01599,2026-08,7,Pasivo,
+R-01600,2026-08,9,Promotor,
+R-01601,2026-08,8,Pasivo,
+R-01602,2026-08,6,Detractor,Facilidad de uso
+R-01603,2026-08,9,Promotor,
+R-01604,2026-08,9,Promotor,
+R-01605,2026-08,10,Promotor,
+R-01606,2026-08,8,Pasivo,
+R-01607,2026-08,10,Promotor,
+R-01608,2026-08,9,Promotor,
+R-01609,2026-08,5,Detractor,Tiempo de respuesta
+R-01610,2026-08,5,Detractor,Tiempo de respuesta
+R-01611,2026-08,7,Pasivo,
+R-01612,2026-08,10,Promotor,
+R-01613,2026-08,9,Promotor,
+R-01614,2026-08,9,Promotor,
+R-01615,2026-08,8,Pasivo,
+R-01616,2026-08,7,Pasivo,
+R-01617,2026-08,10,Promotor,
+R-01618,2026-08,8,Pasivo,
+R-01619,2026-08,6,Detractor,Tiempo de respuesta
+R-01620,2026-08,7,Pasivo,
+R-01621,2026-08,6,Detractor,Tiempo de respuesta
+R-01622,2026-08,7,Pasivo,
+R-01623,2026-08,9,Promotor,
+R-01624,2026-08,6,Detractor,Tiempo de respuesta
+R-01625,2026-08,5,Detractor,Tiempo de respuesta
+R-01626,2026-08,6,Detractor,Atención al cliente
+R-01627,2026-08,4,Detractor,Precio
+R-01628,2026-08,5,Detractor,Tiempo de respuesta
+R-01629,2026-08,8,Pasivo,
+R-01630,2026-08,8,Pasivo,
+R-01631,2026-08,7,Pasivo,
+R-01632,2026-08,6,Detractor,Atención al cliente
+R-01633,2026-08,10,Promotor,
+R-01634,2026-08,9,Promotor,
+R-01635,2026-08,10,Promotor,
+R-01636,2026-08,7,Pasivo,
+R-01637,2026-08,5,Detractor,Precio
+R-01638,2026-08,6,Detractor,Facilidad de uso
+R-01639,2026-08,7,Pasivo,
+R-01640,2026-08,9,Promotor,
+R-01641,2026-08,5,Detractor,Tiempo de respuesta
+R-01642,2026-08,7,Pasivo,
+R-01643,2026-08,8,Pasivo,
+R-01644,2026-08,8,Pasivo,
+R-01645,2026-08,6,Detractor,Tiempo de respuesta
+R-01646,2026-08,6,Detractor,Tiempo de respuesta
+R-01647,2026-08,4,Detractor,Calidad del producto
+R-01648,2026-08,8,Pasivo,
+R-01649,2026-08,5,Detractor,Atención al cliente
+R-01650,2026-08,5,Detractor,Tiempo de respuesta
+R-01651,2026-08,9,Promotor,
+R-01652,2026-08,7,Pasivo,
+R-01653,2026-08,7,Pasivo,
+R-01654,2026-08,9,Promotor,
+R-01655,2026-08,6,Detractor,Calidad del producto
+R-01656,2026-08,8,Pasivo,
+R-01657,2026-08,7,Pasivo,
+R-01658,2026-08,9,Promotor,
+R-01659,2026-08,9,Promotor,
+R-01660,2026-08,3,Detractor,Precio
+R-01661,2026-08,9,Promotor,
+R-01662,2026-08,9,Promotor,
+R-01663,2026-08,7,Pasivo,
+R-01664,2026-08,8,Pasivo,
+R-01665,2026-08,9,Promotor,
+R-01666,2026-08,8,Pasivo,
+R-01667,2026-08,7,Pasivo,
+R-01668,2026-08,6,Detractor,Precio
+R-01669,2026-08,6,Detractor,Atención al cliente
+R-01670,2026-08,3,Detractor,Tiempo de respuesta
+R-01671,2026-08,10,Promotor,
+R-01672,2026-08,9,Promotor,
+R-01673,2026-08,10,Promotor,
+R-01674,2026-08,10,Promotor,
+R-01675,2026-08,7,Pasivo,
+R-01676,2026-08,6,Detractor,Facilidad de uso
+R-01677,2026-08,7,Pasivo,
+R-01678,2026-08,5,Detractor,Tiempo de respuesta
+R-01679,2026-08,5,Detractor,Tiempo de respuesta
+R-01680,2026-08,9,Promotor,
+R-01681,2026-08,8,Pasivo,
+R-01682,2026-08,10,Promotor,
+R-01683,2026-08,6,Detractor,Tiempo de respuesta
+R-01684,2026-08,6,Detractor,Atención al cliente
+R-01685,2026-08,10,Promotor,
+R-01686,2026-08,6,Detractor,Atención al cliente
+R-01687,2026-08,5,Detractor,Tiempo de respuesta
+R-01688,2026-08,7,Pasivo,
+R-01689,2026-08,5,Detractor,Calidad del producto
+R-01690,2026-08,6,Detractor,Tiempo de respuesta
+R-01691,2026-08,7,Pasivo,
+R-01692,2026-08,8,Pasivo,
+R-01693,2026-08,7,Pasivo,
+R-01694,2026-08,10,Promotor,
+R-01695,2026-08,6,Detractor,Calidad del producto
+R-01696,2026-08,8,Pasivo,
+R-01697,2026-08,6,Detractor,Atención al cliente
+R-01698,2026-08,8,Pasivo,
+R-01699,2026-08,9,Promotor,
+R-01700,2026-08,6,Detractor,Calidad del producto
+R-01701,2026-08,8,Pasivo,
+R-01702,2026-08,10,Promotor,
+R-01703,2026-08,7,Pasivo,
+R-01704,2026-08,6,Detractor,Tiempo de respuesta
+R-01705,2026-08,4,Detractor,Tiempo de respuesta
+R-01706,2026-08,9,Promotor,
+R-01707,2026-08,8,Pasivo,
+R-01708,2026-08,5,Detractor,Calidad del producto
+R-01709,2026-08,9,Promotor,
+R-01710,2026-08,8,Pasivo,
+R-01711,2026-08,9,Promotor,
+R-01712,2026-08,7,Pasivo,
+R-01713,2026-08,8,Pasivo,
+R-01714,2026-08,7,Pasivo,
+R-01715,2026-08,7,Pasivo,
+R-01716,2026-08,5,Detractor,Calidad del producto
+R-01717,2026-08,10,Promotor,
+R-01718,2026-08,8,Pasivo,
