@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>XIA · Elasticidad de Precios y Price Intelligence</title>
+<title>XIA · Price Elasticity and Price Intelligence</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -143,127 +143,127 @@
 <div class="wrap">
   <div class="brand"><div class="mark"><img src="../../assets/xia-logo.png" alt="XIA logo"></div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
   <header class="page-head">
-    <div class="tag">Proyecto 06 · Portafolio de demostración</div>
-    <h1>Elasticidad de Precios y Price Intelligence</h1>
-    <p class="tagline">No todos los productos reaccionan igual a un cambio de precio — la matriz dice a cuáles subirles precio ya, a cuáles con prueba piloto primero, y a cuáles no tocar.</p>
+    <div class="tag">Project 06 · Portfolio Demonstration</div>
+    <h1>Price Elasticity and Price Intelligence</h1>
+    <p class="tagline">Not every product reacts the same way to a price change — the matrix shows which ones to raise now, which need a pilot test first, and which to leave alone.</p>
   </header>
 
-  
+
     <div class="minto-banner">
-      <p class="minto-label">Próxima actualización de lista de precios</p>
-      <h2>1 de 8 productos listo para subir precio ya (+$234,648 MXN/año) — 3 más apuntan en la misma dirección pero necesitan una prueba piloto primero.</h2>
-      <p class="minto-sub">La evidencia es sólida en 3 productos para NO subir precio: hacerlo destruiría $2,173,463 MXN/año de ingreso. 1 producto no tiene suficiente señal (R² bajo) para decidir en ningún sentido todavía.</p>
+      <p class="minto-label">Upcoming price list update</p>
+      <h2>1 of 8 products is ready for a price increase now (+$234,648 MXN/year) — 3 more point in the same direction but need a pilot test first.</h2>
+      <p class="minto-sub">The evidence is solid for 3 products that should NOT get a price increase: doing so would destroy $2,173,463 MXN/year in revenue. 1 product doesn't yet have enough signal (low R²) to decide either way.</p>
     </div>
-    
+
 
   <div class="kpi-row">
-    
+
         <div class="kpi-card">
-          <div class="kpi-label">Productos analizados</div>
+          <div class="kpi-label">Products analyzed</div>
           <div class="kpi-value">8</div>
-          
-          
+
+
         </div>
 
         <div class="kpi-card kpi-hero">
-          <div class="kpi-label">Impacto anual si se ejecutan las subidas recomendadas</div>
+          <div class="kpi-label">Annual impact if recommended increases are executed</div>
           <div class="kpi-value">$1,560,290 MXN</div>
-          
-          
+
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Ejecutar ya (alta confianza)</div>
-          <div class="kpi-value">1 producto</div>
-          
+          <div class="kpi-label">Execute now (high confidence)</div>
+          <div class="kpi-value">1 product</div>
+
           <span class="kpi-badge kpi-good">good</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Requieren piloto antes de escalar</div>
-          <div class="kpi-value">4 productos</div>
-          
+          <div class="kpi-label">Require a pilot before scaling</div>
+          <div class="kpi-value">4 products</div>
+
           <span class="kpi-badge kpi-warning">warning</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Ingreso protegido al no subir precio</div>
+          <div class="kpi-label">Revenue protected by not raising price</div>
           <div class="kpi-value">$2,173,463 MXN</div>
-          
+
           <span class="kpi-badge kpi-critical">critical</span>
         </div>
   </div>
 
-  
+
     <div class="table-wrap table-wrap-open">
-      <p class="section-label">Resumen por cuadrante de acción</p>
+      <p class="section-label">Summary by action quadrant</p>
       <table>
-        <thead><tr><th>Cuadrante</th><th>Productos</th><th>Elasticidad promedio</th><th>R² promedio</th><th>Impacto anual</th><th>Acción recomendada</th></tr></thead>
-        <tbody><tr><td>Subir precio — ejecutar ya</td><td>1</td><td>-0.6</td><td>0.56</td><td>$234,648</td><td>Aplicar el incremento en la próxima actualización de lista — demanda inelástica y el modelo explica bien la variación de unidades: bajo riesgo de sorpresa.</td></tr>
-<tr><td>Subir precio — probar antes de escalar</td><td>3</td><td>-0.3</td><td>0.07</td><td>$1,325,642</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr>
-<tr><td>No subir precio — evidencia sólida</td><td>3</td><td>-2.0</td><td>0.75</td><td>-$2,173,463</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr>
-<tr><td>Recolectar más datos</td><td>1</td><td>-0.95</td><td>0.39</td><td>-$36,551</td><td>Ni la dirección ni la magnitud son confiables todavía (R² bajo) — no tomar una decisión de precio con este dato; ampliar el histórico o correr una prueba controlada primero.</td></tr>
+        <thead><tr><th>Quadrant</th><th>Products</th><th>Average elasticity</th><th>Average R²</th><th>Annual impact</th><th>Recommended action</th></tr></thead>
+        <tbody><tr><td>Raise price — execute now</td><td>1</td><td>-0.6</td><td>0.56</td><td>$234,648</td><td>Apply the increase in the next price list update — demand is inelastic and the model explains unit variation well: low risk of surprise.</td></tr>
+<tr><td>Raise price — test before scaling</td><td>3</td><td>-0.3</td><td>0.07</td><td>$1,325,642</td><td>The direction points toward raising price, but R² is low — validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr>
+<tr><td>Do not raise price — solid evidence</td><td>3</td><td>-2.0</td><td>0.75</td><td>-$2,173,463</td><td>Do not raise price — demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr>
+<tr><td>Collect more data</td><td>1</td><td>-0.95</td><td>0.39</td><td>-$36,551</td><td>Neither the direction nor the magnitude is reliable yet (low R²) — don't make a pricing decision on this data; extend the historical record or run a controlled test first.</td></tr>
 </tbody>
       </table>
     </div>
-    
+
 
   <div class="charts-grid">
-    
+
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
-        <h3>Matriz elasticidad x confianza: qué acción de precio corresponde a cada producto</h3>
-        <p>8 productos — elasticidad estimada vs. R² del modelo, divididos en la mediana de cada eje</p>
+        <h3>Elasticity x confidence matrix: which price action fits each product</h3>
+        <p>8 products — estimated elasticity vs. model R², split at the median of each axis</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_matriz"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
-        <h3>Impacto anual proyectado por producto (+10% de precio)</h3>
-        <p>MXN/año — positivo donde subir precio conviene, negativo donde destruye ingreso</p>
+        <h3>Projected annual impact by product (+10% price)</h3>
+        <p>MXN/year — positive where a price increase pays off, negative where it destroys revenue</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_impacto"></canvas>
       </div>
     </div>
-    
+
   </div>
 
-  
+
 
   <div class="insights-card">
-    <h3>Lo que dice el dato</h3>
-    <ul class="insights"><li><b>Repuesto especializado X</b> es el único producto con evidencia suficiente (R²=0.56, elasticidad -0.6) para subir precio en la próxima lista sin necesidad de prueba piloto — impacto estimado +$234,648 MXN/año.</li>
-<li><b>3 productos</b> (Repuesto especializado Y, Servicio de instalación, Refacción crítica) apuntan a subir precio (+$1,325,642 MXN/año combinado) pero con R² por debajo de 0.48 — antes de aplicarlo a todo el catálogo conviene una prueba piloto en una región o segmento de clientes.</li>
-<li><b>3 productos</b> (Componente A, Accesorio estándar, Componente B) tienen evidencia sólida (R² 0.56–0.92) de ser altamente elásticos — subir su precio destruiría $2,173,463 MXN/año; no deben tocarse en esta ronda.</li>
-<li>La confianza estadística (R²) importa tanto como la dirección de la elasticidad: dos productos con la misma elasticidad estimada pueden merecer una acción distinta si uno tiene mucha más señal que ruido que el otro — por eso la matriz cruza ambos ejes en vez de ordenar solo por elasticidad.</li></ul>
+    <h3>What the data shows</h3>
+    <ul class="insights"><li><b>Specialized Part X</b> is the only product with enough evidence (R²=0.56, elasticity -0.6) to raise its price in the next list without needing a pilot test — estimated impact +$234,648 MXN/year.</li>
+<li><b>3 products</b> (Specialized Part Y, Installation Service, Critical Spare Part) point toward a price increase (+$1,325,642 MXN/year combined) but with R² below 0.48 — before applying it across the full catalog, a pilot test in one region or customer segment is advisable.</li>
+<li><b>3 products</b> (Component A, Standard Accessory, Component B) have solid evidence (R² 0.56–0.92) of being highly elastic — raising their price would destroy $2,173,463 MXN/year; they should not be touched this round.</li>
+<li>Statistical confidence (R²) matters as much as the direction of elasticity: two products with the same estimated elasticity may warrant different actions if one has far more signal than noise than the other — that's why the matrix crosses both axes instead of ranking by elasticity alone.</li></ul>
   </div>
 
-  
 
-  
+
+
     <div class="checklist-card">
-      <h3>Plan de repricing — próxima actualización de lista</h3>
-      <p class="checklist-sub">Los 8 productos ordenados por prioridad de acción. Marca cada uno al aplicarlo (o al confirmar que se deja igual) en el ERP — el progreso se guarda en este navegador.</p>
+      <h3>Repricing plan — next price list update</h3>
+      <p class="checklist-sub">The 8 products ordered by action priority. Check each one off as you apply it (or confirm it stays the same) in the ERP — progress is saved in this browser.</p>
       <div class="checklist-progress">
         <div class="progress-bar"><div class="progress-fill" id="plan_repricing-fill" style="width:0%"></div></div>
-        <span id="plan_repricing-count">0 / 8 revisados</span>
+        <span id="plan_repricing-count">0 / 8 reviewed</span>
       </div>
       <div class="checklist-table-wrap">
         <table class="checklist-table">
-          <thead><tr><th></th><th>Producto</th><th>Elasticidad</th><th>Confianza</th><th>Impacto anual estimado</th><th>Acción</th></tr></thead>
-          <tbody><tr data-row="Repuesto especializado X"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Repuesto especializado X"></td><td>Repuesto especializado X</td><td>-0.6</td><td>Alta (R²=0.56)</td><td>$234,648</td><td>Aplicar el incremento en la próxima actualización de lista — demanda inelástica y el modelo explica bien la variación de unidades: bajo riesgo de sorpresa.</td></tr><tr data-row="Repuesto especializado Y"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Repuesto especializado Y"></td><td>Repuesto especializado Y</td><td>-0.48</td><td>Baja (R²=0.13)</td><td>$333,864</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Servicio de instalación"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Servicio de instalación"></td><td>Servicio de instalación</td><td>-0.27</td><td>Baja (R²=0.04)</td><td>$502,760</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Refacción crítica (sin sustituto)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Refacción crítica (sin sustituto)"></td><td>Refacción crítica (sin sustituto)</td><td>-0.15</td><td>Baja (R²=0.04)</td><td>$489,018</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Componente A (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Componente A (commodity)"></td><td>Componente A (commodity)</td><td>-2.18</td><td>Alta (R²=0.92)</td><td>-$770,804</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Accesorio estándar"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Accesorio estándar"></td><td>Accesorio estándar</td><td>-1.96</td><td>Alta (R²=0.56)</td><td>-$743,260</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Componente B (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Componente B (commodity)"></td><td>Componente B (commodity)</td><td>-1.85</td><td>Alta (R²=0.78)</td><td>-$659,399</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Kit de mantenimiento"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Kit de mantenimiento"></td><td>Kit de mantenimiento</td><td>-0.95</td><td>Baja (R²=0.39)</td><td>-$36,551</td><td>Ni la dirección ni la magnitud son confiables todavía (R² bajo) — no tomar una decisión de precio con este dato; ampliar el histórico o correr una prueba controlada primero.</td></tr></tbody>
+          <thead><tr><th></th><th>Product</th><th>Elasticity</th><th>Confidence</th><th>Estimated annual impact</th><th>Action</th></tr></thead>
+          <tbody><tr data-row="Specialized Part X"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Specialized Part X"></td><td>Specialized Part X</td><td>-0.6</td><td>High (R²=0.56)</td><td>$234,648</td><td>Apply the increase in the next price list update — demand is inelastic and the model explains unit variation well: low risk of surprise.</td></tr><tr data-row="Specialized Part Y"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Specialized Part Y"></td><td>Specialized Part Y</td><td>-0.48</td><td>Low (R²=0.13)</td><td>$333,864</td><td>The direction points toward raising price, but R² is low — validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr><tr data-row="Installation Service"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Installation Service"></td><td>Installation Service</td><td>-0.27</td><td>Low (R²=0.04)</td><td>$502,760</td><td>The direction points toward raising price, but R² is low — validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr><tr data-row="Critical Spare Part (no substitute)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Critical Spare Part (no substitute)"></td><td>Critical Spare Part (no substitute)</td><td>-0.15</td><td>Low (R²=0.04)</td><td>$489,018</td><td>The direction points toward raising price, but R² is low — validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr><tr data-row="Component A (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Component A (commodity)"></td><td>Component A (commodity)</td><td>-2.18</td><td>High (R²=0.92)</td><td>-$770,804</td><td>Do not raise price — demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr><tr data-row="Standard Accessory"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Standard Accessory"></td><td>Standard Accessory</td><td>-1.96</td><td>High (R²=0.56)</td><td>-$743,260</td><td>Do not raise price — demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr><tr data-row="Component B (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Component B (commodity)"></td><td>Component B (commodity)</td><td>-1.85</td><td>High (R²=0.78)</td><td>-$659,399</td><td>Do not raise price — demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr><tr data-row="Maintenance Kit"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Maintenance Kit"></td><td>Maintenance Kit</td><td>-0.95</td><td>Low (R²=0.39)</td><td>-$36,551</td><td>Neither the direction nor the magnitude is reliable yet (low R²) — don't make a pricing decision on this data; extend the historical record or run a controlled test first.</td></tr></tbody>
         </table>
       </div>
     </div>
-    
+
 
   <footer>
-    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    Synthetic dataset generated for demonstration purposes. Real service: Data Storytelling Express / Micro Data Office &middot;
     <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
   </footer>
 </div>
@@ -305,7 +305,7 @@ function surfaceColor() { return cssVar('--surface'); }
         const fill = document.getElementById(scopeId + '-fill');
         const count = document.getElementById(scopeId + '-count');
         if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
-        if (count) count.textContent = `${checked} / ${total} ${"revisados"}`;
+        if (count) count.textContent = `${checked} / ${total} ${"reviewed"}`;
       }
       boxes.forEach((b) => {
         const rowId = b.dataset.row;
@@ -324,40 +324,40 @@ function surfaceColor() { return cssVar('--surface'); }
       });
       updateProgress();
     })();
-    
+
 
     (function() {
       const quadrantLines_chart_matriz = {"x": -0.77, "y": 0.478};
-      const quadrantLabels_chart_matriz = [{"corner": "top-left", "text": "NO SUBIR — EVIDENCIA SÓLIDA"}, {"corner": "top-right", "text": "EJECUTAR YA"}, {"corner": "bottom-left", "text": "RECOLECTAR MÁS DATOS"}, {"corner": "bottom-right", "text": "PROBAR ANTES DE ESCALAR"}];
+      const quadrantLabels_chart_matriz = [{"corner": "top-left", "text": "DO NOT RAISE — SOLID EVIDENCE"}, {"corner": "top-right", "text": "EXECUTE NOW"}, {"corner": "bottom-left", "text": "COLLECT MORE DATA"}, {"corner": "bottom-right", "text": "TEST BEFORE SCALING"}];
       new Chart(document.getElementById('chart_matriz').getContext('2d'), {
         type: 'scatter',
         data: { datasets: [{
-            label: "No subir — evidencia sólida",
-            data: [{"x": -2.18, "y": 0.917, "label": "Componente A (commodity) · elasticidad -2.18 · R²=0.92"}, {"x": -1.96, "y": 0.563, "label": "Accesorio estándar · elasticidad -1.96 · R²=0.56"}, {"x": -1.85, "y": 0.78, "label": "Componente B (commodity) · elasticidad -1.85 · R²=0.78"}],
+            label: "Do not raise — solid evidence",
+            data: [{"x": -2.18, "y": 0.917, "label": "Component A (commodity) · elasticity -2.18 · R²=0.92"}, {"x": -1.96, "y": 0.563, "label": "Standard Accessory · elasticity -1.96 · R²=0.56"}, {"x": -1.85, "y": 0.78, "label": "Component B (commodity) · elasticity -1.85 · R²=0.78"}],
             backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 0.85),
             borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
             pointRadius: 7,
             pointHoverRadius: 9,
         },
 {
-            label: "Recolectar más datos",
-            data: [{"x": -0.95, "y": 0.394, "label": "Kit de mantenimiento · elasticidad -0.95 · R²=0.39"}],
+            label: "Collect more data",
+            data: [{"x": -0.95, "y": 0.394, "label": "Maintenance Kit · elasticity -0.95 · R²=0.39"}],
             backgroundColor: withAlpha(seriesColorHex("#B8842C", "#B8842C"), 0.85),
             borderColor: seriesColorHex("#B8842C", "#B8842C"),
             pointRadius: 7,
             pointHoverRadius: 9,
         },
 {
-            label: "Subir — ejecutar ya",
-            data: [{"x": -0.6, "y": 0.563, "label": "Repuesto especializado X · elasticidad -0.6 · R²=0.56"}],
+            label: "Raise — execute now",
+            data: [{"x": -0.6, "y": 0.563, "label": "Specialized Part X · elasticity -0.6 · R²=0.56"}],
             backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 0.85),
             borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
             pointRadius: 7,
             pointHoverRadius: 9,
         },
 {
-            label: "Subir — probar antes",
-            data: [{"x": -0.48, "y": 0.13, "label": "Repuesto especializado Y · elasticidad -0.48 · R²=0.13"}, {"x": -0.27, "y": 0.043, "label": "Servicio de instalación · elasticidad -0.27 · R²=0.04"}, {"x": -0.15, "y": 0.044, "label": "Refacción crítica (sin sustituto) · elasticidad -0.15 · R²=0.04"}],
+            label: "Raise — test first",
+            data: [{"x": -0.48, "y": 0.13, "label": "Specialized Part Y · elasticity -0.48 · R²=0.13"}, {"x": -0.27, "y": 0.043, "label": "Installation Service · elasticity -0.27 · R²=0.04"}, {"x": -0.15, "y": 0.044, "label": "Critical Spare Part (no substitute) · elasticity -0.15 · R²=0.04"}],
             backgroundColor: withAlpha(seriesColorHex("#9CB8B4", "#9CB8B4"), 0.85),
             borderColor: seriesColorHex("#9CB8B4", "#9CB8B4"),
             pointRadius: 7,
@@ -378,9 +378,9 @@ function surfaceColor() { return cssVar('--surface'); }
             }
           },
           scales: {
-            x: { title: { display: true, text: "Elasticidad-precio (más negativo = más sensible al precio)", color: inkColor('secondary') },
+            x: { title: { display: true, text: "Price elasticity (more negative = more price-sensitive)", color: inkColor('secondary') },
                   grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
-            y: { title: { display: true, text: "Confianza del modelo (R²)", color: inkColor('secondary') },
+            y: { title: { display: true, text: "Model confidence (R²)", color: inkColor('secondary') },
                   grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
           }
         },
@@ -425,14 +425,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       });
     })();
-    
+
 
     new Chart(document.getElementById('chart_impacto').getContext('2d'), {
       type: "bar",
       data: {
-        labels: ["Componente A (commodity)", "Accesorio estándar", "Componente B (commodity)", "Kit de mantenimiento", "Repuesto especializado X", "Repuesto especializado Y", "Servicio de instalación", "Refacción crítica (sin sustituto)"],
+        labels: ["Component A (commodity)", "Standard Accessory", "Component B (commodity)", "Maintenance Kit", "Specialized Part X", "Specialized Part Y", "Installation Service", "Critical Spare Part (no substitute)"],
         datasets: [{
-            label: "Impacto anual",
+            label: "Annual impact",
             data: [-770804, -743260, -659399, -36551, 234648, 333864, 502760, 489018],
             valueLabels: null,
             backgroundColor: ["#d03b3b", "#d03b3b", "#d03b3b", "#B8842C", "#3E8F72", "#9CB8B4", "#9CB8B4", "#9CB8B4"],
@@ -456,7 +456,7 @@ function surfaceColor() { return cssVar('--surface'); }
                      labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
           tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
                       borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('es-MX')}` } }
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('en-US')}` } }
         },
         scales: {
           y: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
@@ -464,12 +464,12 @@ function surfaceColor() { return cssVar('--surface'); }
             stacked: false,
             grid: { color: inkColor('grid') },
             ticks: { color: inkColor('muted') },
-            title: { display: true, text: "MXN/año", color: inkColor('secondary') }
+            title: { display: true, text: "MXN/year", color: inkColor('secondary') }
           }
         }
       }
     });
-    
+
 </script>
 </body>
 </html>

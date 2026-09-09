@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>XIA · Ventas por Equipo en Tiempo Real</title>
+<title>XIA · Real-Time Sales by Team</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -143,97 +143,97 @@
 <div class="wrap">
   <div class="brand"><div class="mark"><img src="../../assets/xia-logo.png" alt="XIA logo"></div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
   <header class="page-head">
-    <div class="tag">Proyecto 01 · Portafolio de demostración</div>
-    <h1>Ventas por Equipo en Tiempo Real</h1>
-    <p class="tagline">Occidente viene en 46% de su meta este mes — y la tendencia ya lo mostraba desde 2026-06. Así se ve la alerta antes del cierre, no después.</p>
+    <div class="tag">Project 01 · Portfolio Demo</div>
+    <h1>Real-Time Sales by Team</h1>
+    <p class="tagline">West is running at 46% of its target this month — and the trend had already been signaling it since 2026-06. This is what an early warning looks like before the close, not after.</p>
   </header>
 
-  
+
 
   <div class="kpi-row">
-    
+
         <div class="kpi-card">
-          <div class="kpi-label">Ventas totales (2026-08)</div>
+          <div class="kpi-label">Total sales (2026-08)</div>
           <div class="kpi-value">$3,772,904</div>
-          
-          
+
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Cumplimiento vs. meta</div>
+          <div class="kpi-label">Attainment vs. target</div>
           <div class="kpi-value">87.5%</div>
-          
-          <span class="kpi-badge kpi-warning">cerca de meta</span>
+
+          <span class="kpi-badge kpi-warning">near target</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Equipo líder</div>
-          <div class="kpi-value">Norte</div>
-          <div class="kpi-delta delta-up">&uarr; 113.4% de meta</div>
-          
+          <div class="kpi-label">Top team</div>
+          <div class="kpi-value">North</div>
+          <div class="kpi-delta delta-up">&uarr; 113.4% of target</div>
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Equipo en riesgo</div>
-          <div class="kpi-value">Occidente</div>
-          <div class="kpi-delta delta-down">&darr; 46.4% de meta</div>
-          
+          <div class="kpi-label">Team at risk</div>
+          <div class="kpi-value">West</div>
+          <div class="kpi-delta delta-down">&darr; 46.4% of target</div>
+
         </div>
   </div>
 
-  
+
 
   <div class="charts-grid">
-    
+
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Occidente va en 46% de meta — el único equipo en riesgo</h3>
-        <p>Verde = en meta (≥95%) · Amarillo = cerca (80–94%) · Rojo = en riesgo (<80%). Ordenado de menor a mayor cumplimiento.</p>
+        <h3>West is at 46% of target — the only team at risk</h3>
+        <p>Green = on target (≥95%) · Yellow = near target (80–94%) · Red = at risk (<80%). Sorted from lowest to highest attainment.</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_current"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Occidente cae 64% en 2 meses tras tocar su punto más alto en 2026-06</h3>
-        <p>Tendencia mensual por equipo · Occidente resaltado en rojo, el resto en gris para no distraer.</p>
+        <h3>West drops 64% in 2 months after peaking in 2026-06</h3>
+        <p>Monthly trend by team · West highlighted in red, other teams in gray to minimize distraction.</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_trend"></canvas>
       </div>
     </div>
-    
+
   </div>
 
-  
+
 
   <div class="insights-card">
-    <h3>Lo que dice el dato</h3>
-    <ul class="insights"><li><b>Occidente</b> cayó 64% en 2 meses (de $1,450,572 en 2026-06 a $519,900 en 2026-08) — no es ruido, es una caída sostenida.</li>
-<li>El quiebre ya era visible en la tendencia mensual desde 2026-06, semanas antes de que el reporte de cierre lo hubiera mostrado.</li>
-<li><b>Norte</b> compensa parte del boquete (va en 113.4% de su meta), pero no alcanza: el cumplimiento consolidado de la organización es <b>87.5%</b> ($3,772,904 de $4,310,000 MXN).</li>
-<li>Acción esta semana: revisar con el gerente de <b>Occidente</b> qué cambió — antes de que sea un problema de cierre de trimestre, no después.</li></ul>
+    <h3>What the data shows</h3>
+    <ul class="insights"><li><b>West</b> dropped 64% in 2 months (from $1,450,572 in 2026-06 to $519,900 in 2026-08) — this isn't noise, it's a sustained decline.</li>
+<li>The break was already visible in the monthly trend as of 2026-06, weeks before the closing report would have shown it.</li>
+<li><b>North</b> offsets part of the gap (running at 113.4% of its target), but it isn't enough: the organization's consolidated attainment is <b>87.5%</b> ($3,772,904 of $4,310,000 MXN).</li>
+<li>Action this week: review with the <b>West</b> team manager what changed — before it becomes a quarter-close problem, not after.</li></ul>
   </div>
 
-  
+
     <details class="table-wrap">
-      <summary>Ver tabla de datos</summary>
+      <summary>View data table</summary>
       <table>
-        <thead><tr><th>Equipo</th><th>Ventas 2026-08 (MXN)</th><th>Meta mensual (MXN)</th><th>% Cumplimiento</th></tr></thead>
-        <tbody><tr><td>Norte</td><td>$1,111,585</td><td>$980,000</td><td>113.4%</td></tr>
-<tr><td>Centro</td><td>$1,444,994</td><td>$1,450,000</td><td>99.7%</td></tr>
-<tr><td>Sureste</td><td>$696,426</td><td>$760,000</td><td>91.6%</td></tr>
-<tr><td>Occidente</td><td>$519,900</td><td>$1,120,000</td><td>46.4%</td></tr>
+        <thead><tr><th>Team</th><th>Sales 2026-08 (MXN)</th><th>Monthly target (MXN)</th><th>% Attainment</th></tr></thead>
+        <tbody><tr><td>North</td><td>$1,111,585</td><td>$980,000</td><td>113.4%</td></tr>
+<tr><td>Central</td><td>$1,444,994</td><td>$1,450,000</td><td>99.7%</td></tr>
+<tr><td>Southeast</td><td>$696,426</td><td>$760,000</td><td>91.6%</td></tr>
+<tr><td>West</td><td>$519,900</td><td>$1,120,000</td><td>46.4%</td></tr>
 </tbody>
       </table>
     </details>
-    
+
 
   <footer>
-    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    Synthetic dataset generated for demonstration purposes. Real service: Data Storytelling Express / Micro Data Office &middot;
     <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
   </footer>
 </div>
@@ -266,9 +266,9 @@ function surfaceColor() { return cssVar('--surface'); }
     new Chart(document.getElementById('chart_current').getContext('2d'), {
       type: "bar",
       data: {
-        labels: ["Occidente", "Sureste", "Centro", "Norte"],
+        labels: ["West", "Southeast", "Central", "North"],
         datasets: [{
-            label: "% de meta",
+            label: "% of target",
             data: [46.4, 91.6, 99.7, 113.4],
             valueLabels: ["46%", "92%", "100%", "113%"],
             backgroundColor: ["#d03b3b", "#B8842C", "#3E8F72", "#3E8F72"],
@@ -287,7 +287,7 @@ function surfaceColor() { return cssVar('--surface'); }
         afterDatasetsDraw(chart) {
           const { ctx, chartArea, scales } = chart;
           ctx.save();
-          
+
       chart.data.datasets.forEach((dataset, di) => {
         if (!dataset.valueLabels) return;
         const meta = chart.getDatasetMeta(di);
@@ -322,7 +322,7 @@ function surfaceColor() { return cssVar('--surface'); }
           ctx.fillStyle = inkColor('secondary');
           ctx.font = '600 11px -apple-system, sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText("Meta (100%)", px, chartArea.top - 8);
+          ctx.fillText("Target (100%)", px, chartArea.top - 8);
         } else {
           const py = axisScale.getPixelForValue(val);
           ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
@@ -331,7 +331,7 @@ function surfaceColor() { return cssVar('--surface'); }
           ctx.fillStyle = inkColor('secondary');
           ctx.font = '600 11px -apple-system, sans-serif';
           ctx.textAlign = 'left';
-          ctx.fillText("Meta (100%)", chartArea.left + 4, py - 6);
+          ctx.fillText("Target (100%)", chartArea.left + 4, py - 6);
         }
       }
           ctx.restore();
@@ -360,14 +360,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_trend').getContext('2d'), {
       type: "line",
       data: {
         labels: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "Centro",
+            label: "Central",
             data: [1296235.0, 942973.0, 1577762.0, 1607857.0, 1482574.0, 1900637.0, 1511140.0, 1444994.0],
             valueLabels: null,
             backgroundColor: withAlpha(inkColor('muted'), 0.12),
@@ -381,7 +381,7 @@ function surfaceColor() { return cssVar('--surface'); }
             pointHoverRadius: 5,
         },
 {
-            label: "Norte",
+            label: "North",
             data: [1003669.0, 1008575.0, 818166.0, 945645.0, 985588.0, 844516.0, 817923.0, 1111585.0],
             valueLabels: null,
             backgroundColor: withAlpha(inkColor('muted'), 0.12),
@@ -395,7 +395,7 @@ function surfaceColor() { return cssVar('--surface'); }
             pointHoverRadius: 5,
         },
 {
-            label: "Occidente",
+            label: "West",
             data: [1078484.0, 1180978.0, 1266093.0, 1343822.0, 1038066.0, 1450572.0, 741438.0, 519900.0],
             valueLabels: null,
             backgroundColor: "#d03b3b",
@@ -409,7 +409,7 @@ function surfaceColor() { return cssVar('--surface'); }
             pointHoverRadius: 5,
         },
 {
-            label: "Sureste",
+            label: "Southeast",
             data: [781698.0, 666576.0, 814661.0, 752489.0, 714554.0, 687997.0, 689517.0, 696426.0],
             valueLabels: null,
             backgroundColor: withAlpha(inkColor('muted'), 0.12),
@@ -428,7 +428,7 @@ function surfaceColor() { return cssVar('--surface'); }
         afterDatasetsDraw(chart) {
           const { ctx, chartArea, scales } = chart;
           ctx.save();
-          
+
       {
         const px = scales.x.getPixelForValue(5);
         ctx.strokeStyle = withAlpha(inkColor('muted'), 0.7);
@@ -441,13 +441,13 @@ function surfaceColor() { return cssVar('--surface'); }
         ctx.fillStyle = inkColor('secondary');
         ctx.font = '600 11px -apple-system, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText("Pico: 2026-06", px, chartArea.top + 12);
+        ctx.fillText("Peak: 2026-06", px, chartArea.top + 12);
       }
           ctx.restore();
         }
       }],
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -456,7 +456,7 @@ function surfaceColor() { return cssVar('--surface'); }
                      labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
           tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
                       borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('es-MX')}` } }
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('en-US')}` } }
         },
         scales: {
           x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
@@ -469,7 +469,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 </script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>XIA · ROI de Marketing: CAC vs. LTV por Canal</title>
+<title>XIA · Consolidating Scattered Data: One Single Source of Truth</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -163,153 +163,149 @@
 <div class="wrap">
   <div class="brand"><div class="mark"><img src="../../assets/xia-logo.png" alt="XIA logo"></div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
   <header class="page-head">
-    <div class="tag">Proyecto 09 · Portafolio de demostración</div>
-    <h1>ROI de Marketing: CAC vs. LTV por Canal</h1>
-    <p class="tagline">No todos los pesos de marketing valen lo mismo — saber qué canal escalar y cuál replantear.</p>
+    <div class="tag">Project 11 · Portfolio Demo</div>
+    <h1>Consolidating Scattered Data: One Single Source of Truth</h1>
+    <p class="tagline">Every branch with its own spreadsheet, three different formats, inconsistent naming — one clean file that any report can build on, with the risk segmentation and trend view management needs to decide.</p>
   </header>
 
-  
+
     <div class="minto-banner">
-      <p class="minto-label">La respuesta primero</p>
-      <h2>65% del presupuesto de marketing (Google Ads y Meta Ads) no cubre el benchmark de retorno 3:1 — mientras los canales más eficientes reciben apenas 19% del gasto.</h2>
-      <p class="minto-sub">Recomendación para el próximo trimestre: mover presupuesto de Google Ads (el de peor tendencia entre los canales de riesgo) hacia Email marketing y SEO / Orgánico (mejores ratios, con capacidad de crecer); mantener Meta Ads en optimización porque su tendencia mejora; escalar Referidos con cautela — ya muestra señales de techo de capacidad.</p>
+      <p class="minto-label">The Answer First</p>
+      <h2>The single source of truth prevents $18,111 MXN in sales inflated by duplicates — but $12,018 MXN remains stuck in Monterrey's review queue.</h2>
+      <p class="minto-sub">Priority for the quarter: close out Monterrey's queue with a clear owner and a capture SLA, and lock down CDMX's export at the source — it accounts for 96% of all duplicate value detected this quarter.</p>
     </div>
-    
+
 
   <div class="top-row">
-    
+
     <div class="hero-widget">
-      <div class="kpi-label">% del gasto en canales por debajo del benchmark 3:1</div>
-      <div class="kpi-value hero-value">64.9%</div>
-      <span class="kpi-badge kpi-critical">Riesgo estructural</span>
+      <div class="kpi-label">Consolidated quarterly sales (single source of truth)</div>
+      <div class="kpi-value hero-value">$1,170,834</div>
+      <span class="kpi-badge kpi-good">No anomalies</span>
       <div class="hero-chart-wrap">
-        <canvas id="chart_hero_riesgo"></canvas>
+        <canvas id="chart_hero_trend"></canvas>
       </div>
     </div>
     <div class="kpi-grid-5">
-      
+
         <div class="kpi-card">
-          <div class="kpi-label">Inversión total (12 meses)</div>
-          <div class="kpi-value">$2,266,206 MXN</div>
-          
-          
+          <div class="kpi-label">Sources consolidated</div>
+          <div class="kpi-value">3 exports → 1</div>
+
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Clientes nuevos totales</div>
-          <div class="kpi-value">2,299</div>
-          
-          
+          <div class="kpi-label">Duplicates avoided (value)</div>
+          <div class="kpi-value">$18,111</div>
+
+          <span class="kpi-badge kpi-warning">warning</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Mejor canal (LTV:CAC)</div>
-          <div class="kpi-value">Referidos (19.25:1)</div>
-          
+          <div class="kpi-label">In review queue (estimated)</div>
+          <div class="kpi-value">$12,018</div>
+
+          <span class="kpi-badge kpi-warning">warning</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Quarterly growth</div>
+          <div class="kpi-value">+7.0%</div>
+
           <span class="kpi-badge kpi-good">good</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Peor canal (LTV:CAC)</div>
-          <div class="kpi-value">Meta Ads (1.55:1)</div>
-          
-          <span class="kpi-badge kpi-critical">critical</span>
-        </div>
+          <div class="kpi-label">Highest-risk source</div>
+          <div class="kpi-value">CDMX · Exact duplicates</div>
 
-        <div class="kpi-card">
-          <div class="kpi-label">Referidos: clientes nuevos (12 meses)</div>
-          <div class="kpi-value">-12%</div>
-          <div class="kpi-delta delta-down">&darr; techo de capacidad</div>
           <span class="kpi-badge kpi-warning">warning</span>
         </div>
     </div>
   </div>
 
-  
+
     <div class="table-wrap table-wrap-open">
-      <p class="section-label">Segmentación y recomendación por canal</p>
+      <p class="section-label">Source segmentation by dominant quality issue</p>
       <table>
-        <thead><tr><th>Canal</th><th>Segmento</th><th>Gasto total</th><th>Ratio LTV:CAC</th><th>Clientes nuevos (12m)</th><th>Recomendación</th></tr></thead>
-        <tbody><tr><td>Referidos</td><td>Escalar — alto retorno, bajo gasto</td><td>$95,511</td><td>19.25:1</td><td>-11.5%</td><td>Escalar con cautela — señal de techo de capacidad</td></tr>
-<tr><td>Email marketing</td><td>Escalar — alto retorno, bajo gasto</td><td>$72,405</td><td>13.01:1</td><td>-12.5%</td><td>Escalar con cautela — señal de techo de capacidad</td></tr>
-<tr><td>SEO / Orgánico</td><td>Escalar — alto retorno, bajo gasto</td><td>$257,358</td><td>7.43:1</td><td>+20.7%</td><td>Escalar agresivamente — mayor prioridad de inversión</td></tr>
-<tr><td>Eventos / Ferias</td><td>Mantener / vigilar</td><td>$371,001</td><td>5.74:1</td><td>-7.1%</td><td>Mantener con vigilancia — retorno sano pero tendencia en enfriamiento</td></tr>
-<tr><td>Google Ads</td><td>Recorte prioritario</td><td>$773,299</td><td>2.01:1</td><td>+2.4%</td><td>Recorte prioritario — sin mejora y por debajo del benchmark</td></tr>
-<tr><td>Meta Ads</td><td>Recorte prioritario</td><td>$696,633</td><td>1.55:1</td><td>+28.2%</td><td>Optimizar y monitorear — mejorando, aún no cruza el benchmark</td></tr>
+        <thead><tr><th>Source</th><th>Dominant issue</th><th>% rows affected</th><th>Associated value (MXN)</th><th>Recommended action</th></tr></thead>
+        <tbody><tr><td>CDMX</td><td>Exact duplicates</td><td>4.0%</td><td>$17,311</td><td>Review the point-of-sale export logic to prevent duplicate resubmissions of the same ticket.</td></tr>
+<tr><td>Monterrey</td><td>Missing data (blank amount)</td><td>3.6%</td><td>~$12,018 (estimated)</td><td>Make amount-field validation mandatory before export; assign an owner with an SLA to clear the queue.</td></tr>
+<tr><td>Guadalajara</td><td>Inconsistent branch name (3 formats)</td><td>0.7%</td><td>N/A</td><td>Consolidate to a single branch catalog in the source system and retire the manual normalization step.</td></tr>
 </tbody>
       </table>
     </div>
-    
+
 
   <div class="charts-grid">
-    
-    <div class="chart-card chart-card-wide">
-      <div class="chart-head">
-        <h3>Matriz de segmentación: gasto vs. retorno por canal (tipo BCG)</h3>
-        <p>Eje X: gasto total 12 meses (línea = mediana) · Eje Y: ratio LTV:CAC (línea = benchmark 3:1)</p>
-      </div>
-      <div class="chart-canvas-wrap">
-        <canvas id="chart_matriz"></canvas>
-      </div>
-    </div>
-    
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Costo de adquisición (CAC) por canal</h3>
-        <p>MXN por cliente nuevo — total de 12 meses</p>
+        <h3>Monthly sales by branch</h3>
+        <p>CDMX and Monterrey swing in opposite directions; the total (thick line) stays stable</p>
       </div>
       <div class="chart-canvas-wrap">
-        <canvas id="chart_cac"></canvas>
+        <canvas id="chart_sucursal_mes"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Ratio LTV:CAC por canal</h3>
-        <p>Benchmark saludable: 3:1</p>
+        <h3>Monday sells 6% above average; Saturday, 11% below</h3>
+        <p>Seasonal index by day of week (100 = quarterly daily average)</p>
       </div>
       <div class="chart-canvas-wrap">
-        <canvas id="chart_ratio"></canvas>
+        <canvas id="chart_estacionalidad"></canvas>
       </div>
     </div>
-    
 
-    <div class="chart-card chart-card-wide">
+
+    <div class="chart-card">
       <div class="chart-head">
-        <h3>Tendencia del CAC mensual (12 meses) — ¿quién mejora y quién empeora?</h3>
-        <p>Referidos (mejor ratio) vs. Meta Ads (en riesgo, vigilar mejora) — resaltados, resto atenuado</p>
+        <h3>Problem rows by source (duplicated or missing amount)</h3>
+        <p>% of rows removed or sent to manual review — the real severity, in dollar terms, is in the table above</p>
       </div>
       <div class="chart-canvas-wrap">
-        <canvas id="chart_tendencia_cac"></canvas>
+        <canvas id="chart_calidad_fuente"></canvas>
       </div>
     </div>
-    
+
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>From 3 raw exports to one single source, without losing data</h3>
+        <p>99% of rows carry a valid amount, and of those, 98% were already unique (not duplicated)</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_pipeline"></canvas>
+      </div>
+    </div>
+
   </div>
 
-  
+
 
   <div class="insights-card">
-    <h3>Lo que dice el dato</h3>
-    <ul class="insights"><li><b>¿Dónde recortar ya?</b> Google Ads y Meta Ads concentran 65% del gasto de 12 meses ($1,469,932 MXN) y están por debajo del benchmark 3:1.</li>
-<li><b>¿Qué canales merecen más presupuesto?</b> Referidos (19.25:1), Email marketing (13.01:1), SEO / Orgánico (7.43:1) tienen los mejores ratios, con solo 19% del gasto combinado.</li>
-<li><b>¿Referidos puede escalar sin límite?</b> No — su CAC +14.6% y sus clientes nuevos -11.5% en 12 meses: señal de techo de capacidad. Escalar con cautela, priorizando el resto de los canales eficientes para el grueso del incremento de presupuesto.</li>
-<li><b>¿Google Ads merece la misma paciencia?</b> No — CAC -3.1% y clientes nuevos +2.4% en 12 meses: sin mejora clara y por debajo del benchmark. Candidato principal a recorte de presupuesto.</li>
-<li><b>¿Hay que abandonar Meta Ads?</b> No todavía — su CAC -10.5% y sus clientes nuevos +28.2% en 12 meses: es un canal de riesgo que está mejorando. Vale la pena seguir optimizando antes de recortar.</li>
-<li><b>¿Cuánto dinero está en juego?</b> $1,469,932 MXN de los últimos 12 meses se fueron a canales que no cubren el retorno mínimo esperado.</li>
-<li><b>¿Eventos / Ferias, con gasto alto, es seguro?</b> Su ratio es sano (5.74:1) pero está enfriándose (clientes nuevos -7.1% en 12 meses) — mantener el presupuesto, vigilar antes de escalarlo más.</li>
-<li><b>¿El problema se está resolviendo solo?</b> No — el % del gasto en canales de riesgo se mantuvo entre 62.2% y 68.3% durante los últimos 12 meses, sin tendencia clara de mejora: requiere una decisión activa de reasignación, no esperar a que se corrija solo.</li></ul>
+    <h3>What the Data Shows</h3>
+    <ul class="insights"><li><b>Q1 · The single source of truth prevents $18,111 MXN in inflated sales</b> (26 duplicate rows across the 3 sources) against a consolidated total of $1,170,834 MXN — this settles the meeting debate over which number is correct.</li>
+<li><b>Q2 · CDMX concentrates the greatest quality risk</b> (exact duplicates, 4.0% of its rows) and accounts for 96% of all duplicate value detected — it is the source to fix first, at the point of origin.</li>
+<li><b>Q3 · $12,018 MXN (estimated) remains unreported</b> in the manual review queue — 12 rows, 100% from Monterrey — because the single source of truth never invents a missing amount; someone has to capture it.</li>
+<li><b>Q4 · No branch declines steadily across the quarter</b>: CDMX dropped in July and recovered in August, Monterrey followed the reverse pattern, and Guadalajara grew for two straight months despite being the smallest.</li>
+<li><b>Q5 · The consolidated total smooths out each branch's swings</b>: while CDMX and Monterrey oscillate ±19-28% month to month in opposite directions, the company total moved only -0.0% and +7.1% — planning off a single branch would have been misleading.</li>
+<li><b>Q6 · A moderate weekly pattern exists</b>: Monday sells 6% above the daily average and Saturday 11% below — use the seasonal index when setting daily targets, not a flat average.</li>
+<li><b>Q7 · No anomalies were detected</b> (&gt;3 standard deviations from the 7-day rolling median) across the quarter's 92 days; daily variability (CV 32%) is normal sales noise, not an isolated event.</li></ul>
   </div>
 
-  
 
-  
 
-  
+
+
+
 
   <footer>
-    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    Synthetic dataset generated for demonstration purposes. Actual service: Data Storytelling Express / Micro Data Office &middot;
     <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
   </footer>
 </div>
@@ -339,16 +335,16 @@ function inkColor(role) {
 function surfaceColor() { return cssVar('--surface'); }
 
 
-    new Chart(document.getElementById('chart_hero_riesgo').getContext('2d'), {
+    new Chart(document.getElementById('chart_hero_trend').getContext('2d'), {
       type: "line",
       data: {
-        labels: ["2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07"],
+        labels: ["Week of Jun 07", "Week of Jun 14", "Week of Jun 21", "Week of Jun 28", "Week of Jul 05", "Week of Jul 12", "Week of Jul 19", "Week of Jul 26", "Week of Aug 02", "Week of Aug 09", "Week of Aug 16", "Week of Aug 23", "Week of Aug 30"],
         datasets: [{
-            label: "% del gasto en canales de riesgo",
-            data: [64.0, 62.9, 63.4, 64.5, 67.2, 63.9, 64.2, 66.1, 62.2, 68.3, 65.2, 66.3],
+            label: "Weekly sales",
+            data: [81211.0, 89438.0, 87678.0, 94173.0, 99684.0, 74366.0, 74455.0, 101782.0, 83838.0, 104765.0, 96999.0, 86669.0, 85638.0],
             valueLabels: null,
-            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
-            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
+            backgroundColor: seriesColor(2, "#163832", "#DCEAE7", 0.12),
+            borderColor: seriesColor(2, "#163832", "#DCEAE7", 1),
             borderWidth: 3,
             borderDash: [],
             borderRadius: 0,
@@ -359,7 +355,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       },
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -380,316 +376,71 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
 
-    (function() {
-      const quadrantLines_chart_matriz = {"x": 314179.33, "y": 3.0};
-      const quadrantLabels_chart_matriz = [{"corner": "top-left", "text": "Escalar — alto retorno, bajo gasto"}, {"corner": "top-right", "text": "Mantener — vigilar tendencia"}, {"corner": "bottom-left", "text": "Optimizar antes de escalar"}, {"corner": "bottom-right", "text": "Recorte prioritario"}];
-      new Chart(document.getElementById('chart_matriz').getContext('2d'), {
-        type: 'scatter',
-        data: { datasets: [{
-            label: "Escalar (bajo gasto, buen retorno)",
-            data: [{"x": 95510.7, "y": 19.25, "label": "Referidos"}, {"x": 72405.1, "y": 13.01, "label": "Email marketing"}, {"x": 257357.51, "y": 7.43, "label": "SEO / Orgánico"}],
-            backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 1),
-            borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
-            pointRadius: 8,
-            pointHoverRadius: 10,
-        },
-{
-            label: "Mantener / vigilar (alto gasto, retorno sano)",
-            data: [{"x": 371001.15, "y": 5.74, "label": "Eventos / Ferias"}],
-            backgroundColor: withAlpha(seriesColorHex("#B8842C", "#B8842C"), 1),
-            borderColor: seriesColorHex("#B8842C", "#B8842C"),
-            pointRadius: 8,
-            pointHoverRadius: 10,
-        },
-{
-            label: "Recorte prioritario (alto gasto, bajo retorno)",
-            data: [{"x": 773298.81, "y": 2.01, "label": "Google Ads"}, {"x": 696633.1900000001, "y": 1.55, "label": "Meta Ads"}],
-            backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 1),
-            borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
-            pointRadius: 8,
-            pointHoverRadius: 10,
-        }] },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: true, position: 'top', align: 'start',
-                       labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
-            tooltip: {
-              backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
-              borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-              callbacks: {
-                label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)}, ${ctx.parsed.y.toFixed(1)}`
-              }
-            }
-          },
-          scales: {
-            x: { title: { display: true, text: "Gasto total (MXN)", color: inkColor('secondary') },
-                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
-            y: { title: { display: true, text: "Ratio LTV:CAC", color: inkColor('secondary') },
-                  grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
-          }
-        },
-        plugins: [{
-          id: 'quadrantOverlay_chart_matriz',
-          afterDraw: (chartInstance) => {
-            const { ctx, chartArea } = chartInstance;
-            if (!chartArea) return;
-            const { left, right, top, bottom } = chartArea;
-            const scales = chartInstance.scales;
-            ctx.save();
-            if (quadrantLines_chart_matriz) {
-              ctx.strokeStyle = withAlpha(inkColor('grid'), 0.55);
-              ctx.setLineDash([4, 4]);
-              ctx.lineWidth = 1;
-              if (quadrantLines_chart_matriz.x !== undefined && quadrantLines_chart_matriz.x !== null) {
-                const xPix = scales.x.getPixelForValue(quadrantLines_chart_matriz.x);
-                ctx.beginPath(); ctx.moveTo(xPix, top); ctx.lineTo(xPix, bottom); ctx.stroke();
-              }
-              if (quadrantLines_chart_matriz.y !== undefined && quadrantLines_chart_matriz.y !== null) {
-                const yPix = scales.y.getPixelForValue(quadrantLines_chart_matriz.y);
-                ctx.beginPath(); ctx.moveTo(left, yPix); ctx.lineTo(right, yPix); ctx.stroke();
-              }
-              ctx.setLineDash([]);
-            }
-            if (quadrantLabels_chart_matriz.length) {
-              ctx.font = '700 10px -apple-system, sans-serif';
-              ctx.fillStyle = withAlpha(inkColor('muted'), 0.95);
-              const pad = 10;
-              quadrantLabels_chart_matriz.forEach((q) => {
-                let x, y, align;
-                if (q.corner === 'top-left') { x = left + pad; y = top + pad + 9; align = 'left'; }
-                else if (q.corner === 'top-right') { x = right - pad; y = top + pad + 9; align = 'right'; }
-                else if (q.corner === 'bottom-left') { x = left + pad; y = bottom - pad; align = 'left'; }
-                else { x = right - pad; y = bottom - pad; align = 'right'; }
-                ctx.textAlign = align;
-                ctx.fillText(q.text, x, y);
-              });
-            }
-            ctx.restore();
-          }
-        }]
-      });
-    })();
-    
 
-    new Chart(document.getElementById('chart_cac').getContext('2d'), {
-      type: "bar",
-      data: {
-        labels: ["Referidos", "Email marketing", "SEO / Orgánico", "Eventos / Ferias", "Google Ads", "Meta Ads"],
-        datasets: [{
-            label: "CAC",
-            data: [373.0, 213.0, 617.0, 2195.0, 1467.0, 1181.0],
-            valueLabels: null,
-            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.85),
-            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
-            borderWidth: 1,
-            borderDash: [],
-            borderRadius: 4,
-            fill: false,
-            tension: 0,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { display: false, position: 'top', align: 'start',
-                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
-          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
-                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('es-MX')}` } }
-        },
-        scales: {
-          y: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
-          x: {
-            stacked: false,
-            grid: { color: inkColor('grid') },
-            ticks: { color: inkColor('muted') },
-            title: { display: true, text: "MXN", color: inkColor('secondary') }
-          }
-        }
-      }
-    });
-    
-
-    new Chart(document.getElementById('chart_ratio').getContext('2d'), {
-      type: "bar",
-      data: {
-        labels: ["Referidos", "Email marketing", "SEO / Orgánico", "Eventos / Ferias", "Google Ads", "Meta Ads"],
-        datasets: [{
-            label: "LTV:CAC",
-            data: [19.25, 13.01, 7.43, 5.74, 2.01, 1.55],
-            valueLabels: null,
-            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.85),
-            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
-            borderWidth: 1,
-            borderDash: [],
-            borderRadius: 4,
-            fill: false,
-            tension: 0,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        }]
-      },
-      plugins: [{
-        id: 'xiaAnnotate_chart_ratio',
-        afterDatasetsDraw(chart) {
-          const { ctx, chartArea, scales } = chart;
-          ctx.save();
-          
-      {
-        const val = 3.0;
-        const horiz = chart.options.indexAxis === 'y';
-        const axisScale = horiz ? scales.x : scales.y;
-        ctx.strokeStyle = inkColor('muted');
-        ctx.setLineDash([5, 4]);
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        if (horiz) {
-          const px = axisScale.getPixelForValue(val);
-          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
-          ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.fillStyle = inkColor('secondary');
-          ctx.font = '600 11px -apple-system, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText("Benchmark 3:1", px, chartArea.top - 8);
-        } else {
-          const py = axisScale.getPixelForValue(val);
-          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
-          ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.fillStyle = inkColor('secondary');
-          ctx.font = '600 11px -apple-system, sans-serif';
-          ctx.textAlign = 'left';
-          ctx.fillText("Benchmark 3:1", chartArea.left + 4, py - 6);
-        }
-      }
-          ctx.restore();
-        }
-      }],
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { display: false, position: 'top', align: 'start',
-                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
-          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
-                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
-        },
-        scales: {
-          y: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
-          x: {
-            stacked: false,
-            grid: { color: inkColor('grid') },
-            ticks: { color: inkColor('muted') },
-            title: { display: false, text: "", color: inkColor('secondary') }
-          }
-        }
-      }
-    });
-    
-
-    new Chart(document.getElementById('chart_tendencia_cac').getContext('2d'), {
+    new Chart(document.getElementById('chart_sucursal_mes').getContext('2d'), {
       type: "line",
       data: {
-        labels: ["2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07"],
+        labels: ["Jun 2026", "Jul 2026", "Aug 2026"],
         datasets: [{
-            label: "Email marketing",
-            data: [187.0, 196.0, 197.0, 183.0, 222.0, 231.0, 199.0, 263.0, 235.0, 215.0, 227.0, 216.0],
+            label: "Consolidated total",
+            data: [381385.0, 381206.0, 408243.0],
             valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        },
-{
-            label: "Eventos / Ferias",
-            data: [2380.0, 2724.0, 1928.0, 2294.0, 2176.0, 2470.0, 1793.0, 2373.0, 2088.0, 2327.0, 1915.0, 2306.0],
-            valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        },
-{
-            label: "Google Ads",
-            data: [1590.0, 1405.0, 1423.0, 1567.0, 1438.0, 1353.0, 1357.0, 1365.0, 1581.0, 1644.0, 1384.0, 1541.0],
-            valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        },
-{
-            label: "Meta Ads",
-            data: [1409.0, 1160.0, 1121.0, 1220.0, 1174.0, 1184.0, 1169.0, 1266.0, 1181.0, 1060.0, 1068.0, 1261.0],
-            valueLabels: null,
-            backgroundColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 0.12),
-            borderColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 1),
+            backgroundColor: seriesColor(5, "#4F6360", "#6E8B86", 0.12),
+            borderColor: seriesColor(5, "#4F6360", "#6E8B86", 1),
             borderWidth: 3,
             borderDash: [],
             borderRadius: 0,
             fill: false,
-            tension: 0.3,
+            tension: 0,
             pointRadius: 4,
             pointHoverRadius: 5,
         },
 {
-            label: "Referidos",
-            data: [310.0, 374.0, 347.0, 353.0, 438.0, 377.0, 464.0, 370.0, 342.0, 373.0, 435.0, 356.0],
+            label: "CDMX",
+            data: [181441.0, 147540.0, 188396.0],
             valueLabels: null,
             backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
             borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
-            borderWidth: 3,
+            borderWidth: 2,
             borderDash: [],
             borderRadius: 0,
             fill: false,
-            tension: 0.3,
-            pointRadius: 4,
+            tension: 0,
+            pointRadius: 3,
             pointHoverRadius: 5,
         },
 {
-            label: "SEO / Orgánico",
-            data: [730.0, 501.0, 644.0, 573.0, 620.0, 560.0, 663.0, 683.0, 645.0, 552.0, 744.0, 613.0],
+            label: "Guadalajara",
+            data: [83486.0, 88379.0, 103021.0],
             valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
+            backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
+            borderColor: seriesColor(1, "#B8842C", "#D4A94F", 1),
+            borderWidth: 2,
+            borderDash: [],
             borderRadius: 0,
             fill: false,
-            tension: 0.3,
-            pointRadius: 0,
+            tension: 0,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Monterrey",
+            data: [116458.0, 145287.0, 116827.0],
+            valueLabels: null,
+            backgroundColor: seriesColor(2, "#163832", "#DCEAE7", 0.12),
+            borderColor: seriesColor(2, "#163832", "#DCEAE7", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0,
+            pointRadius: 3,
             pointHoverRadius: 5,
         }]
       },
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -705,12 +456,235 @@ function surfaceColor() { return cssVar('--surface'); }
             stacked: false,
             grid: { color: inkColor('grid') },
             ticks: { color: inkColor('muted') },
-            title: { display: true, text: "CAC mensual (MXN)", color: inkColor('secondary') }
+            title: { display: true, text: "MXN", color: inkColor('secondary') }
           }
         }
       }
     });
-    
+
+
+    new Chart(document.getElementById('chart_estacionalidad').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        datasets: [{
+            label: "Seasonal index",
+            data: [106.0, 98.8, 105.6, 94.1, 105.3, 88.7, 101.0],
+            valueLabels: null,
+            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.85),
+            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_estacionalidad',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+
+      {
+        const val = 100;
+        const horiz = chart.options.indexAxis === 'y';
+        const axisScale = horiz ? scales.x : scales.y;
+        ctx.strokeStyle = inkColor('muted');
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (horiz) {
+          const px = axisScale.getPixelForValue(val);
+          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Daily average", px, chartArea.top - 8);
+        } else {
+          const py = axisScale.getPixelForValue(val);
+          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '600 11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Daily average", chartArea.left + 4, py - 6);
+        }
+      }
+          ctx.restore();
+        }
+      }],
+      options: {
+
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Index (100 = average)", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+
+
+    (function() {
+      const canvas = document.getElementById('chart_calidad_fuente');
+      const wrap = canvas.parentElement;
+      const labels = ["CDMX", "Monterrey", "Guadalajara"];
+      const values = [4.0, 3.6, 0.7];
+      const maxVal = 10;
+      const colors = ["#B8842C", "#B8842C", "#3E8F72"];
+      const valueSuffix = "%";
+      const defaultColor = { light: "#71A8A3", dark: "#8FC2BC" };
+
+      function roundRect(ctx, x, y, w, h, r) {
+        const rr = Math.max(Math.min(r, h / 2, Math.max(w, 0) / 2), 0);
+        ctx.beginPath();
+        ctx.moveTo(x + rr, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rr);
+        ctx.arcTo(x + w, y + h, x, y + h, rr);
+        ctx.arcTo(x, y + h, x, y, rr);
+        ctx.arcTo(x, y, x + w, y, rr);
+        ctx.closePath();
+      }
+
+      function draw() {
+        const dpr = window.devicePixelRatio || 1;
+        const w = wrap.clientWidth, h = wrap.clientHeight;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+
+        const n = labels.length;
+        const padLeft = Math.min(190, w * 0.34);
+        const padRight = 54;
+        const barAreaW = Math.max(w - padLeft - padRight, 20);
+        const rowH = h / n;
+        const barH = Math.max(Math.min(16, rowH * 0.42), 6);
+
+        for (let i = 0; i < n; i++) {
+          const cy = i * rowH + rowH / 2;
+          const barY = cy - barH / 2;
+          const val = values[i];
+          const pct = Math.max(0, Math.min(val / maxVal, 1));
+          const color = (colors && colors[i]) ? colors[i] : (isDark() ? defaultColor.dark : defaultColor.light);
+
+          ctx.fillStyle = inkColor('primary');
+          ctx.font = '600 12px -apple-system, sans-serif';
+          ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+          ctx.fillText(labels[i], 0, cy);
+
+          ctx.fillStyle = withAlpha(inkColor('muted'), 0.22);
+          roundRect(ctx, padLeft, barY, barAreaW, barH, barH / 2);
+          ctx.fill();
+
+          if (pct > 0) {
+            ctx.fillStyle = color;
+            roundRect(ctx, padLeft, barY, barAreaW * pct, barH, barH / 2);
+            ctx.fill();
+          }
+
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '700 12px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(`${val.toFixed(1)}${valueSuffix}`, padLeft + barAreaW + 8, cy);
+        }
+      }
+
+      draw();
+      window.addEventListener('resize', draw);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+      new ResizeObserver(draw).observe(wrap);
+    })();
+
+
+    new Chart(document.getElementById('chart_pipeline').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["Raw rows", "With valid amount", "Single source"],
+        datasets: [{
+            label: "Rows",
+            data: [1211, 1199, 1173],
+            valueLabels: ["1,211", "1,199", "1,173"],
+            backgroundColor: ["#9CB8B4", "#9CB8B4", "#3E8F72"],
+            borderColor: ["#9CB8B4", "#9CB8B4", "#3E8F72"],
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      plugins: [{
+        id: 'xiaAnnotate_chart_pipeline',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+
+      chart.data.datasets.forEach((dataset, di) => {
+        if (!dataset.valueLabels) return;
+        const meta = chart.getDatasetMeta(di);
+        const horiz = chart.options.indexAxis === 'y';
+        meta.data.forEach((el, i) => {
+          const vl = dataset.valueLabels[i];
+          if (vl === undefined) return;
+          ctx.fillStyle = inkColor('primary');
+          ctx.font = '600 12px -apple-system, sans-serif';
+          if (horiz) {
+            ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            ctx.fillText(vl, el.x + 8, el.y);
+          } else {
+            ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+            ctx.fillText(vl, el.x, el.y - 6);
+          }
+        });
+      });
+          ctx.restore();
+        }
+      }],
+      options: {
+
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Rows", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+
 </script>
 </body>
 </html>

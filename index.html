@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>XIA Insights × Analytics — Portafolio</title>
-<meta name="description" content="13 proyectos de demostración: datos, análisis y dashboards interactivos que muestran lo que un equipo de datos a demanda resuelve en semanas.">
+<title>XIA Insights × Analytics — Portfolio</title>
+<meta name="description" content="13 demo projects: data, analysis, and interactive dashboards showing what an on-demand data team solves in weeks.">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-3MS4PTZN8Q"></script>
 <script>
@@ -70,7 +70,9 @@
   .brand { display:flex; align-items:center; justify-content: space-between; gap:10px; margin-bottom:28px; flex-wrap: wrap; }
   .brand-left { display:flex; align-items:center; gap:10px; }
   .brand .mark { width:28px; height:28px; border-radius:7px; background: var(--brand-ink);
-                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px; }
+                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px;
+                  overflow: hidden; }
+  .brand .mark img { width:100%; height:100%; object-fit: cover; display:block; }
   .brand span { color: var(--text-muted); font-size:13px; letter-spacing: .04em; text-transform: uppercase; }
   .lang-toggle {
     font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
@@ -158,7 +160,7 @@
 <div class="wrap">
 
   <div class="brand">
-    <div class="brand-left"><div class="mark">X</div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
+    <div class="brand-left"><div class="mark"><img src="assets/xia-logo.png" alt="XIA logo"></div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
     <button class="lang-toggle" id="langToggle" type="button"></button>
   </div>
 
@@ -234,8 +236,8 @@
     { num: "08", slug: "08-flujo-caja-cartera", title: "Flujo de Caja y Cartera Vencida", title_en: "Cash Flow & Overdue Receivables", service: "express", category: "analysis", blurb: "Cuánto de la cartera es cobrable de verdad en las próximas 4 semanas.", blurb_en: "How much of the receivables is actually collectible in the next 4 weeks.", img: "assets/dashboard_preview.png" },
     { num: "09", slug: "09-roi-marketing-canal", title: "ROI de Marketing: CAC vs. LTV por Canal", title_en: "Marketing ROI: CAC vs. LTV by Channel", service: "express", category: "analysis", blurb: "Qué canal escalar y cuál replantear, más allá del gasto.", blurb_en: "Which channel to scale and which to rethink, beyond ad spend.", img: "assets/dashboard_preview.png" },
     { num: "10", slug: "10-reporte-ejecutivo-mensual", title: "Reporte Ejecutivo Mensual", title_en: "Monthly Executive Report", service: "express", category: "analysis", blurb: "El entregable insignia: qué pasó, por qué, y qué hacer — en una sesión de 15 min.", blurb_en: "The flagship deliverable: what happened, why, and what to do — in a 15-minute session.", img: "assets/dashboard_preview.png" },
-    { num: "11", slug: "11-consolidacion-fuente-verdad", title: "Consolidación de Datos Dispersos", service: "office", category: "foundation", blurb: "Tres Excels de tres sucursales, un solo número correcto.", img: "assets/dashboard_preview.png" },
-    { num: "12", slug: "12-nps-causa-raiz", title: "NPS y Análisis de Causa Raíz", service: "express", category: "analysis", blurb: "De “el NPS bajó” a “sabemos exactamente qué corregir”.", img: "assets/dashboard_preview.png" },
+    { num: "11", slug: "11-consolidacion-fuente-verdad", title: "Consolidación de Datos Dispersos", title_en: "Consolidating Scattered Data", service: "office", category: "foundation", blurb: "Tres Excels de tres sucursales, un solo número correcto.", blurb_en: "Three spreadsheets from three branches, one correct number.", img: "assets/dashboard_preview.png" },
+    { num: "12", slug: "12-nps-causa-raiz", title: "NPS y Análisis de Causa Raíz", title_en: "NPS & Root Cause Analysis", service: "express", category: "analysis", blurb: "De “el NPS bajó” a “sabemos exactamente qué corregir”.", blurb_en: "From “NPS dropped” to “we know exactly what to fix”.", img: "assets/dashboard_preview.png" },
     { num: "13", slug: "13-data-health-check", title: "Data Health Check: Auditoría de Calidad de Datos", title_en: "Data Health Check: Data Quality Audit", service: "office", category: "foundation", blurb: "Un score de calidad por tabla y el plan de qué corregir primero — y por qué.", blurb_en: "A quality score per table and the plan for what to fix first — and why.", img: "assets/dashboard_preview.png" },
   ];
 
@@ -285,15 +287,6 @@
     },
   };
 
-  function detectDefaultLang() {
-    const langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || "es"];
-    for (const l of langs) {
-      const base = l.slice(0, 2).toLowerCase();
-      if (base === "es" || base === "en") return base;
-    }
-    return "es";
-  }
-
   function getStoredLang() {
     try { return localStorage.getItem("xia-lang"); } catch (e) { return null; }
   }
@@ -302,7 +295,7 @@
     try { localStorage.setItem("xia-lang", lang); } catch (e) { /* private mode / storage disabled */ }
   }
 
-  let currentLang = getStoredLang() || detectDefaultLang();
+  let currentLang = getStoredLang() || "en";
 
   function applyStaticI18n(lang) {
     const t = I18N[lang];
@@ -334,7 +327,8 @@
       const blurb = currentLang === "en" ? p.blurb_en : p.blurb;
       const a = document.createElement("a");
       a.className = "card";
-      a.href = `projects/${p.slug}/dashboard.html`;
+      const dashboardFile = currentLang === "en" ? "dashboard.en.html" : "dashboard.html";
+      a.href = `projects/${p.slug}/${dashboardFile}`;
       a.innerHTML = `
         <div class="thumb">
           <img src="projects/${p.slug}/${p.img}" alt="${t.previewAlt(title)}" loading="lazy">
