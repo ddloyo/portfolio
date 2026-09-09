@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>XIA · ROI de Marketing: CAC vs. LTV por Canal</title>
+<title>XIA · Cash Flow and Overdue Receivables</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -134,12 +134,11 @@
   .explorer-chart-card .chart-head p { margin: 0 0 10px; color: var(--text-muted); font-size: 12px; }
   @media (max-width: 760px) { .explorer-grid { grid-template-columns: 1fr; } }
   .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 26px; }
-  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; min-width: 0; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
   .chart-card-wide { grid-column: 1 / -1; }
   .chart-head h3 { margin: 0 0 2px; font-size: 15px; }
   .chart-head p { margin: 0 0 12px; color: var(--text-muted); font-size: 12.5px; }
-  .chart-canvas-wrap { position: relative; height: 280px; overflow: hidden; }
-  .chart-canvas-wrap canvas { max-width: 100%; }
+  .chart-canvas-wrap { position: relative; height: 280px; }
   .section-label { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; }
   .drilldown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 26px; }
   .drilldown-grid .chart-card { padding: 14px 16px; }
@@ -150,9 +149,9 @@
   .insights-card h3 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
   ul.insights { margin: 0; padding-left: 18px; color: var(--text-secondary); line-height: 1.65; font-size: 14.5px; }
   ul.insights li::marker { color: var(--accent); }
-  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 22px; overflow-x: auto; }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 22px; }
   .table-wrap summary { cursor: pointer; color: var(--text-secondary); font-size: 13.5px; font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; min-width: 560px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
   th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
   th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
   footer { color: var(--text-muted); font-size: 12px; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 16px; }
@@ -163,153 +162,157 @@
 <div class="wrap">
   <div class="brand"><div class="mark"><img src="../../assets/xia-logo.png" alt="XIA logo"></div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
   <header class="page-head">
-    <div class="tag">Proyecto 09 · Portafolio de demostración</div>
-    <h1>ROI de Marketing: CAC vs. LTV por Canal</h1>
-    <p class="tagline">No todos los pesos de marketing valen lo mismo — saber qué canal escalar y cuál replantear.</p>
+    <div class="tag">Project 08 · Demo Portfolio</div>
+    <h1>Cash Flow and Overdue Receivables</h1>
+    <p class="tagline">Not "how much is outstanding," but who that money depends on and what action to take with each of them this week.</p>
   </header>
 
-  
+
     <div class="minto-banner">
-      <p class="minto-label">La respuesta primero</p>
-      <h2>65% del presupuesto de marketing (Google Ads y Meta Ads) no cubre el benchmark de retorno 3:1 — mientras los canales más eficientes reciben apenas 19% del gasto.</h2>
-      <p class="minto-sub">Recomendación para el próximo trimestre: mover presupuesto de Google Ads (el de peor tendencia entre los canales de riesgo) hacia Email marketing y SEO / Orgánico (mejores ratios, con capacidad de crecer); mantener Meta Ads en optimización porque su tendencia mejora; escalar Referidos con cautela — ya muestra señales de techo de capacidad.</p>
+      <p class="minto-label">The Answer First</p>
+      <h2>$1,392,332 MXN (86.4%) of receivables are overdue, and 78.5% of everything outstanding depends on just 2 clients with a payment history of 100+ days.</h2>
+      <p class="minto-sub">The consolidated DSO (36.4 days) masks the fact that the Delinquent segment takes an average of 102 days to pay — nearly 2.8x the overall average. This isn't a vague future cash-flow problem: it's risk concentration in identifiable clients, each requiring a distinct action this week.</p>
     </div>
-    
 
-  <div class="top-row">
-    
-    <div class="hero-widget">
-      <div class="kpi-label">% del gasto en canales por debajo del benchmark 3:1</div>
-      <div class="kpi-value hero-value">64.9%</div>
-      <span class="kpi-badge kpi-critical">Riesgo estructural</span>
-      <div class="hero-chart-wrap">
-        <canvas id="chart_hero_riesgo"></canvas>
-      </div>
-    </div>
-    <div class="kpi-grid-5">
-      
-        <div class="kpi-card">
-          <div class="kpi-label">Inversión total (12 meses)</div>
-          <div class="kpi-value">$2,266,206 MXN</div>
-          
-          
-        </div>
 
-        <div class="kpi-card">
-          <div class="kpi-label">Clientes nuevos totales</div>
-          <div class="kpi-value">2,299</div>
-          
-          
-        </div>
+  <div class="kpi-row">
 
-        <div class="kpi-card">
-          <div class="kpi-label">Mejor canal (LTV:CAC)</div>
-          <div class="kpi-value">Referidos (19.25:1)</div>
-          
-          <span class="kpi-badge kpi-good">good</span>
-        </div>
+        <div class="kpi-card kpi-hero">
+          <div class="kpi-label">Overdue Receivables</div>
+          <div class="kpi-value">$1,392,332 MXN (86.4%)</div>
 
-        <div class="kpi-card">
-          <div class="kpi-label">Peor canal (LTV:CAC)</div>
-          <div class="kpi-value">Meta Ads (1.55:1)</div>
-          
           <span class="kpi-badge kpi-critical">critical</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Referidos: clientes nuevos (12 meses)</div>
-          <div class="kpi-value">-12%</div>
-          <div class="kpi-delta delta-down">&darr; techo de capacidad</div>
-          <span class="kpi-badge kpi-warning">warning</span>
+          <div class="kpi-label">Consolidated DSO vs. Delinquent</div>
+          <div class="kpi-value">36.4 days / 102 days</div>
+
+          <span class="kpi-badge kpi-critical">critical</span>
         </div>
-    </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Top-2 Client Concentration</div>
+          <div class="kpi-value">78.5% of outstanding receivables</div>
+
+          <span class="kpi-badge kpi-critical">critical</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Projected Collections (4 Weeks)</div>
+          <div class="kpi-value">$1,246,130 MXN</div>
+
+
+        </div>
   </div>
 
-  
+
     <div class="table-wrap table-wrap-open">
-      <p class="section-label">Segmentación y recomendación por canal</p>
+      <p class="section-label">Outstanding Receivables and DSO by Client Segment</p>
       <table>
-        <thead><tr><th>Canal</th><th>Segmento</th><th>Gasto total</th><th>Ratio LTV:CAC</th><th>Clientes nuevos (12m)</th><th>Recomendación</th></tr></thead>
-        <tbody><tr><td>Referidos</td><td>Escalar — alto retorno, bajo gasto</td><td>$95,511</td><td>19.25:1</td><td>-11.5%</td><td>Escalar con cautela — señal de techo de capacidad</td></tr>
-<tr><td>Email marketing</td><td>Escalar — alto retorno, bajo gasto</td><td>$72,405</td><td>13.01:1</td><td>-12.5%</td><td>Escalar con cautela — señal de techo de capacidad</td></tr>
-<tr><td>SEO / Orgánico</td><td>Escalar — alto retorno, bajo gasto</td><td>$257,358</td><td>7.43:1</td><td>+20.7%</td><td>Escalar agresivamente — mayor prioridad de inversión</td></tr>
-<tr><td>Eventos / Ferias</td><td>Mantener / vigilar</td><td>$371,001</td><td>5.74:1</td><td>-7.1%</td><td>Mantener con vigilancia — retorno sano pero tendencia en enfriamiento</td></tr>
-<tr><td>Google Ads</td><td>Recorte prioritario</td><td>$773,299</td><td>2.01:1</td><td>+2.4%</td><td>Recorte prioritario — sin mejora y por debajo del benchmark</td></tr>
-<tr><td>Meta Ads</td><td>Recorte prioritario</td><td>$696,633</td><td>1.55:1</td><td>+28.2%</td><td>Optimizar y monitorear — mejorando, aún no cruza el benchmark</td></tr>
+        <thead><tr><th>Segment</th><th>Clients</th><th>Avg. Days to Pay</th><th>Outstanding Receivables</th><th>% of Total</th><th>DSO (Days)</th></tr></thead>
+        <tbody><tr><td>On-Time</td><td>3</td><td>10 days</td><td>$0</td><td>0.0%</td><td>N/A</td></tr>
+<tr><td>Slow-Pay</td><td>3</td><td>49 days</td><td>$422,422</td><td>26.2%</td><td>32.7</td></tr>
+<tr><td>Delinquent</td><td>2</td><td>103 days</td><td>$1,189,799</td><td>73.8%</td><td>102.1</td></tr>
 </tbody>
       </table>
     </div>
-    
+
 
   <div class="charts-grid">
-    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Receivables Aging (AR Aging)</h3>
+        <p>Outstanding amount by days-overdue range</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_aging"></canvas>
+      </div>
+    </div>
+
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>100% of outstanding receivables sit in 2 of 3 segments</h3>
+        <p>Outstanding receivables by payment-behavior segment</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_segmento"></canvas>
+      </div>
+    </div>
+
+
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
-        <h3>Matriz de segmentación: gasto vs. retorno por canal (tipo BCG)</h3>
-        <p>Eje X: gasto total 12 meses (línea = mediana) · Eje Y: ratio LTV:CAC (línea = benchmark 3:1)</p>
+        <h3>Who is large and also slow to pay — the real collections priority</h3>
+        <p>Client's historical billing (size) vs. average days to pay (behavior)</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_matriz"></canvas>
       </div>
     </div>
-    
 
-    <div class="chart-card">
-      <div class="chart-head">
-        <h3>Costo de adquisición (CAC) por canal</h3>
-        <p>MXN por cliente nuevo — total de 12 meses</p>
-      </div>
-      <div class="chart-canvas-wrap">
-        <canvas id="chart_cac"></canvas>
-      </div>
-    </div>
-    
-
-    <div class="chart-card">
-      <div class="chart-head">
-        <h3>Ratio LTV:CAC por canal</h3>
-        <p>Benchmark saludable: 3:1</p>
-      </div>
-      <div class="chart-canvas-wrap">
-        <canvas id="chart_ratio"></canvas>
-      </div>
-    </div>
-    
 
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
-        <h3>Tendencia del CAC mensual (12 meses) — ¿quién mejora y quién empeora?</h3>
-        <p>Referidos (mejor ratio) vs. Meta Ads (en riesgo, vigilar mejora) — resaltados, resto atenuado</p>
+        <h3>Monthly collections are growing, but risk concentration hasn't changed</h3>
+        <p>Billing vs. monthly collections — the latest month is incomplete (as of today)</p>
       </div>
       <div class="chart-canvas-wrap">
-        <canvas id="chart_tendencia_cac"></canvas>
+        <canvas id="chart_mensual"></canvas>
       </div>
     </div>
-    
+
+
+    <div class="chart-card chart-card-wide">
+      <div class="chart-head">
+        <h3>Projected collections (4 weeks): who each week depends on</h3>
+        <p>On-Time contributes nothing to the forecast — it has no outstanding receivables left</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_forecast"></canvas>
+      </div>
+    </div>
+
   </div>
 
-  
+
 
   <div class="insights-card">
-    <h3>Lo que dice el dato</h3>
-    <ul class="insights"><li><b>¿Dónde recortar ya?</b> Google Ads y Meta Ads concentran 65% del gasto de 12 meses ($1,469,932 MXN) y están por debajo del benchmark 3:1.</li>
-<li><b>¿Qué canales merecen más presupuesto?</b> Referidos (19.25:1), Email marketing (13.01:1), SEO / Orgánico (7.43:1) tienen los mejores ratios, con solo 19% del gasto combinado.</li>
-<li><b>¿Referidos puede escalar sin límite?</b> No — su CAC +14.6% y sus clientes nuevos -11.5% en 12 meses: señal de techo de capacidad. Escalar con cautela, priorizando el resto de los canales eficientes para el grueso del incremento de presupuesto.</li>
-<li><b>¿Google Ads merece la misma paciencia?</b> No — CAC -3.1% y clientes nuevos +2.4% en 12 meses: sin mejora clara y por debajo del benchmark. Candidato principal a recorte de presupuesto.</li>
-<li><b>¿Hay que abandonar Meta Ads?</b> No todavía — su CAC -10.5% y sus clientes nuevos +28.2% en 12 meses: es un canal de riesgo que está mejorando. Vale la pena seguir optimizando antes de recortar.</li>
-<li><b>¿Cuánto dinero está en juego?</b> $1,469,932 MXN de los últimos 12 meses se fueron a canales que no cubren el retorno mínimo esperado.</li>
-<li><b>¿Eventos / Ferias, con gasto alto, es seguro?</b> Su ratio es sano (5.74:1) pero está enfriándose (clientes nuevos -7.1% en 12 meses) — mantener el presupuesto, vigilar antes de escalarlo más.</li>
-<li><b>¿El problema se está resolviendo solo?</b> No — el % del gasto en canales de riesgo se mantuvo entre 62.2% y 68.3% durante los últimos 12 meses, sin tendencia clara de mejora: requiere una decisión activa de reasignación, no esperar a que se corrija solo.</li></ul>
+    <h3>What the Data Shows</h3>
+    <ul class="insights"><li><b>$1,264,998 MXN (78.5%)</b> of outstanding receivables sits with just 2 clients — Importadora Tres Ríos and Servicios Integrales Roble, both in the Delinquent segment. Cash-flow risk isn't diversified: it's concentrated, and it should be managed with dedicated follow-up on those 2 clients, not a generic collections campaign.</li>
+<li>The consolidated DSO (<b>36.4 days</b>) masks the fact that the Delinquent segment takes an average of <b>102 days</b> to pay — almost 3 times longer. Reporting only the consolidated DSO understates the real risk; DSO by segment should be the number tracked month to month.</li>
+<li>The 3 clients in the On-Time segment (Grupo Ferretero del Bajío, Distribuidora Maple, Grupo Industrial Norte) don't have a single peso outstanding today — 100% of receivables sit in the Slow-Pay and Delinquent segments. Collections effort should concentrate there, not be spread evenly across all 8 clients.</li>
+<li>The aging-based collections curve projects that much of the Delinquent receivables will be collected in the next 4 weeks — but that curve is generic and doesn't use the actual history of these clients, who have taken 100+ days to pay in the past. For the Delinquent segment, that projection should be read as the optimistic scenario, not the expected one.</li>
+<li>Monthly collections grew from $398,170 MXN in 2026-03 to $1,117,124 MXN in the latest complete month — a seemingly healthy trend, but the risk concentration in 2 clients hasn't changed along with it. Aggregate collections improving doesn't mean receivables risk has gone down.</li>
+<li>Of the 5 clients with overdue invoices today, the 2 in the Delinquent segment account for <b>85%</b> of the overdue amount and require the most urgent action (freeze new credit + payment plan), not just a collections call — see this week's checklist.</li>
+<li>Credit policy recommendation: require an advance payment or reduce the credit limit for any client that falls into the Delinquent profile (more than 70 days average historical payment time) before they accumulate more overdue receivables — otherwise, risk concentration will keep growing with every new credit sale to those clients.</li></ul>
   </div>
 
-  
 
-  
 
-  
+
+    <div class="checklist-card">
+      <h3>Collections Checklist — Clients with Overdue Invoices Today</h3>
+      <p class="checklist-sub">5 clients with genuinely overdue receivables, with the recommended action based on their segment. Check each one off as you handle it.</p>
+      <div class="checklist-progress">
+        <div class="progress-bar"><div class="progress-fill" id="cobranza_semana-fill" style="width:0%"></div></div>
+        <span id="cobranza_semana-count">0 / 5 handled</span>
+      </div>
+      <div class="checklist-table-wrap">
+        <table class="checklist-table">
+          <thead><tr><th></th><th>Client</th><th>Segment</th><th>Overdue Amount</th><th>Days Overdue (avg.)</th><th>Recommended Action</th></tr></thead>
+          <tbody><tr data-row="Importadora Tres Ríos"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="cobranza_semana" data-row="Importadora Tres Ríos"></td><td>Importadora Tres Ríos</td><td>Delinquent</td><td>$969,501</td><td>39 days</td><td>Freeze new credit + payment plan</td></tr><tr data-row="Servicios Integrales Roble"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="cobranza_semana" data-row="Servicios Integrales Roble"></td><td>Servicios Integrales Roble</td><td>Delinquent</td><td>$220,299</td><td>37 days</td><td>Freeze new credit + payment plan</td></tr><tr data-row="Constructora del Valle"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="cobranza_semana" data-row="Constructora del Valle"></td><td>Constructora del Valle</td><td>Slow-Pay</td><td>$107,345</td><td>3 days</td><td>Automated payment reminder</td></tr><tr data-row="Comercial Alfa y Omega"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="cobranza_semana" data-row="Comercial Alfa y Omega"></td><td>Comercial Alfa y Omega</td><td>Slow-Pay</td><td>$52,003</td><td>16 days</td><td>Collections call this week</td></tr><tr data-row="Refaccionaria Central"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="cobranza_semana" data-row="Refaccionaria Central"></td><td>Refaccionaria Central</td><td>Slow-Pay</td><td>$43,185</td><td>7 days</td><td>Automated payment reminder</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+
+
 
   <footer>
-    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    Synthetic dataset generated for demonstration purposes. Real service: Data Storytelling Express / Micro Data Office &middot;
     <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
   </footer>
 </div>
@@ -339,27 +342,60 @@ function inkColor(role) {
 function surfaceColor() { return cssVar('--surface'); }
 
 
-    new Chart(document.getElementById('chart_hero_riesgo').getContext('2d'), {
-      type: "line",
+    (function() {
+      const scopeId = "cobranza_semana";
+      const total = 5;
+      const storageKey = 'xia_checklist_' + scopeId;
+      let state = {};
+      try { state = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (e) {}
+      const boxes = document.querySelectorAll(`input.xia-check[data-scope="${scopeId}"]`);
+      function updateProgress() {
+        const checked = document.querySelectorAll(`input.xia-check[data-scope="${scopeId}"]:checked`).length;
+        const fill = document.getElementById(scopeId + '-fill');
+        const count = document.getElementById(scopeId + '-count');
+        if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
+        if (count) count.textContent = `${checked} / ${total} ${"handled"}`;
+      }
+      boxes.forEach((b) => {
+        const rowId = b.dataset.row;
+        if (state[rowId]) {
+          b.checked = true;
+          const tr = b.closest('tr');
+          if (tr) tr.classList.add('done');
+        }
+        b.addEventListener('change', () => {
+          state[rowId] = b.checked;
+          try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch (e) {}
+          const tr = b.closest('tr');
+          if (tr) tr.classList.toggle('done', b.checked);
+          updateProgress();
+        });
+      });
+      updateProgress();
+    })();
+
+
+    new Chart(document.getElementById('chart_aging').getContext('2d'), {
+      type: "bar",
       data: {
-        labels: ["2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07"],
+        labels: ["Current (not yet due)", "1-30 days", "31-60 days", "61-90 days", "90+ days"],
         datasets: [{
-            label: "% del gasto en canales de riesgo",
-            data: [64.0, 62.9, 63.4, 64.5, 67.2, 63.9, 64.2, 66.1, 62.2, 68.3, 65.2, 66.3],
+            label: "Outstanding Amount",
+            data: [219889.0, 869148.0, 382500.0, 140684.0, 0.0],
             valueLabels: null,
-            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
+            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.85),
             borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
-            borderWidth: 3,
+            borderWidth: 1,
             borderDash: [],
-            borderRadius: 0,
+            borderRadius: 4,
             fill: false,
-            tension: 0.3,
-            pointRadius: 4,
+            tension: 0,
+            pointRadius: 0,
             pointHoverRadius: 5,
         }]
       },
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -375,38 +411,81 @@ function surfaceColor() { return cssVar('--surface'); }
             stacked: false,
             grid: { color: inkColor('grid') },
             ticks: { color: inkColor('muted') },
-            title: { display: false, text: "", color: inkColor('secondary') }
+            title: { display: true, text: "MXN", color: inkColor('secondary') }
           }
         }
       }
     });
-    
+
+
+    new Chart(document.getElementById('chart_segmento').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["On-Time", "Slow-Pay", "Delinquent"],
+        datasets: [{
+            label: "Outstanding Receivables",
+            data: [0.0, 422422.0, 1189799.0],
+            valueLabels: null,
+            backgroundColor: ["#3E8F72", "#B8842C", "#d03b3b"],
+            borderColor: ["#3E8F72", "#B8842C", "#d03b3b"],
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "MXN", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+
 
     (function() {
-      const quadrantLines_chart_matriz = {"x": 314179.33, "y": 3.0};
-      const quadrantLabels_chart_matriz = [{"corner": "top-left", "text": "Escalar — alto retorno, bajo gasto"}, {"corner": "top-right", "text": "Mantener — vigilar tendencia"}, {"corner": "bottom-left", "text": "Optimizar antes de escalar"}, {"corner": "bottom-right", "text": "Recorte prioritario"}];
+      const quadrantLines_chart_matriz = {"x": 837199.59, "y": 20.0};
+      const quadrantLabels_chart_matriz = [{"corner": "top-left", "text": "SMALL + SLOW (MONITOR)"}, {"corner": "top-right", "text": "LARGE + SLOW (PRIORITY)"}, {"corner": "bottom-left", "text": "SMALL + ON-TIME"}, {"corner": "bottom-right", "text": "LARGE + ON-TIME (ANCHOR)"}];
       new Chart(document.getElementById('chart_matriz').getContext('2d'), {
         type: 'scatter',
         data: { datasets: [{
-            label: "Escalar (bajo gasto, buen retorno)",
-            data: [{"x": 95510.7, "y": 19.25, "label": "Referidos"}, {"x": 72405.1, "y": 13.01, "label": "Email marketing"}, {"x": 257357.51, "y": 7.43, "label": "SEO / Orgánico"}],
-            backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 1),
-            borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
-            pointRadius: 8,
-            pointHoverRadius: 10,
-        },
-{
-            label: "Mantener / vigilar (alto gasto, retorno sano)",
-            data: [{"x": 371001.15, "y": 5.74, "label": "Eventos / Ferias"}],
-            backgroundColor: withAlpha(seriesColorHex("#B8842C", "#B8842C"), 1),
+            label: "Slow-Pay",
+            data: [{"x": 706143.66, "y": 47.2, "label": "Comercial Alfa y Omega (Slow-Pay)"}, {"x": 850227.26, "y": 54.6, "label": "Constructora del Valle (Slow-Pay)"}, {"x": 310543.58, "y": 45.5, "label": "Refaccionaria Central (Slow-Pay)"}],
+            backgroundColor: withAlpha(seriesColorHex("#B8842C", "#B8842C"), 0.8),
             borderColor: seriesColorHex("#B8842C", "#B8842C"),
             pointRadius: 8,
             pointHoverRadius: 10,
         },
 {
-            label: "Recorte prioritario (alto gasto, bajo retorno)",
-            data: [{"x": 773298.81, "y": 2.01, "label": "Google Ads"}, {"x": 696633.1900000001, "y": 1.55, "label": "Meta Ads"}],
-            backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 1),
+            label: "On-Time",
+            data: [{"x": 824171.92, "y": 9.8, "label": "Distribuidora Maple (On-Time)"}, {"x": 1104647.5, "y": 9.4, "label": "Grupo Ferretero del Bajío (On-Time)"}, {"x": 1572842.8, "y": 10.2, "label": "Grupo Industrial Norte (On-Time)"}],
+            backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 0.8),
+            borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
+            pointRadius: 8,
+            pointHoverRadius: 10,
+        },
+{
+            label: "Delinquent",
+            data: [{"x": 1134504.36, "y": 100.0, "label": "Importadora Tres Ríos (Delinquent)"}, {"x": 604901.81, "y": 106.5, "label": "Servicios Integrales Roble (Delinquent)"}],
+            backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 0.8),
             borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
             pointRadius: 8,
             pointHoverRadius: 10,
@@ -421,14 +500,14 @@ function surfaceColor() { return cssVar('--surface'); }
               backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
               borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
               callbacks: {
-                label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)}, ${ctx.parsed.y.toFixed(1)}`
+                label: (ctx) => `${ctx.raw.label}: ${ctx.parsed.x.toFixed(1)} MXN, ${ctx.parsed.y.toFixed(1)} days`
               }
             }
           },
           scales: {
-            x: { title: { display: true, text: "Gasto total (MXN)", color: inkColor('secondary') },
+            x: { title: { display: true, text: "Historical Billing (MXN)", color: inkColor('secondary') },
                   grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
-            y: { title: { display: true, text: "Ratio LTV:CAC", color: inkColor('secondary') },
+            y: { title: { display: true, text: "Average Days to Pay", color: inkColor('secondary') },
                   grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
           }
         },
@@ -473,223 +552,66 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       });
     })();
-    
 
-    new Chart(document.getElementById('chart_cac').getContext('2d'), {
-      type: "bar",
+
+    new Chart(document.getElementById('chart_mensual').getContext('2d'), {
+      type: "line",
       data: {
-        labels: ["Referidos", "Email marketing", "SEO / Orgánico", "Eventos / Ferias", "Google Ads", "Meta Ads"],
+        labels: ["2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "CAC",
-            data: [373.0, 213.0, 617.0, 2195.0, 1467.0, 1181.0],
+            label: "Billing",
+            data: [1301598.0, 831280.0, 992627.0, 1362904.0, 1668509.0, 951064.0],
             valueLabels: null,
-            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.85),
+            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
             borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
-            borderWidth: 1,
+            borderWidth: 2,
             borderDash: [],
-            borderRadius: 4,
+            borderRadius: 0,
             fill: false,
-            tension: 0,
-            pointRadius: 0,
+            tension: 0.3,
+            pointRadius: 3,
             pointHoverRadius: 5,
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { display: false, position: 'top', align: 'start',
-                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
-          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
-                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('es-MX')}` } }
         },
-        scales: {
-          y: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
-          x: {
-            stacked: false,
-            grid: { color: inkColor('grid') },
-            ticks: { color: inkColor('muted') },
-            title: { display: true, text: "MXN", color: inkColor('secondary') }
-          }
-        }
-      }
-    });
-    
-
-    new Chart(document.getElementById('chart_ratio').getContext('2d'), {
-      type: "bar",
-      data: {
-        labels: ["Referidos", "Email marketing", "SEO / Orgánico", "Eventos / Ferias", "Google Ads", "Meta Ads"],
-        datasets: [{
-            label: "LTV:CAC",
-            data: [19.25, 13.01, 7.43, 5.74, 2.01, 1.55],
+{
+            label: "Collections",
+            data: [398170.0, 708970.0, 528871.0, 1116085.0, 1117124.0, 1626543.0],
             valueLabels: null,
-            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.85),
-            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
-            borderWidth: 1,
+            backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
+            borderColor: seriesColor(1, "#B8842C", "#D4A94F", 1),
+            borderWidth: 2,
             borderDash: [],
-            borderRadius: 4,
+            borderRadius: 0,
             fill: false,
-            tension: 0,
-            pointRadius: 0,
+            tension: 0.3,
+            pointRadius: 3,
             pointHoverRadius: 5,
         }]
       },
       plugins: [{
-        id: 'xiaAnnotate_chart_ratio',
+        id: 'xiaAnnotate_chart_mensual',
         afterDatasetsDraw(chart) {
           const { ctx, chartArea, scales } = chart;
           ctx.save();
-          
+
       {
-        const val = 3.0;
-        const horiz = chart.options.indexAxis === 'y';
-        const axisScale = horiz ? scales.x : scales.y;
-        ctx.strokeStyle = inkColor('muted');
-        ctx.setLineDash([5, 4]);
-        ctx.lineWidth = 1.5;
+        const px = scales.x.getPixelForValue(5);
+        ctx.strokeStyle = withAlpha(inkColor('muted'), 0.7);
+        ctx.setLineDash([3, 3]);
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        if (horiz) {
-          const px = axisScale.getPixelForValue(val);
-          ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
-          ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.fillStyle = inkColor('secondary');
-          ctx.font = '600 11px -apple-system, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText("Benchmark 3:1", px, chartArea.top - 8);
-        } else {
-          const py = axisScale.getPixelForValue(val);
-          ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py);
-          ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.fillStyle = inkColor('secondary');
-          ctx.font = '600 11px -apple-system, sans-serif';
-          ctx.textAlign = 'left';
-          ctx.fillText("Benchmark 3:1", chartArea.left + 4, py - 6);
-        }
+        ctx.moveTo(px, chartArea.top); ctx.lineTo(px, chartArea.bottom);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = inkColor('secondary');
+        ctx.font = '600 11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText("Current month (incomplete)", px, chartArea.top + 12);
       }
           ctx.restore();
         }
       }],
       options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { display: false, position: 'top', align: 'start',
-                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
-          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
-                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
-        },
-        scales: {
-          y: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
-          x: {
-            stacked: false,
-            grid: { color: inkColor('grid') },
-            ticks: { color: inkColor('muted') },
-            title: { display: false, text: "", color: inkColor('secondary') }
-          }
-        }
-      }
-    });
-    
 
-    new Chart(document.getElementById('chart_tendencia_cac').getContext('2d'), {
-      type: "line",
-      data: {
-        labels: ["2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07"],
-        datasets: [{
-            label: "Email marketing",
-            data: [187.0, 196.0, 197.0, 183.0, 222.0, 231.0, 199.0, 263.0, 235.0, 215.0, 227.0, 216.0],
-            valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        },
-{
-            label: "Eventos / Ferias",
-            data: [2380.0, 2724.0, 1928.0, 2294.0, 2176.0, 2470.0, 1793.0, 2373.0, 2088.0, 2327.0, 1915.0, 2306.0],
-            valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        },
-{
-            label: "Google Ads",
-            data: [1590.0, 1405.0, 1423.0, 1567.0, 1438.0, 1353.0, 1357.0, 1365.0, 1581.0, 1644.0, 1384.0, 1541.0],
-            valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        },
-{
-            label: "Meta Ads",
-            data: [1409.0, 1160.0, 1121.0, 1220.0, 1174.0, 1184.0, 1169.0, 1266.0, 1181.0, 1060.0, 1068.0, 1261.0],
-            valueLabels: null,
-            backgroundColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 0.12),
-            borderColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 1),
-            borderWidth: 3,
-            borderDash: [],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 4,
-            pointHoverRadius: 5,
-        },
-{
-            label: "Referidos",
-            data: [310.0, 374.0, 347.0, 353.0, 438.0, 377.0, 464.0, 370.0, 342.0, 373.0, 435.0, 356.0],
-            valueLabels: null,
-            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
-            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
-            borderWidth: 3,
-            borderDash: [],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 4,
-            pointHoverRadius: 5,
-        },
-{
-            label: "SEO / Orgánico",
-            data: [730.0, 501.0, 644.0, 573.0, 620.0, 560.0, 663.0, 683.0, 645.0, 552.0, 744.0, 613.0],
-            valueLabels: null,
-            backgroundColor: withAlpha(inkColor('muted'), 0.12),
-            borderColor: withAlpha(inkColor('muted'), 0.75),
-            borderWidth: 1.5,
-            borderDash: [3, 3],
-            borderRadius: 0,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-        }]
-      },
-      options: {
-        
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -705,12 +627,83 @@ function surfaceColor() { return cssVar('--surface'); }
             stacked: false,
             grid: { color: inkColor('grid') },
             ticks: { color: inkColor('muted') },
-            title: { display: true, text: "CAC mensual (MXN)", color: inkColor('secondary') }
+            title: { display: true, text: "MXN", color: inkColor('secondary') }
           }
         }
       }
     });
-    
+
+
+    new Chart(document.getElementById('chart_forecast').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+        datasets: [{
+            label: "On-Time",
+            data: [0.0, 0.0, 0.0, 0.0],
+            valueLabels: null,
+            backgroundColor: "#3E8F72",
+            borderColor: "#3E8F72",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Slow-Pay",
+            data: [93743.0, 137721.0, 96347.0, 38192.0],
+            valueLabels: null,
+            backgroundColor: "#B8842C",
+            borderColor: "#B8842C",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Delinquent",
+            data: [268614.0, 290553.0, 193374.0, 127586.0],
+            valueLabels: null,
+            backgroundColor: "#d03b3b",
+            borderColor: "#d03b3b",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: true,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Expected MXN", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+
 </script>
 </body>
 </html>

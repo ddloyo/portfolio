@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>XIA · Reporte Ejecutivo Mensual</title>
+<title>XIA · Monthly Executive Report</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -163,270 +163,270 @@
 <div class="wrap">
   <div class="brand"><div class="mark"><img src="../../assets/xia-logo.png" alt="XIA logo"></div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
   <header class="page-head">
-    <div class="tag">Proyecto 10 · Portafolio de demostración</div>
-    <h1>Reporte Ejecutivo Mensual</h1>
-    <p class="tagline">Tu reporte, convertido en la decisión — de la cifra general de la empresa al cliente concreto que hay que llamar, listo para la reunión de dirección.</p>
+    <div class="tag">Project 10 · Portfolio Demo</div>
+    <h1>Monthly Executive Report</h1>
+    <p class="tagline">Your report, turned into a decision — from the company-wide number down to the specific customer to call, ready for the leadership meeting.</p>
   </header>
 
-  
+
     <div class="minto-banner">
-      <p class="minto-label">Respuesta ejecutiva — 2026-08</p>
-      <h2>El ingreso de 2026-08 va +1.0% vs. 2025-08 (mismo mes de 2025) — Estándar Mayoreo (Línea Estándar) cayó -34.9% en ese mismo comparativo, aunque el resto de la operación compensó esa caída. El YTD 2026 confirma el panorama: +6.8% vs. 2025.</h2>
-      <p class="minto-sub">4 de 8 subcategorías requieren seguimiento de dirección esta semana: Premium Oficina (Alerta puntual), Estándar Mayoreo (Alerta puntual), Económica Básica (En riesgo), Económica Promocional (En riesgo). Al final del reporte, los 15 clientes concretos de Estándar Mayoreo a confirmar primero.</p>
+      <p class="minto-label">Executive summary — 2026-08</p>
+      <h2>2026-08 revenue is up +1.0% vs. 2025-08 (same month last year) — Standard Wholesale (Standard Line) fell -34.9% on that same comparison, though the rest of the business offset that decline. YTD 2026 confirms the picture: +6.8% vs. 2025.</h2>
+      <p class="minto-sub">4 of 8 subcategories need leadership follow-up this week: Premium Office (Isolated Alert), Standard Wholesale (Isolated Alert), Economy Basic (At Risk), Economy Promotional (At Risk). At the end of the report, the 15 specific Standard Wholesale customers to confirm first.</p>
     </div>
-    
+
 
   <div class="top-row">
-    
+
     <div class="hero-widget">
-      <div class="kpi-label">Variación YTD 2026 vs. 2025 (ene–ago)</div>
+      <div class="kpi-label">YTD Variance 2026 vs. 2025 (Jan–Aug)</div>
       <div class="kpi-value hero-value">+6.8%</div>
-      <span class="kpi-badge kpi-good">Por encima del año anterior</span>
+      <span class="kpi-badge kpi-good">Above prior year</span>
       <div class="hero-chart-wrap">
         <canvas id="chart_hero_ytd"></canvas>
       </div>
     </div>
     <div class="kpi-grid-5">
-      
+
         <div class="kpi-card">
-          <div class="kpi-label">Ingreso 2026-08 (empresa)</div>
+          <div class="kpi-label">Revenue 2026-08 (company)</div>
           <div class="kpi-value">$219,869 MXN</div>
-          
-          
+
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Variación vs. Ago 2025 (interanual)</div>
+          <div class="kpi-label">Variance vs. Aug 2025 (year-over-year)</div>
           <div class="kpi-value">+1.0%</div>
-          
+
           <span class="kpi-badge kpi-good">good</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Subcategoría causante (interanual)</div>
-          <div class="kpi-value">Estándar Mayoreo</div>
+          <div class="kpi-label">Root-cause subcategory (YoY)</div>
+          <div class="kpi-value">Standard Wholesale</div>
           <div class="kpi-delta delta-down">&darr; -34.9%</div>
-          
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Ingreso YTD 2026 (empresa)</div>
+          <div class="kpi-label">YTD 2026 Revenue (company)</div>
           <div class="kpi-value">$1,784,677 MXN</div>
-          
-          
+
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Subcategorías que requieren atención</div>
-          <div class="kpi-value">4 de 8</div>
-          
+          <div class="kpi-label">Subcategories requiring attention</div>
+          <div class="kpi-value">4 of 8</div>
+
           <span class="kpi-badge kpi-warning">warning</span>
         </div>
     </div>
   </div>
 
-  
+
 
   <div class="charts-grid">
-    
+
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
-        <h3>Ingreso total — 20 meses</h3>
-        <p>Consolidado, las 4 categorías y 200 clientes</p>
+        <h3>Total Revenue — 20 Months</h3>
+        <p>Consolidated, all 4 categories and 200 customers</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_trend"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>YTD 2026 vs. YTD 2025 por categoría</h3>
-        <p>Acumulado ene–ago de cada año</p>
+        <h3>YTD 2026 vs. YTD 2025 by Category</h3>
+        <p>Cumulative Jan–Aug for each year</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_ytd_cat"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Variación por categoría — 2026-08 vs 2026-07</h3>
-        <p>La vista general antes de bajar a subcategoría</p>
+        <h3>Variance by Category — 2026-08 vs 2026-07</h3>
+        <p>The big picture before drilling into subcategories</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_cause_cat"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>YTD 2026 vs. YTD 2025 por región</h3>
-        <p>Estructura comercial: dónde está concentrado el ingreso</p>
+        <h3>YTD 2026 vs. YTD 2025 by Region</h3>
+        <p>Sales structure: where revenue is concentrated</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_region"></canvas>
       </div>
     </div>
-    
+
   </div>
 
   <div>
-    <p class="section-label">Detalle por subcategoría: segmentación y serie mensual (20 meses)</p>
+    <p class="section-label">Subcategory detail: segmentation and monthly series (20 months)</p>
     <div class="drilldown-grid">
-      
+
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Segmentación: tendencia vs. volatilidad por subcategoría</h3>
-        <p>Tendencia mensual (recalculada por regresión) vs. qué tan errático es el mes a mes</p>
+        <h3>Segmentation: trend vs. volatility by subcategory</h3>
+        <p>Monthly trend (recalculated via regression) vs. how erratic month-to-month performance is</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_segmentacion"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Premium Exportación</h3>
-        <p>Línea Premium · Motor de crecimiento · tendencia +1.51%/mes</p>
+        <h3>Premium Export</h3>
+        <p>Premium Line · Growth Engine · trend +1.51%/mo</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_sub_0"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Premium Hogar</h3>
-        <p>Línea Premium · Motor de crecimiento · tendencia +1.01%/mes</p>
+        <h3>Premium Home</h3>
+        <p>Premium Line · Growth Engine · trend +1.01%/mo</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_sub_1"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Premium Oficina</h3>
-        <p>Línea Premium · Alerta puntual · tendencia +0.60%/mes</p>
+        <h3>Premium Office</h3>
+        <p>Premium Line · Isolated Alert · trend +0.60%/mo</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_sub_2"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Estándar Mayoreo</h3>
-        <p>Línea Estándar · Alerta puntual · tendencia -0.40%/mes</p>
+        <h3>Standard Wholesale</h3>
+        <p>Standard Line · Isolated Alert · trend -0.40%/mo</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_sub_3"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Estándar Retail</h3>
-        <p>Línea Estándar · Estable / Core · tendencia +0.27%/mes</p>
+        <h3>Standard Retail</h3>
+        <p>Standard Line · Stable / Core · trend +0.27%/mo</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_sub_4"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Económica Básica</h3>
-        <p>Línea Económica · En riesgo · tendencia -0.09%/mes</p>
+        <h3>Economy Basic</h3>
+        <p>Economy Line · At Risk · trend -0.09%/mo</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_sub_5"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Económica Promocional</h3>
-        <p>Línea Económica · En riesgo · tendencia -0.22%/mes</p>
+        <h3>Economy Promotional</h3>
+        <p>Economy Line · At Risk · trend -0.22%/mo</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_sub_6"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Soporte y Mantenimiento</h3>
-        <p>Servicios postventa · Motor de crecimiento · tendencia +1.69%/mes</p>
+        <h3>Support &amp; Maintenance</h3>
+        <p>Aftersales Services · Growth Engine · trend +1.69%/mo</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_sub_7"></canvas>
       </div>
     </div>
-    
+
     </div>
   </div>
 
   <div class="insights-card">
-    <h3>Lo que dice el dato</h3>
-    <ul class="insights"><li><b>Qué pasó:</b> el ingreso de 2026-08 fue $219,869 MXN, +1.0% vs. 2025-08 (mismo mes de 2025) — la comparación que importa para medir qué tan grave es. Mes contra mes se ve peor (-5.6% vs. 2026-07), pero es ruido de calendario: <b>Estándar Mayoreo</b> (Línea Estándar) es quien realmente cayó en el comparativo interanual (-34.9%).</li>
-<li><b>Así vamos en el año:</b> el YTD 2026 acumula $1,784,677 MXN (+6.8% vs. el mismo periodo 2025). <b>Premium Exportación</b> aporta el mayor crecimiento ($54,246 MXN más que en 2025) y <b>Estándar Mayoreo</b> es la subcategoría que más retrocede en el acumulado (-4.1%).</li>
-<li><b>Por qué (el mes):</b> el movimiento de Estándar Mayoreo en 2026-08 es una anomalía estadística (-5.3&sigma; frente a su propio historial) — evidencia de evento aislado (p. ej. un cliente grande que pausó pedidos), no de una tendencia sostenida en Línea Estándar.</li>
-<li><b>Qué hacer:</b> antes de mover el forecast del trimestre, confirmar con ventas los 15 clientes de la lista al final de este reporte — son los que más explican la caída en Estándar Mayoreo. En paralelo, Estándar Mayoreo necesita revisión de precio/portafolio: su rezago viene sosteniéndose desde inicios de año (tendencia -0.40%/mes), no es un mes suelto.</li>
-<li>4 de 8 subcategorías están en un segmento que requiere seguimiento esta semana (Premium Oficina, Estándar Mayoreo, Económica Básica, Económica Promocional) — las demás sostienen el crecimiento y solo necesitan protección de capacidad, no intervención.</li></ul>
+    <h3>What the Data Shows</h3>
+    <ul class="insights"><li><b>What happened:</b> 2026-08 revenue came in at $219,869 MXN, +1.0% vs. 2025-08 (same month last year) — the comparison that matters for gauging severity. Month-over-month it looks worse (-5.6% vs. 2026-07), but that's calendar noise: <b>Standard Wholesale</b> (Standard Line) is the one that actually declined on a year-over-year basis (-34.9%).</li>
+<li><b>Year-to-date performance:</b> YTD 2026 totals $1,784,677 MXN (+6.8% vs. the same period in 2025). <b>Premium Export</b> contributes the largest growth ($54,246 MXN more than in 2025) and <b>Standard Wholesale</b> is the subcategory pulling back the most on a cumulative basis (-4.1%).</li>
+<li><b>Why (this month):</b> the move in Standard Wholesale in 2026-08 is a statistical anomaly (-5.3&sigma; against its own history) — evidence of an isolated event (e.g., a large customer pausing orders), not a sustained trend in the Standard Line.</li>
+<li><b>What to do:</b> before revising the quarterly forecast, confirm with sales the 15 customers listed at the end of this report — they account for most of the decline in Standard Wholesale. In parallel, Standard Wholesale needs a pricing/portfolio review: its underperformance has been building since the start of the year (trend -0.40%/mo), not a one-off month.</li>
+<li>4 of 8 subcategories are in a segment that requires follow-up this week (Premium Office, Standard Wholesale, Economy Basic, Economy Promotional) — the rest are sustaining growth and only need capacity protection, not intervention.</li></ul>
   </div>
 
-  
+
     <details class="table-wrap">
-      <summary>Ver tabla de datos</summary>
+      <summary>View data table</summary>
       <table>
-        <thead><tr><th>Subcategoría</th><th>Categoría</th><th>Tendencia (%/mes)</th><th>Volatilidad (%)</th><th>Segmento</th><th>YTD 2026</th><th>YoY YTD</th><th>Estrategia recomendada</th></tr></thead>
-        <tbody><tr><td>Premium Exportación</td><td>Línea Premium</td><td>+1.51%</td><td>10.9%</td><td>Motor de crecimiento</td><td>$364,400</td><td>+17.5%</td><td>Proteger inventario/capacidad de esta subcategoría y replicar sus palancas de venta en las demás.</td></tr>
-<tr><td>Premium Hogar</td><td>Línea Premium</td><td>+1.01%</td><td>14.4%</td><td>Motor de crecimiento</td><td>$288,756</td><td>+10.8%</td><td>Proteger inventario/capacidad de esta subcategoría y replicar sus palancas de venta en las demás.</td></tr>
-<tr><td>Premium Oficina</td><td>Línea Premium</td><td>+0.60%</td><td>10.3%</td><td>Alerta puntual</td><td>$271,571</td><td>+6.0%</td><td>Confirmar con el equipo comercial si es un cliente puntual o el inicio de una tendencia, antes de mover el forecast.</td></tr>
-<tr><td>Estándar Mayoreo</td><td>Línea Estándar</td><td>-0.40%</td><td>12.8%</td><td>Alerta puntual</td><td>$243,124</td><td>-4.1%</td><td>Confirmar con el equipo comercial si es un cliente puntual o el inicio de una tendencia, antes de mover el forecast.</td></tr>
-<tr><td>Estándar Retail</td><td>Línea Estándar</td><td>+0.27%</td><td>12.5%</td><td>Estable / Core</td><td>$262,883</td><td>+4.1%</td><td>Mantener; foco en eficiencia y margen, no en crecimiento agresivo.</td></tr>
-<tr><td>Económica Básica</td><td>Línea Económica</td><td>-0.09%</td><td>9.1%</td><td>En riesgo</td><td>$142,472</td><td>-0.5%</td><td>Revisar mezcla de precio y portafolio; definir plan de contención a 90 días.</td></tr>
-<tr><td>Económica Promocional</td><td>Línea Económica</td><td>-0.22%</td><td>7.9%</td><td>En riesgo</td><td>$103,275</td><td>-4.4%</td><td>Revisar mezcla de precio y portafolio; definir plan de contención a 90 días.</td></tr>
-<tr><td>Soporte y Mantenimiento</td><td>Servicios postventa</td><td>+1.69%</td><td>13.1%</td><td>Motor de crecimiento</td><td>$108,197</td><td>+23.9%</td><td>Proteger inventario/capacidad de esta subcategoría y replicar sus palancas de venta en las demás.</td></tr>
+        <thead><tr><th>Subcategory</th><th>Category</th><th>Trend (%/mo)</th><th>Volatility (%)</th><th>Segment</th><th>YTD 2026</th><th>YoY YTD</th><th>Recommended Strategy</th></tr></thead>
+        <tbody><tr><td>Premium Export</td><td>Premium Line</td><td>+1.51%</td><td>10.9%</td><td>Growth Engine</td><td>$364,400</td><td>+17.5%</td><td>Protect this subcategory's inventory/capacity and replicate its sales levers across the rest of the portfolio.</td></tr>
+<tr><td>Premium Home</td><td>Premium Line</td><td>+1.01%</td><td>14.4%</td><td>Growth Engine</td><td>$288,756</td><td>+10.8%</td><td>Protect this subcategory's inventory/capacity and replicate its sales levers across the rest of the portfolio.</td></tr>
+<tr><td>Premium Office</td><td>Premium Line</td><td>+0.60%</td><td>10.3%</td><td>Isolated Alert</td><td>$271,571</td><td>+6.0%</td><td>Confirm with the sales team whether this is an isolated customer or the start of a trend before revising the forecast.</td></tr>
+<tr><td>Standard Wholesale</td><td>Standard Line</td><td>-0.40%</td><td>12.8%</td><td>Isolated Alert</td><td>$243,124</td><td>-4.1%</td><td>Confirm with the sales team whether this is an isolated customer or the start of a trend before revising the forecast.</td></tr>
+<tr><td>Standard Retail</td><td>Standard Line</td><td>+0.27%</td><td>12.5%</td><td>Stable / Core</td><td>$262,883</td><td>+4.1%</td><td>Maintain; focus on efficiency and margin, not aggressive growth.</td></tr>
+<tr><td>Economy Basic</td><td>Economy Line</td><td>-0.09%</td><td>9.1%</td><td>At Risk</td><td>$142,472</td><td>-0.5%</td><td>Review price and portfolio mix; define a 90-day containment plan.</td></tr>
+<tr><td>Economy Promotional</td><td>Economy Line</td><td>-0.22%</td><td>7.9%</td><td>At Risk</td><td>$103,275</td><td>-4.4%</td><td>Review price and portfolio mix; define a 90-day containment plan.</td></tr>
+<tr><td>Support &amp; Maintenance</td><td>Aftersales Services</td><td>+1.69%</td><td>13.1%</td><td>Growth Engine</td><td>$108,197</td><td>+23.9%</td><td>Protect this subcategory's inventory/capacity and replicate its sales levers across the rest of the portfolio.</td></tr>
 </tbody>
       </table>
     </details>
-    
 
-  
+
+
     <div class="checklist-card">
-      <h3>Clientes a confirmar — Estándar Mayoreo</h3>
-      <p class="checklist-sub">Los 15 clientes cuya compra en Estándar Mayoreo más cayó entre 2026-07 y 2026-08 (de 57 con caída en total, quedan 42 más de menor tamaño). Marca cada uno al confirmar si es un cliente puntual o el inicio de una tendencia.</p>
+      <h3>Customers to Confirm — Standard Wholesale</h3>
+      <p class="checklist-sub">The 15 customers whose Standard Wholesale purchases fell the most between 2026-07 and 2026-08 (of 57 total with a decline, 42 smaller ones remain). Check each one off once you confirm whether it's an isolated customer or the start of a trend.</p>
       <div class="checklist-progress">
         <div class="progress-bar"><div class="progress-fill" id="clientes_causante-fill" style="width:0%"></div></div>
-        <span id="clientes_causante-count">0 / 15 confirmados</span>
+        <span id="clientes_causante-count">0 / 15 confirmed</span>
       </div>
       <div class="checklist-table-wrap">
         <table class="checklist-table">
-          <thead><tr><th></th><th>Cliente</th><th>Región</th><th>Perfil</th><th>2026-07</th><th>2026-08</th><th>Cambio (MXN)</th></tr></thead>
-          <tbody><tr data-row="CLI-118"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-118"></td><td>CLI-118</td><td>Occidente</td><td>Ocasional</td><td>$1,132</td><td>$0</td><td>$-1,132</td></tr><tr data-row="CLI-083"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-083"></td><td>CLI-083</td><td>Occidente</td><td>Ocasional</td><td>$931</td><td>$0</td><td>$-931</td></tr><tr data-row="CLI-013"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-013"></td><td>CLI-013</td><td>Centro</td><td>Ocasional</td><td>$844</td><td>$0</td><td>$-844</td></tr><tr data-row="CLI-193"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-193"></td><td>CLI-193</td><td>Norte</td><td>Ocasional</td><td>$823</td><td>$0</td><td>$-823</td></tr><tr data-row="CLI-079"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-079"></td><td>CLI-079</td><td>Occidente</td><td>VIP</td><td>$786</td><td>$0</td><td>$-786</td></tr><tr data-row="CLI-168"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-168"></td><td>CLI-168</td><td>Norte</td><td>VIP</td><td>$1,161</td><td>$531</td><td>$-630</td></tr><tr data-row="CLI-067"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-067"></td><td>CLI-067</td><td>Norte</td><td>Ocasional</td><td>$569</td><td>$0</td><td>$-569</td></tr><tr data-row="CLI-189"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-189"></td><td>CLI-189</td><td>Occidente</td><td>Recurrente</td><td>$513</td><td>$0</td><td>$-513</td></tr><tr data-row="CLI-195"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-195"></td><td>CLI-195</td><td>Norte</td><td>Ocasional</td><td>$1,136</td><td>$623</td><td>$-512</td></tr><tr data-row="CLI-015"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-015"></td><td>CLI-015</td><td>Bajío</td><td>VIP</td><td>$1,362</td><td>$876</td><td>$-486</td></tr><tr data-row="CLI-191"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-191"></td><td>CLI-191</td><td>Norte</td><td>VIP</td><td>$1,023</td><td>$574</td><td>$-449</td></tr><tr data-row="CLI-055"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-055"></td><td>CLI-055</td><td>Norte</td><td>VIP</td><td>$990</td><td>$553</td><td>$-437</td></tr><tr data-row="CLI-009"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-009"></td><td>CLI-009</td><td>Occidente</td><td>Recurrente</td><td>$425</td><td>$0</td><td>$-425</td></tr><tr data-row="CLI-164"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-164"></td><td>CLI-164</td><td>Centro</td><td>VIP</td><td>$1,002</td><td>$597</td><td>$-404</td></tr><tr data-row="CLI-071"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-071"></td><td>CLI-071</td><td>Occidente</td><td>Recurrente</td><td>$402</td><td>$0</td><td>$-402</td></tr></tbody>
+          <thead><tr><th></th><th>Customer</th><th>Region</th><th>Profile</th><th>2026-07</th><th>2026-08</th><th>Change (MXN)</th></tr></thead>
+          <tbody><tr data-row="CLI-118"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-118"></td><td>CLI-118</td><td>West</td><td>Occasional</td><td>$1,132</td><td>$0</td><td>$-1,132</td></tr><tr data-row="CLI-083"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-083"></td><td>CLI-083</td><td>West</td><td>Occasional</td><td>$931</td><td>$0</td><td>$-931</td></tr><tr data-row="CLI-013"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-013"></td><td>CLI-013</td><td>Central</td><td>Occasional</td><td>$844</td><td>$0</td><td>$-844</td></tr><tr data-row="CLI-193"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-193"></td><td>CLI-193</td><td>North</td><td>Occasional</td><td>$823</td><td>$0</td><td>$-823</td></tr><tr data-row="CLI-079"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-079"></td><td>CLI-079</td><td>West</td><td>VIP</td><td>$786</td><td>$0</td><td>$-786</td></tr><tr data-row="CLI-168"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-168"></td><td>CLI-168</td><td>North</td><td>VIP</td><td>$1,161</td><td>$531</td><td>$-630</td></tr><tr data-row="CLI-067"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-067"></td><td>CLI-067</td><td>North</td><td>Occasional</td><td>$569</td><td>$0</td><td>$-569</td></tr><tr data-row="CLI-189"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-189"></td><td>CLI-189</td><td>West</td><td>Recurring</td><td>$513</td><td>$0</td><td>$-513</td></tr><tr data-row="CLI-195"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-195"></td><td>CLI-195</td><td>North</td><td>Occasional</td><td>$1,136</td><td>$623</td><td>$-512</td></tr><tr data-row="CLI-015"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-015"></td><td>CLI-015</td><td>Bajío</td><td>VIP</td><td>$1,362</td><td>$876</td><td>$-486</td></tr><tr data-row="CLI-191"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-191"></td><td>CLI-191</td><td>North</td><td>VIP</td><td>$1,023</td><td>$574</td><td>$-449</td></tr><tr data-row="CLI-055"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-055"></td><td>CLI-055</td><td>North</td><td>VIP</td><td>$990</td><td>$553</td><td>$-437</td></tr><tr data-row="CLI-009"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-009"></td><td>CLI-009</td><td>West</td><td>Recurring</td><td>$425</td><td>$0</td><td>$-425</td></tr><tr data-row="CLI-164"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-164"></td><td>CLI-164</td><td>Central</td><td>VIP</td><td>$1,002</td><td>$597</td><td>$-404</td></tr><tr data-row="CLI-071"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="clientes_causante" data-row="CLI-071"></td><td>CLI-071</td><td>West</td><td>Recurring</td><td>$402</td><td>$0</td><td>$-402</td></tr></tbody>
         </table>
       </div>
     </div>
-    
 
-  
+
+
 
   <footer>
-    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    Synthetic dataset generated for demonstration purposes. Real service: Data Storytelling Express / Micro Data Office &middot;
     <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
   </footer>
 </div>
@@ -468,7 +468,7 @@ function surfaceColor() { return cssVar('--surface'); }
         const fill = document.getElementById(scopeId + '-fill');
         const count = document.getElementById(scopeId + '-count');
         if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
-        if (count) count.textContent = `${checked} / ${total} ${"confirmados"}`;
+        if (count) count.textContent = `${checked} / ${total} ${"confirmed"}`;
       }
       boxes.forEach((b) => {
         const rowId = b.dataset.row;
@@ -487,12 +487,12 @@ function surfaceColor() { return cssVar('--surface'); }
       });
       updateProgress();
     })();
-    
+
 
     new Chart(document.getElementById('chart_hero_ytd').getContext('2d'), {
       type: "line",
       data: {
-        labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago"],
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
         datasets: [{
             label: "2025",
             data: [205820.0, 201218.0, 204597.0, 203000.0, 222678.0, 207416.0, 208937.0, 217708.0],
@@ -523,7 +523,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       },
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -544,14 +544,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_trend').getContext('2d'), {
       type: "line",
       data: {
         labels: ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "Ingreso total",
+            label: "Total Revenue",
             data: [205820.0, 201218.0, 204597.0, 203000.0, 222678.0, 207416.0, 208937.0, 217708.0, 217196.0, 205715.0, 215438.0, 216061.0, 209284.0, 219499.0, 210384.0, 230645.0, 226071.0, 236133.0, 232793.0, 219869.0],
             valueLabels: null,
             backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
@@ -570,7 +570,7 @@ function surfaceColor() { return cssVar('--surface'); }
         afterDatasetsDraw(chart) {
           const { ctx, chartArea, scales } = chart;
           ctx.save();
-          
+
       {
         const px = scales.x.getPixelForValue(19);
         ctx.strokeStyle = withAlpha(inkColor('muted'), 0.7);
@@ -583,13 +583,13 @@ function surfaceColor() { return cssVar('--surface'); }
         ctx.fillStyle = inkColor('secondary');
         ctx.font = '600 11px -apple-system, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText("Estándar Mayoreo: -34.9%", px, chartArea.top + 12);
+        ctx.fillText("Standard Wholesale: -34.9%", px, chartArea.top + 12);
       }
           ctx.restore();
         }
       }],
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -610,12 +610,12 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_ytd_cat').getContext('2d'), {
       type: "bar",
       data: {
-        labels: ["Línea Premium", "Línea Estándar", "Línea Económica", "Servicios postventa"],
+        labels: ["Premium Line", "Standard Line", "Economy Line", "Aftersales Services"],
         datasets: [{
             label: "YTD 2025",
             data: [826854.0, 505951.0, 251214.0, 87357.0],
@@ -655,7 +655,7 @@ function surfaceColor() { return cssVar('--surface'); }
                      labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
           tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
                       borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('es-MX')}` } }
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('en-US')}` } }
         },
         scales: {
           y: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
@@ -668,14 +668,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_cause_cat').getContext('2d'), {
       type: "bar",
       data: {
-        labels: ["Línea Estándar", "Línea Económica", "Línea Premium", "Servicios postventa"],
+        labels: ["Standard Line", "Economy Line", "Premium Line", "Aftersales Services"],
         datasets: [{
-            label: "Cambio en MXN",
+            label: "Change (MXN)",
             data: [-18716.0, 1240.0, 2008.0, 2545.0],
             valueLabels: null,
             backgroundColor: ["#d03b3b", "#3E8F72", "#3E8F72", "#3E8F72"],
@@ -711,12 +711,12 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_region').getContext('2d'), {
       type: "bar",
       data: {
-        labels: ["Norte", "Centro", "Occidente", "Sureste", "Bajío"],
+        labels: ["North", "Central", "West", "Southeast", "Bajío"],
         datasets: [{
             label: "YTD 2025",
             data: [598525.0, 477456.0, 276566.0, 185080.0, 133748.0],
@@ -756,7 +756,7 @@ function surfaceColor() { return cssVar('--surface'); }
                      labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
           tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
                       borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
-                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('es-MX')}` } }
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.parsed[ctx.chart.options.indexAxis === 'y' ? 'x' : 'y']).toLocaleString('en-US')}` } }
         },
         scales: {
           y: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
@@ -769,7 +769,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     (function() {
       const quadrantLines_chart_segmentacion = {"x": 0};
@@ -777,32 +777,32 @@ function surfaceColor() { return cssVar('--surface'); }
       new Chart(document.getElementById('chart_segmentacion').getContext('2d'), {
         type: 'scatter',
         data: { datasets: [{
-            label: "Motor de crecimiento",
-            data: [{"x": 1.51, "y": 10.9, "label": "Premium Exportación (Línea Premium)"}, {"x": 1.01, "y": 14.4, "label": "Premium Hogar (Línea Premium)"}, {"x": 1.69, "y": 13.1, "label": "Soporte y Mantenimiento (Servicios postventa)"}],
+            label: "Growth Engine",
+            data: [{"x": 1.51, "y": 10.9, "label": "Premium Export (Premium Line)"}, {"x": 1.01, "y": 14.4, "label": "Premium Home (Premium Line)"}, {"x": 1.69, "y": 13.1, "label": "Support & Maintenance (Aftersales Services)"}],
             backgroundColor: withAlpha(seriesColorHex("#3E8F72", "#3E8F72"), 1),
             borderColor: seriesColorHex("#3E8F72", "#3E8F72"),
             pointRadius: 6,
             pointHoverRadius: 8,
         },
 {
-            label: "Alerta puntual",
-            data: [{"x": 0.6, "y": 10.3, "label": "Premium Oficina (Línea Premium)"}, {"x": -0.4, "y": 12.8, "label": "Estándar Mayoreo (Línea Estándar)"}],
+            label: "Isolated Alert",
+            data: [{"x": 0.6, "y": 10.3, "label": "Premium Office (Premium Line)"}, {"x": -0.4, "y": 12.8, "label": "Standard Wholesale (Standard Line)"}],
             backgroundColor: withAlpha(seriesColorHex("#B8842C", "#B8842C"), 1),
             borderColor: seriesColorHex("#B8842C", "#B8842C"),
             pointRadius: 6,
             pointHoverRadius: 8,
         },
 {
-            label: "Estable / Core",
-            data: [{"x": 0.27, "y": 12.5, "label": "Estándar Retail (Línea Estándar)"}],
+            label: "Stable / Core",
+            data: [{"x": 0.27, "y": 12.5, "label": "Standard Retail (Standard Line)"}],
             backgroundColor: withAlpha(seriesColorHex("#9CB8B4", "#9CB8B4"), 1),
             borderColor: seriesColorHex("#9CB8B4", "#9CB8B4"),
             pointRadius: 6,
             pointHoverRadius: 8,
         },
 {
-            label: "En riesgo",
-            data: [{"x": -0.09, "y": 9.1, "label": "Económica Básica (Línea Económica)"}, {"x": -0.22, "y": 7.9, "label": "Económica Promocional (Línea Económica)"}],
+            label: "At Risk",
+            data: [{"x": -0.09, "y": 9.1, "label": "Economy Basic (Economy Line)"}, {"x": -0.22, "y": 7.9, "label": "Economy Promotional (Economy Line)"}],
             backgroundColor: withAlpha(seriesColorHex("#d03b3b", "#d03b3b"), 1),
             borderColor: seriesColorHex("#d03b3b", "#d03b3b"),
             pointRadius: 6,
@@ -823,9 +823,9 @@ function surfaceColor() { return cssVar('--surface'); }
             }
           },
           scales: {
-            x: { title: { display: true, text: "Tendencia mensual (%)", color: inkColor('secondary') },
+            x: { title: { display: true, text: "Monthly Trend (%)", color: inkColor('secondary') },
                   grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } },
-            y: { title: { display: true, text: "Volatilidad mes a mes (%)", color: inkColor('secondary') },
+            y: { title: { display: true, text: "Month-to-Month Volatility (%)", color: inkColor('secondary') },
                   grid: { color: inkColor('grid') }, ticks: { color: inkColor('muted') } }
           }
         },
@@ -870,14 +870,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       });
     })();
-    
+
 
     new Chart(document.getElementById('chart_sub_0').getContext('2d'), {
       type: "line",
       data: {
         labels: ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "Premium Exportación",
+            label: "Premium Export",
             data: [37281.0, 29788.0, 37458.0, 37283.0, 42996.0, 42718.0, 39054.0, 43575.0, 41164.0, 42639.0, 41779.0, 45528.0, 39815.0, 45884.0, 43854.0, 47605.0, 44477.0, 47045.0, 48066.0, 47654.0],
             valueLabels: null,
             backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
@@ -892,7 +892,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       },
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -913,14 +913,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_sub_1').getContext('2d'), {
       type: "line",
       data: {
         labels: ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "Premium Hogar",
+            label: "Premium Home",
             data: [31383.0, 31259.0, 31719.0, 29453.0, 36154.0, 33118.0, 33143.0, 34303.0, 32478.0, 28644.0, 33192.0, 33973.0, 33432.0, 36520.0, 27278.0, 38797.0, 38091.0, 38651.0, 40446.0, 35540.0],
             valueLabels: null,
             backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
@@ -935,7 +935,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       },
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -956,14 +956,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_sub_2').getContext('2d'), {
       type: "line",
       data: {
         labels: ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "Premium Oficina",
+            label: "Premium Office",
             data: [30595.0, 33896.0, 27691.0, 34239.0, 31304.0, 32102.0, 32956.0, 33385.0, 33016.0, 30880.0, 33644.0, 29972.0, 32511.0, 32386.0, 33591.0, 32586.0, 34112.0, 33353.0, 32852.0, 40179.0],
             valueLabels: null,
             backgroundColor: seriesColor(2, "#163832", "#DCEAE7", 0.12),
@@ -982,7 +982,7 @@ function surfaceColor() { return cssVar('--surface'); }
         afterDatasetsDraw(chart) {
           const { ctx, chartArea, scales } = chart;
           ctx.save();
-          
+
       {
         const px = scales.x.getPixelForValue(19);
         ctx.strokeStyle = withAlpha(inkColor('muted'), 0.7);
@@ -1001,7 +1001,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }],
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -1022,14 +1022,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_sub_3').getContext('2d'), {
       type: "line",
       data: {
         labels: ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "Estándar Mayoreo",
+            label: "Standard Wholesale",
             data: [31484.0, 28943.0, 33095.0, 33175.0, 33717.0, 31346.0, 31782.0, 29966.0, 32113.0, 30587.0, 31526.0, 34261.0, 28163.0, 32476.0, 32609.0, 30474.0, 31822.0, 33983.0, 34095.0, 19503.0],
             valueLabels: null,
             backgroundColor: seriesColor(3, "#9CB8B4", "#A9C7C2", 0.12),
@@ -1048,7 +1048,7 @@ function surfaceColor() { return cssVar('--surface'); }
         afterDatasetsDraw(chart) {
           const { ctx, chartArea, scales } = chart;
           ctx.save();
-          
+
       {
         const px = scales.x.getPixelForValue(19);
         ctx.strokeStyle = withAlpha(inkColor('muted'), 0.7);
@@ -1067,7 +1067,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }],
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -1088,14 +1088,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_sub_4').getContext('2d'), {
       type: "line",
       data: {
         labels: ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "Estándar Retail",
+            label: "Standard Retail",
             data: [32288.0, 35613.0, 31686.0, 29271.0, 34672.0, 25434.0, 31209.0, 32270.0, 34811.0, 31467.0, 33188.0, 31064.0, 30248.0, 30466.0, 30124.0, 36466.0, 34233.0, 36881.0, 34294.0, 30171.0],
             valueLabels: null,
             backgroundColor: seriesColor(4, "#D4A94F", "#E8C878", 0.12),
@@ -1110,7 +1110,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       },
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -1131,14 +1131,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_sub_5').getContext('2d'), {
       type: "line",
       data: {
         labels: ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "Económica Básica",
+            label: "Economy Basic",
             data: [18014.0, 18521.0, 18642.0, 16345.0, 18097.0, 19115.0, 15827.0, 18671.0, 16346.0, 15283.0, 16087.0, 16295.0, 18386.0, 18675.0, 17335.0, 17513.0, 17064.0, 18309.0, 17128.0, 18061.0],
             valueLabels: null,
             backgroundColor: seriesColor(5, "#4F6360", "#6E8B86", 0.12),
@@ -1153,7 +1153,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       },
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -1174,14 +1174,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_sub_6').getContext('2d'), {
       type: "line",
       data: {
         labels: ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "Económica Promocional",
+            label: "Economy Promotional",
             data: [13703.0, 12463.0, 13350.0, 13005.0, 14389.0, 12812.0, 13251.0, 15008.0, 14826.0, 14957.0, 13629.0, 13037.0, 13236.0, 12214.0, 11241.0, 13213.0, 13538.0, 13630.0, 12947.0, 13254.0],
             valueLabels: null,
             backgroundColor: seriesColor(6, "#C7D6D3", "#C79A52", 0.12),
@@ -1196,7 +1196,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       },
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -1217,14 +1217,14 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 
     new Chart(document.getElementById('chart_sub_7').getContext('2d'), {
       type: "line",
       data: {
         labels: ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],
         datasets: [{
-            label: "Soporte y Mantenimiento",
+            label: "Support & Maintenance",
             data: [11073.0, 10735.0, 10957.0, 10227.0, 11349.0, 10772.0, 11714.0, 10530.0, 12443.0, 11259.0, 12393.0, 11931.0, 13492.0, 10877.0, 14352.0, 13990.0, 12734.0, 14281.0, 12963.0, 15508.0],
             valueLabels: null,
             backgroundColor: seriesColor(7, "#8C6220", "#557D77", 0.12),
@@ -1239,7 +1239,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }]
       },
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -1260,7 +1260,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 </script>
 </body>
 </html>

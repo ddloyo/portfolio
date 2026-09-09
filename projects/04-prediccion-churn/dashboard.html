@@ -53,7 +53,9 @@
   .wrap { max-width: 1080px; margin: 0 auto; }
   .brand { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
   .brand .mark { width:28px; height:28px; border-radius:7px; background: var(--brand-ink);
-                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px; }
+                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px;
+                  overflow: hidden; }
+  .brand .mark img { width:100%; height:100%; object-fit: cover; display:block; }
   .brand span { color: var(--text-muted); font-size:13px; letter-spacing: .04em; text-transform: uppercase; }
   header.page-head { margin-bottom: 28px; }
   header.page-head .tag { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
@@ -139,7 +141,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="brand"><div class="mark">X</div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
+  <div class="brand"><div class="mark"><img src="../../assets/xia-logo.png" alt="XIA logo"></div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
   <header class="page-head">
     <div class="tag">Proyecto 04 · Portafolio de demostración</div>
     <h1>Predicción de Riesgo de Churn</h1>

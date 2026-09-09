@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>XIA · Funnel de Ventas con Alertas de Fuga</title>
+<title>XIA · Sales Funnel with Leak Alerts</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -98,88 +98,88 @@
 <div class="wrap">
   <div class="brand"><div class="mark"><img src="../../assets/xia-logo.png" alt="XIA logo"></div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
   <header class="page-head">
-    <div class="tag">Proyecto 02 · Portafolio de demostración</div>
-    <h1>Funnel de Ventas con Alertas de Fuga</h1>
-    <p class="tagline">Te enteras de la fuga en el funnel cuando todavía puedes corregirla, no cuando ya se perdió el trimestre.</p>
+    <div class="tag">Project 02 · Portfolio Demonstration</div>
+    <h1>Sales Funnel with Leak Alerts</h1>
+    <p class="tagline">Catch the funnel leak while you can still fix it — not after the quarter is already lost.</p>
   </header>
 
   <div class="kpi-row">
-    
+
         <div class="kpi-card">
-          <div class="kpi-label">Leads esta semana</div>
+          <div class="kpi-label">Leads this week</div>
           <div class="kpi-value">511</div>
-          
-          
+
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Tasa Calif. → Propuesta</div>
+          <div class="kpi-label">Qualified → Proposal Rate</div>
           <div class="kpi-value">27.1%</div>
-          <div class="kpi-delta delta-down">&darr; vs. 56.7% histórico</div>
-          <span class="kpi-badge kpi-critical">fuga activa</span>
+          <div class="kpi-delta delta-down">&darr; vs. 56.7% historical</div>
+          <span class="kpi-badge kpi-critical">active leak</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Semanas en alerta</div>
+          <div class="kpi-label">Weeks on alert</div>
           <div class="kpi-value">3</div>
-          
-          
+
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Conversión total del funnel</div>
+          <div class="kpi-label">Total funnel conversion</div>
           <div class="kpi-value">3.1%</div>
-          
-          
+
+
         </div>
 
         <div class="kpi-card kpi-hero">
-          <div class="kpi-label">Propuestas perdidas desde S10</div>
+          <div class="kpi-label">Proposals lost since W10</div>
           <div class="kpi-value">248</div>
-          <div class="kpi-delta delta-down">&darr; prospectos calificados vs. ritmo histórico</div>
-          <span class="kpi-badge kpi-critical">fuga activa</span>
+          <div class="kpi-delta delta-down">&darr; qualified prospects vs. historical pace</div>
+          <span class="kpi-badge kpi-critical">active leak</span>
         </div>
   </div>
 
   <div class="charts-grid">
-    
+
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Funnel — semana 16</h3>
-        <p>De 511 leads a 16 cierres · ⚠ marca la transición con mayor fuga</p>
+        <h3>Funnel — week 16</h3>
+        <p>From 511 leads to 16 closed deals · ⚠ marks the transition with the biggest leak</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_funnel"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Calificados → Propuesta: 57% → 27.1%</h3>
-        <p>Umbral de alerta: 40.0% · fuga activa desde la semana 10</p>
+        <h3>Qualified → Proposal: 57% → 27.1%</h3>
+        <p>Alert threshold: 40.0% · active leak since week 10</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_leak"></canvas>
       </div>
     </div>
-    
+
   </div>
 
   <div class="insights-card">
-    <h3>Lo que dice el dato</h3>
-    <ul class="insights"><li>Desde que arrancó la fuga en la semana 10, se perdieron <b>248 propuestas</b> frente al ritmo histórico — esas son conversaciones de cierre que nunca se iniciaron.</li>
-<li>La conversión Calificados → Propuesta cayó de ~57% a <b>27.1%</b>, 3 semanas por debajo del umbral de 40.0%.</li>
-<li>La fuga está aislada en la etapa de propuesta: el volumen de leads y la tasa de calificación se mantienen estables, así que no es un problema de generación de demanda.</li>
-<li>Un reporte mensual detecta esto 4-6 semanas tarde; con la alerta activa desde la semana 10, ya van 3 semanas de ventana para corregir antes del cierre de trimestre.</li>
-<li>Acción sugerida: auditar el proceso de armado de propuestas y el tiempo de respuesta a prospectos calificados de las últimas 3 semanas.</li></ul>
+    <h3>What the Data Shows</h3>
+    <ul class="insights"><li>Since the leak began in week 10, <b>248 proposals</b> were lost relative to the historical pace — those are closing conversations that never even started.</li>
+<li>Qualified → Proposal conversion dropped from ~57% to <b>27.1%</b>, 3 weeks below the 40.0% threshold.</li>
+<li>The leak is isolated to the proposal stage: lead volume and the qualification rate remain stable, so this is not a demand-generation problem.</li>
+<li>A monthly report would catch this 4-6 weeks late; with the alert active since week 10, there are still 3 weeks of window left to correct it before quarter close.</li>
+<li>Suggested action: audit the proposal-building process and response time to qualified prospects over the last 3 weeks.</li></ul>
   </div>
 
-  
+
     <details class="table-wrap">
-      <summary>Ver tabla de datos</summary>
+      <summary>View Data Table</summary>
       <table>
-        <thead><tr><th>Semana</th><th>Leads</th><th>Contactados</th><th>Calificados</th><th>Propuestas</th><th>Cierres</th><th>% Calif.→Prop.</th></tr></thead>
+        <thead><tr><th>Week</th><th>Leads</th><th>Contacted</th><th>Qualified</th><th>Proposals</th><th>Closed</th><th>% Qual.→Prop.</th></tr></thead>
         <tbody><tr><td>1</td><td>587</td><td>426</td><td>221</td><td>124</td><td>39</td><td>56.1%</td></tr>
 <tr><td>2</td><td>520</td><td>384</td><td>179</td><td>103</td><td>36</td><td>57.5%</td></tr>
 <tr><td>3</td><td>494</td><td>363</td><td>194</td><td>105</td><td>34</td><td>54.1%</td></tr>
@@ -199,10 +199,10 @@
 </tbody>
       </table>
     </details>
-    
+
 
   <footer>
-    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    Synthetic dataset generated for demonstration purposes. Actual service: Data Storytelling Express / Micro Data Office &middot;
     <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
   </footer>
 </div>
@@ -234,7 +234,7 @@ function surfaceColor() { return cssVar('--surface'); }
     (function() {
       const canvas = document.getElementById('chart_funnel');
       const wrap = canvas.parentElement;
-      const labels = ["Leads", "Contactados", "Calificados", "Propuestas", "Cierres"];
+      const labels = ["Leads", "Contacted", "Qualified", "Proposals", "Closed"];
       const values = [511, 383, 207, 56, 16];
       const colorsLight = ["#DCEAE7", "#BFDAD5", "#9FC7C0", "#71A8A3", "#4F8880", "#163832"];
       const colorsDark = ["#2F5850", "#3D7268", "#4F9285", "#63AC9E", "#84C9BB", "#B3E2D6"];
@@ -291,7 +291,7 @@ function surfaceColor() { return cssVar('--surface'); }
           ctx.fillText(labels[i], padLeft - 12, yTop + rowH / 2 - 8);
           ctx.fillStyle = inkColor('secondary');
           ctx.font = '700 12.5px -apple-system, sans-serif';
-          ctx.fillText(values[i].toLocaleString('es-MX'), padLeft - 12, yTop + rowH / 2 + 9);
+          ctx.fillText(values[i].toLocaleString('en-US'), padLeft - 12, yTop + rowH / 2 + 9);
 
           if (i + 1 < n) {
             const rate = values[i + 1] / values[i] * 100;
@@ -299,7 +299,7 @@ function surfaceColor() { return cssVar('--surface'); }
             ctx.fillStyle = isWeak ? '#d03b3b' : inkColor('muted');
             ctx.font = (isWeak ? '700 12px' : '600 11.5px') + ' -apple-system, sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText(`${rate.toFixed(0)}% ${isWeak ? '\u26A0' : '\u2192'}`, padLeft + bandW + 12, yBot);
+            ctx.fillText(`${rate.toFixed(0)}% ${isWeak ? '⚠' : '→'}`, padLeft + bandW + 12, yBot);
           }
         }
       }
@@ -309,14 +309,14 @@ function surfaceColor() { return cssVar('--surface'); }
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
       new ResizeObserver(draw).observe(wrap);
     })();
-    
+
 
     new Chart(document.getElementById('chart_leak').getContext('2d'), {
       type: "line",
       data: {
-        labels: ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S12", "S13", "S14", "S15", "S16"],
+        labels: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8", "W9", "W10", "W11", "W12", "W13", "W14", "W15", "W16"],
         datasets: [{
-            label: "Tasa real",
+            label: "Actual rate",
             data: [56.1, 57.5, 54.1, 55.5, 61.1, 57.6, 56.5, 60.0, 52.3, 51.0, 46.6, 41.0, 41.8, 31.3, 32.1, 27.1],
             valueLabels: null,
             backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
@@ -330,7 +330,7 @@ function surfaceColor() { return cssVar('--surface'); }
             pointHoverRadius: 5,
         },
 {
-            label: "Umbral de alerta",
+            label: "Alert threshold",
             data: [40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0],
             valueLabels: null,
             backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
@@ -349,7 +349,7 @@ function surfaceColor() { return cssVar('--surface'); }
         afterDatasetsDraw(chart) {
           const { ctx, chartArea, scales } = chart;
           ctx.save();
-          
+
       {
         const px = scales.x.getPixelForValue(9);
         ctx.strokeStyle = withAlpha(inkColor('muted'), 0.7);
@@ -362,13 +362,13 @@ function surfaceColor() { return cssVar('--surface'); }
         ctx.fillStyle = inkColor('secondary');
         ctx.font = '600 11px -apple-system, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText("Inicio de fuga (S10)", px, chartArea.top + 12);
+        ctx.fillText("Leak started (W10)", px, chartArea.top + 12);
       }
           ctx.restore();
         }
       }],
       options: {
-        
+
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
@@ -389,7 +389,7 @@ function surfaceColor() { return cssVar('--surface'); }
         }
       }
     });
-    
+
 </script>
 </body>
 </html>

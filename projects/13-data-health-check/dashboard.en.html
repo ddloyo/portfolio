@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>XIA · Data Health Check: Auditoría de Calidad de Datos</title>
+<title>XIA · Data Health Check: Data Quality Audit</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -163,174 +163,174 @@
 <div class="wrap">
   <div class="brand"><div class="mark"><img src="../../assets/xia-logo.png" alt="XIA logo"></div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
   <header class="page-head">
-    <div class="tag">Proyecto 13 · Portafolio de demostración</div>
-    <h1>Data Health Check: Auditoría de Calidad de Datos</h1>
-    <p class="tagline">4 tablas de un mini-ERP de ventas, 33 reglas de validación documentadas, un score de calidad por tabla y el plan de qué corregir primero -- y por qué.</p>
+    <div class="tag">Project 13 · Portfolio Demonstration</div>
+    <h1>Data Health Check: Data Quality Audit</h1>
+    <p class="tagline">4 tables from a mini sales ERP, 33 documented validation rules, a quality score per table, and the plan for what to fix first -- and why.</p>
   </header>
 
-  
+
 
   <div class="kpi-row">
-    
+
         <div class="kpi-card kpi-hero">
-          <div class="kpi-label">Score de calidad global</div>
+          <div class="kpi-label">Overall quality score</div>
           <div class="kpi-value">73.1/100</div>
-          
-          <span class="kpi-badge kpi-serious">En riesgo</span>
+
+          <span class="kpi-badge kpi-serious">At risk</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Filas auditadas</div>
+          <div class="kpi-label">Rows audited</div>
           <div class="kpi-value">5,007</div>
-          
-          
+
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Reglas de validación evaluadas</div>
+          <div class="kpi-label">Validation rules evaluated</div>
           <div class="kpi-value">33</div>
-          
-          
+
+
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Issues con hallazgo</div>
+          <div class="kpi-label">Issues identified</div>
           <div class="kpi-value">30</div>
-          
-          <span class="kpi-badge kpi-warning">Atención</span>
+
+          <span class="kpi-badge kpi-warning">Attention</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Tabla con menor score</div>
-          <div class="kpi-value">facturas (68.1)</div>
-          
-          <span class="kpi-badge kpi-serious">En riesgo</span>
+          <div class="kpi-label">Lowest-scoring table</div>
+          <div class="kpi-value">Invoices (68.1)</div>
+
+          <span class="kpi-badge kpi-serious">At risk</span>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-label">Filas duplicadas detectadas</div>
+          <div class="kpi-label">Duplicate rows detected</div>
           <div class="kpi-value">289</div>
-          
-          <span class="kpi-badge kpi-warning">Atención</span>
+
+          <span class="kpi-badge kpi-warning">Attention</span>
         </div>
   </div>
 
-  
+
 
   <div class="charts-grid">
-    
+
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
-        <h3>Score de calidad por tabla</h3>
-        <p>0-100 · umbral de riesgo en 60, aceptable desde 75</p>
+        <h3>Quality score by table</h3>
+        <p>0-100 · risk threshold at 60, acceptable from 75</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_score_tabla"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
-        <h3>Top 10 issues por impacto en el score</h3>
-        <p>Severidad x % de filas afectadas -- lo que más está bajando el score, primero</p>
+        <h3>Top 10 issues by score impact</h3>
+        <p>Severity x % of rows affected -- what's dragging the score down most, first</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_top_issues"></canvas>
       </div>
     </div>
-    
+
   </div>
 
   <div>
-    <p class="section-label">Score por dimensión de calidad, por tabla</p>
+    <p class="section-label">Quality score by dimension, per table</p>
     <div class="drilldown-grid">
-      
+
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Facturas</h3>
-        <p>5 dimensiones aplicables</p>
+        <h3>Invoices</h3>
+        <p>5 applicable dimensions</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_dim_facturas"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Calendario</h3>
-        <p>2 dimensiones aplicables</p>
+        <h3>Calendar</h3>
+        <p>2 applicable dimensions</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_dim_calendario"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Clientes</h3>
-        <p>3 dimensiones aplicables</p>
+        <h3>Customers</h3>
+        <p>3 applicable dimensions</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_dim_clientes"></canvas>
       </div>
     </div>
-    
+
 
     <div class="chart-card">
       <div class="chart-head">
-        <h3>Productos</h3>
-        <p>3 dimensiones aplicables</p>
+        <h3>Products</h3>
+        <p>3 applicable dimensions</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_dim_productos"></canvas>
       </div>
     </div>
-    
+
     </div>
   </div>
 
   <div class="insights-card">
-    <h3>Lo que dice el dato</h3>
-    <ul class="insights"><li>El health score global de la base es <b>73.1/100</b> (en riesgo): <b>facturas</b> es la tabla que más lo arrastra, con un score de <b>68.1</b>.</li>
-<li>El issue de mayor impacto es <b>fecha</b> en <b>facturas</b> (fecha debe capturarse en formato estándar iso (yyyy-mm-dd), no mezclado con dd/mm/yyyy o mm/dd/yyyy.) -- 1024 filas (28.48%) no cumplen la regla, con 11.39 puntos de impacto en el score.</li>
-<li>Se detectaron <b>289 filas duplicadas</b> entre las 4 tablas y <b>282 referencias rotas</b> (cliente_id/sku que ya no existen en su catálogo) en facturas -- ambos inflan cualquier reporte que sume filas o cruce tablas sin deduplicar/filtrar primero.</li>
-<li>El caso más difícil de detectar a simple vista: <b>332 facturas</b> (9.5%) donde <code>total</code> no cuadra con <code>cantidad × precio_unitario</code> -- un override manual sin recalcular que ningún filtro de nulos o duplicados detecta.</li>
-<li>Se identificaron <b>3 columnas huérfanas</b> (100% vacías, sin uso) en el esquema -- no penalizan el score porque no son un defecto del dato capturado, pero son limpieza de esquema pendiente.</li></ul>
+    <h3>What the data shows</h3>
+    <ul class="insights"><li>The database's overall health score is <b>73.1/100</b> (at risk): <b>Invoices</b> is the table dragging it down the most, with a score of <b>68.1</b>.</li>
+<li>The highest-impact issue is <b>fecha</b> in <b>Invoices</b> (fecha must be captured in standard ISO format (yyyy-mm-dd), not mixed with dd/mm/yyyy or mm/dd/yyyy.) -- 1024 rows (28.48%) fail the rule, with 11.39 points of score impact.</li>
+<li>We detected <b>289 duplicate rows</b> across the 4 tables and <b>282 broken references</b> (cliente_id/sku values that no longer exist in their catalog) in Invoices -- both inflate any report that sums rows or joins tables without deduplicating/filtering first.</li>
+<li>The hardest case to spot at a glance: <b>332 invoices</b> (9.5%) where <code>total</code> doesn't match <code>cantidad × precio_unitario</code> -- a manual override without recalculation that no null or duplicate filter catches.</li>
+<li>We identified <b>3 orphaned columns</b> (100% empty, unused) in the schema -- they don't penalize the score because they aren't a defect in captured data, but they are pending schema cleanup.</li></ul>
   </div>
 
-  
+
     <details class="table-wrap">
-      <summary>Ver tabla de datos</summary>
+      <summary>View data table</summary>
       <table>
-        <thead><tr><th>#</th><th>Tabla</th><th>Campo</th><th>Tipo</th><th>Severidad</th><th>Filas afectadas</th><th>% filas</th><th>Impacto (pts)</th><th>Qué hacer primero</th></tr></thead>
-        <tbody><tr><td>1</td><td>facturas</td><td>fecha</td><td>Validez/Formato</td><td>Alta</td><td>1,024</td><td>28.48%</td><td>11.39</td><td>Agregar validación de formato/rango en el punto de captura para `fecha`; poner en cuarentena o corregir las 1024 filas fuera de rango.</td></tr>
-<tr><td>2</td><td>clientes</td><td>fecha_alta</td><td>Validez/Formato</td><td>Alta</td><td>129</td><td>24.62%</td><td>9.85</td><td>Agregar validación de formato/rango en el punto de captura para `fecha_alta`; poner en cuarentena o corregir las 129 filas fuera de rango.</td></tr>
-<tr><td>3</td><td>productos</td><td>sku</td><td>Unicidad</td><td>Crítica</td><td>16</td><td>10.0%</td><td>6.5</td><td>Definir `sku` (o la combinación de campos) como llave única en la base; deduplicar las 16 filas detectadas antes de usar la tabla en cualquier agregado.</td></tr>
-<tr><td>4</td><td>facturas</td><td>total</td><td>Consistencia de cálculo</td><td>Crítica</td><td>332</td><td>9.48%</td><td>6.16</td><td>Recalcular `total` desde sus componentes en vez de aceptar el valor capturado manualmente; revisar las 332 filas donde no cuadra con la fórmula esperada.</td></tr>
-<tr><td>5</td><td>clientes</td><td>ciudad</td><td>Validez/Formato</td><td>Media</td><td>132</td><td>25.19%</td><td>5.04</td><td>Agregar validación de formato/rango en el punto de captura para `ciudad`; poner en cuarentena o corregir las 132 filas fuera de rango.</td></tr>
-<tr><td>6</td><td>clientes</td><td>email</td><td>Unicidad</td><td>Alta</td><td>43</td><td>8.83%</td><td>3.53</td><td>Definir `email` (o la combinación de campos) como llave única en la base; deduplicar las 43 filas detectadas antes de usar la tabla en cualquier agregado.</td></tr>
-<tr><td>7</td><td>clientes</td><td>cliente_id</td><td>Unicidad</td><td>Crítica</td><td>28</td><td>5.34%</td><td>3.47</td><td>Definir `cliente_id` (o la combinación de campos) como llave única en la base; deduplicar las 28 filas detectadas antes de usar la tabla en cualquier agregado.</td></tr>
-<tr><td>8</td><td>productos</td><td>precio_unitario</td><td>Validez/Formato</td><td>Alta</td><td>13</td><td>8.12%</td><td>3.25</td><td>Agregar validación de formato/rango en el punto de captura para `precio_unitario`; poner en cuarentena o corregir las 13 filas fuera de rango.</td></tr>
-<tr><td>9</td><td>facturas</td><td>cliente_id</td><td>Integridad referencial</td><td>Crítica</td><td>158</td><td>4.55%</td><td>2.96</td><td>Bloquear la inserción de filas cuyo `cliente_id` no exista en el catálogo maestro; investigar el origen de las 158 referencias huérfanas (¿catálogo desactualizado o borrado sin cascada?).</td></tr>
-<tr><td>10</td><td>clientes</td><td>segmento</td><td>Validez/Formato</td><td>Media</td><td>77</td><td>14.69%</td><td>2.94</td><td>Agregar validación de formato/rango en el punto de captura para `segmento`; poner en cuarentena o corregir las 77 filas fuera de rango.</td></tr>
-<tr><td>11</td><td>clientes</td><td>email</td><td>Completitud</td><td>Alta</td><td>37</td><td>7.06%</td><td>2.82</td><td>Hacer obligatorio `email` en el formulario/ETL de origen; las 37 filas ya capturadas van a una cola de revisión manual, no a imputación automática.</td></tr>
-<tr><td>12</td><td>productos</td><td>categoria</td><td>Validez/Formato</td><td>Media</td><td>21</td><td>13.12%</td><td>2.62</td><td>Agregar validación de formato/rango en el punto de captura para `categoria`; poner en cuarentena o corregir las 21 filas fuera de rango.</td></tr>
-<tr><td>13</td><td>productos</td><td>precio_unitario</td><td>Completitud</td><td>Alta</td><td>9</td><td>5.62%</td><td>2.25</td><td>Hacer obligatorio `precio_unitario` en el formulario/ETL de origen; las 9 filas ya capturadas van a una cola de revisión manual, no a imputación automática.</td></tr>
-<tr><td>14</td><td>facturas</td><td>sku</td><td>Integridad referencial</td><td>Crítica</td><td>124</td><td>3.45%</td><td>2.24</td><td>Bloquear la inserción de filas cuyo `sku` no exista en el catálogo maestro; investigar el origen de las 124 referencias huérfanas (¿catálogo desactualizado o borrado sin cascada?).</td></tr>
+        <thead><tr><th>#</th><th>Table</th><th>Field</th><th>Type</th><th>Severity</th><th>Rows affected</th><th>% rows</th><th>Impact (pts)</th><th>What to fix first</th></tr></thead>
+        <tbody><tr><td>1</td><td>Invoices</td><td>fecha</td><td>Validity/Format</td><td>High</td><td>1,024</td><td>28.48%</td><td>11.39</td><td>Add format/range validation at the point of capture for `fecha`; quarantine or correct the 1024 out-of-range rows.</td></tr>
+<tr><td>2</td><td>Customers</td><td>fecha_alta</td><td>Validity/Format</td><td>High</td><td>129</td><td>24.62%</td><td>9.85</td><td>Add format/range validation at the point of capture for `fecha_alta`; quarantine or correct the 129 out-of-range rows.</td></tr>
+<tr><td>3</td><td>Products</td><td>sku</td><td>Uniqueness</td><td>Critical</td><td>16</td><td>10.0%</td><td>6.5</td><td>Define `sku` (or the field combination) as a unique key in the database; deduplicate the 16 detected rows before using the table in any aggregate.</td></tr>
+<tr><td>4</td><td>Invoices</td><td>total</td><td>Calculation Consistency</td><td>Critical</td><td>332</td><td>9.48%</td><td>6.16</td><td>Recalculate `total` from its components instead of accepting the manually captured value; review the 332 rows where it doesn't match the expected formula.</td></tr>
+<tr><td>5</td><td>Customers</td><td>ciudad</td><td>Validity/Format</td><td>Medium</td><td>132</td><td>25.19%</td><td>5.04</td><td>Add format/range validation at the point of capture for `ciudad`; quarantine or correct the 132 out-of-range rows.</td></tr>
+<tr><td>6</td><td>Customers</td><td>email</td><td>Uniqueness</td><td>High</td><td>43</td><td>8.83%</td><td>3.53</td><td>Define `email` (or the field combination) as a unique key in the database; deduplicate the 43 detected rows before using the table in any aggregate.</td></tr>
+<tr><td>7</td><td>Customers</td><td>cliente_id</td><td>Uniqueness</td><td>Critical</td><td>28</td><td>5.34%</td><td>3.47</td><td>Define `cliente_id` (or the field combination) as a unique key in the database; deduplicate the 28 detected rows before using the table in any aggregate.</td></tr>
+<tr><td>8</td><td>Products</td><td>precio_unitario</td><td>Validity/Format</td><td>High</td><td>13</td><td>8.12%</td><td>3.25</td><td>Add format/range validation at the point of capture for `precio_unitario`; quarantine or correct the 13 out-of-range rows.</td></tr>
+<tr><td>9</td><td>Invoices</td><td>cliente_id</td><td>Referential Integrity</td><td>Critical</td><td>158</td><td>4.55%</td><td>2.96</td><td>Block insertion of rows whose `cliente_id` doesn't exist in the master catalog; investigate the source of the 158 orphaned references (outdated catalog, or deletion without cascade?).</td></tr>
+<tr><td>10</td><td>Customers</td><td>segmento</td><td>Validity/Format</td><td>Medium</td><td>77</td><td>14.69%</td><td>2.94</td><td>Add format/range validation at the point of capture for `segmento`; quarantine or correct the 77 out-of-range rows.</td></tr>
+<tr><td>11</td><td>Customers</td><td>email</td><td>Completeness</td><td>High</td><td>37</td><td>7.06%</td><td>2.82</td><td>Make `email` mandatory in the source form/ETL; the 37 already-captured rows go to a manual review queue, not automatic imputation.</td></tr>
+<tr><td>12</td><td>Products</td><td>categoria</td><td>Validity/Format</td><td>Medium</td><td>21</td><td>13.12%</td><td>2.62</td><td>Add format/range validation at the point of capture for `categoria`; quarantine or correct the 21 out-of-range rows.</td></tr>
+<tr><td>13</td><td>Products</td><td>precio_unitario</td><td>Completeness</td><td>High</td><td>9</td><td>5.62%</td><td>2.25</td><td>Make `precio_unitario` mandatory in the source form/ETL; the 9 already-captured rows go to a manual review queue, not automatic imputation.</td></tr>
+<tr><td>14</td><td>Invoices</td><td>sku</td><td>Referential Integrity</td><td>Critical</td><td>124</td><td>3.45%</td><td>2.24</td><td>Block insertion of rows whose `sku` doesn't exist in the master catalog; investigate the source of the 124 orphaned references (outdated catalog, or deletion without cascade?).</td></tr>
 </tbody>
       </table>
     </details>
-    
 
-  
 
-  
+
+
+
 
   <footer>
-    Dataset sintético generado para fines demostrativos. Servicio real: Data Storytelling Express / Micro Data Office &middot;
+    Synthetic dataset generated for demonstration purposes. Actual service: Data Storytelling Express / Micro Data Office &middot;
     <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
   </footer>
 </div>
@@ -363,7 +363,7 @@ function surfaceColor() { return cssVar('--surface'); }
     (function() {
       const canvas = document.getElementById('chart_score_tabla');
       const wrap = canvas.parentElement;
-      const labels = ["facturas", "calendario", "clientes", "productos"];
+      const labels = ["Invoices", "Calendar", "Customers", "Products"];
       const values = [68.1, 98.1, 69.2, 83.2];
       const maxVal = 100;
       const colors = ["#8C5A1E", "#3E8F72", "#8C5A1E", "#B8842C"];
@@ -431,14 +431,14 @@ function surfaceColor() { return cssVar('--surface'); }
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
       new ResizeObserver(draw).observe(wrap);
     })();
-    
+
 
     new Chart(document.getElementById('chart_top_issues').getContext('2d'), {
       type: "bar",
       data: {
-        labels: ["facturas · fecha (Validez/Formato)", "clientes · fecha_alta (Validez/Formato)", "productos · sku (Unicidad)", "facturas · total (Consistencia de cálculo)", "clientes · ciudad (Validez/Formato)", "clientes · email (Unicidad)", "clientes · cliente_id (Unicidad)", "productos · precio_unitario (Validez/Formato)", "facturas · cliente_id (Integridad referencial)", "clientes · segmento (Validez/Formato)"],
+        labels: ["Invoices · fecha (Validity/Format)", "Customers · fecha_alta (Validity/Format)", "Products · sku (Uniqueness)", "Invoices · total (Calculation Consistency)", "Customers · ciudad (Validity/Format)", "Customers · email (Uniqueness)", "Customers · cliente_id (Uniqueness)", "Products · precio_unitario (Validity/Format)", "Invoices · cliente_id (Referential Integrity)", "Customers · segmento (Validity/Format)"],
         datasets: [{
-            label: "Impacto (pts)",
+            label: "Impact (pts)",
             data: [11.4, 9.8, 6.5, 6.2, 5.0, 3.5, 3.5, 3.2, 3.0, 2.9],
             valueLabels: null,
             backgroundColor: ["#8C5A1E", "#8C5A1E", "#d03b3b", "#d03b3b", "#B8842C", "#8C5A1E", "#d03b3b", "#8C5A1E", "#d03b3b", "#B8842C"],
@@ -469,17 +469,17 @@ function surfaceColor() { return cssVar('--surface'); }
             stacked: false,
             grid: { color: inkColor('grid') },
             ticks: { color: inkColor('muted') },
-            title: { display: true, text: "Puntos de impacto", color: inkColor('secondary') }
+            title: { display: true, text: "Impact points", color: inkColor('secondary') }
           }
         }
       }
     });
-    
+
 
     (function() {
       const canvas = document.getElementById('chart_dim_facturas');
       const wrap = canvas.parentElement;
-      const labels = ["Completitud", "Unicidad", "Validez/Formato", "Integridad referencial", "Consistencia de cálculo"];
+      const labels = ["Completeness", "Uniqueness", "Validity/Format", "Referential Integrity", "Calculation Consistency"];
       const values = [97.6, 97.9, 84.0, 94.8, 93.8];
       const maxVal = 100;
       const colors = ["#3E8F72", "#3E8F72", "#B8842C", "#3E8F72", "#3E8F72"];
@@ -547,12 +547,12 @@ function surfaceColor() { return cssVar('--surface'); }
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
       new ResizeObserver(draw).observe(wrap);
     })();
-    
+
 
     (function() {
       const canvas = document.getElementById('chart_dim_calendario');
       const wrap = canvas.parentElement;
-      const labels = ["Unicidad", "Validez/Formato"];
+      const labels = ["Uniqueness", "Validity/Format"];
       const values = [99.3, 98.8];
       const maxVal = 100;
       const colors = ["#3E8F72", "#3E8F72"];
@@ -620,12 +620,12 @@ function surfaceColor() { return cssVar('--surface'); }
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
       new ResizeObserver(draw).observe(wrap);
     })();
-    
+
 
     (function() {
       const canvas = document.getElementById('chart_dim_clientes');
       const wrap = canvas.parentElement;
-      const labels = ["Completitud", "Unicidad", "Validez/Formato"];
+      const labels = ["Completeness", "Uniqueness", "Validity/Format"];
       const values = [95.9, 93.0, 80.3];
       const maxVal = 100;
       const colors = ["#3E8F72", "#3E8F72", "#B8842C"];
@@ -693,12 +693,12 @@ function surfaceColor() { return cssVar('--surface'); }
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
       new ResizeObserver(draw).observe(wrap);
     })();
-    
+
 
     (function() {
       const canvas = document.getElementById('chart_dim_productos');
       const wrap = canvas.parentElement;
-      const labels = ["Completitud", "Unicidad", "Validez/Formato"];
+      const labels = ["Completeness", "Uniqueness", "Validity/Format"];
       const values = [97.0, 93.5, 92.7];
       const maxVal = 100;
       const colors = ["#3E8F72", "#3E8F72", "#3E8F72"];
@@ -766,7 +766,7 @@ function surfaceColor() { return cssVar('--surface'); }
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
       new ResizeObserver(draw).observe(wrap);
     })();
-    
+
 </script>
 </body>
 </html>
