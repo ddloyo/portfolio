@@ -20,7 +20,7 @@ dbt, y el estado de cada una se puede comprobar (ver [Verificación](#verificaci
 | `schema/04_gold.sql` | 19 vistas | `warehouse/models/gold/` | **Migrado, verificado y eliminado** | — (recuperable: `git show c712ad8:database/schema/04_gold.sql`) |
 
 Con esto termina la migración. Otros documentos que describen el diseño legacy y
-habrá que reescribir o retirar: `database/README.md`, `database/architecture.html` (y su artifact publicado).
+habrá que reescribir o retirar: `database/README.md`. `database/architecture.html` ya se reescribió: ilustra la transformación de este DDL a dbt y es el proyecto 14 del portafolio (su artifact publicado, si existe, sigue mostrando la versión anterior).
 
 | Capa | Migradas | Parciales | Pendientes | Total |
 |---|---|---|---|---|

@@ -57,7 +57,7 @@ export DBT_PROFILES_DIR=profiles
 dbt deps          # instala dbt_utils
 dbt seed          # carga los 22 CSV a DuckDB (schema "raw")
 dbt run           # staging -> intermediate -> marts -> meta -> gold (87 modelos)
-dbt test          # 430 tests (sources, llaves, integridad, contratos, genéricos, custom y singulares)
+dbt test          # 429 tests (sources, llaves, integridad, contratos, genéricos, custom y singulares)
 dbt docs generate && dbt docs serve   # catálogo + lineage DAG en localhost
 
 ```
@@ -117,7 +117,7 @@ warehouse/
 | **contratos** | Los 19 `rpt_*` de gold llevan `contract: enforced`: dbt no los materializa si cambia una columna o un tipo respecto al CSV del dashboard |
 | **meta** | `models/meta/` — motor de calidad persistido: cada `dbt run` es un batch (`invocation_id`), evalúa 33 reglas sobre bronze y guarda resultado, scorecard y plan de remediación. Reproduce exactamente las salidas de `projects/13` |
 | **incremental** | `fct_pedido.sql` — watermark por fecha, `unique_key`, `delete+insert`. Verificado a mano: correr dos veces sin datos nuevos no reprocesa nada; agregar un día nuevo solo inserta esas filas. |
-| **tests** | 430: PK (`unique`/`not_null`) y FK (`relationships`) de las 35 tablas de silver y las 5 de meta, valores aceptados y rangos, contratos de los 19 reportes gold, 1 genérico custom (`total_matches_lineas`) y 6 singulares (reconciliación entre marts, líneas que no se pierden, fechas futuras, regla del NPS, reglas de calidad evaluadas en cada batch) |
+| **tests** | 429: PK (`unique`/`not_null`) y FK (`relationships`) de las 35 tablas de silver y las 5 de meta, valores aceptados y rangos, contratos de los 19 reportes gold, 1 genérico custom (`total_matches_lineas`) y 6 singulares (reconciliación entre marts, líneas que no se pierden, fechas futuras, regla del NPS, reglas de calidad evaluadas en cada batch) |
 | **schema.yml** | Uno por dominio, no un YAML monolítico |
 | **documentación** | Descripciones inline + bloques `{% docs %}` largos (`dim_cliente_dedupe`) |
 | **lineage/DAG** | `dbt docs generate` + `dbt docs serve` — el grafo interactivo real |

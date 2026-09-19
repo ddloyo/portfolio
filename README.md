@@ -2,7 +2,7 @@
 
 **Preguntas un lunes. Respuesta el jueves. El viernes ya decidiste sin ella.**
 
-Este repositorio es un portafolio de 13 proyectos de demostración que muestran, con datos sintéticos pero con código funcional real, lo que un **equipo de datos a demanda** puede resolver en semanas — no en trimestres. Cada proyecto es un caso de negocio completo: datos, análisis y un dashboard interactivo, listo para abrirse en el navegador.
+Este repositorio es un portafolio de 14 proyectos de demostración que muestran, con datos sintéticos pero con código funcional real, lo que un **equipo de datos a demanda** puede resolver en semanas — no en trimestres. Trece son casos de negocio completos: datos, análisis y un dashboard interactivo, listo para abrirse en el navegador; el catorce es la arquitectura de datos (dbt) que los respalda.
 
 No vendemos dashboards. Vendemos el momento en que la respuesta todavía importaba.
 
@@ -11,9 +11,9 @@ No vendemos dashboards. Vendemos el momento en que la respuesta todavía importa
 | Servicio | Qué es | Proyectos de ejemplo |
 |---|---|---|
 | **Data Storytelling Express** | Proyecto puntual · primera versión en días. Un reporte convertido en la decisión: diagnóstico, narrativa clara (qué pasa, por qué, qué hacer) y presentación ejecutiva. | 03, 05, 06, 09, 10, 12 |
-| **Micro Data Office** | Suscripción mensual, sin mínimos. El equipo de datos que no se justifica contratar todavía: dashboards siempre actualizados, limpieza de datos, iteración continua. | 01, 02, 04, 07, 08, 11, 13 |
+| **Micro Data Office** | Suscripción mensual, sin mínimos. El equipo de datos que no se justifica contratar todavía: dashboards siempre actualizados, limpieza de datos, iteración continua. | 01, 02, 04, 07, 08, 11, 13, 14 |
 
-## Los 13 proyectos, en tres pilares
+## Los 14 proyectos, en tres pilares
 
 El portafolio avanza en madurez: primero se asegura que los datos sean confiables (**Data Foundation**), luego responde qué está pasando y por qué (**Data Analysis**), y finalmente anticipa qué va a pasar y qué hacer al respecto (**Advanced Analytics**).
 
@@ -25,6 +25,7 @@ Calidad, consolidación y confiabilidad de los datos — la base antes de analiz
 |---|---|---|---|
 | 11 | [Consolidación de Datos Dispersos](projects/11-consolidacion-fuente-verdad) | Micro Data Office | Tres Excels de tres sucursales, un solo número correcto. |
 | 13 | [Data Health Check: Auditoría de Calidad de Datos](projects/13-data-health-check) | Micro Data Office | Un score de calidad por tabla y el plan de qué corregir primero — y por qué. |
+| 14 | [Arquitectura de Datos: del DDL a un Warehouse dbt](database/architecture.html) | Micro Data Office | El mismo diseño de warehouse, ahora con 87 modelos, 429 tests y lineage generado — no dibujado. |
 
 ### Data Analysis
 
@@ -69,7 +70,9 @@ el operativo real (CRM, pedidos, facturación...) del que esos reportes se
 calcularían, reusando los datasets ya sucios de los proyectos 04, 11 y 13
 como fuente en vez de inventar datos desde cero. El diseño completo está en
 [`database/README.md`](database/README.md); cómo correrlo, en
-[`warehouse/README.md`](warehouse/README.md).
+[`warehouse/README.md`](warehouse/README.md). La transformación de ese diseño
+en DDL a este proyecto dbt, con sus ventajas, está ilustrada en
+[`database/architecture.html`](database/architecture.html) (proyecto 14).
 
 ## Cómo explorar el portafolio
 
