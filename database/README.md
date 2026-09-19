@@ -18,15 +18,11 @@ patrón *medallion* (Databricks/dbt):
    sin transformar              + salidas de modelo
 ```
 
-Por ahora **solo se define estructura** (DDL) — sin `INSERT`, sin scripts de carga.
-Los `.sql` están en [`schema/`](schema/), en orden de dependencia. **`01_bronze.sql` y
-`02_silver.sql` ya se migraron a dbt y se eliminaron** (siguen en el historial de git;
-ver [`LEGACY_TABLES.md`](LEGACY_TABLES.md)). Quedan:
-
-| Archivo | Contenido |
-|---|---|
-| [`03_meta_dq.sql`](schema/03_meta_dq.sql) | Motor de reglas de calidad de datos, corre contra el maestro real de bronze |
-| [`04_gold.sql`](schema/04_gold.sql) | 19 vistas — los 13 datasets del portafolio, como consulta sobre silver |
+Este documento describe el diseño original, que era **solo estructura** (DDL).
+Los DDL originales (`schema/01_bronze.sql` a `04_gold.sql`) **ya se migraron a dbt y se
+eliminaron**; siguen en el historial de git (ver [`LEGACY_TABLES.md`](LEGACY_TABLES.md)).
+Su contraparte ejecutable: bronze en `warehouse/seeds/`, silver en `warehouse/models/marts/`,
+meta en `warehouse/models/meta/` y gold en `warehouse/models/gold/`.
 
 ## El cambio de enfoque respecto a la primera versión
 

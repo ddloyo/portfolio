@@ -6,11 +6,10 @@ como un archivo local (o temporal en CI); todo el pipeline — seeds,
 staging, marts, tests, docs — se ejecuta igual en tu laptop que en un
 runner gratuito de GitHub Actions.
 
-**Este proyecto es la única fuente de verdad ejecutable.** Los `.sql` de
-`database/schema/` son el diseño original en DDL y se están migrando aquí capa
-por capa; el estado de cada tabla está en
-[`database/LEGACY_TABLES.md`](../database/LEGACY_TABLES.md). **Bronze (21/21) y
-silver (35/35) ya están migrados 1:1, verificados y sus `.sql` legacy eliminados**; meta y gold están en curso.
+**Este proyecto es la única fuente de verdad ejecutable.** El diseño original en DDL
+(`database/schema/`) se migró aquí capa por capa y ya se eliminó; el estado de cada tabla está en
+[`database/LEGACY_TABLES.md`](../database/LEGACY_TABLES.md). **Bronze (21/21),
+silver (35/35), meta (5/5) y gold (19/19) ya están migrados y verificados**.
 
 ## Bronze: 21 seeds, uno por tabla del DDL
 
@@ -57,8 +56,8 @@ export DBT_PROFILES_DIR=profiles
 
 dbt deps          # instala dbt_utils
 dbt seed          # carga los 22 CSV a DuckDB (schema "raw")
-dbt run           # staging -> intermediate -> marts (69 modelos)
-dbt test          # 326 tests (sources, llaves, integridad, genéricos, custom y singulares)
+dbt run           # staging -> intermediate -> marts -> meta -> gold (87 modelos)
+dbt test          # 430 tests (sources, llaves, integridad, contratos, genéricos, custom y singulares)
 dbt docs generate && dbt docs serve   # catálogo + lineage DAG en localhost
 
 ```
@@ -84,22 +83,26 @@ python3 seeds/generators/generate_bronze.py
 warehouse/
 ├── seeds/              22 CSV por sistema fuente (crm/, erp/, pos/, sucursales/, wms/...)
 │   └── generators/      generate_bronze.py (+ generate_pedido_linea.py, que este invoca)
-├── models/              69 modelos
+├── models/              87 modelos
 │   ├── staging/         22 modelos stg_<source>__<entidad> — 1:1 con cada fuente; los 10
 │   │                    sources de bronze se declaran aquí (_*__sources.yml, con tests)
-│   ├── intermediate/    5 modelos: depuración y reglas de negocio (int_producto_depurado,
-│   │                    int_factura_linea_validada, dedup de sucursales, pedidos enriquecidos)
-│   └── marts/           silver (11 dims + 24 hechos) y reportes (7 rpt_*)
+│   ├── intermediate/    6 modelos: depuración y reglas de negocio (int_producto_depurado,
+│   │                    int_factura_linea_validada, dedup de sucursales, pedidos enriquecidos,
+│   │                    métricas de canal por mes)
+│   ├── marts/           silver: 11 dims + 24 hechos
 │       ├── core/        11 dimensiones: dim_fecha, dim_cliente, dim_producto, dim_canal...
-│       ├── ventas/      fct_pedido (incremental), RFM, elasticidad, tendencia + 4 rpt_*
+│       ├── ventas/      fct_pedido (incremental), RFM, elasticidad, tendencia
 │       ├── finanzas/    facturas, pagos, cargos de suscripción, segmento de pago
 │       ├── cliente/     soporte, actividad, cancelación, NPS, features y score de churn
 │       ├── marketing/   gasto de pauta y ROI por canal
 │       ├── inventario/  snapshot de inventario y forecast de demanda
 │       ├── scorecard/   KPIs manuales y metas
-│       └── sucursales/  ventas de sucursal, cola de revisión + 2 rpt_*
-├── macros/              9 macros Jinja reutilizables (ver abajo)
-├── tests/               5 tests singulares + 1 test genérico custom
+│       └── sucursales/  ventas de sucursal y cola de revisión
+│   ├── meta/            5 modelos: motor de calidad de datos (batch, reglas, resultados, scorecard, plan)
+│   └── gold/            19 rpt_*, en una carpeta por dashboard (01_ventas_por_equipo ... 13_data_health)
+├── macros/              11 macros Jinja reutilizables (ver abajo)
+├── scripts/             verify_dashboard_coverage.py: cada dashboard tiene su reporte gold
+├── tests/               6 tests singulares + 1 test genérico custom
 └── snapshots/, analyses/  (vacíos por ahora)
 ```
 
@@ -110,17 +113,57 @@ warehouse/
 | **sources** | `models/staging/*/_*__sources.yml` — 10 sistemas fuente, 21 tablas, cada una anclada a su tabla legacy con `meta.legacy_table`. Los sistemas limpios llevan tests de llave única, `accepted_values` e integridad referencial entre sources. |
 | **staging** | `stg_<source>__<entidad>.sql` — 22 modelos, materializados como view |
 | **intermediate** | `models/intermediate/` — depuración de producto (`QUALIFY`, ventana para recuperar categorías), validación de facturas con motivo de rechazo, dedup de sucursales |
-| **marts** | `models/marts/core` (11 dimensiones) + hechos por dominio (24) + `rpt_*` (7). Los hechos "enriquecidos" (churn, RFM, elasticidad, forecast, ROI, tendencia) se calculan en SQL puro |
+| **marts** | `models/marts/core` (11 dimensiones) + hechos por dominio (24). Los hechos "enriquecidos" (churn, RFM, elasticidad, forecast, ROI, tendencia) se calculan en SQL puro |
+| **contratos** | Los 19 `rpt_*` de gold llevan `contract: enforced`: dbt no los materializa si cambia una columna o un tipo respecto al CSV del dashboard |
+| **meta** | `models/meta/` — motor de calidad persistido: cada `dbt run` es un batch (`invocation_id`), evalúa 33 reglas sobre bronze y guarda resultado, scorecard y plan de remediación. Reproduce exactamente las salidas de `projects/13` |
 | **incremental** | `fct_pedido.sql` — watermark por fecha, `unique_key`, `delete+insert`. Verificado a mano: correr dos veces sin datos nuevos no reprocesa nada; agregar un día nuevo solo inserta esas filas. |
-| **tests** | 326: PK (`unique`/`not_null`) y FK (`relationships`) de las 35 tablas de silver, valores aceptados y rangos, 1 genérico custom (`total_matches_lineas`) y 5 singulares (reconciliación entre marts, líneas que no se pierden, fechas futuras, regla del NPS) |
+| **tests** | 430: PK (`unique`/`not_null`) y FK (`relationships`) de las 35 tablas de silver y las 5 de meta, valores aceptados y rangos, contratos de los 19 reportes gold, 1 genérico custom (`total_matches_lineas`) y 6 singulares (reconciliación entre marts, líneas que no se pierden, fechas futuras, regla del NPS, reglas de calidad evaluadas en cada batch) |
 | **schema.yml** | Uno por dominio, no un YAML monolítico |
-| **documentación** | Descripciones inline + 2 bloques `{% docs %}` largos (`dim_cliente_dedupe`, `un_hecho_seis_reportes`) |
+| **documentación** | Descripciones inline + bloques `{% docs %}` largos (`dim_cliente_dedupe`) |
 | **lineage/DAG** | `dbt docs generate` + `dbt docs serve` — el grafo interactivo real |
-| **macros** | `duckdb__create_csv_table` (todo seed aterriza como TEXT), `generate_schema_name`, `parse_messy_date` (fechas mixtas; la ambigüedad DD/MM vs MM/DD está documentada, no oculta), `cast_messy_amount`, `quadrant_segment` (un macro en vez de 4 `CASE WHEN`), `nombre_mes_es`/`nombre_dia_es`, `canonical_case` (normaliza catálogos), `mes_key` |
+| **macros** | `duckdb__create_csv_table` (todo seed aterriza como TEXT), `generate_schema_name`, `parse_messy_date` (fechas mixtas; la ambigüedad DD/MM vs MM/DD está documentada, no oculta), `cast_messy_amount`, `quadrant_segment` (un macro en vez de 4 `CASE WHEN`), `nombre_mes_es`/`nombre_dia_es`, `canonical_case` (normaliza catálogos), `mes_key`, `dq_reglas` (las 33 reglas de calidad como datos, no como 33 tests sueltos) y `cerrar_batch` (hook `on-run-end`) |
 | **Jinja** | `{% for %}` sobre la lista de formatos de fecha, `{% if is_incremental() %}`, `ref()`/`source()` en todo, `{{ var(...) }}` |
 | **SQL** | CTEs en cascada, `ROW_NUMBER()`/`QUALIFY`, `PERCENT_RANK()`, ventanas móviles, regresión nativa (`regr_slope`/`regr_r2`), agregaciones con `FILTER` |
 | **Git** | rama por feature → PR → CI en verde → merge a main |
-| **CI/CD** | `dbt_ci.yml`: seed → run → test en cada PR, DuckDB efímero, sin credenciales. `dbt_docs.yml`: genera el sitio de docs como artifact en cada push a main |
+| **CI/CD** | `dbt_ci.yml`: seed → run → test → cobertura de dashboards en cada PR, DuckDB efímero, sin credenciales. `dbt_docs.yml`: genera el sitio de docs como artifact en cada push a main |
+
+## Gold: un reporte por cada dataset de dashboard
+
+Cada CSV que consume (o produce) un dashboard de `projects/` tiene un modelo
+`rpt_*` en `models/gold/`, con **las mismas columnas, en el mismo orden y del
+mismo tipo** que el CSV (contrato de dbt). Casi toda la lógica vive en
+silver; gold agrega y da formato. Los que comparan periodos usan semanas o
+meses **completos** al corte de `fecha_referencia`.
+
+| # | Dashboard | Reportes gold |
+|---|---|---|
+| 01 | Sales performance | `rpt_ventas_diarias`, `rpt_metas_mensuales` |
+| 02 | Funnel de ventas | `rpt_funnel_semanal` |
+| 03 | Scorecard metas vs resultados | `rpt_kpi_historico`, `rpt_scorecard` |
+| 04 | Predicción de churn | `rpt_clientes_churn` |
+| 05 | Segmentación RFM | `rpt_transacciones` |
+| 06 | Elasticidad de precios | `rpt_precio_demanda` |
+| 07 | Forecast de demanda e inventario | `rpt_demanda_diaria`, `rpt_inventario_actual` |
+| 08 | Flujo de caja y cartera | `rpt_facturas` |
+| 09 | ROI de marketing por canal | `rpt_marketing_canales` |
+| 10 | Reporte ejecutivo mensual | `rpt_transacciones_ejecutivo` |
+| 11 | Consolidación a una fuente de verdad | `rpt_fuente_unica`, `rpt_revision_manual_monto_faltante` |
+| 12 | NPS y causa raíz | `rpt_encuestas_nps` |
+| 13 | Data health check | `rpt_scorecard_calidad_tablas`, `rpt_reglas_validacion`, `rpt_plan_remediacion` |
+
+Para comprobar que la cobertura sigue completa (tras `dbt run`, con el manifest generado):
+
+```bash
+python scripts/verify_dashboard_coverage.py --db xia_warehouse.duckdb          # forma: columnas, tipos, filas, contrato
+python scripts/verify_dashboard_coverage.py --e2e --python /ruta/con/pandas    # además, construye cada dashboard con datos de gold
+```
+
+La prueba de extremo a extremo copia el repo a un directorio temporal, exporta
+cada reporte gold como el CSV del proyecto y corre su `run_analysis.py`; nunca
+toca `projects/`. Hoy se construyen con datos del warehouse los dashboards 01–06,
+09 y 12. **07, 08 y 10 no**, porque su `run_analysis.py` trae supuestos fijos del
+dataset autónomo del proyecto (paleta para 5 categorías, `TODAY` fijo, catálogo de
+4 categorías); no son fallas del reporte gold y están listados en el script.
 
 ## Los 3 hallazgos reales que los tests atrapan (a propósito)
 
@@ -137,8 +180,7 @@ calidad ya conocida, se le da seguimiento.
 
 ## Qué sigue
 
-Bronze y silver están migrados. Faltan, en este orden: **meta** (motor de calidad de
-datos, 5 tablas) y **gold** (19 vistas; 7 migradas). Además, hay hallazgos abiertos que
+Todas las capas del diseño legacy están migradas. Quedan hallazgos abiertos que
 piden decisión (moneda de las facturas, 22% de facturas rechazadas, churn como proxy): están
 en [`database/LEGACY_TABLES.md`](../database/LEGACY_TABLES.md), junto con el modelo dbt
 correspondiente a cada objeto del diseño legacy.
