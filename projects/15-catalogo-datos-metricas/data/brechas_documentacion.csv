@@ -1,0 +1,121 @@
+objeto,capa,dominio,tipo_brecha,detalle,n_dashboards_impactados,dashboards_impactados
+crm.crm_cliente,bronze,core,sin_tests,Ningún test lo cubre,11,01 03 04 05 06 07 08 09 10 12 13
+crm.crm_cliente,bronze,core,columnas_sin_descripcion,6 de 12 columnas sin descripción,11,01 03 04 05 06 07 08 09 10 12 13
+dim_cliente,marts,core,columnas_sin_descripcion,9 de 12 columnas sin descripción,10,01 03 04 05 06 07 08 09 10 12
+dim_region,marts,core,columnas_sin_descripcion,2 de 2 columnas sin descripción,10,01 03 04 05 06 07 08 09 10 12
+stg_crm__cliente,staging,core,columnas_sin_descripcion,10 de 11 columnas sin descripción,10,01 03 04 05 06 07 08 09 10 12
+erp.factura_linea,bronze,finanzas,sin_tests,Ningún test lo cubre,9,01 03 05 06 07 08 09 10 13
+erp.producto,bronze,core,sin_tests,Ningún test lo cubre,9,01 03 05 06 07 08 09 10 13
+erp.factura_linea,bronze,finanzas,columnas_sin_descripcion,6 de 10 columnas sin descripción,9,01 03 05 06 07 08 09 10 13
+erp.producto,bronze,core,columnas_sin_descripcion,7 de 9 columnas sin descripción,9,01 03 05 06 07 08 09 10 13
+pos.pedido_linea,bronze,ventas,sin_tests,Ningún test lo cubre,8,01 03 05 06 07 08 09 10
+ads.marketing_gasto,bronze,marketing,columnas_sin_descripcion,3 de 3 columnas sin descripción,8,01 03 05 06 07 08 09 10
+crm.crm_equipo,bronze,core,columnas_sin_descripcion,2 de 2 columnas sin descripción,8,01 02 03 05 06 07 09 10
+crm.crm_vendedor,bronze,core,columnas_sin_descripcion,2 de 3 columnas sin descripción,8,01 02 03 05 06 07 09 10
+dim_canal,marts,core,columnas_sin_descripcion,2 de 3 columnas sin descripción,8,01 03 05 06 07 08 09 10
+dim_equipo,marts,core,columnas_sin_descripcion,3 de 3 columnas sin descripción,8,01 02 03 05 06 07 09 10
+dim_producto,marts,core,columnas_sin_descripcion,7 de 9 columnas sin descripción,8,01 03 05 06 07 08 09 10
+dim_vendedor,marts,core,columnas_sin_descripcion,5 de 6 columnas sin descripción,8,01 02 03 05 06 07 09 10
+int_producto_depurado,intermediate,core,columnas_sin_descripcion,8 de 8 columnas sin descripción,8,01 03 05 06 07 08 09 10
+pos.pedido_linea,bronze,ventas,columnas_sin_descripcion,8 de 10 columnas sin descripción,8,01 03 05 06 07 08 09 10
+stg_ads__marketing_gasto,staging,marketing,columnas_sin_descripcion,3 de 3 columnas sin descripción,8,01 03 05 06 07 08 09 10
+stg_crm__equipo,staging,core,columnas_sin_descripcion,2 de 2 columnas sin descripción,8,01 02 03 05 06 07 09 10
+stg_crm__vendedor,staging,core,columnas_sin_descripcion,3 de 3 columnas sin descripción,8,01 02 03 05 06 07 09 10
+stg_erp__factura_linea,staging,finanzas,columnas_sin_descripcion,10 de 10 columnas sin descripción,8,01 03 05 06 07 08 09 10
+stg_erp__producto,staging,core,columnas_sin_descripcion,8 de 8 columnas sin descripción,8,01 03 05 06 07 08 09 10
+stg_pos__pedido_linea,staging,ventas,columnas_sin_descripcion,10 de 10 columnas sin descripción,8,01 03 05 06 07 08 09 10
+fct_pedido,marts,ventas,columnas_sin_descripcion,16 de 18 columnas sin descripción,7,01 03 05 06 07 09 10
+int_pedidos_enriquecidos,intermediate,ventas,columnas_sin_descripcion,14 de 14 columnas sin descripción,7,01 03 05 06 07 09 10
+dim_fecha,marts,core,columnas_sin_descripcion,10 de 11 columnas sin descripción,5,02 03 06 07 09
+sucursales.pedido_sucursal_cdmx,bronze,sucursales,sin_tests,Ningún test lo cubre,2,03 11
+sucursales.pedido_sucursal_guadalajara,bronze,sucursales,sin_tests,Ningún test lo cubre,2,03 11
+sucursales.pedido_sucursal_monterrey,bronze,sucursales,sin_tests,Ningún test lo cubre,2,03 11
+crm.cancelacion,bronze,cliente,columnas_sin_descripcion,3 de 3 columnas sin descripción,2,04 09
+dim_mes,marts,core,columnas_sin_descripcion,4 de 4 columnas sin descripción,2,03 09
+dim_semana,marts,core,columnas_sin_descripcion,5 de 5 columnas sin descripción,2,02 06
+dim_sucursal,marts,core,columnas_sin_descripcion,2 de 3 columnas sin descripción,2,03 11
+encuestas.encuesta_nps,bronze,cliente,columnas_sin_descripcion,5 de 5 columnas sin descripción,2,03 12
+fct_cancelacion,marts,cliente,columnas_sin_descripcion,3 de 3 columnas sin descripción,2,04 09
+fct_encuesta_nps,marts,cliente,columnas_sin_descripcion,6 de 7 columnas sin descripción,2,03 12
+fct_venta_sucursal,marts,sucursales,columnas_sin_descripcion,6 de 6 columnas sin descripción,2,03 11
+int_ventas_sucursal_unificada,intermediate,sucursales,columnas_sin_descripcion,6 de 6 columnas sin descripción,2,03 11
+stg_crm__cancelacion,staging,cliente,columnas_sin_descripcion,3 de 3 columnas sin descripción,2,04 09
+stg_encuestas__encuesta_nps,staging,cliente,columnas_sin_descripcion,5 de 5 columnas sin descripción,2,03 12
+stg_sucursales__cdmx,staging,sucursales,columnas_sin_descripcion,5 de 5 columnas sin descripción,2,03 11
+stg_sucursales__guadalajara,staging,sucursales,columnas_sin_descripcion,5 de 5 columnas sin descripción,2,03 11
+stg_sucursales__monterrey,staging,sucursales,columnas_sin_descripcion,5 de 5 columnas sin descripción,2,03 11
+sucursales.pedido_sucursal_cdmx,bronze,sucursales,columnas_sin_descripcion,3 de 3 columnas sin descripción,2,03 11
+sucursales.pedido_sucursal_guadalajara,bronze,sucursales,columnas_sin_descripcion,3 de 3 columnas sin descripción,2,03 11
+sucursales.pedido_sucursal_monterrey,bronze,sucursales,columnas_sin_descripcion,3 de 3 columnas sin descripción,2,03 11
+int_canal_mes_metricas,intermediate,marketing,sin_descripcion,El objeto no tiene descripción en dbt,1,09
+erp.calendario,bronze,core,sin_tests,Ningún test lo cubre,1,13
+int_canal_mes_metricas,intermediate,marketing,sin_tests,Ningún test lo cubre,1,09
+int_ventas_sucursal_pendiente,intermediate,sucursales,sin_tests,Ningún test lo cubre,1,11
+batch_ingesta,meta,calidad,columnas_sin_descripcion,4 de 4 columnas sin descripción,1,13
+crm.crm_meta_venta,bronze,ventas,columnas_sin_descripcion,2 de 2 columnas sin descripción,1,01
+crm.crm_oportunidad_evento,bronze,ventas,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,02
+dim_kpi,marts,core,columnas_sin_descripcion,6 de 6 columnas sin descripción,1,03
+dq_plan_remediacion,meta,calidad,columnas_sin_descripcion,10 de 10 columnas sin descripción,1,13
+dq_regla,meta,calidad,columnas_sin_descripcion,11 de 11 columnas sin descripción,1,13
+dq_resultado_regla,meta,calidad,columnas_sin_descripcion,8 de 8 columnas sin descripción,1,13
+dq_scorecard_tabla,meta,calidad,columnas_sin_descripcion,11 de 11 columnas sin descripción,1,13
+erp.calendario,bronze,core,columnas_sin_descripcion,7 de 8 columnas sin descripción,1,13
+erp.pago,bronze,finanzas,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,08
+erp.suscripcion_cargo,bronze,finanzas,columnas_sin_descripcion,3 de 3 columnas sin descripción,1,04
+fct_cliente_features_churn,marts,cliente,columnas_sin_descripcion,10 de 10 columnas sin descripción,1,04
+fct_evento_actividad,marts,cliente,columnas_sin_descripcion,6 de 6 columnas sin descripción,1,04
+fct_factura,marts,finanzas,columnas_sin_descripcion,8 de 10 columnas sin descripción,1,08
+fct_inventario_snapshot,marts,inventario,columnas_sin_descripcion,4 de 4 columnas sin descripción,1,07
+fct_kpi_manual,marts,scorecard,columnas_sin_descripcion,3 de 3 columnas sin descripción,1,03
+fct_kpi_meta,marts,scorecard,columnas_sin_descripcion,2 de 2 columnas sin descripción,1,03
+fct_marketing_gasto,marts,marketing,columnas_sin_descripcion,3 de 3 columnas sin descripción,1,09
+fct_meta_venta,marts,ventas,columnas_sin_descripcion,2 de 2 columnas sin descripción,1,01
+fct_oportunidad_evento,marts,ventas,columnas_sin_descripcion,6 de 6 columnas sin descripción,1,02
+fct_pago,marts,finanzas,columnas_sin_descripcion,6 de 6 columnas sin descripción,1,08
+fct_producto_forecast,marts,inventario,columnas_sin_descripcion,9 de 9 columnas sin descripción,1,07
+fct_suscripcion_cargo,marts,finanzas,columnas_sin_descripcion,3 de 3 columnas sin descripción,1,04
+fct_ticket_soporte,marts,cliente,columnas_sin_descripcion,6 de 6 columnas sin descripción,1,04
+fct_venta_sucursal_pendiente_revision,marts,sucursales,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,11
+helpdesk.ticket_soporte,bronze,cliente,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,04
+int_canal_mes_metricas,intermediate,marketing,columnas_sin_descripcion,7 de 7 columnas sin descripción,1,09
+int_factura_linea_validada,intermediate,finanzas,columnas_sin_descripcion,10 de 11 columnas sin descripción,1,08
+int_ventas_sucursal_pendiente,intermediate,sucursales,columnas_sin_descripcion,4 de 4 columnas sin descripción,1,11
+producto_analytics.evento_actividad,bronze,cliente,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,04
+rpt_clientes_churn,gold,cliente,columnas_sin_descripcion,9 de 9 columnas sin descripción,1,04
+rpt_demanda_diaria,gold,inventario,columnas_sin_descripcion,7 de 7 columnas sin descripción,1,07
+rpt_encuestas_nps,gold,cliente,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,12
+rpt_facturas,gold,finanzas,columnas_sin_descripcion,7 de 7 columnas sin descripción,1,08
+rpt_fuente_unica,gold,sucursales,columnas_sin_descripcion,4 de 4 columnas sin descripción,1,11
+rpt_funnel_semanal,gold,ventas,columnas_sin_descripcion,6 de 6 columnas sin descripción,1,02
+rpt_inventario_actual,gold,inventario,columnas_sin_descripcion,8 de 8 columnas sin descripción,1,07
+rpt_kpi_historico,gold,scorecard,columnas_sin_descripcion,4 de 4 columnas sin descripción,1,03
+rpt_marketing_canales,gold,marketing,columnas_sin_descripcion,7 de 7 columnas sin descripción,1,09
+rpt_metas_mensuales,gold,ventas,columnas_sin_descripcion,2 de 2 columnas sin descripción,1,01
+rpt_plan_remediacion,gold,calidad,columnas_sin_descripcion,9 de 9 columnas sin descripción,1,13
+rpt_precio_demanda,gold,ventas,columnas_sin_descripcion,4 de 4 columnas sin descripción,1,06
+rpt_reglas_validacion,gold,calidad,columnas_sin_descripcion,11 de 11 columnas sin descripción,1,13
+rpt_revision_manual_monto_faltante,gold,sucursales,columnas_sin_descripcion,4 de 4 columnas sin descripción,1,11
+rpt_scorecard,gold,scorecard,columnas_sin_descripcion,7 de 7 columnas sin descripción,1,03
+rpt_scorecard_calidad_tablas,gold,calidad,columnas_sin_descripcion,7 de 7 columnas sin descripción,1,13
+rpt_transacciones,gold,cliente,columnas_sin_descripcion,3 de 3 columnas sin descripción,1,05
+rpt_transacciones_ejecutivo,gold,ventas,columnas_sin_descripcion,7 de 7 columnas sin descripción,1,10
+rpt_ventas_diarias,gold,ventas,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,01
+scorecard.kpi_captura_manual,bronze,scorecard,columnas_sin_descripcion,7 de 7 columnas sin descripción,1,03
+scorecard.kpi_meta,bronze,scorecard,columnas_sin_descripcion,2 de 2 columnas sin descripción,1,03
+stg_crm__meta_venta,staging,ventas,columnas_sin_descripcion,2 de 2 columnas sin descripción,1,01
+stg_crm__oportunidad_evento,staging,ventas,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,02
+stg_erp__pago,staging,finanzas,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,08
+stg_erp__suscripcion_cargo,staging,finanzas,columnas_sin_descripcion,4 de 4 columnas sin descripción,1,04
+stg_helpdesk__ticket_soporte,staging,cliente,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,04
+stg_producto_analytics__evento_actividad,staging,cliente,columnas_sin_descripcion,5 de 5 columnas sin descripción,1,04
+stg_scorecard__kpi_captura_manual,staging,scorecard,columnas_sin_descripcion,8 de 8 columnas sin descripción,1,03
+stg_scorecard__kpi_meta,staging,scorecard,columnas_sin_descripcion,2 de 2 columnas sin descripción,1,03
+stg_wms__inventario_snapshot,staging,inventario,columnas_sin_descripcion,4 de 4 columnas sin descripción,1,07
+wms.inventario_snapshot,bronze,inventario,columnas_sin_descripcion,4 de 4 columnas sin descripción,1,07
+fct_canal_roi,marts,marketing,columnas_sin_descripcion,7 de 7 columnas sin descripción,0,
+fct_cliente_churn_score,marts,cliente,columnas_sin_descripcion,4 de 4 columnas sin descripción,0,
+fct_cliente_pago_segmento,marts,finanzas,columnas_sin_descripcion,3 de 3 columnas sin descripción,0,
+fct_cliente_rfm_score,marts,ventas,columnas_sin_descripcion,6 de 6 columnas sin descripción,0,
+fct_producto_elasticidad,marts,ventas,columnas_sin_descripcion,6 de 6 columnas sin descripción,0,
+fct_subcategoria_tendencia,marts,ventas,columnas_sin_descripcion,8 de 8 columnas sin descripción,0,
+stg_erp__calendario,staging,core,columnas_sin_descripcion,7 de 7 columnas sin descripción,0,
