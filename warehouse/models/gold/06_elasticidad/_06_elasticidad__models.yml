@@ -1,0 +1,32 @@
+version: 2
+models:
+- name: rpt_precio_demanda
+  description: Precio promedio y unidades por producto x semana (semanas completas; semana = índice consecutivo). Base del dashboard 06. Contrato = columnas y tipos de projects/06-elasticidad-precios/data/precio_demanda.csv.
+  config:
+    contract:
+      enforced: true
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - producto
+        - semana
+  columns:
+  - name: producto
+    data_type: varchar
+  - name: semana
+    data_type: bigint
+  - name: precio_mxn
+    data_type: double
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0.01
+  - name: unidades_vendidas
+    data_type: double
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 1

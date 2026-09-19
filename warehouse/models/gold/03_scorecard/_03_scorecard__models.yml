@@ -1,0 +1,53 @@
+version: 2
+models:
+- name: rpt_kpi_historico
+  description: Serie mensual por KPI (derivados + captura manual), meses completos. Base del dashboard 03. Contrato = columnas y tipos de projects/03-scorecard-metas-vs-resultados/data/kpi_historico.csv.
+  config:
+    contract:
+      enforced: true
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - mes
+        - kpi
+  columns:
+  - name: mes
+    data_type: varchar
+  - name: kpi
+    data_type: varchar
+  - name: area
+    data_type: varchar
+  - name: resultado
+    data_type: double
+    data_tests:
+    - not_null
+- name: rpt_scorecard
+  description: 'Un renglón por KPI: resultado del último mes completo contra su meta. Base del dashboard 03. Contrato = columnas y tipos de projects/03-scorecard-metas-vs-resultados/data/scorecard.csv.'
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: kpi
+    data_type: varchar
+    data_tests:
+    - unique
+    - not_null
+  - name: area
+    data_type: varchar
+  - name: responsable
+    data_type: varchar
+  - name: meta
+    data_type: double
+    data_tests:
+    - not_null
+  - name: resultado
+    data_type: double
+    data_tests:
+    - not_null
+  - name: unidad
+    data_type: varchar
+  - name: menor_es_mejor
+    data_type: boolean
+    data_tests:
+    - not_null

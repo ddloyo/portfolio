@@ -1,0 +1,46 @@
+version: 2
+models:
+- name: rpt_fuente_unica
+  description: Ventas de las 3 sucursales unidas, normalizadas y sin duplicados. Base del dashboard 11. Contrato = columnas y tipos de projects/11-consolidacion-fuente-verdad/data/fuente_unica.csv.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: fecha
+    data_type: date
+  - name: sucursal
+    data_type: varchar
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - CDMX
+          - Guadalajara
+          - Monterrey
+  - name: monto_mxn
+    data_type: double
+    data_tests:
+    - not_null
+  - name: fuente
+    data_type: varchar
+- name: rpt_revision_manual_monto_faltante
+  description: 'Cola de revisión manual: filas de sucursal sin monto (monto_mxn siempre NULL). Base del dashboard 11. Contrato = columnas y tipos de projects/11-consolidacion-fuente-verdad/data/revision_manual_monto_faltante.csv.'
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: fecha
+    data_type: date
+  - name: sucursal
+    data_type: varchar
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - CDMX
+          - Guadalajara
+          - Monterrey
+  - name: monto_mxn
+    data_type: double
+  - name: fuente
+    data_type: varchar

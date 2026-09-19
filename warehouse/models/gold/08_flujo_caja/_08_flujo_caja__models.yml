@@ -1,0 +1,37 @@
+version: 2
+models:
+- name: rpt_facturas
+  description: Una fila por factura con estatus y fecha de pago derivados de los pagos. Base del dashboard 08. Contrato = columnas y tipos de projects/08-flujo-caja-cartera/data/facturas.csv.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: factura_id
+    data_type: varchar
+    data_tests:
+    - unique
+    - not_null
+  - name: cliente
+    data_type: varchar
+  - name: fecha_emision
+    data_type: date
+  - name: fecha_vencimiento
+    data_type: date
+  - name: monto_mxn
+    data_type: double
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0.01
+  - name: estatus
+    data_type: varchar
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - Pagada
+          - Pendiente
+  - name: fecha_pago
+    data_type: date

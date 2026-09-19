@@ -1,0 +1,115 @@
+version: 2
+models:
+- name: rpt_scorecard_calidad_tablas
+  description: Score de calidad 0-100 por tabla auditada (corrida más reciente del motor de calidad). Salida del dashboard 13. Contrato = columnas y tipos de projects/13-data-health-check/data/scorecard_calidad_tablas.csv.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: tabla
+    data_type: varchar
+    data_tests:
+    - unique
+    - not_null
+  - name: filas
+    data_type: bigint
+  - name: score
+    data_type: double
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+          max_value: 100
+  - name: status
+    data_type: varchar
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - good
+          - warning
+          - serious
+          - critical
+  - name: status_label
+    data_type: varchar
+  - name: reglas_evaluadas
+    data_type: bigint
+  - name: reglas_con_hallazgo
+    data_type: bigint
+- name: rpt_reglas_validacion
+  description: Las 33 reglas de calidad con su resultado en la corrida más reciente. Salida del dashboard 13. Contrato = columnas y tipos de projects/13-data-health-check/data/reglas_validacion.csv.
+  config:
+    contract:
+      enforced: true
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - tabla
+        - campo
+        - tipo
+        - descripcion
+  columns:
+  - name: tabla
+    data_type: varchar
+  - name: campo
+    data_type: varchar
+  - name: tipo
+    data_type: varchar
+  - name: tipo_label
+    data_type: varchar
+  - name: severidad
+    data_type: varchar
+  - name: severidad_label
+    data_type: varchar
+  - name: descripcion
+    data_type: varchar
+  - name: n_filas
+    data_type: bigint
+  - name: n_fallas
+    data_type: bigint
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+  - name: pct_fallas
+    data_type: double
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+          max_value: 100
+  - name: impacto_pts
+    data_type: double
+- name: rpt_plan_remediacion
+  description: Plan de remediación priorizado de la corrida más reciente. Salida del dashboard 13. Contrato = columnas y tipos de projects/13-data-health-check/data/plan_remediacion.csv.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: prioridad
+    data_type: bigint
+    data_tests:
+    - unique
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 1
+  - name: tabla
+    data_type: varchar
+  - name: campo
+    data_type: varchar
+  - name: tipo
+    data_type: varchar
+  - name: severidad
+    data_type: varchar
+  - name: filas_afectadas
+    data_type: bigint
+  - name: pct_filas
+    data_type: double
+  - name: impacto_pts
+    data_type: double
+  - name: accion_recomendada
+    data_type: varchar
+    data_tests:
+    - not_null

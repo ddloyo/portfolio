@@ -1,0 +1,48 @@
+version: 2
+models:
+- name: rpt_ventas_diarias
+  description: Ventas por fecha x equipo x vendedor x línea de producto (canal gestionado con vendedor). Base del dashboard 01. Contrato = columnas y tipos de projects/01-sales-performance-dashboard/data/ventas_diarias.csv.
+  config:
+    contract:
+      enforced: true
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - fecha
+        - equipo
+        - vendedor
+        - linea_producto
+  columns:
+  - name: fecha
+    data_type: date
+  - name: equipo
+    data_type: varchar
+  - name: vendedor
+    data_type: varchar
+  - name: linea_producto
+    data_type: varchar
+  - name: monto_mxn
+    data_type: double
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+- name: rpt_metas_mensuales
+  description: Meta mensual vigente por equipo. Base del dashboard 01. Contrato = columnas y tipos de projects/01-sales-performance-dashboard/data/metas_mensuales.csv.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: equipo
+    data_type: varchar
+    data_tests:
+    - unique
+    - not_null
+  - name: meta_mensual_mxn
+    data_type: bigint
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 1

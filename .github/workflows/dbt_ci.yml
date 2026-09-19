@@ -10,6 +10,7 @@ on:
   pull_request:
     paths:
       - 'warehouse/**'
+      - 'projects/*/data/*.csv'
       - '.github/workflows/dbt_ci.yml'
   push:
     branches: [main]
@@ -51,3 +52,6 @@ jobs:
 
       - name: dbt test
         run: dbt test --target ci
+
+      - name: Cobertura de dashboards (cada CSV de projects/ tiene su reporte gold)
+        run: python3 scripts/verify_dashboard_coverage.py --db ci_xia_warehouse.duckdb

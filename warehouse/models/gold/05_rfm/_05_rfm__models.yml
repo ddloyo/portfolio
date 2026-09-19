@@ -1,0 +1,25 @@
+version: 2
+models:
+- name: rpt_transacciones
+  description: Monto por cliente x día. Insumo del cálculo RFM del dashboard 05. Contrato = columnas y tipos de projects/05-segmentacion-rfm/data/transacciones.csv.
+  config:
+    contract:
+      enforced: true
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - cliente_id
+        - fecha
+  columns:
+  - name: cliente_id
+    data_type: varchar
+  - name: fecha
+    data_type: date
+  - name: monto_mxn
+    data_type: double
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0

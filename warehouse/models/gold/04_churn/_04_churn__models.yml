@@ -1,0 +1,53 @@
+version: 2
+models:
+- name: rpt_clientes_churn
+  description: Feature set de churn por cliente con plan de servicio, calculado desde bronze. Base del dashboard 04. Contrato = columnas y tipos de projects/04-prediccion-churn/data/clientes.csv.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: cliente_id
+    data_type: varchar
+    data_tests:
+    - unique
+    - not_null
+  - name: antiguedad_meses
+    data_type: double
+  - name: gasto_mensual_mxn
+    data_type: double
+  - name: tickets_soporte_90d
+    data_type: bigint
+  - name: dias_desde_ultima_actividad
+    data_type: double
+  - name: usage_score
+    data_type: double
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+          max_value: 100
+  - name: tipo_contrato
+    data_type: varchar
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - Mensual
+          - Anual
+  - name: plan
+    data_type: varchar
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - Starter
+          - Pro
+          - Business
+  - name: churn_historico
+    data_type: bigint
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - 0
+          - 1

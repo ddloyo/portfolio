@@ -1,0 +1,70 @@
+version: 2
+models:
+- name: rpt_demanda_diaria
+  description: Serie diaria continua por SKU, con ceros en los días sin venta. Base del dashboard 07. Contrato = columnas y tipos de projects/07-forecast-demanda-inventario/data/demanda_diaria.csv.
+  config:
+    contract:
+      enforced: true
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - sku
+        - fecha
+  columns:
+  - name: sku
+    data_type: varchar
+  - name: fecha
+    data_type: date
+  - name: unidades_vendidas
+    data_type: bigint
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+  - name: costo_unitario
+    data_type: double
+  - name: precio_unitario
+    data_type: double
+  - name: ingreso
+    data_type: double
+  - name: costo_total
+    data_type: double
+- name: rpt_inventario_actual
+  description: Última foto de inventario por SKU con su segmento de demanda. Base del dashboard 07. Contrato = columnas y tipos de projects/07-forecast-demanda-inventario/data/inventario_actual.csv.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: sku
+    data_type: varchar
+    data_tests:
+    - unique
+    - not_null
+  - name: categoria
+    data_type: varchar
+  - name: segmento_demanda
+    data_type: varchar
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - alta
+          - media
+          - baja
+  - name: lead_time_dias
+    data_type: bigint
+  - name: stock_actual
+    data_type: bigint
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+  - name: costo_unitario
+    data_type: double
+  - name: precio_unitario
+    data_type: double
+  - name: margen_pct
+    data_type: double
