@@ -1,0 +1,571 @@
+<title>Bronze Silver Gold Warehouse</title>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ink:#1c2129;
+    --ink-soft:#4b5563;
+    --paper:#eef0f2;
+    --surface:#ffffff;
+    --line:#d7dbe0;
+    --line-strong:#b7bec7;
+    --bronze:#a8672f;
+    --bronze-soft:#f1e3d3;
+    --silver:#5b6572;
+    --silver-soft:#e6e9ec;
+    --gold:#93711f;
+    --gold-soft:#f0e5c4;
+    --meta:#5c4a8a;
+    --meta-soft:#e9e3f5;
+    --code-bg:#f4f2ec;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#eceef1;
+      --ink-soft:#aab0ba;
+      --paper:#14171c;
+      --surface:#1b1f26;
+      --line:#2c323b;
+      --line-strong:#3c434e;
+      --bronze:#d68c4e;
+      --bronze-soft:#3a2c1c;
+      --silver:#9aa4b1;
+      --silver-soft:#262c33;
+      --gold:#d4b656;
+      --gold-soft:#3a3315;
+      --meta:#b3a0e6;
+      --meta-soft:#2a2340;
+      --code-bg:#20242b;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#eceef1;
+    --ink-soft:#aab0ba;
+    --paper:#14171c;
+    --surface:#1b1f26;
+    --line:#2c323b;
+    --line-strong:#3c434e;
+    --bronze:#d68c4e;
+    --bronze-soft:#3a2c1c;
+    --silver:#9aa4b1;
+    --silver-soft:#262c33;
+    --gold:#d4b656;
+    --gold-soft:#3a3315;
+    --meta:#b3a0e6;
+    --meta-soft:#2a2340;
+    --code-bg:#20242b;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size:15px;
+    line-height:1.55;
+  }
+  code, .mono{
+    font-family:"IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+  }
+  main{
+    max-width:1180px;
+    margin:0 auto;
+    padding:56px 28px 96px;
+  }
+
+  header.page{
+    margin-bottom:44px;
+    padding-bottom:32px;
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+  }
+  h1{
+    font-size:clamp(28px, 4vw, 40px);
+    line-height:1.12;
+    margin:0 0 14px;
+    text-wrap:balance;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  .dek{
+    max-width:68ch;
+    color:var(--ink-soft);
+    font-size:16px;
+    margin:0;
+  }
+  .dek b{color:var(--ink); font-weight:600;}
+
+  .callout{
+    margin-top:22px;
+    padding:14px 18px;
+    border-left:3px solid var(--gold);
+    background:var(--gold-soft);
+    border-radius:0 8px 8px 0;
+    font-size:14px;
+    max-width:68ch;
+  }
+  .callout b{color:var(--ink);}
+
+  section{margin:64px 0;}
+  h2{
+    font-size:21px;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .section-note{
+    color:var(--ink-soft);
+    max-width:74ch;
+    margin:0 0 26px;
+    font-size:14.5px;
+  }
+
+  figure{margin:0;}
+  figure.diagram{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:22px 22px 16px;
+    overflow-x:auto;
+  }
+  figure.diagram svg{
+    display:block;
+    width:100%;
+    height:auto;
+    min-width:640px;
+  }
+  figcaption{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+
+  svg text{
+    font-family:"IBM Plex Sans", sans-serif;
+    fill:currentColor;
+  }
+  svg .mono-label{
+    font-family:"IBM Plex Mono", monospace;
+  }
+  svg .zone-title{
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:.02em;
+  }
+  svg .chip-label{
+    font-size:11.5px;
+  }
+  svg .arrow-label{
+    font-size:11px;
+    fill:var(--ink-soft);
+  }
+  svg .count{
+    font-size:11px;
+    font-weight:600;
+  }
+
+  /* layer legend */
+  .legend{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    margin:18px 0 0;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .legend span{display:inline-flex; align-items:center; gap:7px;}
+  .legend i{width:10px; height:10px; border-radius:2px; display:inline-block;}
+
+  /* mapping table */
+  .table-wrap{
+    overflow-x:auto;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--surface);
+  }
+  table.mapping{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13.5px;
+    min-width:960px;
+  }
+  table.mapping caption{display:none;}
+  table.mapping th{
+    text-align:left;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:11px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:500;
+    padding:12px 14px;
+    border-bottom:1px solid var(--line-strong);
+    white-space:nowrap;
+    position:sticky;
+    top:0;
+    background:var(--surface);
+  }
+  table.mapping td{
+    padding:11px 14px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  table.mapping tr:last-child td{border-bottom:none;}
+  table.mapping td.num{
+    font-family:"IBM Plex Mono", monospace;
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+  table.mapping td.proj{font-weight:600;}
+  .taglist{display:flex; flex-direction:column; gap:4px;}
+  .tag{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    padding:2px 0;
+  }
+  .tag.bronze{color:var(--bronze);}
+  .tag.silver{color:var(--silver);}
+  .tag.gold{color:var(--gold);}
+
+  footer.page{
+    margin-top:72px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  footer.page code{
+    background:var(--code-bg);
+    padding:1px 6px;
+    border-radius:4px;
+  }
+
+  @media (max-width: 640px){
+    main{padding:36px 16px 72px;}
+    table.mapping{font-size:12.5px;}
+  }
+</style>
+
+<main>
+
+  <header class="page">
+    <p class="eyebrow">Portafolio XIA · Arquitectura de datos</p>
+    <h1>Un warehouse, trece dashboards</h1>
+    <p class="dek">Este documento simula <b>el sistema operativo real de una empresa</b> — CRM, ventas, catálogo, facturación, soporte, marketing, encuestas — y las consultas que, corriendo sobre él, producirían los 13 datasets que hoy existen como CSV en <code class="mono">projects/*/data/</code>. Solo estructura: sin datos, sin ETL todavía.</p>
+    <div class="callout"><b>La mayoría de esos CSV ya son un reporte gold</b> — <code class="mono">ventas_diarias.csv</code> es una agregación por equipo/día, <code class="mono">marketing_canales.csv</code> trae CAC y LTV ya calculados. Lo que faltaba diseñar era el operativo real detrás: el pedido, la factura, el ticket de soporte.</div>
+  </header>
+
+  <section id="overview">
+    <h2>Las tres capas, de extremo a extremo</h2>
+    <p class="section-note">21 tablas de sistemas fuente reales (CRM, ventas, ERP, ads, encuestas...) se conforman en una bodega operativa compartida, y de ahí salen 19 vistas gold que reproducen los 13 datasets del portafolio. El motor de calidad de datos audita el maestro real (cliente, producto, calendario, factura) en paralelo.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 1180 460" role="img" aria-label="Sistemas fuente reales entran a bronze, se conforman en una bodega operativa compartida en silver, y de ahí salen 19 vistas gold que reproducen los 13 datasets del portafolio; un motor de calidad de datos audita el maestro real en bronze.">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- BRONZE ZONE -->
+        <rect x="20" y="30" width="270" height="340" rx="10" fill="var(--bronze-soft)" stroke="var(--bronze)" stroke-opacity="0.35"/>
+        <text x="40" y="58" class="zone-title" fill="var(--bronze)">BRONZE</text>
+        <text x="40" y="75" class="count mono-label" fill="var(--bronze)">21 tablas · sistemas fuente</text>
+
+        <g class="mono-label chip-label" fill="var(--ink)">
+          <rect x="38" y="90" width="234" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="48" y="107">crm_cliente</text>
+          <rect x="38" y="122" width="234" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="48" y="139">pedido_linea</text>
+          <rect x="38" y="154" width="234" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="48" y="171">factura_linea</text>
+          <rect x="38" y="186" width="234" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="48" y="203">marketing_gasto</text>
+          <rect x="38" y="218" width="234" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="48" y="235">encuesta_nps</text>
+        </g>
+        <text x="40" y="262" class="chip-label" fill="var(--ink-soft)">+ 16 tablas más</text>
+        <text x="40" y="340" class="chip-label" fill="var(--ink-soft)">Tipos permisivos (TEXT).</text>
+        <text x="40" y="356" class="chip-label" fill="var(--ink-soft)">CRM · POS · ERP · ads · encuestas.</text>
+
+        <!-- SILVER ZONE -->
+        <rect x="345" y="30" width="330" height="340" rx="10" fill="var(--silver-soft)" stroke="var(--silver)" stroke-opacity="0.35"/>
+        <text x="365" y="58" class="zone-title" fill="var(--silver)">SILVER</text>
+        <text x="365" y="75" class="count mono-label" fill="var(--silver)">11 dim · 24 fact · conformado</text>
+
+        <g class="mono-label chip-label" fill="var(--ink)">
+          <rect x="363" y="90" width="290" height="26" rx="5" fill="var(--surface)" stroke="var(--line-strong)"/>
+          <text x="373" y="107">dim_fecha · dim_cliente · dim_producto</text>
+          <rect x="363" y="122" width="290" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="373" y="139">fact_pedido, fact_factura, fact_ticket…</text>
+          <rect x="363" y="154" width="290" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="373" y="171">fact_cliente_features_churn (agregado)</text>
+          <rect x="363" y="186" width="290" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="373" y="203">fact_producto_forecast (salida modelo)</text>
+        </g>
+        <text x="365" y="230" class="chip-label" fill="var(--ink-soft)">+ 20 hechos más</text>
+        <text x="365" y="340" class="chip-label" fill="var(--ink-soft)">Tipado, deduplicado,</text>
+        <text x="365" y="356" class="chip-label" fill="var(--ink-soft)">un solo cliente/producto real.</text>
+
+        <!-- GOLD ZONE -->
+        <rect x="720" y="30" width="270" height="340" rx="10" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.35"/>
+        <text x="740" y="58" class="zone-title" fill="var(--gold)">GOLD</text>
+        <text x="740" y="75" class="count mono-label" fill="var(--gold)">19 vistas · los 13 CSV</text>
+
+        <g class="mono-label chip-label" fill="var(--ink)">
+          <rect x="738" y="90" width="234" height="24" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="748" y="106">rpt_01_ventas_diarias</text>
+          <rect x="738" y="120" width="234" height="24" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="748" y="136">rpt_05_transacciones</text>
+          <rect x="738" y="150" width="234" height="24" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="748" y="166">rpt_09_marketing_canales</text>
+          <rect x="738" y="180" width="234" height="24" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="748" y="196">rpt_11_fuente_unica</text>
+          <rect x="738" y="210" width="234" height="24" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+          <text x="748" y="226">rpt_13_scorecard_calidad_tablas</text>
+        </g>
+        <text x="740" y="252" class="chip-label" fill="var(--ink-soft)">+ 14 vistas más</text>
+        <text x="740" y="340" class="chip-label" fill="var(--ink-soft)">1 vista = 1 CSV de</text>
+        <text x="740" y="356" class="chip-label" fill="var(--ink-soft)">projects/*/data/, ya agregado.</text>
+
+        <!-- arrows bronze -> silver -> gold -->
+        <line x1="292" y1="200" x2="343" y2="200" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <text x="317" y="190" class="arrow-label mono-label" text-anchor="middle">tipar</text>
+        <line x1="677" y1="200" x2="718" y2="200" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <text x="697" y="190" class="arrow-label mono-label" text-anchor="middle">agregar</text>
+
+        <!-- meta layer -->
+        <rect x="345" y="392" width="330" height="56" rx="10" fill="var(--meta-soft)" stroke="var(--meta)" stroke-opacity="0.4"/>
+        <text x="365" y="414" class="zone-title" fill="var(--meta)">META</text>
+        <text x="365" y="432" class="chip-label mono-label" fill="var(--ink-soft)">dq_regla · dq_scorecard_tabla · dq_plan_remediacion</text>
+        <line x1="155" y1="370" x2="420" y2="392" stroke="var(--meta)" stroke-opacity="0.55" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <line x1="675" y1="420" x2="855" y2="370" stroke="var(--meta)" stroke-opacity="0.55" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <text x="700" y="410" class="arrow-label mono-label">audita bronze → rpt_13</text>
+      </svg>
+      <figcaption>Bronze aterriza cada sistema fuente casi sin tocar; silver limpia y conforma la bodega operativa (más las features y salidas de modelo: churn, RFM, forecast…); gold agrega y da formato exacto a cada uno de los 13 datasets del portafolio. El motor de calidad (meta) audita el maestro real en bronze y alimenta el dashboard 13.</figcaption>
+    </figure>
+  </section>
+
+  <section id="conform-example">
+    <h2>Cómo se conforma: el caso de las 3 sucursales</h2>
+    <p class="section-note">El proyecto 11 es la excepción que confirma la regla: su CSV ya es bronze por diseño. Tres sucursales sin integrar al sistema de ventas reportan por su cuenta, cada una con su propio formato — el problema real de consolidación que resuelve.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 1180 300" role="img" aria-label="Tres tablas bronze con esquemas distintos — pedido_sucursal_cdmx en español con fecha DD/MM/AAAA, pedido_sucursal_guadalajara en inglés con nombre de sucursal inconsistente, pedido_sucursal_monterrey en formato ISO — se normalizan y deduplican hacia silver.dim_sucursal y silver.fact_venta_sucursal; las filas sin monto se separan a una cola de revisión manual en vez de inventarse un valor.">
+        <defs>
+          <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- three bronze sources -->
+        <g class="mono-label chip-label">
+          <rect x="20" y="20" width="270" height="70" rx="8" fill="var(--bronze-soft)" stroke="var(--bronze)" stroke-opacity="0.45"/>
+          <text x="34" y="42" fill="var(--bronze)" font-weight="600">bronze.pedido_sucursal_cdmx</text>
+          <text x="34" y="60" fill="var(--ink-soft)">Fecha DD/MM/AAAA · Sucursal · Monto</text>
+          <text x="34" y="76" fill="var(--ink-soft)">columnas en español</text>
+
+          <rect x="20" y="105" width="270" height="70" rx="8" fill="var(--bronze-soft)" stroke="var(--bronze)" stroke-opacity="0.45"/>
+          <text x="34" y="127" fill="var(--bronze)" font-weight="600">bronze.pedido_sucursal_guadalajara</text>
+          <text x="34" y="145" fill="var(--ink-soft)">Date MM/DD/AAAA · Store · Amount_MXN</text>
+          <text x="34" y="161" fill="var(--ink-soft)">"guadalajara" / "GDL " / "Guadalajara"</text>
+
+          <rect x="20" y="190" width="270" height="70" rx="8" fill="var(--bronze-soft)" stroke="var(--bronze)" stroke-opacity="0.45"/>
+          <text x="34" y="212" fill="var(--bronze)" font-weight="600">bronze.pedido_sucursal_monterrey</text>
+          <text x="34" y="230" fill="var(--ink-soft)">fecha_venta AAAA-MM-DD · importe_mxn</text>
+          <text x="34" y="246" fill="var(--ink-soft)">algunos montos vacíos</text>
+        </g>
+
+        <!-- converging arrows -->
+        <path d="M290,55 C 420,55 420,150 540,150" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow2)"/>
+        <path d="M290,140 C 400,140 400,150 540,150" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow2)"/>
+        <path d="M290,225 C 420,225 420,150 540,150" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow2)"/>
+        <text x="400" y="105" class="arrow-label mono-label" text-anchor="middle">normalizar fecha</text>
+        <text x="400" y="120" class="arrow-label mono-label" text-anchor="middle">+ catálogo sucursal</text>
+        <text x="400" y="135" class="arrow-label mono-label" text-anchor="middle">+ deduplicar</text>
+
+        <!-- silver output -->
+        <rect x="555" y="105" width="290" height="90" rx="8" fill="var(--silver-soft)" stroke="var(--silver)" stroke-opacity="0.5"/>
+        <text x="570" y="128" fill="var(--silver)" font-weight="600" class="mono-label chip-label">silver.dim_sucursal</text>
+        <text x="570" y="146" fill="var(--ink-soft)" class="chip-label mono-label">nombre_normalizado: 'CDMX' | 'Guadalajara' | 'Monterrey'</text>
+        <text x="570" y="168" fill="var(--silver)" font-weight="600" class="mono-label chip-label">silver.fact_venta_sucursal</text>
+        <text x="570" y="186" fill="var(--ink-soft)" class="chip-label mono-label">date_key · sucursal_key · monto_mxn</text>
+
+        <!-- quarantine branch -->
+        <path d="M845,150 C 920,150 920,235 985,235" fill="none" stroke="var(--bronze)" stroke-width="1.4" marker-end="url(#arrow2)"/>
+        <text x="900" y="215" class="arrow-label mono-label" text-anchor="middle" fill="var(--bronze)">monto NULL</text>
+        <rect x="985" y="200" width="180" height="70" rx="8" fill="var(--surface)" stroke="var(--bronze)" stroke-dasharray="4 3"/>
+        <text x="998" y="222" fill="var(--bronze)" font-weight="600" class="mono-label chip-label">venta_sucursal_</text>
+        <text x="998" y="236" fill="var(--bronze)" font-weight="600" class="mono-label chip-label">pendiente_revision</text>
+        <text x="998" y="256" fill="var(--ink-soft)" class="chip-label">cola de revisión,</text>
+        <text x="998" y="268" fill="var(--ink-soft)" class="chip-label">nunca se inventa un monto</text>
+      </svg>
+      <figcaption>Tres esquemas distintos entran a bronze tal cual llegan porque esas sucursales no están integradas al sistema de ventas gestionado; silver decide qué es "Guadalajara" y qué fila ya está duplicada. Las filas sin monto no se imputan: se separan a una tabla de excepción explícita.</figcaption>
+    </figure>
+  </section>
+
+  <section id="fanout-hub">
+    <h2>Un solo hecho, seis reportes</h2>
+    <p class="section-note"><code class="mono">silver.fact_pedido</code> — línea de pedido del canal gestionado — es el hecho central del warehouse. No son seis fuentes de datos distintas: es la misma venta, agregada seis formas distintas para seis de los trece datasets del portafolio.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 900 360" role="img" aria-label="silver.fact_pedido en el centro se agrega de seis formas distintas para producir seis de los trece datasets del portafolio: 01 por equipo/vendedor/día, 05 por cliente/día, 06 por producto/semana, 07 por SKU/día, 09 por canal/mes para ticket y margen, y 10 por mes/región/categoría.">
+        <defs>
+          <marker id="arrow3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- center hub -->
+        <rect x="330" y="148" width="240" height="64" rx="9" fill="var(--silver-soft)" stroke="var(--silver)" stroke-opacity="0.6"/>
+        <text x="450" y="173" text-anchor="middle" class="mono-label chip-label" font-weight="600" fill="var(--silver)">silver.fact_pedido</text>
+        <text x="450" y="191" text-anchor="middle" class="mono-label" style="font-size:10.5px" fill="var(--ink-soft)">1 fila por SKU vendido</text>
+
+        <!-- six spokes -->
+        <g class="mono-label chip-label">
+          <rect x="20" y="20" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
+          <text x="130" y="40" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_01_ventas_diarias</text>
+          <text x="130" y="55" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">agrupa por equipo · vendedor · día</text>
+
+          <rect x="340" y="20" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
+          <text x="450" y="40" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_06_precio_demanda</text>
+          <text x="450" y="55" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">agrupa por producto · semana</text>
+
+          <rect x="660" y="20" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
+          <text x="770" y="40" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_07_demanda_diaria</text>
+          <text x="770" y="55" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">agrupa por SKU · día</text>
+
+          <rect x="20" y="294" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
+          <text x="130" y="314" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_05_transacciones</text>
+          <text x="130" y="329" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">agrupa por cliente · día</text>
+
+          <rect x="340" y="294" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
+          <text x="450" y="314" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_09_marketing_canales</text>
+          <text x="450" y="329" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">ticket y margen por canal · mes</text>
+
+          <rect x="660" y="294" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
+          <text x="770" y="314" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_10_transacciones</text>
+          <text x="770" y="329" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">agrupa por mes · región · categoría</text>
+        </g>
+
+        <!-- spokes lines, arrows out from center -->
+        <line x1="380" y1="148" x2="160" y2="68" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
+        <line x1="440" y1="148" x2="448" y2="68" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
+        <line x1="555" y1="160" x2="740" y2="68" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
+        <line x1="380" y1="212" x2="160" y2="292" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
+        <line x1="440" y1="212" x2="448" y2="292" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
+        <line x1="555" y1="200" x2="740" y2="292" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
+      </svg>
+    </figure>
+    <figcaption style="margin-top:10px;">Cada reporte es un <code class="mono">GROUP BY</code> distinto sobre la misma tabla — la prueba de que consolidar en un solo hecho, en vez de un CSV por proyecto, elimina seis copias de la misma venta.</figcaption>
+  </section>
+
+  <section id="mapping">
+    <h2>Mapa completo: bronze → silver → gold, por proyecto</h2>
+    <p class="section-note">El detalle columna-por-columna está en <code class="mono">database/schema/*.sql</code>; esta tabla es el resumen de qué alimenta a qué.</p>
+    <div class="legend">
+      <span><i style="background:var(--bronze)"></i> bronze — sistema fuente</span>
+      <span><i style="background:var(--silver)"></i> silver — conformado</span>
+      <span><i style="background:var(--gold)"></i> gold — reproduce el CSV del proyecto</span>
+    </div>
+    <div class="table-wrap" style="margin-top:16px;">
+      <table class="mapping">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Proyecto</th>
+            <th>CSV que reproduce gold</th>
+            <th>Capas</th>
+          </tr>
+        </thead>
+        <tbody id="mapping-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="page">
+    DDL completo en <code>database/schema/01_bronze.sql</code> · <code>02_silver.sql</code> · <code>03_meta_dq.sql</code> · <code>04_gold.sql</code> — explicación de cada decisión en <code>database/README.md</code>. Sintaxis PostgreSQL, sin datos ni scripts de carga en esta fase.
+  </footer>
+
+</main>
+
+<script>
+const rows = [
+  ["01","Ventas por equipo","ventas_diarias.csv · metas_mensuales.csv",
+    "pedido_linea, crm_equipo, crm_vendedor, crm_meta_venta",
+    "fact_pedido (agregado) + fact_meta_venta",
+    "rpt_01_ventas_diarias, rpt_01_metas_mensuales"],
+  ["02","Funnel de fuga","funnel_semanal.csv",
+    "crm_oportunidad_evento",
+    "fact_oportunidad_evento (agregado por semana)",
+    "rpt_02_funnel_semanal"],
+  ["03","Scorecard ejecutivo","kpi_historico.csv · scorecard.csv",
+    "kpi_captura_manual + hechos de cada KPI",
+    "fact_kpi_manual, fact_kpi_meta + KPIs calculados (ingresos, altas, NPS…)",
+    "rpt_03_kpi_historico, rpt_03_scorecard"],
+  ["04","Predicción de churn","clientes.csv",
+    "crm_cliente, suscripcion_cargo, ticket_soporte, evento_actividad, cancelacion",
+    "fact_cliente_features_churn → fact_cliente_churn_score",
+    "rpt_04_clientes"],
+  ["05","Segmentación RFM","transacciones.csv",
+    "pedido_linea, crm_cliente",
+    "fact_pedido (agregado) → fact_cliente_rfm_score",
+    "rpt_05_transacciones"],
+  ["06","Elasticidad de precios","precio_demanda.csv",
+    "pedido_linea, producto",
+    "fact_pedido (agregado) → fact_producto_elasticidad",
+    "rpt_06_precio_demanda"],
+  ["07","Forecast de inventario","demanda_diaria.csv · inventario_actual.csv",
+    "pedido_linea, producto, inventario_snapshot",
+    "fact_pedido (agregado), fact_inventario_snapshot → fact_producto_forecast",
+    "rpt_07_demanda_diaria, rpt_07_inventario_actual"],
+  ["08","Flujo de caja / cartera","facturas.csv",
+    "factura_linea, pago",
+    "fact_factura, fact_pago → fact_cliente_pago_segmento",
+    "rpt_08_facturas"],
+  ["09","ROI de marketing","marketing_canales.csv",
+    "marketing_gasto, crm_cliente.canal_adquisicion, pedido_linea, cancelacion",
+    "fact_marketing_gasto → fact_canal_roi",
+    "rpt_09_marketing_canales"],
+  ["10","Reporte ejecutivo","transacciones.csv",
+    "pedido_linea, crm_cliente, producto",
+    "fact_pedido (agregado) → fact_subcategoria_tendencia",
+    "rpt_10_transacciones"],
+  ["11","Fuente única","fuente_unica.csv · revision_manual_monto_faltante.csv",
+    "pedido_sucursal_cdmx / guadalajara / monterrey (bronze, sin cambios)",
+    "fact_venta_sucursal, venta_sucursal_pendiente_revision",
+    "rpt_11_fuente_unica, rpt_11_revision_manual_monto_faltante"],
+  ["12","NPS y causa raíz","encuestas_nps.csv",
+    "encuesta_nps",
+    "fact_encuesta_nps",
+    "rpt_12_encuestas_nps"],
+  ["13","Data health check","scorecard_calidad_tablas.csv · reglas_validacion.csv · plan_remediacion.csv",
+    "crm_cliente, producto, calendario, factura_linea (bronze, sin cambios)",
+    "— (el motor de calidad audita bronze directo)",
+    "rpt_13_scorecard_calidad_tablas, rpt_13_reglas_validacion, rpt_13_plan_remediacion"],
+];
+
+const tbody = document.getElementById("mapping-body");
+for (const [num, name, source, bronze, silver, gold] of rows) {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="num">${num}</td>
+    <td class="proj">${name}</td>
+    <td class="mono">${source}</td>
+    <td>
+      <div class="taglist">
+        <span class="tag bronze">${bronze}</span>
+        <span class="tag silver">${silver}</span>
+        <span class="tag gold">${gold}</span>
+      </div>
+    </td>`;
+  tbody.appendChild(tr);
+}
+</script>
