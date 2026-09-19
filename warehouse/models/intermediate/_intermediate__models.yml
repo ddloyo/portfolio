@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: int_ventas_sucursal_unificada
+    description: Las 3 sucursales unidas, con duplicados exactos marcados (no descartados todavía).
+    columns:
+      - name: es_duplicado_descartado
+        data_tests:
+          - not_null
+
+  - name: int_ventas_sucursal_pendiente
+    description: Filas de sucursal sin monto — cola de revisión manual.
+
+  - name: int_pedidos_enriquecidos
+    description: Línea de pedido + producto + importe neto calculado.
+    columns:
+      - name: linea_id
+        data_tests:
+          - unique
+          - not_null
+      - name: importe_neto
+        data_tests:
+          - not_null
+
+  - name: int_cliente_riesgo_churn
+    description: Feature set de churn + percentil de riesgo (heurística, no modelo entrenado).
+    columns:
+      - name: cliente_id
+        data_tests:
+          - unique
+          - not_null
+      - name: percentil_riesgo
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100

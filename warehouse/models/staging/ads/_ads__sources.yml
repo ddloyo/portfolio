@@ -1,0 +1,25 @@
+version: 2
+
+sources:
+  - name: ads
+    schema: raw
+    description: >
+      Plataformas de pauta y canales de marketing. Migración 1:1 de
+      `bronze.marketing_gasto` (`_source_system` original:
+      `ads_platforms`). Aún sin modelos de staging.
+    tables:
+      - name: marketing_gasto
+        description: >
+          Gasto diario por canal con inversión. Los clientes nuevos por canal
+          NO vienen de aquí: salen de crm_cliente.canal_adquisicion.
+        meta: {legacy_table: bronze.marketing_gasto}
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [canal, fecha]
+        columns:
+          - name: canal
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ['Referidos', 'Google Ads', 'Meta Ads', 'Email', 'Eventos']

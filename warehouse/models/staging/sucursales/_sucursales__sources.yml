@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: sucursales
+    schema: raw
+    description: >
+      Tres exports de venta de sucursales no integradas al sistema de ventas
+      gestionado, cada una con su propio esquema. Migración 1:1 de
+      `bronze.pedido_sucursal_*` (`_source_system` original:
+      `export_sucursal_*`). Copias idénticas de los CSV crudos de
+      `projects/11-consolidacion-fuente-verdad/data/`.
+    tables:
+      - name: pedido_sucursal_cdmx
+        description: Export de la sucursal CDMX. Columnas en español, fecha DD/MM/AAAA.
+        meta: {legacy_table: bronze.pedido_sucursal_cdmx}
+      - name: pedido_sucursal_guadalajara
+        description: >
+          Export de un sistema legado en inglés. La columna Store trae el
+          nombre de la sucursal en 3 grafías distintas dentro del mismo
+          archivo ('guadalajara', 'GDL ', 'Guadalajara').
+        meta: {legacy_table: bronze.pedido_sucursal_guadalajara}
+      - name: pedido_sucursal_monterrey
+        description: Export de Monterrey en formato ISO. Algunas filas traen importe_mxn vacío a propósito.
+        meta: {legacy_table: bronze.pedido_sucursal_monterrey}

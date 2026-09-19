@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: rpt_clientes_churn
+    description: >
+      Feature set de churn + percentil de riesgo (heurística) + cuadrante
+      riesgo x valor. El percentil_riesgo es un proxy por reglas, no la
+      salida de un modelo entrenado — ver int_cliente_riesgo_churn.
+    columns:
+      - name: cliente_id
+        data_tests:
+          - unique
+          - not_null
+      - name: cuadrante_accion
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - 'Alto riesgo / alto valor'
+                  - 'Alto riesgo / bajo valor'
+                  - 'Bajo riesgo / alto valor'
+                  - 'Bajo riesgo / bajo valor'

@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: pos
+    schema: raw
+    description: >
+      Sistema de ventas gestionado (equipos comerciales / e-commerce /
+      marketplace). Migración 1:1 de `bronze.pedido_linea`
+      (`_source_system` original: `pos_crm`). Es un sistema moderno y
+      limpio por diseño: la suciedad de este warehouse vive en crm/, erp/ y
+      sucursales/.
+    tables:
+      - name: pedido_linea
+        description: Grano 1 fila por SKU vendido dentro de un pedido.
+        meta: {legacy_table: bronze.pedido_linea}
+        columns:
+          - name: linea_id
+            description: Llave natural de la línea (pedido_id + consecutivo).
+          - name: vendedor_id
+            description: Vacío cuando el canal es autoservicio (E-commerce / Marketplace).

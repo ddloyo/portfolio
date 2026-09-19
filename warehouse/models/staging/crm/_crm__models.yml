@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: stg_crm__cliente
+    description: Cliente limpio y tipado. Aún puede traer cliente_id duplicado — dim_cliente lo resuelve.
+    columns:
+      - name: cliente_id
+        description: Identificador de cliente en el CRM.
+        data_tests:
+          - not_null:
+              config: {severity: warn}   # la fuente trae nulos a propósito
+
+  - name: stg_crm__equipo
+    description: Equipos comerciales.
+    columns:
+      - name: equipo_id
+        data_tests: [unique, not_null]
+
+  - name: stg_crm__vendedor
+    description: Vendedores y el equipo al que pertenecen.
+    columns:
+      - name: vendedor_id
+        data_tests: [unique, not_null]

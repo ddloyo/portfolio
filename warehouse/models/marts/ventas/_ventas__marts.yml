@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: fct_pedidos
+    description: >
+      Hecho central del warehouse — 1 fila por SKU vendido en el canal
+      gestionado. Incremental por fecha. Seis marts distintos (de los cuales
+      4 viven en este proyecto) se agregan sobre esta misma tabla.
+    columns:
+      - name: pedido_linea_key
+        data_tests:
+          - unique
+          - not_null
+      - name: linea_id
+        data_tests:
+          - unique
+          - not_null
+      - name: importe_neto
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+
+  - name: rpt_ventas_diarias
+    description: "{{ doc('un_hecho_seis_reportes') }}"
+
+  - name: rpt_transacciones
+    description: fct_pedidos agregado por cliente x día — reproduce projects/05.
+
+  - name: rpt_precio_demanda
+    description: fct_pedidos agregado por producto x semana — reproduce projects/06.
+
+  - name: rpt_demanda_diaria
+    description: fct_pedidos agregado por SKU x día — reproduce projects/07.

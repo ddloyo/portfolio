@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: dim_fecha
+    description: Calendario canónico del warehouse (1 fila/día), generado por date_spine.
+    columns:
+      - name: date_key
+        data_tests:
+          - unique
+          - not_null
+
+  - name: dim_cliente
+    description: "{{ doc('dim_cliente_dedupe') }}"
+    columns:
+      - name: cliente_id
+        data_tests:
+          - unique
+          - not_null
+
+  - name: dim_producto
+    description: Un producto por SKU, ya deduplicado.
+    columns:
+      - name: sku
+        data_tests:
+          - unique
+          - not_null
+
+  - name: dim_vendedor
+    description: Vendedor y su equipo comercial.
+    columns:
+      - name: vendedor_id
+        data_tests:
+          - unique
+          - not_null

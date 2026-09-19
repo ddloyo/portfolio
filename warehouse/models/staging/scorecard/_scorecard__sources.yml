@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: scorecard
+    schema: raw
+    description: >
+      Scorecard directivo con captura manual. Migración 1:1 de
+      `bronze.kpi_captura_manual` (`_source_system` original:
+      `scorecard_manual`). Aún sin modelos de staging.
+    tables:
+      - name: kpi_captura_manual
+        description: >
+          KPIs que ningún sistema transaccional captura solo (satisfacción
+          interna, SLA, rotación) y que su dueño registra a mano cada mes.
+          Los demás KPIs del scorecard se calculan a partir de otras tablas.
+        meta: {legacy_table: bronze.kpi_captura_manual}
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [kpi, mes]
+        columns:
+          - name: menor_es_mejor
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ['True', 'False']

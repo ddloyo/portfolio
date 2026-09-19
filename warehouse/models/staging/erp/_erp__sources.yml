@@ -1,0 +1,82 @@
+version: 2
+
+sources:
+  - name: erp
+    schema: raw
+    description: >
+      ERP — catálogo de producto, calendario, facturación y cobranza.
+      Migración 1:1 de `bronze.producto`, `bronze.calendario`,
+      `bronze.factura_linea`, `bronze.pago` y `bronze.suscripcion_cargo`
+      (`_source_system` original: `erp_catalogo`, `erp_calendario` y
+      `erp_facturacion`, agrupados aquí en un solo sistema).
+    tables:
+      - name: producto
+        description: >
+          Maestro de producto/SKU. Parte de `projects/13-data-health-check`
+          (precio como texto, precios negativos, duplicados "recapturados",
+          categoría vacía — intactos) más la columna subcategoria.
+        meta: {legacy_table: bronze.producto}
+        columns:
+          - name: sku
+            description: No garantizado único (SKUs recapturados con otro precio).
+          - name: precio_unitario
+            description: A veces texto ("$1,234.50") o negativo.
+
+      - name: calendario
+        description: >
+          Calendario maestro, 728 días (2024-01-01 a 2025-12-31), con
+          duplicados y capitalización inconsistente. Copia idéntica del
+          original de `projects/13`. No cubre todo el rango de pedidos —
+          dim_fecha se genera por date_spine, no desde aquí.
+        meta: {legacy_table: bronze.calendario}
+        columns:
+          - name: fecha
+            description: Debería ser única; la fuente trae duplicados a propósito.
+
+      - name: factura_linea
+        description: >
+          Línea de facturación. Parte de `projects/13-data-health-check`
+          (cliente_id/sku huérfanos, total que no cuadra, factura_id
+          repetido, fechas mixtas — intactos) más fecha_vencimiento.
+        meta: {legacy_table: bronze.factura_linea}
+        columns:
+          - name: factura_id
+            description: "No único: la fuente repite líneas a propósito."
+          - name: fecha
+            description: ISO y DD/MM/AAAA mezclados.
+          - name: fecha_vencimiento
+            description: ISO. Vacía si la fecha de emisión no se pudo interpretar.
+          - name: total
+            description: Debería ser cantidad × precio_unitario; algunas filas traen un override manual.
+
+      - name: pago
+        description: >
+          Ledger de pagos aplicados a una factura. Una factura puede tener
+          más de un pago (pago parcial) o ninguno (sin cobrar).
+        meta: {legacy_table: bronze.pago}
+        columns:
+          - name: pago_id
+            data_tests: [unique, not_null]
+          - name: factura_id
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('erp', 'factura_linea')
+                    field: factura_id
+
+      - name: suscripcion_cargo
+        description: Cargo recurrente mensual de los clientes con plan de servicio.
+        meta: {legacy_table: bronze.suscripcion_cargo}
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [cliente_id, mes]
+        columns:
+          - name: cliente_id
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('crm', 'crm_cliente')
+                    field: cliente_id

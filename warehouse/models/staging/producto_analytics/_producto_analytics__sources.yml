@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: producto_analytics
+    schema: raw
+    description: >
+      Analítica de uso del producto/servicio. Migración 1:1 de
+      `bronze.evento_actividad` (`_source_system` original:
+      `producto_analytics`). Aún sin modelos de staging.
+    tables:
+      - name: evento_actividad
+        description: Log de actividad por cliente (login, uso de funcionalidad, descarga de reporte, invitación de usuario).
+        meta: {legacy_table: bronze.evento_actividad}
+        columns:
+          - name: evento_id
+            data_tests: [unique, not_null]
+          - name: cliente_id
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('crm', 'crm_cliente')
+                    field: cliente_id
+          - name: tipo_evento
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ['login', 'uso_feature', 'descarga_reporte', 'invitacion_usuario']
