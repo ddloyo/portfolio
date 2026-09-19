@@ -1,571 +1,469 @@
-<title>Bronze Silver Gold Warehouse</title>
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XIA · From DDL to dbt: Data Architecture</title>
+<meta name="description" content="How a warehouse design written as DDL became an executable dbt project: 87 models, 429 tests, enforced contracts, generated lineage and CI.">
+<script>
+  (function () {
+    try { var l = localStorage.getItem("xia-lang"); if (l === "es" || l === "en") document.documentElement.lang = l; } catch (e) {}
+  })();
+</script>
 <style>
   :root{
-    --ink:#1c2129;
-    --ink-soft:#4b5563;
-    --paper:#eef0f2;
-    --surface:#ffffff;
-    --line:#d7dbe0;
-    --line-strong:#b7bec7;
-    --bronze:#a8672f;
-    --bronze-soft:#f1e3d3;
-    --silver:#5b6572;
-    --silver-soft:#e6e9ec;
-    --gold:#93711f;
-    --gold-soft:#f0e5c4;
-    --meta:#5c4a8a;
-    --meta-soft:#e9e3f5;
-    --code-bg:#f4f2ec;
+    color-scheme: light;
+    --brand-ink:#163832; --brand-cream:#F6EFE1;
+    --gold:#B8842C; --teal:#71A8A3;
+    --surface:#FFFFFF; --page:#F6EFE1;
+    --text-primary:#163832; --text-secondary:#4A625D; --text-muted:#7E948F;
+    --border:rgba(22,56,50,.12); --border-strong:rgba(22,56,50,.28);
+    --accent:#71A8A3; --accent-ink:#2F6F69; --accent-soft:rgba(113,168,163,.16);
+    --code-bg:#FBF8F1;
+    --legacy:#7E948F; --legacy-soft:rgba(22,56,50,.035);
+    --src:#8C6220;  --src-ink:#7A5418;  --src-soft:rgba(140,98,32,.11);
+    --stg:#9CB8B4;  --stg-ink:#3E6B66;  --stg-soft:rgba(156,184,180,.22);
+    --int:#71A8A3;  --int-ink:#2F6F69;  --int-soft:rgba(113,168,163,.17);
+    --mart:#2F6F69; --mart-ink:#1F5651; --mart-soft:rgba(47,111,105,.11);
+    --gld:#B8842C;  --gld-ink:#7A5418;  --gld-soft:rgba(184,132,44,.15);
+    --meta:#4F6360; --meta-ink:#3B4E4B; --meta-soft:rgba(79,99,96,.09);
   }
   @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --ink:#eceef1;
-      --ink-soft:#aab0ba;
-      --paper:#14171c;
-      --surface:#1b1f26;
-      --line:#2c323b;
-      --line-strong:#3c434e;
-      --bronze:#d68c4e;
-      --bronze-soft:#3a2c1c;
-      --silver:#9aa4b1;
-      --silver-soft:#262c33;
-      --gold:#d4b656;
-      --gold-soft:#3a3315;
-      --meta:#b3a0e6;
-      --meta-soft:#2a2340;
-      --code-bg:#20242b;
-    }
+    :root:not([data-theme="light"]){ 
+      color-scheme: dark;
+      --surface:#163832; --page:#0E1F1B;
+      --text-primary:#F6EFE1; --text-secondary:#C7D9D5; --text-muted:#8FA8A3;
+      --border:rgba(246,239,225,.13); --border-strong:rgba(246,239,225,.3);
+      --accent:#8FC2BC; --accent-ink:#A9D6D0; --accent-soft:rgba(143,194,188,.16);
+      --code-bg:#0F2621;
+      --legacy:#8FA8A3; --legacy-soft:rgba(246,239,225,.04);
+      --src:#C9944A;  --src-ink:#E3B872;  --src-soft:rgba(201,148,74,.16);
+      --stg:#7FA39E;  --stg-ink:#B7D3CE;  --stg-soft:rgba(127,163,158,.2);
+      --int:#8FC2BC;  --int-ink:#A9D6D0;  --int-soft:rgba(143,194,188,.17);
+      --mart:#6FB3A9; --mart-ink:#BFE3DD; --mart-soft:rgba(111,179,169,.16);
+      --gld:#D4A94F;  --gld-ink:#E9C978;  --gld-soft:rgba(212,169,79,.2);
+      --meta:#9CB8B4; --meta-ink:#C7D9D5; --meta-soft:rgba(156,184,180,.13);
+ }
   }
-  :root[data-theme="dark"]{
-    --ink:#eceef1;
-    --ink-soft:#aab0ba;
-    --paper:#14171c;
-    --surface:#1b1f26;
-    --line:#2c323b;
-    --line-strong:#3c434e;
-    --bronze:#d68c4e;
-    --bronze-soft:#3a2c1c;
-    --silver:#9aa4b1;
-    --silver-soft:#262c33;
-    --gold:#d4b656;
-    --gold-soft:#3a3315;
-    --meta:#b3a0e6;
-    --meta-soft:#2a2340;
-    --code-bg:#20242b;
-  }
+  :root[data-theme="dark"]{ 
+      color-scheme: dark;
+      --surface:#163832; --page:#0E1F1B;
+      --text-primary:#F6EFE1; --text-secondary:#C7D9D5; --text-muted:#8FA8A3;
+      --border:rgba(246,239,225,.13); --border-strong:rgba(246,239,225,.3);
+      --accent:#8FC2BC; --accent-ink:#A9D6D0; --accent-soft:rgba(143,194,188,.16);
+      --code-bg:#0F2621;
+      --legacy:#8FA8A3; --legacy-soft:rgba(246,239,225,.04);
+      --src:#C9944A;  --src-ink:#E3B872;  --src-soft:rgba(201,148,74,.16);
+      --stg:#7FA39E;  --stg-ink:#B7D3CE;  --stg-soft:rgba(127,163,158,.2);
+      --int:#8FC2BC;  --int-ink:#A9D6D0;  --int-soft:rgba(143,194,188,.17);
+      --mart:#6FB3A9; --mart-ink:#BFE3DD; --mart-soft:rgba(111,179,169,.16);
+      --gld:#D4A94F;  --gld-ink:#E9C978;  --gld-soft:rgba(212,169,79,.2);
+      --meta:#9CB8B4; --meta-ink:#C7D9D5; --meta-soft:rgba(156,184,180,.13);
+ }
 
-  *{box-sizing:border-box;}
+  html[lang="en"] [lang="es"], html[lang="es"] [lang="en"]{ display:none !important; }
+
+  *{ box-sizing:border-box; }
   body{
-    margin:0;
-    background:var(--paper);
-    color:var(--ink);
-    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-    font-size:15px;
-    line-height:1.55;
+    margin:0; background:var(--page); color:var(--text-primary);
+    font-family:-apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    padding:32px 20px 60px; line-height:1.55;
   }
-  code, .mono{
-    font-family:"IBM Plex Mono", ui-monospace, "SF Mono", monospace;
-  }
-  main{
-    max-width:1180px;
-    margin:0 auto;
-    padding:56px 28px 96px;
+  .wrap{ max-width:1180px; margin:0 auto; }
+  code, .mono, pre{ font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  p code, td code, li code, figcaption code, h3 code{
+    font-size:.88em; background:var(--accent-soft); padding:1px 5px; border-radius:4px;
   }
 
-  header.page{
-    margin-bottom:44px;
-    padding-bottom:32px;
-    border-bottom:1px solid var(--line);
+  .brand{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:28px; flex-wrap:wrap; }
+  .brand-left{ display:flex; align-items:center; gap:10px; }
+  .brand .mark{ width:28px; height:28px; border-radius:7px; background:var(--brand-ink); overflow:hidden; display:flex; }
+  .brand .mark img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .brand-name{ color:var(--text-muted); font-size:13px; letter-spacing:.04em; text-transform:uppercase; }
+  .brand-right{ display:flex; gap:10px; align-items:center; }
+  .pill{
+    font:inherit; font-size:12px; font-weight:700; cursor:pointer; text-decoration:none;
+    padding:6px 13px; border-radius:999px; border:1px solid var(--border);
+    background:var(--surface); color:var(--text-secondary);
   }
-  .eyebrow{
-    font-family:"IBM Plex Mono", monospace;
-    font-size:12px;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin:0 0 14px;
-  }
-  h1{
-    font-size:clamp(28px, 4vw, 40px);
-    line-height:1.12;
-    margin:0 0 14px;
-    text-wrap:balance;
-    font-weight:700;
-    letter-spacing:-0.01em;
-  }
-  .dek{
-    max-width:68ch;
-    color:var(--ink-soft);
-    font-size:16px;
-    margin:0;
-  }
-  .dek b{color:var(--ink); font-weight:600;}
+  .pill:hover, .pill:focus-visible{ color:var(--accent-ink); border-color:var(--accent); outline:none; }
 
-  .callout{
-    margin-top:22px;
-    padding:14px 18px;
-    border-left:3px solid var(--gold);
-    background:var(--gold-soft);
-    border-radius:0 8px 8px 0;
-    font-size:14px;
-    max-width:68ch;
-  }
-  .callout b{color:var(--ink);}
+  header.hero{ margin-bottom:34px; max-width:860px; }
+  .eyebrow{ color:var(--text-secondary); font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+  h1{ font-size:32px; line-height:1.2; margin:0 0 14px; text-wrap:balance; }
+  h1 em{ color:var(--gold); font-style:normal; }
+  .dek{ color:var(--text-secondary); font-size:16px; line-height:1.6; margin:0; max-width:74ch; }
+  .dek b{ color:var(--text-primary); }
 
-  section{margin:64px 0;}
-  h2{
-    font-size:21px;
-    margin:0 0 6px;
-    letter-spacing:-0.01em;
-  }
-  .section-note{
-    color:var(--ink-soft);
-    max-width:74ch;
-    margin:0 0 26px;
-    font-size:14.5px;
-  }
+  .kpis{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin:0 0 30px; }
+  .kpi{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+  .kpi.hero-kpi{ border-color:var(--gold); }
+  .kv{ font-size:30px; font-weight:800; line-height:1.1; letter-spacing:-.01em; }
+  .hero-kpi .kv{ color:var(--gold); }
+  .kl{ font-size:13px; font-weight:700; margin-top:4px; }
+  .ks{ font-size:12.5px; color:var(--text-secondary); margin-top:2px; line-height:1.45; }
 
-  figure{margin:0;}
-  figure.diagram{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:22px 22px 16px;
-    overflow-x:auto;
+  .thesis{
+    background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent);
+    border-radius:0 10px 10px 0; padding:14px 18px; max-width:860px; font-size:14.5px; color:var(--text-secondary);
   }
-  figure.diagram svg{
-    display:block;
-    width:100%;
-    height:auto;
-    min-width:640px;
-  }
-  figcaption{
-    font-size:13px;
-    color:var(--ink-soft);
-    margin-top:14px;
-    padding-top:14px;
-    border-top:1px solid var(--line);
-  }
+  .thesis b{ color:var(--text-primary); }
 
-  svg text{
-    font-family:"IBM Plex Sans", sans-serif;
-    fill:currentColor;
-  }
-  svg .mono-label{
-    font-family:"IBM Plex Mono", monospace;
-  }
-  svg .zone-title{
-    font-weight:600;
-    font-size:13px;
-    letter-spacing:.02em;
-  }
-  svg .chip-label{
-    font-size:11.5px;
-  }
-  svg .arrow-label{
-    font-size:11px;
-    fill:var(--ink-soft);
-  }
-  svg .count{
-    font-size:11px;
-    font-weight:600;
-  }
+  section.sec{ margin:56px 0 0; }
+  h2{ font-size:21px; margin:0 0 6px; letter-spacing:-.005em; }
+  h3{ font-size:15px; margin:0 0 10px; }
+  .note{ color:var(--text-secondary); max-width:78ch; margin:0 0 22px; font-size:14.5px; }
+  .note b{ color:var(--text-primary); }
 
-  /* layer legend */
-  .legend{
-    display:flex;
-    gap:18px;
-    flex-wrap:wrap;
-    margin:18px 0 0;
-    font-size:12.5px;
-    color:var(--ink-soft);
+  figure{ margin:0; }
+  figure.diagram{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 18px 14px; overflow-x:auto; }
+  figure.diagram svg{ display:block; width:100%; height:auto; }
+  figcaption, .cap{ font-size:13px; color:var(--text-secondary); line-height:1.55; }
+  figcaption{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
+  .cap{ margin:10px 0 0; max-width:96ch; }
+  .cap b{ color:var(--text-primary); }
+  .cap code{ white-space:nowrap; }
+
+  svg text{ font-family:-apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+  svg .mono{ font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  svg .b{ font-weight:700; }
+  svg .s10{ font-size:10.5px; } svg .s11{ font-size:11.5px; } svg .s12{ font-size:12px; } svg .s13{ font-size:13px; }
+
+  /* advantages table */
+  .table-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:12px; background:var(--surface); }
+  table.cmp{ width:100%; border-collapse:collapse; font-size:13.5px; min-width:820px; }
+  table.cmp thead th{
+    text-align:left; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-secondary);
+    padding:12px 16px; border-bottom:1px solid var(--border-strong); white-space:nowrap;
   }
-  .legend span{display:inline-flex; align-items:center; gap:7px;}
-  .legend i{width:10px; height:10px; border-radius:2px; display:inline-block;}
+  table.cmp thead th.aft-h{ color:var(--accent-ink); }
+  table.cmp tbody th{ text-align:left; font-weight:700; padding:12px 16px; vertical-align:top; width:17%; }
+  table.cmp td{ padding:12px 16px; vertical-align:top; border-left:1px solid var(--border); }
+  table.cmp tbody tr + tr > *{ border-top:1px solid var(--border); }
+  table.cmp td.bef{ color:var(--text-secondary); width:31%; }
+  table.cmp td.aft{ width:52%; background:var(--accent-soft); }
+  table.cmp td.aft b{ color:var(--accent-ink); }
+
+  /* code pairs */
+  .proof{ margin-top:26px; }
+  .proof:first-of-type{ margin-top:0; }
+  .pair{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; }
+  .code{ background:var(--code-bg); border:1px solid var(--border); border-radius:10px; overflow:hidden; min-width:0; }
+  .code.after{ border-color:var(--accent); }
+  .code-h{ display:flex; justify-content:space-between; gap:12px; align-items:baseline; padding:8px 14px; border-bottom:1px solid var(--border); background:var(--surface); }
+  .tagline{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--text-secondary); }
+  .after .tagline{ color:var(--accent-ink); }
+  .file{ font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size:10.5px; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+  .code pre{ margin:0; padding:14px; overflow-x:auto; font-size:12px; line-height:1.6; color:var(--text-primary); }
+  .code pre code{ font-family:inherit; }
+
+  /* CI steps */
+  .steps{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:10px; counter-reset:step; }
+  .steps li{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 12px 12px; position:relative; counter-increment:step; }
+  .steps li::before{
+    content:counter(step); display:inline-flex; width:22px; height:22px; border-radius:50%; align-items:center; justify-content:center;
+    font-size:11.5px; font-weight:800; background:var(--brand-ink); color:var(--brand-cream); margin-bottom:8px;
+  }
+  .steps .cmd{ font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size:12px; font-weight:700; display:block; margin-bottom:4px; }
+  .steps .desc{ font-size:12.5px; color:var(--text-secondary); line-height:1.45; }
+
+  .alerts{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; margin-top:18px; }
+  .alert{ background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--src); border-radius:0 10px 10px 0; padding:12px 16px; }
+  .alert .n{ font-size:26px; font-weight:800; line-height:1.1; color:var(--src-ink); }
+  .alert .t{ font-size:13px; color:var(--text-secondary); margin-top:2px; }
 
   /* mapping table */
-  .table-wrap{
-    overflow-x:auto;
-    border:1px solid var(--line);
-    border-radius:10px;
-    background:var(--surface);
+  table.map{ width:100%; border-collapse:collapse; font-size:13px; min-width:1000px; }
+  table.map th{
+    text-align:left; font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-secondary);
+    padding:12px 14px; border-bottom:1px solid var(--border-strong); white-space:nowrap;
   }
-  table.mapping{
-    width:100%;
-    border-collapse:collapse;
-    font-size:13.5px;
-    min-width:960px;
-  }
-  table.mapping caption{display:none;}
-  table.mapping th{
-    text-align:left;
-    font-family:"IBM Plex Mono", monospace;
-    font-size:11px;
-    letter-spacing:.05em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    font-weight:500;
-    padding:12px 14px;
-    border-bottom:1px solid var(--line-strong);
-    white-space:nowrap;
-    position:sticky;
-    top:0;
-    background:var(--surface);
-  }
-  table.mapping td{
-    padding:11px 14px;
-    border-bottom:1px solid var(--line);
-    vertical-align:top;
-  }
-  table.mapping tr:last-child td{border-bottom:none;}
-  table.mapping td.num{
-    font-family:"IBM Plex Mono", monospace;
-    color:var(--ink-soft);
-    font-weight:500;
-  }
-  table.mapping td.proj{font-weight:600;}
-  .taglist{display:flex; flex-direction:column; gap:4px;}
-  .tag{
-    font-family:"IBM Plex Mono", monospace;
-    font-size:12px;
-    padding:2px 0;
-  }
-  .tag.bronze{color:var(--bronze);}
-  .tag.silver{color:var(--silver);}
-  .tag.gold{color:var(--gold);}
+  table.map td{ padding:10px 14px; border-top:1px solid var(--border); vertical-align:top; }
+  table.map tbody tr:first-child td{ border-top:none; }
+  table.map td.num{ font-family:ui-monospace, "SF Mono", Menlo, monospace; color:var(--text-secondary); font-weight:600; }
+  table.map td.proj{ font-weight:700; }
+  table.map td.csv{ font-family:ui-monospace, "SF Mono", Menlo, monospace; font-size:12px; color:var(--text-secondary); }
+  .tags{ display:flex; flex-direction:column; gap:2px; font-family:ui-monospace, "SF Mono", Menlo, monospace; font-size:12px; }
+  .tags .mart{ color:var(--mart-ink); } .tags .gld{ color:var(--gld-ink); font-weight:600; }
+  .srcs{ white-space:nowrap; font-size:12.5px; }
+  .srcs .from{ color:var(--text-secondary); }
+  .srcs .to{ font-weight:800; color:var(--accent-ink); }
+  .srcs .to.up{ color:var(--gld-ink); }
+  .legend{ display:flex; gap:18px; flex-wrap:wrap; margin:0 0 12px; font-size:12.5px; color:var(--text-secondary); }
+  .legend span{ display:inline-flex; align-items:center; gap:7px; }
+  .legend i{ width:10px; height:10px; border-radius:2px; display:inline-block; }
 
-  footer.page{
-    margin-top:72px;
-    padding-top:24px;
-    border-top:1px solid var(--line);
-    font-size:13px;
-    color:var(--ink-soft);
-  }
-  footer.page code{
-    background:var(--code-bg);
-    padding:1px 6px;
-    border-radius:4px;
-  }
+  footer{ margin-top:56px; border-top:1px solid var(--border); padding-top:20px; color:var(--text-secondary); font-size:13px; line-height:1.7; }
+  footer a{ color:var(--accent-ink); }
+  footer code{ background:var(--accent-soft); padding:1px 6px; border-radius:4px; font-size:.9em; }
 
-  @media (max-width: 640px){
-    main{padding:36px 16px 72px;}
-    table.mapping{font-size:12.5px;}
+  @media (max-width: 900px){
+    .steps{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .pair{ grid-template-columns:minmax(0,1fr); }
+  }
+  @media (max-width: 520px){
+    body{ padding:24px 16px 48px; }
+    h1{ font-size:25px; }
+    .steps{ grid-template-columns:minmax(0,1fr); }
+    .kv{ font-size:26px; }
   }
 </style>
+</head>
+<body>
+<div class="wrap">
 
-<main>
+  <div class="brand">
+    <div class="brand-left"><div class="mark"><img src="../assets/xia-logo.png" alt="XIA"></div><span class="brand-name">XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
+    <div class="brand-right">
+      <a class="pill" href="../index.html"><span lang="es">← Portafolio</span><span lang="en">← Portfolio</span></a>
+      <button class="pill" id="langToggle" type="button"></button>
+    </div>
+  </div>
 
-  <header class="page">
-    <p class="eyebrow">Portafolio XIA · Arquitectura de datos</p>
-    <h1>Un warehouse, trece dashboards</h1>
-    <p class="dek">Este documento simula <b>el sistema operativo real de una empresa</b> — CRM, ventas, catálogo, facturación, soporte, marketing, encuestas — y las consultas que, corriendo sobre él, producirían los 13 datasets que hoy existen como CSV en <code class="mono">projects/*/data/</code>. Solo estructura: sin datos, sin ETL todavía.</p>
-    <div class="callout"><b>La mayoría de esos CSV ya son un reporte gold</b> — <code class="mono">ventas_diarias.csv</code> es una agregación por equipo/día, <code class="mono">marketing_canales.csv</code> trae CAC y LTV ya calculados. Lo que faltaba diseñar era el operativo real detrás: el pedido, la factura, el ticket de soporte.</div>
+  <header class="hero">
+    <div class="eyebrow"><span lang="es">Data Foundation · Arquitectura de datos</span><span lang="en">Data Foundation · Data architecture</span></div>
+    <h1><span lang="es">De DDL a dbt: <em>el mismo diseño, ahora ejecutable</em></span><span lang="en">From DDL to dbt: <em>the same design, now executable</em></span></h1>
+    <p class="dek"><span lang="es">El diseño original del warehouse eran <b>cuatro archivos SQL con 80 objetos y ni una fila de datos</b>. Migrado 1:1 a dbt es un proyecto que carga los datos, construye 87 modelos, corre 429 tests en CI con cada cambio y genera su propio lineage.</span><span lang="en">The original warehouse design was <b>four SQL files with 80 objects and not a single row of data</b>. Migrated 1:1 to dbt, it's a project that loads the data, builds 87 models, runs 429 tests in CI on every change and generates its own lineage.</span></p>
   </header>
 
-  <section id="overview">
-    <h2>Las tres capas, de extremo a extremo</h2>
-    <p class="section-note">21 tablas de sistemas fuente reales (CRM, ventas, ERP, ads, encuestas...) se conforman en una bodega operativa compartida, y de ahí salen 19 vistas gold que reproducen los 13 datasets del portafolio. El motor de calidad de datos audita el maestro real (cliente, producto, calendario, factura) en paralelo.</p>
+  <div class="kpis">
+    <div class="kpi hero-kpi"><div class="kv">429</div><div class="kl"><span lang="es">tests automáticos</span><span lang="en">automated tests</span></div><div class="ks"><span lang="es">426 pasan · 3 alertas conocidas de la fuente</span><span lang="en">426 pass · 3 known source-data warnings</span></div></div>
+    <div class="kpi"><div class="kv">19 / 19</div><div class="kl"><span lang="es">reportes gold con contrato</span><span lang="en">gold reports with a contract</span></div><div class="ks"><span lang="es">mismas columnas y tipos que el CSV de cada dashboard</span><span lang="en">same columns and types as each dashboard's CSV</span></div></div>
+    <div class="kpi"><div class="kv">87</div><div class="kl"><span lang="es">modelos dbt</span><span lang="en">dbt models</span></div><div class="ks"><span lang="es">22 staging · 6 intermediate · 35 marts · 5 meta · 19 gold</span><span lang="en">22 staging · 6 intermediate · 35 marts · 5 meta · 19 gold</span></div></div>
+    <div class="kpi"><div class="kv">22</div><div class="kl"><span lang="es">fuentes declaradas</span><span lang="en">declared sources</span></div><div class="ks"><span lang="es">de 10 sistemas: CRM, POS, ERP, ads, encuestas…</span><span lang="en">from 10 systems: CRM, POS, ERP, ads, surveys…</span></div></div>
+  </div>
+
+  <div class="thesis"><span lang="es"><b>El diseño no cambió; cambió lo que lo hace cumplir.</b> Las mismas capas y las mismas 80 tablas siguen ahí. Lo que aparece es todo lo que un archivo <code>.sql</code> no puede hacer: ejecutarse, probarse contra datos y avisar cuando algo se rompe.</span><span lang="en"><b>The design didn't change — what enforces it did.</b> The same layers and the same 80 tables are still there. What's new is everything a <code>.sql</code> file can't do: run, be tested against data, and warn you when something breaks.</span></div>
+
+  <section class="sec" id="overview">
+    <h2><span lang="es">Antes y después, capa por capa</span><span lang="en">Before and after, layer by layer</span></h2>
+    <p class="note"><span lang="es">Cada objeto del DDL tiene su contraparte en dbt. Pero <b>silver</b> ya no es una sola capa: el DDL la describía como tres trabajos a la vez — tipar, aplicar reglas de negocio y modelar — y dbt los separa en <b>staging</b>, <b>intermediate</b> y <b>marts</b>, cada uno con su propia responsabilidad y sus propios tests.</span><span lang="en">Every DDL object has its dbt counterpart. But <b>silver</b> is no longer a single layer: the DDL described it as three jobs at once — typing, applying business rules and modeling — and dbt splits them into <b>staging</b>, <b>intermediate</b> and <b>marts</b>, each with its own responsibility and its own tests.</span></p>
     <figure class="diagram">
-      <svg viewBox="0 0 1180 460" role="img" aria-label="Sistemas fuente reales entran a bronze, se conforman en una bodega operativa compartida en silver, y de ahí salen 19 vistas gold que reproducen los 13 datasets del portafolio; un motor de calidad de datos audita el maestro real en bronze.">
-        <defs>
-          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
-          </marker>
-        </defs>
-
-        <!-- BRONZE ZONE -->
-        <rect x="20" y="30" width="270" height="340" rx="10" fill="var(--bronze-soft)" stroke="var(--bronze)" stroke-opacity="0.35"/>
-        <text x="40" y="58" class="zone-title" fill="var(--bronze)">BRONZE</text>
-        <text x="40" y="75" class="count mono-label" fill="var(--bronze)">21 tablas · sistemas fuente</text>
-
-        <g class="mono-label chip-label" fill="var(--ink)">
-          <rect x="38" y="90" width="234" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="48" y="107">crm_cliente</text>
-          <rect x="38" y="122" width="234" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="48" y="139">pedido_linea</text>
-          <rect x="38" y="154" width="234" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="48" y="171">factura_linea</text>
-          <rect x="38" y="186" width="234" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="48" y="203">marketing_gasto</text>
-          <rect x="38" y="218" width="234" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="48" y="235">encuesta_nps</text>
-        </g>
-        <text x="40" y="262" class="chip-label" fill="var(--ink-soft)">+ 16 tablas más</text>
-        <text x="40" y="340" class="chip-label" fill="var(--ink-soft)">Tipos permisivos (TEXT).</text>
-        <text x="40" y="356" class="chip-label" fill="var(--ink-soft)">CRM · POS · ERP · ads · encuestas.</text>
-
-        <!-- SILVER ZONE -->
-        <rect x="345" y="30" width="330" height="340" rx="10" fill="var(--silver-soft)" stroke="var(--silver)" stroke-opacity="0.35"/>
-        <text x="365" y="58" class="zone-title" fill="var(--silver)">SILVER</text>
-        <text x="365" y="75" class="count mono-label" fill="var(--silver)">11 dim · 24 fact · conformado</text>
-
-        <g class="mono-label chip-label" fill="var(--ink)">
-          <rect x="363" y="90" width="290" height="26" rx="5" fill="var(--surface)" stroke="var(--line-strong)"/>
-          <text x="373" y="107">dim_fecha · dim_cliente · dim_producto</text>
-          <rect x="363" y="122" width="290" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="373" y="139">fact_pedido, fact_factura, fact_ticket…</text>
-          <rect x="363" y="154" width="290" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="373" y="171">fact_cliente_features_churn (agregado)</text>
-          <rect x="363" y="186" width="290" height="26" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="373" y="203">fact_producto_forecast (salida modelo)</text>
-        </g>
-        <text x="365" y="230" class="chip-label" fill="var(--ink-soft)">+ 20 hechos más</text>
-        <text x="365" y="340" class="chip-label" fill="var(--ink-soft)">Tipado, deduplicado,</text>
-        <text x="365" y="356" class="chip-label" fill="var(--ink-soft)">un solo cliente/producto real.</text>
-
-        <!-- GOLD ZONE -->
-        <rect x="720" y="30" width="270" height="340" rx="10" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.35"/>
-        <text x="740" y="58" class="zone-title" fill="var(--gold)">GOLD</text>
-        <text x="740" y="75" class="count mono-label" fill="var(--gold)">19 vistas · los 13 CSV</text>
-
-        <g class="mono-label chip-label" fill="var(--ink)">
-          <rect x="738" y="90" width="234" height="24" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="748" y="106">rpt_01_ventas_diarias</text>
-          <rect x="738" y="120" width="234" height="24" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="748" y="136">rpt_05_transacciones</text>
-          <rect x="738" y="150" width="234" height="24" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="748" y="166">rpt_09_marketing_canales</text>
-          <rect x="738" y="180" width="234" height="24" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="748" y="196">rpt_11_fuente_unica</text>
-          <rect x="738" y="210" width="234" height="24" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-          <text x="748" y="226">rpt_13_scorecard_calidad_tablas</text>
-        </g>
-        <text x="740" y="252" class="chip-label" fill="var(--ink-soft)">+ 14 vistas más</text>
-        <text x="740" y="340" class="chip-label" fill="var(--ink-soft)">1 vista = 1 CSV de</text>
-        <text x="740" y="356" class="chip-label" fill="var(--ink-soft)">projects/*/data/, ya agregado.</text>
-
-        <!-- arrows bronze -> silver -> gold -->
-        <line x1="292" y1="200" x2="343" y2="200" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrow)"/>
-        <text x="317" y="190" class="arrow-label mono-label" text-anchor="middle">tipar</text>
-        <line x1="677" y1="200" x2="718" y2="200" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrow)"/>
-        <text x="697" y="190" class="arrow-label mono-label" text-anchor="middle">agregar</text>
-
-        <!-- meta layer -->
-        <rect x="345" y="392" width="330" height="56" rx="10" fill="var(--meta-soft)" stroke="var(--meta)" stroke-opacity="0.4"/>
-        <text x="365" y="414" class="zone-title" fill="var(--meta)">META</text>
-        <text x="365" y="432" class="chip-label mono-label" fill="var(--ink-soft)">dq_regla · dq_scorecard_tabla · dq_plan_remediacion</text>
-        <line x1="155" y1="370" x2="420" y2="392" stroke="var(--meta)" stroke-opacity="0.55" stroke-width="1.3" marker-end="url(#arrow)"/>
-        <line x1="675" y1="420" x2="855" y2="370" stroke="var(--meta)" stroke-opacity="0.55" stroke-width="1.3" marker-end="url(#arrow)"/>
-        <text x="700" y="410" class="arrow-label mono-label">audita bronze → rpt_13</text>
-      </svg>
-      <figcaption>Bronze aterriza cada sistema fuente casi sin tocar; silver limpia y conforma la bodega operativa (más las features y salidas de modelo: churn, RFM, forecast…); gold agrega y da formato exacto a cada uno de los 13 datasets del portafolio. El motor de calidad (meta) audita el maestro real en bronze y alimenta el dashboard 13.</figcaption>
+      <svg viewBox="0 0 1180 640" role="img" style="min-width:900px" data-aria-es="A la izquierda, el diseño original: cuatro archivos DDL (bronze 21 tablas, silver 35, meta 5, gold 19 vistas). A la derecha, el proyecto dbt: sources y seeds, staging, intermediate, marts y gold con contrato, más una capa meta de calidad de datos y, en todas las capas, tests, contratos, macros, documentación y CI/CD." data-aria-en="On the left, the original design: four DDL files (bronze 21 tables, silver 35, meta 5, gold 19 views). On the right, the dbt project: sources and seeds, staging, intermediate, marts and gold with a contract, plus a meta data-quality layer and, across every layer, tests, contracts, macros, documentation and CI/CD." aria-label="On the left, the original design: four DDL files (bronze 21 tables, silver 35, meta 5, gold 19 views). On the right, the dbt project: sources and seeds, staging, intermediate, marts and gold with a contract, plus a meta data-quality layer and, across every layer, tests, contracts, macros, documentation and CI/CD."><defs>
+<marker id="ar1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--text-secondary)"/></marker>
+<marker id="ar1a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--accent-ink)"/></marker></defs><rect x="10" y="10" width="310" height="620" rx="12" fill="var(--legacy-soft)" stroke="var(--legacy)" stroke-dasharray="5 4"/><text lang="es" x="30" y="40" class="s13 b" fill="var(--text-secondary)">ANTES · DDL</text><text lang="en" x="30" y="40" class="s13 b" fill="var(--text-secondary)">BEFORE · DDL</text><text x="30" y="58" class="mono s10" fill="var(--text-secondary)">database/schema/*.sql · PostgreSQL</text><rect x="30" y="78" width="270" height="70" rx="8" fill="var(--surface)" stroke="var(--border)"/><rect x="30" y="78" width="6" height="70" rx="3" fill="var(--src)"/><text x="50" y="102" class="mono s12 b" fill="var(--text-primary)">01_bronze.sql</text><text lang="es" x="50" y="120" class="s11" fill="var(--text-secondary)">21 tablas · 309 líneas</text><text lang="en" x="50" y="120" class="s11" fill="var(--text-secondary)">21 tables · 309 lines</text><text x="50" y="137" class="mono s10" fill="var(--src-ink)">→ seeds + sources</text><rect x="30" y="158" width="270" height="70" rx="8" fill="var(--surface)" stroke="var(--border)"/><rect x="30" y="158" width="6" height="70" rx="3" fill="var(--mart)"/><text x="50" y="182" class="mono s12 b" fill="var(--text-primary)">02_silver.sql</text><text lang="es" x="50" y="200" class="s11" fill="var(--text-secondary)">35 tablas · 369 líneas</text><text lang="en" x="50" y="200" class="s11" fill="var(--text-secondary)">35 tables · 369 lines</text><text x="50" y="217" class="mono s10" fill="var(--mart-ink)">→ staging + intermediate + marts</text><rect x="30" y="238" width="270" height="70" rx="8" fill="var(--surface)" stroke="var(--border)"/><rect x="30" y="238" width="6" height="70" rx="3" fill="var(--meta)"/><text x="50" y="262" class="mono s12 b" fill="var(--text-primary)">03_meta_dq.sql</text><text lang="es" x="50" y="280" class="s11" fill="var(--text-secondary)">5 tablas · 78 líneas</text><text lang="en" x="50" y="280" class="s11" fill="var(--text-secondary)">5 tables · 78 lines</text><text x="50" y="297" class="mono s10" fill="var(--meta-ink)">→ meta</text><rect x="30" y="318" width="270" height="70" rx="8" fill="var(--surface)" stroke="var(--border)"/><rect x="30" y="318" width="6" height="70" rx="3" fill="var(--gld)"/><text x="50" y="342" class="mono s12 b" fill="var(--text-primary)">04_gold.sql</text><text lang="es" x="50" y="360" class="s11" fill="var(--text-secondary)">19 vistas · 378 líneas</text><text lang="en" x="50" y="360" class="s11" fill="var(--text-secondary)">19 views · 378 lines</text><text x="50" y="377" class="mono s10" fill="var(--gld-ink)">→ gold</text><text lang="es" x="30" y="430" class="s11 b" fill="var(--text-primary)">Lo que este diseño no podía hacer</text><text lang="en" x="30" y="430" class="s11 b" fill="var(--text-primary)">What this design couldn't do</text><text x="30" y="454" class="s11" fill="var(--text-secondary)">✕</text><text lang="es" x="48" y="454" class="s11" fill="var(--text-secondary)">Cargar datos (sin INSERT ni seeds)</text><text lang="en" x="48" y="454" class="s11" fill="var(--text-secondary)">Load data (no INSERTs, no seeds)</text><text x="30" y="476" class="s11" fill="var(--text-secondary)">✕</text><text lang="es" x="48" y="476" class="s11" fill="var(--text-secondary)">Ejecutarse en orden: 01 → 04, a mano</text><text lang="en" x="48" y="476" class="s11" fill="var(--text-secondary)">Run in order: 01 → 04, by hand</text><text x="30" y="498" class="s11" fill="var(--text-secondary)">✕</text><text lang="es" x="48" y="498" class="s11" fill="var(--text-secondary)">Probar sus constraints contra datos</text><text lang="en" x="48" y="498" class="s11" fill="var(--text-secondary)">Test its constraints against data</text><text x="30" y="520" class="s11" fill="var(--text-secondary)">✕</text><text lang="es" x="48" y="520" class="s11" fill="var(--text-secondary)">Calcular churn, RFM, forecast (fuera de SQL)</text><text lang="en" x="48" y="520" class="s11" fill="var(--text-secondary)">Compute churn, RFM, forecast (outside SQL)</text><text x="30" y="542" class="s11" fill="var(--text-secondary)">✕</text><text lang="es" x="48" y="542" class="s11" fill="var(--text-secondary)">Avisar si un dashboard se rompe</text><text lang="en" x="48" y="542" class="s11" fill="var(--text-secondary)">Warn when a dashboard breaks</text><line x1="30" y1="566" x2="300" y2="566" stroke="var(--legacy)" stroke-opacity=".5"/><text lang="es" x="30" y="592" class="s12 b" fill="var(--text-primary)">1,134 líneas de DDL · 0 filas de datos</text><text lang="en" x="30" y="592" class="s12 b" fill="var(--text-primary)">1,134 lines of DDL · 0 rows of data</text><line x1="332" y1="300" x2="418" y2="300" stroke="var(--accent-ink)" stroke-width="2.2" marker-end="url(#ar1a)"/><text lang="es" x="375" y="270" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">migración</text><text lang="en" x="375" y="270" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">migration</text><text lang="es" x="375" y="285" class="s11" text-anchor="middle" fill="var(--accent-ink)">1:1 · 80 objetos</text><text lang="en" x="375" y="285" class="s11" text-anchor="middle" fill="var(--accent-ink)">1:1 · 80 objects</text><text lang="es" x="375" y="322" class="s11" text-anchor="middle" fill="var(--accent-ink)">+ tests, docs, CI</text><text lang="en" x="375" y="322" class="s11" text-anchor="middle" fill="var(--accent-ink)">+ tests, docs, CI</text><rect x="430" y="10" width="740" height="620" rx="12" fill="var(--surface)" stroke="var(--accent)" stroke-opacity=".7"/><text lang="es" x="450" y="40" class="s13 b" fill="var(--accent-ink)">DESPUÉS · dbt</text><text lang="en" x="450" y="40" class="s13 b" fill="var(--accent-ink)">AFTER · dbt</text><text x="450" y="58" class="mono s10" fill="var(--text-secondary)">warehouse/ · dbt + DuckDB</text><rect x="450" y="78" width="700" height="58" rx="8" fill="var(--src-soft)" stroke="var(--src)" stroke-opacity=".55"/><text lang="es" x="462" y="98" class="mono s11 b" fill="var(--src-ink)">SOURCES · 22 seeds · 10 sistemas fuente</text><text lang="en" x="462" y="98" class="mono s11 b" fill="var(--src-ink)">SOURCES · 22 seeds · 10 source systems</text><rect x="462" y="106" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--src)" stroke-opacity=".7"/><text x="471" y="121" class="mono s10" fill="var(--text-primary)">crm_cliente</text><rect x="690" y="106" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--src)" stroke-opacity=".7"/><text x="699" y="121" class="mono s10" fill="var(--text-primary)">pedido_linea</text><rect x="918" y="106" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--src)" stroke-opacity=".7"/><text x="927" y="121" class="mono s10" fill="var(--text-primary)">factura_linea</text><line x1="800" y1="138" x2="800" y2="158" stroke="var(--text-secondary)" stroke-width="1.5" marker-end="url(#ar1)"/><text lang="es" x="812" y="152" class="s10" fill="var(--text-secondary)">tipar · renombrar · 1:1</text><text lang="en" x="812" y="152" class="s10" fill="var(--text-secondary)">type · rename · 1:1</text><rect x="450" y="158" width="700" height="58" rx="8" fill="var(--stg-soft)" stroke="var(--stg)" stroke-opacity=".55"/><text lang="es" x="462" y="178" class="mono s11 b" fill="var(--stg-ink)">STAGING · 22 modelos (views)</text><text lang="en" x="462" y="178" class="mono s11 b" fill="var(--stg-ink)">STAGING · 22 models (views)</text><rect x="462" y="186" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--stg)" stroke-opacity=".7"/><text x="471" y="201" class="mono s10" fill="var(--text-primary)">stg_crm__cliente</text><rect x="690" y="186" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--stg)" stroke-opacity=".7"/><text x="699" y="201" class="mono s10" fill="var(--text-primary)">stg_pos__pedido_linea</text><rect x="918" y="186" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--stg)" stroke-opacity=".7"/><text x="927" y="201" class="mono s10" fill="var(--text-primary)">stg_erp__factura_linea</text><line x1="800" y1="218" x2="800" y2="238" stroke="var(--text-secondary)" stroke-width="1.5" marker-end="url(#ar1)"/><text lang="es" x="812" y="232" class="s10" fill="var(--text-secondary)">reglas de negocio</text><text lang="en" x="812" y="232" class="s10" fill="var(--text-secondary)">business rules</text><rect x="450" y="238" width="700" height="58" rx="8" fill="var(--int-soft)" stroke="var(--int)" stroke-opacity=".55"/><text lang="es" x="462" y="258" class="mono s11 b" fill="var(--int-ink)">INTERMEDIATE · 6 modelos (views)</text><text lang="en" x="462" y="258" class="mono s11 b" fill="var(--int-ink)">INTERMEDIATE · 6 models (views)</text><rect x="462" y="266" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--int)" stroke-opacity=".7"/><text x="471" y="281" class="mono s10" fill="var(--text-primary)">int_producto_depurado</text><rect x="690" y="266" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--int)" stroke-opacity=".7"/><text x="699" y="281" class="mono s10" fill="var(--text-primary)">int_pedidos_enriquecidos</text><rect x="918" y="266" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--int)" stroke-opacity=".7"/><text x="927" y="281" class="mono s10" fill="var(--text-primary)">int_canal_mes_metricas</text><line x1="800" y1="298" x2="800" y2="318" stroke="var(--text-secondary)" stroke-width="1.5" marker-end="url(#ar1)"/><text lang="es" x="812" y="312" class="s10" fill="var(--text-secondary)">modelar: dimensiones + hechos</text><text lang="en" x="812" y="312" class="s10" fill="var(--text-secondary)">model: dimensions + facts</text><rect x="450" y="318" width="700" height="58" rx="8" fill="var(--mart-soft)" stroke="var(--mart)" stroke-opacity=".55"/><text lang="es" x="462" y="338" class="mono s11 b" fill="var(--mart-ink)">MARTS · 11 dim + 24 fct (tables)</text><text lang="en" x="462" y="338" class="mono s11 b" fill="var(--mart-ink)">MARTS · 11 dim + 24 fct (tables)</text><rect x="462" y="346" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--mart)" stroke-opacity=".7"/><text x="471" y="361" class="mono s10" fill="var(--text-primary)">dim_cliente</text><rect x="690" y="346" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--mart)" stroke-opacity=".7"/><text x="699" y="361" class="mono s10" fill="var(--text-primary)">fct_pedido  (incremental)</text><rect x="918" y="346" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--mart)" stroke-opacity=".7"/><text x="927" y="361" class="mono s10" fill="var(--text-primary)">fct_factura</text><line x1="800" y1="378" x2="800" y2="398" stroke="var(--text-secondary)" stroke-width="1.5" marker-end="url(#ar1)"/><text lang="es" x="812" y="392" class="s10" fill="var(--text-secondary)">agregar + contrato</text><text lang="en" x="812" y="392" class="s10" fill="var(--text-secondary)">aggregate + contract</text><rect x="450" y="398" width="700" height="58" rx="8" fill="var(--gld-soft)" stroke="var(--gld)" stroke-opacity=".55"/><text lang="es" x="462" y="418" class="mono s11 b" fill="var(--gld-ink)">GOLD · 19 rpt_* con contrato (tables)</text><text lang="en" x="462" y="418" class="mono s11 b" fill="var(--gld-ink)">GOLD · 19 rpt_* with contract (tables)</text><rect x="462" y="426" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--gld)" stroke-opacity=".7"/><text x="471" y="441" class="mono s10" fill="var(--text-primary)">rpt_ventas_diarias</text><rect x="690" y="426" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--gld)" stroke-opacity=".7"/><text x="699" y="441" class="mono s10" fill="var(--text-primary)">rpt_marketing_canales</text><rect x="918" y="426" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--gld)" stroke-opacity=".7"/><text x="927" y="441" class="mono s10" fill="var(--text-primary)">rpt_scorecard</text><rect x="450" y="490" width="700" height="58" rx="8" fill="var(--meta-soft)" stroke="var(--meta)" stroke-opacity=".6" stroke-dasharray="5 3"/><text lang="es" x="462" y="510" class="mono s11 b" fill="var(--meta-ink)">META · 5 modelos · audita sources y alimenta el dashboard 13</text><text lang="en" x="462" y="510" class="mono s11 b" fill="var(--meta-ink)">META · 5 models · audits sources and feeds dashboard 13</text><rect x="462" y="518" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--meta)" stroke-opacity=".7"/><text x="471" y="533" class="mono s10" fill="var(--text-primary)">dq_regla</text><rect x="690" y="518" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--meta)" stroke-opacity=".7"/><text x="699" y="533" class="mono s10" fill="var(--text-primary)">dq_resultado_regla</text><rect x="918" y="518" width="216" height="22" rx="5" fill="var(--surface)" stroke="var(--meta)" stroke-opacity=".7"/><text x="927" y="533" class="mono s10" fill="var(--text-primary)">dq_scorecard_tabla</text><text lang="es" x="450" y="580" class="s11 b" fill="var(--text-primary)">Aplicado a todas las capas</text><text lang="en" x="450" y="580" class="s11 b" fill="var(--text-primary)">Applied to every layer</text><rect x="450" y="592" width="110" height="26" rx="13" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".7"/><text lang="es" x="505.0" y="609" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">429 tests</text><text lang="en" x="505.0" y="609" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">429 tests</text><rect x="570" y="592" width="130" height="26" rx="13" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".7"/><text lang="es" x="635.0" y="609" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">19 contratos</text><text lang="en" x="635.0" y="609" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">19 contracts</text><rect x="710" y="592" width="110" height="26" rx="13" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".7"/><text lang="es" x="765.0" y="609" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">11 macros</text><text lang="en" x="765.0" y="609" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">11 macros</text><rect x="830" y="592" width="140" height="26" rx="13" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".7"/><text lang="es" x="900.0" y="609" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">docs + lineage</text><text lang="en" x="900.0" y="609" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">docs + lineage</text><rect x="980" y="592" width="100" height="26" rx="13" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".7"/><text lang="es" x="1030.0" y="609" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">CI / CD</text><text lang="en" x="1030.0" y="609" class="s11 b" text-anchor="middle" fill="var(--accent-ink)">CI / CD</text></svg>
+      <figcaption><span lang="es">Bronze → seeds + sources (22 seeds; uno extra, <code>kpi_meta</code>, cierra un hueco del diseño). Silver (35 tablas) → 35 marts, más 22 modelos de staging y 6 intermediate que el DDL solo insinuaba en comentarios. Meta (5) y gold (19) migran 1:1. Inventario completo: <code>database/LEGACY_TABLES.md</code>.</span><span lang="en">Bronze → seeds + sources (22 seeds; one extra, <code>kpi_meta</code>, closes a gap in the design). Silver (35 tables) → 35 marts, plus 22 staging and 6 intermediate models that the DDL only hinted at in comments. Meta (5) and gold (19) migrate 1:1. Full inventory: <code>database/LEGACY_TABLES.md</code>.</span></figcaption>
     </figure>
   </section>
 
-  <section id="conform-example">
-    <h2>Cómo se conforma: el caso de las 3 sucursales</h2>
-    <p class="section-note">El proyecto 11 es la excepción que confirma la regla: su CSV ya es bronze por diseño. Tres sucursales sin integrar al sistema de ventas reportan por su cuenta, cada una con su propio formato — el problema real de consolidación que resuelve.</p>
-    <figure class="diagram">
-      <svg viewBox="0 0 1180 300" role="img" aria-label="Tres tablas bronze con esquemas distintos — pedido_sucursal_cdmx en español con fecha DD/MM/AAAA, pedido_sucursal_guadalajara en inglés con nombre de sucursal inconsistente, pedido_sucursal_monterrey en formato ISO — se normalizan y deduplican hacia silver.dim_sucursal y silver.fact_venta_sucursal; las filas sin monto se separan a una cola de revisión manual en vez de inventarse un valor.">
-        <defs>
-          <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
-          </marker>
-        </defs>
-
-        <!-- three bronze sources -->
-        <g class="mono-label chip-label">
-          <rect x="20" y="20" width="270" height="70" rx="8" fill="var(--bronze-soft)" stroke="var(--bronze)" stroke-opacity="0.45"/>
-          <text x="34" y="42" fill="var(--bronze)" font-weight="600">bronze.pedido_sucursal_cdmx</text>
-          <text x="34" y="60" fill="var(--ink-soft)">Fecha DD/MM/AAAA · Sucursal · Monto</text>
-          <text x="34" y="76" fill="var(--ink-soft)">columnas en español</text>
-
-          <rect x="20" y="105" width="270" height="70" rx="8" fill="var(--bronze-soft)" stroke="var(--bronze)" stroke-opacity="0.45"/>
-          <text x="34" y="127" fill="var(--bronze)" font-weight="600">bronze.pedido_sucursal_guadalajara</text>
-          <text x="34" y="145" fill="var(--ink-soft)">Date MM/DD/AAAA · Store · Amount_MXN</text>
-          <text x="34" y="161" fill="var(--ink-soft)">"guadalajara" / "GDL " / "Guadalajara"</text>
-
-          <rect x="20" y="190" width="270" height="70" rx="8" fill="var(--bronze-soft)" stroke="var(--bronze)" stroke-opacity="0.45"/>
-          <text x="34" y="212" fill="var(--bronze)" font-weight="600">bronze.pedido_sucursal_monterrey</text>
-          <text x="34" y="230" fill="var(--ink-soft)">fecha_venta AAAA-MM-DD · importe_mxn</text>
-          <text x="34" y="246" fill="var(--ink-soft)">algunos montos vacíos</text>
-        </g>
-
-        <!-- converging arrows -->
-        <path d="M290,55 C 420,55 420,150 540,150" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow2)"/>
-        <path d="M290,140 C 400,140 400,150 540,150" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow2)"/>
-        <path d="M290,225 C 420,225 420,150 540,150" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow2)"/>
-        <text x="400" y="105" class="arrow-label mono-label" text-anchor="middle">normalizar fecha</text>
-        <text x="400" y="120" class="arrow-label mono-label" text-anchor="middle">+ catálogo sucursal</text>
-        <text x="400" y="135" class="arrow-label mono-label" text-anchor="middle">+ deduplicar</text>
-
-        <!-- silver output -->
-        <rect x="555" y="105" width="290" height="90" rx="8" fill="var(--silver-soft)" stroke="var(--silver)" stroke-opacity="0.5"/>
-        <text x="570" y="128" fill="var(--silver)" font-weight="600" class="mono-label chip-label">silver.dim_sucursal</text>
-        <text x="570" y="146" fill="var(--ink-soft)" class="chip-label mono-label">nombre_normalizado: 'CDMX' | 'Guadalajara' | 'Monterrey'</text>
-        <text x="570" y="168" fill="var(--silver)" font-weight="600" class="mono-label chip-label">silver.fact_venta_sucursal</text>
-        <text x="570" y="186" fill="var(--ink-soft)" class="chip-label mono-label">date_key · sucursal_key · monto_mxn</text>
-
-        <!-- quarantine branch -->
-        <path d="M845,150 C 920,150 920,235 985,235" fill="none" stroke="var(--bronze)" stroke-width="1.4" marker-end="url(#arrow2)"/>
-        <text x="900" y="215" class="arrow-label mono-label" text-anchor="middle" fill="var(--bronze)">monto NULL</text>
-        <rect x="985" y="200" width="180" height="70" rx="8" fill="var(--surface)" stroke="var(--bronze)" stroke-dasharray="4 3"/>
-        <text x="998" y="222" fill="var(--bronze)" font-weight="600" class="mono-label chip-label">venta_sucursal_</text>
-        <text x="998" y="236" fill="var(--bronze)" font-weight="600" class="mono-label chip-label">pendiente_revision</text>
-        <text x="998" y="256" fill="var(--ink-soft)" class="chip-label">cola de revisión,</text>
-        <text x="998" y="268" fill="var(--ink-soft)" class="chip-label">nunca se inventa un monto</text>
-      </svg>
-      <figcaption>Tres esquemas distintos entran a bronze tal cual llegan porque esas sucursales no están integradas al sistema de ventas gestionado; silver decide qué es "Guadalajara" y qué fila ya está duplicada. Las filas sin monto no se imputan: se separan a una tabla de excepción explícita.</figcaption>
-    </figure>
-  </section>
-
-  <section id="fanout-hub">
-    <h2>Un solo hecho, seis reportes</h2>
-    <p class="section-note"><code class="mono">silver.fact_pedido</code> — línea de pedido del canal gestionado — es el hecho central del warehouse. No son seis fuentes de datos distintas: es la misma venta, agregada seis formas distintas para seis de los trece datasets del portafolio.</p>
-    <figure class="diagram">
-      <svg viewBox="0 0 900 360" role="img" aria-label="silver.fact_pedido en el centro se agrega de seis formas distintas para producir seis de los trece datasets del portafolio: 01 por equipo/vendedor/día, 05 por cliente/día, 06 por producto/semana, 07 por SKU/día, 09 por canal/mes para ticket y margen, y 10 por mes/región/categoría.">
-        <defs>
-          <marker id="arrow3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
-          </marker>
-        </defs>
-
-        <!-- center hub -->
-        <rect x="330" y="148" width="240" height="64" rx="9" fill="var(--silver-soft)" stroke="var(--silver)" stroke-opacity="0.6"/>
-        <text x="450" y="173" text-anchor="middle" class="mono-label chip-label" font-weight="600" fill="var(--silver)">silver.fact_pedido</text>
-        <text x="450" y="191" text-anchor="middle" class="mono-label" style="font-size:10.5px" fill="var(--ink-soft)">1 fila por SKU vendido</text>
-
-        <!-- six spokes -->
-        <g class="mono-label chip-label">
-          <rect x="20" y="20" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
-          <text x="130" y="40" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_01_ventas_diarias</text>
-          <text x="130" y="55" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">agrupa por equipo · vendedor · día</text>
-
-          <rect x="340" y="20" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
-          <text x="450" y="40" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_06_precio_demanda</text>
-          <text x="450" y="55" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">agrupa por producto · semana</text>
-
-          <rect x="660" y="20" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
-          <text x="770" y="40" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_07_demanda_diaria</text>
-          <text x="770" y="55" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">agrupa por SKU · día</text>
-
-          <rect x="20" y="294" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
-          <text x="130" y="314" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_05_transacciones</text>
-          <text x="130" y="329" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">agrupa por cliente · día</text>
-
-          <rect x="340" y="294" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
-          <text x="450" y="314" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_09_marketing_canales</text>
-          <text x="450" y="329" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">ticket y margen por canal · mes</text>
-
-          <rect x="660" y="294" width="220" height="46" rx="7" fill="var(--gold-soft)" stroke="var(--gold)" stroke-opacity="0.45"/>
-          <text x="770" y="314" text-anchor="middle" fill="var(--gold)" font-weight="600" style="font-size:11px">rpt_10_transacciones</text>
-          <text x="770" y="329" text-anchor="middle" fill="var(--ink-soft)" style="font-size:10px">agrupa por mes · región · categoría</text>
-        </g>
-
-        <!-- spokes lines, arrows out from center -->
-        <line x1="380" y1="148" x2="160" y2="68" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
-        <line x1="440" y1="148" x2="448" y2="68" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
-        <line x1="555" y1="160" x2="740" y2="68" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
-        <line x1="380" y1="212" x2="160" y2="292" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
-        <line x1="440" y1="212" x2="448" y2="292" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
-        <line x1="555" y1="200" x2="740" y2="292" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow3)"/>
-      </svg>
-    </figure>
-    <figcaption style="margin-top:10px;">Cada reporte es un <code class="mono">GROUP BY</code> distinto sobre la misma tabla — la prueba de que consolidar en un solo hecho, en vez de un CSV por proyecto, elimina seis copias de la misma venta.</figcaption>
-  </section>
-
-  <section id="mapping">
-    <h2>Mapa completo: bronze → silver → gold, por proyecto</h2>
-    <p class="section-note">El detalle columna-por-columna está en <code class="mono">database/schema/*.sql</code>; esta tabla es el resumen de qué alimenta a qué.</p>
-    <div class="legend">
-      <span><i style="background:var(--bronze)"></i> bronze — sistema fuente</span>
-      <span><i style="background:var(--silver)"></i> silver — conformado</span>
-      <span><i style="background:var(--gold)"></i> gold — reproduce el CSV del proyecto</span>
-    </div>
-    <div class="table-wrap" style="margin-top:16px;">
-      <table class="mapping">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Proyecto</th>
-            <th>CSV que reproduce gold</th>
-            <th>Capas</th>
-          </tr>
-        </thead>
-        <tbody id="mapping-body"></tbody>
+  <section class="sec" id="advantages">
+    <h2><span lang="es">Qué se gana, con evidencia</span><span lang="en">What you gain, with evidence</span></h2>
+    <p class="note"><span lang="es">Cada fila compara lo que el diseño en DDL podía ofrecer con lo que el proyecto dbt hace hoy. Las cifras salen del propio proyecto (<code>dbt ls</code> y el manifest), no de una estimación.</span><span lang="en">Each row compares what the DDL design could offer with what the dbt project does today. The figures come from the project itself (<code>dbt ls</code> and the manifest), not from an estimate.</span></p>
+    <div class="table-wrap">
+      <table class="cmp">
+        <thead><tr><th><span lang="es">Aspecto</span><span lang="en">Aspect</span></th><th><span lang="es">Antes · DDL</span><span lang="en">Before · DDL</span></th><th class="aft-h"><span lang="es">Después · dbt</span><span lang="en">After · dbt</span></th></tr></thead>
+        <tbody>
+<tr><th scope="row"><span lang="es">Es ejecutable</span><span lang="en">It actually runs</span></th><td class="bef"><span lang="es">Solo estructura: sin <code>INSERT</code>, sin carga, sin ETL.</span><span lang="en">Structure only: no <code>INSERT</code>, no load, no ETL.</span></td><td class="aft"><span lang="es"><code>dbt seed</code> + <code>dbt run</code> cargan 22 seeds y construyen 87 modelos, sin servidor.</span><span lang="en"><code>dbt seed</code> + <code>dbt run</code> load 22 seeds and build 87 models, no server.</span></td></tr>
+<tr><th scope="row"><span lang="es">Orden y lineage</span><span lang="en">Order and lineage</span></th><td class="bef"><span lang="es">Archivos numerados 01→04 que se corren en orden, a mano. El mapa de dependencias era una tabla escrita a mano en el README.</span><span lang="en">Files numbered 01→04, run in order by hand. The dependency map was a table written by hand in the README.</span></td><td class="aft"><span lang="es"><code>ref()</code> y <code>source()</code> arman el DAG: dbt decide el orden y el paralelismo, y <code>dbt docs</code> lo publica como grafo interactivo.</span><span lang="en"><code>ref()</code> and <code>source()</code> build the DAG: dbt decides order and parallelism, and <code>dbt docs</code> publishes it as an interactive graph.</span></td></tr>
+<tr><th scope="row"><span lang="es">Calidad de datos</span><span lang="en">Data quality</span></th><td class="bef"><span lang="es"><code>PRIMARY KEY</code> y <code>REFERENCES</code> declarados, sin datos contra los cuales correrlos.</span><span lang="en"><code>PRIMARY KEY</code> and <code>REFERENCES</code> declared, with no data to run them against.</span></td><td class="aft"><span lang="es"><b>429 tests</b> — 170 <code>not_null</code>, 75 <code>unique</code>, 64 <code>relationships</code>, rangos, valores aceptados y 8 propios — en CI con cada cambio.</span><span lang="en"><b>429 tests</b> — 170 <code>not_null</code>, 75 <code>unique</code>, 64 <code>relationships</code>, ranges, accepted values and 8 custom ones — in CI on every change.</span></td></tr>
+<tr><th scope="row"><span lang="es">Contrato con el dashboard</span><span lang="en">Contract with the dashboard</span></th><td class="bef"><span lang="es">Ninguno. Un cambio de columna se descubre cuando el dashboard falla.</span><span lang="en">None. A column change is discovered when the dashboard fails.</span></td><td class="aft"><span lang="es"><code>contract: enforced</code> en 19 de 19 reportes gold: mismas columnas, orden y tipos que el CSV.</span><span lang="en"><code>contract: enforced</code> on 19 of 19 gold reports: same columns, order and types as the CSV.</span></td></tr>
+<tr><th scope="row"><span lang="es">Carga de datos</span><span lang="en">Data loading</span></th><td class="bef"><span lang="es">Fuera de alcance: no había estrategia de carga.</span><span lang="en">Out of scope: there was no loading strategy.</span></td><td class="aft"><span lang="es">Modelos incrementales (<code>fct_pedido</code> y el motor de calidad): procesan solo lo nuevo.</span><span lang="en">Incremental models (<code>fct_pedido</code> and the quality engine): they process only what's new.</span></td></tr>
+<tr><th scope="row"><span lang="es">Reutilización</span><span lang="en">Reuse</span></th><td class="bef"><span lang="es">SQL plano: sin plantillas ni funciones reutilizables.</span><span lang="en">Plain SQL: no templates, no reusable functions.</span></td><td class="aft"><span lang="es">11 macros Jinja. <code>quadrant_segment</code> da las 4 etiquetas de cuadrante en 3 marts con un solo <code>CASE WHEN</code>; <code>parse_messy_date</code> resuelve fechas mixtas en un lugar.</span><span lang="en">11 Jinja macros. <code>quadrant_segment</code> produces the 4 quadrant labels in 3 marts with a single <code>CASE WHEN</code>; <code>parse_messy_date</code> handles mixed dates in one place.</span></td></tr>
+<tr><th scope="row"><span lang="es">Documentación</span><span lang="en">Documentation</span></th><td class="bef"><span lang="es">Sentencias <code>COMMENT ON</code> y un README.</span><span lang="en"><code>COMMENT ON</code> statements and a README.</span></td><td class="aft"><span lang="es">Descripciones en YAML (86 de 87 modelos) junto al código, y un catálogo navegable con <code>dbt docs</code>.</span><span lang="en">Descriptions in YAML (86 of 87 models) next to the code, and a browsable catalog with <code>dbt docs</code>.</span></td></tr>
+<tr><th scope="row"><span lang="es">Cambios y despliegue</span><span lang="en">Changes and deployment</span></th><td class="bef"><span lang="es">Editar un <code>.sql</code> y ejecutarlo a mano.</span><span lang="en">Edit a <code>.sql</code> file and run it by hand.</span></td><td class="aft"><span lang="es">Rama → PR → CI (seed · run · test · cobertura de dashboards) → merge. Un cambio que rompe algo se ve en rojo antes del merge.</span><span lang="en">Branch → PR → CI (seed · run · test · dashboard coverage) → merge. A change that breaks something shows up red before the merge.</span></td></tr>
+<tr><th scope="row"><span lang="es">Costo</span><span lang="en">Cost</span></th><td class="bef"><span lang="es">PostgreSQL: requiere un servidor.</span><span lang="en">PostgreSQL: needs a server.</span></td><td class="aft"><span lang="es">DuckDB: un archivo local, o uno efímero en un runner gratuito de GitHub Actions. Sin credenciales.</span><span lang="en">DuckDB: a local file, or an ephemeral one on a free GitHub Actions runner. No credentials.</span></td></tr>
+        </tbody>
       </table>
     </div>
   </section>
 
-  <footer class="page">
-    DDL original en <code>database/schema/03_meta_dq.sql</code> · <code>04_gold.sql</code> — explicación de cada decisión en <code>database/README.md</code>. Sintaxis PostgreSQL, sin datos ni scripts de carga en esta fase.
+  <section class="sec" id="proof">
+    <h2><span lang="es">Tres pruebas en código</span><span lang="en">Three proofs in code</span></h2>
+    <p class="note"><span lang="es">Extractos reales del repositorio: a la izquierda, el DDL original (recuperable del historial de git); a la derecha, su equivalente en el proyecto dbt.</span><span lang="en">Real excerpts from the repository: on the left, the original DDL (recoverable from git history); on the right, its equivalent in the dbt project.</span></p>
+
+    <div class="proof">
+      <h3><span lang="es">Una referencia que el motor entiende</span><span lang="en">A reference the engine understands</span></h3>
+      <div class="pair">
+        <div class="code before"><div class="code-h"><span class="tagline"><span lang="es">Antes · DDL</span><span lang="en">Before · DDL</span></span><span class="file">database/schema/04_gold.sql</span></div><pre><code>CREATE VIEW gold.rpt_01_ventas_diarias AS
+SELECT
+    p.date_key         AS fecha,
+    eq.nombre_equipo   AS equipo,
+    v.codigo_vendedor  AS vendedor,
+    pr.categoria       AS linea_producto,
+    SUM(p.importe_neto) AS monto_mxn
+FROM silver.fact_pedido p
+JOIN silver.dim_vendedor v  ON v.vendedor_key = p.vendedor_key
+JOIN silver.dim_equipo eq   ON eq.equipo_key = v.equipo_key
+JOIN silver.dim_producto pr ON pr.producto_key = p.producto_key
+GROUP BY p.date_key, eq.nombre_equipo, v.codigo_vendedor, pr.categoria;</code></pre></div>
+        <div class="code after"><div class="code-h"><span class="tagline"><span lang="es">Después · dbt</span><span lang="en">After · dbt</span></span><span class="file">models/gold/01_ventas_por_equipo/rpt_ventas_diarias.sql</span></div><pre><code>select
+    fp.date_key as fecha,
+    dv.equipo,
+    dv.codigo_vendedor as vendedor,
+    fp.categoria as linea_producto,
+    sum(fp.importe_neto)::double as monto_mxn
+from {{ ref('fct_pedido') }} fp
+join {{ ref('dim_vendedor') }} dv on dv.vendedor_id = fp.vendedor_id
+group by fp.date_key, dv.equipo, dv.codigo_vendedor, fp.categoria</code></pre></div>
+      </div>
+      <p class="cap"><span lang="es"><code>FROM silver.fact_pedido</code> es texto; <code>{{ ref('fct_pedido') }}</code> es una arista del grafo. Por eso <code>dbt ls --select fct_pedido+</code> responde, sin abrir un archivo, qué se afecta si cambia el hecho central: entre otros, <b>9 de los 19 reportes gold</b>.</span><span lang="en"><code>FROM silver.fact_pedido</code> is text; <code>{{ ref('fct_pedido') }}</code> is an edge in the graph. That's why <code>dbt ls --select fct_pedido+</code> answers, without opening a file, what's affected if the central fact changes — among others, <b>9 of the 19 gold reports</b>.</span></p>
+    </div>
+    <div class="proof">
+      <h3><span lang="es">Un contrato en lugar de un comentario</span><span lang="en">A contract instead of a comment</span></h3>
+      <div class="pair">
+        <div class="code before"><div class="code-h"><span class="tagline"><span lang="es">Antes · DDL</span><span lang="en">Before · DDL</span></span><span class="file">database/schema/04_gold.sql</span></div><pre><code>COMMENT ON VIEW gold.rpt_01_ventas_diarias IS
+  'Agrega fact_pedido (solo líneas con vendedor asignado) por día x equipo x vendedor x categoría.';</code></pre></div>
+        <div class="code after"><div class="code-h"><span class="tagline"><span lang="es">Después · dbt</span><span lang="en">After · dbt</span></span><span class="file">models/gold/01_ventas_por_equipo/_01_ventas_por_equipo__models.yml</span></div><pre><code>- name: rpt_ventas_diarias
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: fecha
+    data_type: date
+  - name: equipo
+    data_type: varchar
+  # ...
+  - name: monto_mxn
+    data_type: double
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0</code></pre></div>
+      </div>
+      <p class="cap"><span lang="es">En el DDL, lo que el dashboard esperaba vivía en un comentario: renombrar una columna lo rompía sin aviso. Con <code>contract: enforced</code> (los 19 reportes gold), dbt se niega a materializar el modelo si cambia una columna o un tipo, y el CI falla antes del merge.</span><span lang="en">In the DDL, what the dashboard expected lived in a comment: renaming a column broke it silently. With <code>contract: enforced</code> (all 19 gold reports), dbt refuses to materialize the model if a column or type changes, and CI fails before the merge.</span></p>
+    </div>
+    <div class="proof">
+      <h3><span lang="es">Cargar solo lo nuevo</span><span lang="en">Load only what's new</span></h3>
+      <div class="pair">
+        <div class="code before"><div class="code-h"><span class="tagline"><span lang="es">Antes · DDL</span><span lang="en">Before · DDL</span></span><span class="file">database/schema/02_silver.sql</span></div><pre><code>CREATE TABLE silver.fact_pedido (
+    linea_key      BIGSERIAL PRIMARY KEY,
+    pedido_id      TEXT NOT NULL,
+    date_key       DATE NOT NULL REFERENCES silver.dim_fecha(date_key),
+    cliente_key    INTEGER NOT NULL REFERENCES silver.dim_cliente(cliente_key),
+    -- ...
+    importe_neto   NUMERIC(14,2) NOT NULL
+);
+-- ¿Quién la llena, y cuándo? Fuera de alcance.</code></pre></div>
+        <div class="code after"><div class="code-h"><span class="tagline"><span lang="es">Después · dbt</span><span lang="en">After · dbt</span></span><span class="file">models/marts/ventas/fct_pedido.sql</span></div><pre><code>{{ config(
+    materialized='incremental',
+    unique_key='linea_key',
+    incremental_strategy='delete+insert'
+) }}
+
+select ...
+from {{ ref('int_pedidos_enriquecidos') }} p
+join {{ ref('dim_cliente') }} dc on dc.cliente_id = p.cliente_id
+-- ...
+{% if is_incremental() %}
+where p.fecha &gt; (select coalesce(max(date_key), date '1900-01-01')
+                 from {{ this }})
+{% endif %}</code></pre></div>
+      </div>
+      <p class="cap"><span lang="es">El DDL definía la tabla pero no cómo se llena. <code>fct_pedido</code> es incremental: cada corrida procesa solo los pedidos posteriores a la última fecha cargada. Verificado a mano: dos corridas sin datos nuevos no reprocesan nada, y un día nuevo inserta solo esas filas.</span><span lang="en">The DDL defined the table but not how it gets filled. <code>fct_pedido</code> is incremental: each run only processes orders after the last loaded date. Checked by hand: two runs with no new data reprocess nothing, and a new day inserts only those rows.</span></p>
+    </div>
+  </section>
+
+  <section class="sec" id="lineage">
+    <h2><span lang="es">El caso de las 3 sucursales, ahora como grafo</span><span lang="en">The 3-branches case, now as a graph</span></h2>
+    <p class="note"><span lang="es">Tres sucursales sin integrar reportan cada una con su formato. Antes era un diagrama dibujado a mano; ahora es el <b>grafo real</b>, generado a partir de los <code>ref()</code> de <code>projects/11</code>. Las filas sin monto no se imputan: se separan a una cola de revisión que llega hasta su propio reporte.</span><span lang="en">Three unintegrated branches each report in their own format. It used to be a hand-drawn diagram; now it's the <b>real graph</b>, generated from the <code>ref()</code> calls behind <code>projects/11</code>. Rows with no amount aren't imputed: they're split into a review queue that reaches its own report.</span></p>
+    <figure class="diagram">
+      <svg viewBox="0 0 1180 420" role="img" style="min-width:900px" data-aria-es="Grafo de dependencias de las tres sucursales: tres seeds con esquemas distintos pasan a tres modelos staging, se unen en int_ventas_sucursal_unificada y int_ventas_sucursal_pendiente, alimentan fct_venta_sucursal y fct_venta_sucursal_pendiente_revision (con dim_sucursal) y de ahí rpt_fuente_unica y rpt_revision_manual_monto_faltante." data-aria-en="Dependency graph for the three branches: three seeds with different schemas feed three staging models, are joined in int_ventas_sucursal_unificada and int_ventas_sucursal_pendiente, feed fct_venta_sucursal and fct_venta_sucursal_pendiente_revision (with dim_sucursal), and from there rpt_fuente_unica and rpt_revision_manual_monto_faltante." aria-label="Dependency graph for the three branches: three seeds with different schemas feed three staging models, are joined in int_ventas_sucursal_unificada and int_ventas_sucursal_pendiente, feed fct_venta_sucursal and fct_venta_sucursal_pendiente_revision (with dim_sucursal), and from there rpt_fuente_unica and rpt_revision_manual_monto_faltante."><defs>
+<marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--text-secondary)"/></marker>
+<marker id="ar2a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--accent-ink)"/></marker></defs><text lang="es" x="10" y="22" class="mono s11 b" fill="var(--src-ink)">SOURCES · 3 seeds</text><text lang="en" x="10" y="22" class="mono s11 b" fill="var(--src-ink)">SOURCES · 3 seeds</text><text lang="es" x="270" y="22" class="mono s11 b" fill="var(--stg-ink)">STAGING · 3 views</text><text lang="en" x="270" y="22" class="mono s11 b" fill="var(--stg-ink)">STAGING · 3 views</text><text lang="es" x="520" y="22" class="mono s11 b" fill="var(--int-ink)">INTERMEDIATE · 2 views</text><text lang="en" x="520" y="22" class="mono s11 b" fill="var(--int-ink)">INTERMEDIATE · 2 views</text><text lang="es" x="750" y="22" class="mono s11 b" fill="var(--mart-ink)">MARTS · 2 fct + 1 dim</text><text lang="en" x="750" y="22" class="mono s11 b" fill="var(--mart-ink)">MARTS · 2 fct + 1 dim</text><text lang="es" x="1010" y="22" class="mono s11 b" fill="var(--gld-ink)">GOLD · 2 rpt</text><text lang="en" x="1010" y="22" class="mono s11 b" fill="var(--gld-ink)">GOLD · 2 rpt</text><rect x="10" y="50" width="220" height="70" rx="8" fill="var(--src-soft)" stroke="var(--src)" stroke-opacity=".7"/><text x="20" y="72" class="mono s10 b" fill="var(--src-ink)">pedido_sucursal_cdmx</text><text lang="es" x="20" y="90" class="s10" fill="var(--text-secondary)">Fecha DD/MM/AAAA · Sucursal · Monto</text><text lang="en" x="20" y="90" class="s10" fill="var(--text-secondary)">Fecha DD/MM/YYYY · Sucursal · Monto</text><text lang="es" x="20" y="104" class="s10" fill="var(--text-secondary)">columnas en español</text><text lang="en" x="20" y="104" class="s10" fill="var(--text-secondary)">columns in Spanish</text><rect x="10" y="140" width="220" height="70" rx="8" fill="var(--src-soft)" stroke="var(--src)" stroke-opacity=".7"/><text x="20" y="162" class="mono s10 b" fill="var(--src-ink)">pedido_sucursal_guadalajara</text><text lang="es" x="20" y="180" class="s10" fill="var(--text-secondary)">Date MM/DD/YYYY · Store · Amount_MXN</text><text lang="en" x="20" y="180" class="s10" fill="var(--text-secondary)">Date MM/DD/YYYY · Store · Amount_MXN</text><text lang="es" x="20" y="194" class="s10" fill="var(--text-secondary)">'guadalajara' · 'GDL ' · 'Guadalajara'</text><text lang="en" x="20" y="194" class="s10" fill="var(--text-secondary)">'guadalajara' · 'GDL ' · 'Guadalajara'</text><rect x="10" y="230" width="220" height="70" rx="8" fill="var(--src-soft)" stroke="var(--src)" stroke-opacity=".7"/><text x="20" y="252" class="mono s10 b" fill="var(--src-ink)">pedido_sucursal_monterrey</text><text lang="es" x="20" y="270" class="s10" fill="var(--text-secondary)">fecha_venta AAAA-MM-DD · importe_mxn</text><text lang="en" x="20" y="270" class="s10" fill="var(--text-secondary)">fecha_venta YYYY-MM-DD · importe_mxn</text><text lang="es" x="20" y="284" class="s10" fill="var(--text-secondary)">algunos montos vacíos</text><text lang="en" x="20" y="284" class="s10" fill="var(--text-secondary)">some amounts are empty</text><rect x="270" y="50" width="200" height="70" rx="8" fill="var(--stg-soft)" stroke="var(--stg)" stroke-opacity=".7"/><text x="280" y="72" class="mono s10 b" fill="var(--stg-ink)">stg_sucursales__cdmx</text><text lang="es" x="280" y="90" class="s10" fill="var(--text-secondary)">fecha · sucursal · monto_mxn</text><text lang="en" x="280" y="90" class="s10" fill="var(--text-secondary)">fecha · sucursal · monto_mxn</text><text lang="es" x="280" y="104" class="s10" fill="var(--text-secondary)">+ sucursal_raw, fuente</text><text lang="en" x="280" y="104" class="s10" fill="var(--text-secondary)">+ sucursal_raw, fuente</text><rect x="270" y="140" width="200" height="70" rx="8" fill="var(--stg-soft)" stroke="var(--stg)" stroke-opacity=".7"/><text x="280" y="162" class="mono s10 b" fill="var(--stg-ink)">stg_sucursales__guadalajara</text><text lang="es" x="280" y="180" class="s10" fill="var(--text-secondary)">fecha · sucursal · monto_mxn</text><text lang="en" x="280" y="180" class="s10" fill="var(--text-secondary)">fecha · sucursal · monto_mxn</text><text lang="es" x="280" y="194" class="s10" fill="var(--text-secondary)">+ sucursal_raw, fuente</text><text lang="en" x="280" y="194" class="s10" fill="var(--text-secondary)">+ sucursal_raw, fuente</text><rect x="270" y="230" width="200" height="70" rx="8" fill="var(--stg-soft)" stroke="var(--stg)" stroke-opacity=".7"/><text x="280" y="252" class="mono s10 b" fill="var(--stg-ink)">stg_sucursales__monterrey</text><text lang="es" x="280" y="270" class="s10" fill="var(--text-secondary)">fecha · sucursal · monto_mxn</text><text lang="en" x="280" y="270" class="s10" fill="var(--text-secondary)">fecha · sucursal · monto_mxn</text><text lang="es" x="280" y="284" class="s10" fill="var(--text-secondary)">+ sucursal_raw, fuente</text><text lang="en" x="280" y="284" class="s10" fill="var(--text-secondary)">+ sucursal_raw, fuente</text><rect x="520" y="70" width="190" height="80" rx="8" fill="var(--int-soft)" stroke="var(--int)" stroke-opacity=".7"/><text x="530" y="92" class="mono s10 b" fill="var(--int-ink)">int_ventas_sucursal_</text><text x="530" y="106" class="mono s10 b" fill="var(--int-ink)">unificada</text><text lang="es" x="530" y="124" class="s10" fill="var(--text-secondary)">union all + row_number()</text><text lang="en" x="530" y="124" class="s10" fill="var(--text-secondary)">union all + row_number()</text><rect x="520" y="215" width="190" height="80" rx="8" fill="var(--int-soft)" stroke="var(--int)" stroke-opacity=".7"/><text x="530" y="237" class="mono s10 b" fill="var(--int-ink)">int_ventas_sucursal_</text><text x="530" y="251" class="mono s10 b" fill="var(--int-ink)">pendiente</text><text lang="es" x="530" y="269" class="s10" fill="var(--text-secondary)">WHERE monto_mxn IS NULL</text><text lang="en" x="530" y="269" class="s10" fill="var(--text-secondary)">WHERE monto_mxn IS NULL</text><rect x="750" y="70" width="220" height="80" rx="8" fill="var(--mart-soft)" stroke="var(--mart)" stroke-opacity=".7"/><text x="760" y="92" class="mono s10 b" fill="var(--mart-ink)">fct_venta_sucursal</text><text lang="es" x="760" y="110" class="s10" fill="var(--text-secondary)">es_duplicado_descartado</text><text lang="en" x="760" y="110" class="s10" fill="var(--text-secondary)">es_duplicado_descartado</text><rect x="750" y="165" width="220" height="36" rx="8" fill="var(--mart-soft)" stroke="var(--mart)" stroke-opacity=".7"/><text x="760" y="187" class="mono s10 b" fill="var(--mart-ink)">dim_sucursal</text><rect x="750" y="215" width="220" height="80" rx="8" fill="var(--mart-soft)" stroke="var(--mart)" stroke-opacity=".7" stroke-dasharray="4 3"/><text x="760" y="237" class="mono s10 b" fill="var(--mart-ink)">fct_venta_sucursal_</text><text x="760" y="251" class="mono s10 b" fill="var(--mart-ink)">pendiente_revision</text><text lang="es" x="760" y="269" class="s10" fill="var(--text-secondary)">cola de revisión manual</text><text lang="en" x="760" y="269" class="s10" fill="var(--text-secondary)">manual review queue</text><rect x="1010" y="70" width="160" height="80" rx="8" fill="var(--gld-soft)" stroke="var(--gld)" stroke-opacity=".7"/><text x="1020" y="92" class="mono s10 b" fill="var(--gld-ink)">rpt_fuente_unica</text><text lang="es" x="1020" y="110" class="s10" fill="var(--text-secondary)">contrato = CSV del 11</text><text lang="en" x="1020" y="110" class="s10" fill="var(--text-secondary)">contract = dashboard 11 CSV</text><rect x="1010" y="215" width="160" height="80" rx="8" fill="var(--gld-soft)" stroke="var(--gld)" stroke-opacity=".7" stroke-dasharray="4 3"/><text x="1020" y="237" class="mono s10 b" fill="var(--gld-ink)">rpt_revision_manual_</text><text x="1020" y="251" class="mono s10 b" fill="var(--gld-ink)">monto_faltante</text><text lang="es" x="1020" y="269" class="s10" fill="var(--text-secondary)">contrato = CSV del 11</text><text lang="en" x="1020" y="269" class="s10" fill="var(--text-secondary)">contract = dashboard 11 CSV</text><line x1="230" y1="85" x2="268" y2="85" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><line x1="230" y1="175" x2="268" y2="175" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><line x1="230" y1="265" x2="268" y2="265" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><path d="M470,85 C 495,85 495,110 518,110" fill="none" stroke-width="1.2" stroke-opacity=".8" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><path d="M470,85 C 495,85 495,255 518,255" fill="none" stroke-width="1.2" stroke-opacity=".8" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><path d="M470,175 C 495,175 495,110 518,110" fill="none" stroke-width="1.2" stroke-opacity=".8" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><path d="M470,175 C 495,175 495,255 518,255" fill="none" stroke-width="1.2" stroke-opacity=".8" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><path d="M470,265 C 495,265 495,110 518,110" fill="none" stroke-width="1.2" stroke-opacity=".8" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><path d="M470,265 C 495,265 495,255 518,255" fill="none" stroke-width="1.2" stroke-opacity=".8" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><line x1="710" y1="110" x2="748" y2="110" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><line x1="710" y1="255" x2="748" y2="255" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><line x1="860" y1="165" x2="860" y2="152" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><line x1="860" y1="201" x2="860" y2="213" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><line x1="970" y1="110" x2="1008" y2="110" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><line x1="970" y1="255" x2="1008" y2="255" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar2)"/><line x1="10" y1="340" x2="230" y2="340" stroke="var(--src)" stroke-width="2"/><text lang="es" x="10" y="360" class="s10" fill="var(--text-secondary)">Tres esquemas, dos idiomas, tres</text><text lang="en" x="10" y="360" class="s10" fill="var(--text-secondary)">Three schemas, two languages, three</text><text lang="es" x="10" y="375" class="s10" fill="var(--text-secondary)">formatos de fecha. Se cargan tal</text><text lang="en" x="10" y="375" class="s10" fill="var(--text-secondary)">date formats. Loaded exactly as</text><text lang="es" x="10" y="390" class="s10" fill="var(--text-secondary)">cual llegan: todo como TEXT.</text><text lang="en" x="10" y="390" class="s10" fill="var(--text-secondary)">they arrive: everything as TEXT.</text><line x1="270" y1="340" x2="470" y2="340" stroke="var(--stg)" stroke-width="2"/><text lang="es" x="270" y="360" class="s10" fill="var(--text-secondary)">parse_messy_date, cast_messy_amount</text><text lang="en" x="270" y="360" class="s10" fill="var(--text-secondary)">parse_messy_date, cast_messy_amount</text><text lang="es" x="270" y="375" class="s10" fill="var(--text-secondary)">y catálogo: 'GDL ' → 'Guadalajara'.</text><text lang="en" x="270" y="375" class="s10" fill="var(--text-secondary)">and a catalog: 'GDL ' → 'Guadalajara'.</text><text lang="es" x="270" y="390" class="s10" fill="var(--text-secondary)">1 modelo por fuente.</text><text lang="en" x="270" y="390" class="s10" fill="var(--text-secondary)">1 model per source.</text><line x1="520" y1="340" x2="710" y2="340" stroke="var(--int)" stroke-width="2"/><text lang="es" x="520" y="360" class="s10" fill="var(--text-secondary)">Une las 3 fuentes y marca los</text><text lang="en" x="520" y="360" class="s10" fill="var(--text-secondary)">Unions the 3 sources and flags</text><text lang="es" x="520" y="375" class="s10" fill="var(--text-secondary)">duplicados; el monto NULL se</text><text lang="en" x="520" y="375" class="s10" fill="var(--text-secondary)">duplicates; NULL amounts are</text><text lang="es" x="520" y="390" class="s10" fill="var(--text-secondary)">separa en vez de imputarse.</text><text lang="en" x="520" y="390" class="s10" fill="var(--text-secondary)">split off instead of imputed.</text><line x1="750" y1="340" x2="970" y2="340" stroke="var(--mart)" stroke-width="2"/><text lang="es" x="750" y="360" class="s10" fill="var(--text-secondary)">unique · not_null · relationships ·</text><text lang="en" x="750" y="360" class="s10" fill="var(--text-secondary)">unique · not_null · relationships ·</text><text lang="es" x="750" y="375" class="s10" fill="var(--text-secondary)">accepted_values: una sucursal con</text><text lang="en" x="750" y="375" class="s10" fill="var(--text-secondary)">accepted_values: a branch with a</text><text lang="es" x="750" y="390" class="s10" fill="var(--text-secondary)">otro nombre hace fallar el test.</text><text lang="en" x="750" y="390" class="s10" fill="var(--text-secondary)">new spelling makes the test fail.</text><line x1="1010" y1="340" x2="1170" y2="340" stroke="var(--gld)" stroke-width="2"/><text lang="es" x="1010" y="360" class="s10" fill="var(--text-secondary)">contract enforced: mismas</text><text lang="en" x="1010" y="360" class="s10" fill="var(--text-secondary)">contract enforced: same columns</text><text lang="es" x="1010" y="375" class="s10" fill="var(--text-secondary)">columnas y tipos que el</text><text lang="en" x="1010" y="375" class="s10" fill="var(--text-secondary)">and types as the dashboard's</text><text lang="es" x="1010" y="390" class="s10" fill="var(--text-secondary)">CSV del dashboard.</text><text lang="en" x="1010" y="390" class="s10" fill="var(--text-secondary)">CSV.</text></svg>
+      <figcaption><span lang="es">Todos los marts y reportes de esta rama se unen además a <code>dim_sucursal</code>, el catálogo normalizado de sucursales. El linaje ya no depende de que alguien lo mantenga: si cambia un <code>ref()</code>, cambia el grafo.</span><span lang="en">All marts and reports in this branch also join <code>dim_sucursal</code>, the normalized branch catalog. Lineage no longer depends on someone maintaining it: if a <code>ref()</code> changes, the graph changes.</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="sec" id="fanout">
+    <h2><span lang="es">Un hecho, seis reportes</span><span lang="en">One fact, six reports</span></h2>
+    <p class="note"><span lang="es"><code>fct_pedido</code> es el hecho central: la misma venta, agregada de seis formas para seis dashboards. Con el grafo, el alcance de un cambio deja de ser una corazonada: <b>9 de los 19 reportes gold dependen de él</b>, directa o indirectamente. Dos tests singulares lo custodian: que no pierda líneas respecto a staging y que las ventas diarias reconcilien con él.</span><span lang="en"><code>fct_pedido</code> is the central fact: the same sale, aggregated six ways for six dashboards. With the graph, the blast radius of a change stops being a hunch: <b>9 of the 19 gold reports depend on it</b>, directly or indirectly. Two singular tests guard it: that it never drops lines relative to staging, and that daily sales reconcile with it.</span></p>
+    <figure class="diagram">
+      <svg viewBox="0 0 900 360" role="img" style="min-width:640px;max-width:900px;margin:0 auto" data-aria-es="fct_pedido en el centro alimenta directamente seis reportes gold: 01 ventas diarias, 06 precio y demanda, 07 demanda diaria, 05 transacciones, 03 historial de KPI y 10 transacciones ejecutivo." data-aria-en="fct_pedido in the center directly feeds six gold reports: 01 daily sales, 06 price and demand, 07 daily demand, 05 transactions, 03 KPI history and 10 executive transactions." aria-label="fct_pedido in the center directly feeds six gold reports: 01 daily sales, 06 price and demand, 07 daily demand, 05 transactions, 03 KPI history and 10 executive transactions."><defs>
+<marker id="ar3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--text-secondary)"/></marker>
+<marker id="ar3a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--accent-ink)"/></marker></defs><rect x="320" y="140" width="260" height="80" rx="9" fill="var(--mart-soft)" stroke="var(--mart)" stroke-opacity=".8"/><text x="450" y="168" class="mono s13 b" text-anchor="middle" fill="var(--mart-ink)">fct_pedido</text><text lang="es" x="450" y="187" class="s11" text-anchor="middle" fill="var(--text-secondary)">1 fila por línea de pedido</text><text lang="en" x="450" y="187" class="s11" text-anchor="middle" fill="var(--text-secondary)">1 row per order line</text><text lang="es" x="450" y="204" class="s10" text-anchor="middle" fill="var(--text-secondary)">incremental · watermark de fecha</text><text lang="en" x="450" y="204" class="s10" text-anchor="middle" fill="var(--text-secondary)">incremental · date watermark</text><rect x="20" y="20" width="220" height="48" rx="7" fill="var(--gld-soft)" stroke="var(--gld)" stroke-opacity=".6"/><text x="130" y="40" class="mono s11 b" text-anchor="middle" fill="var(--gld-ink)">rpt_ventas_diarias</text><text lang="es" x="130" y="57" class="s10" text-anchor="middle" fill="var(--text-secondary)">01 · equipo · vendedor · día</text><text lang="en" x="130" y="57" class="s10" text-anchor="middle" fill="var(--text-secondary)">01 · team · seller · day</text><rect x="340" y="20" width="220" height="48" rx="7" fill="var(--gld-soft)" stroke="var(--gld)" stroke-opacity=".6"/><text x="450" y="40" class="mono s11 b" text-anchor="middle" fill="var(--gld-ink)">rpt_precio_demanda</text><text lang="es" x="450" y="57" class="s10" text-anchor="middle" fill="var(--text-secondary)">06 · producto · semana</text><text lang="en" x="450" y="57" class="s10" text-anchor="middle" fill="var(--text-secondary)">06 · product · week</text><rect x="660" y="20" width="220" height="48" rx="7" fill="var(--gld-soft)" stroke="var(--gld)" stroke-opacity=".6"/><text x="770" y="40" class="mono s11 b" text-anchor="middle" fill="var(--gld-ink)">rpt_demanda_diaria</text><text lang="es" x="770" y="57" class="s10" text-anchor="middle" fill="var(--text-secondary)">07 · SKU · día</text><text lang="en" x="770" y="57" class="s10" text-anchor="middle" fill="var(--text-secondary)">07 · SKU · day</text><rect x="20" y="294" width="220" height="48" rx="7" fill="var(--gld-soft)" stroke="var(--gld)" stroke-opacity=".6"/><text x="130" y="314" class="mono s11 b" text-anchor="middle" fill="var(--gld-ink)">rpt_transacciones</text><text lang="es" x="130" y="331" class="s10" text-anchor="middle" fill="var(--text-secondary)">05 · cliente · día</text><text lang="en" x="130" y="331" class="s10" text-anchor="middle" fill="var(--text-secondary)">05 · customer · day</text><rect x="340" y="294" width="220" height="48" rx="7" fill="var(--gld-soft)" stroke="var(--gld)" stroke-opacity=".6"/><text x="450" y="314" class="mono s11 b" text-anchor="middle" fill="var(--gld-ink)">rpt_kpi_historico</text><text lang="es" x="450" y="331" class="s10" text-anchor="middle" fill="var(--text-secondary)">03 · KPI · mes</text><text lang="en" x="450" y="331" class="s10" text-anchor="middle" fill="var(--text-secondary)">03 · KPI · month</text><rect x="660" y="294" width="220" height="48" rx="7" fill="var(--gld-soft)" stroke="var(--gld)" stroke-opacity=".6"/><text x="770" y="314" class="mono s11 b" text-anchor="middle" fill="var(--gld-ink)">rpt_transacciones_ejecutivo</text><text lang="es" x="770" y="331" class="s10" text-anchor="middle" fill="var(--text-secondary)">10 · mes · región · categoría</text><text lang="en" x="770" y="331" class="s10" text-anchor="middle" fill="var(--text-secondary)">10 · month · region · category</text><line x1="370" y1="140" x2="160" y2="70" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar3)"/><line x1="450" y1="140" x2="450" y2="70" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar3)"/><line x1="530" y1="140" x2="740" y2="70" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar3)"/><line x1="370" y1="220" x2="160" y2="292" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar3)"/><line x1="450" y1="220" x2="450" y2="292" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar3)"/><line x1="530" y1="220" x2="740" y2="292" stroke-width="1.4" stroke="var(--text-secondary)" marker-end="url(#ar3)"/></svg>
+      <figcaption><span lang="es">Cada reporte es un <code>GROUP BY</code> distinto sobre la misma tabla. Tests: <code>assert_fct_pedido_conserva_todas_las_lineas</code> y <code>assert_ventas_diarias_reconcilia_con_fct_pedido</code>. Otros reportes, como el 09, llegan a él de forma indirecta.</span><span lang="en">Each report is a different <code>GROUP BY</code> over the same table. Tests: <code>assert_fct_pedido_conserva_todas_las_lineas</code> and <code>assert_ventas_diarias_reconcilia_con_fct_pedido</code>. Other reports, such as 09, reach it indirectly.</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="sec" id="ci">
+    <h2><span lang="es">La puerta por la que pasa cada cambio</span><span lang="en">The gate every change goes through</span></h2>
+    <p class="note"><span lang="es">Cada pull request que toca <code>warehouse/</code> corre el pipeline completo contra un DuckDB efímero — sin credenciales ni servidor. Si un modelo, un test o un contrato falla, el PR queda en rojo antes del merge.</span><span lang="en">Every pull request that touches <code>warehouse/</code> runs the full pipeline against an ephemeral DuckDB — no credentials, no server. If a model, a test or a contract fails, the PR turns red before the merge.</span></p>
+    <ol class="steps">
+      <li><span class="cmd">dbt seed</span><span class="desc"><span lang="es">Carga los 22 CSV como TEXT, igual que llegan de las fuentes.</span><span lang="en">Loads the 22 CSVs as TEXT, exactly as the sources deliver them.</span></span></li>
+      <li><span class="cmd">dbt run</span><span class="desc"><span lang="es">Construye los 87 modelos en el orden que dicta el DAG.</span><span lang="en">Builds the 87 models in the order the DAG dictates.</span></span></li>
+      <li><span class="cmd">dbt test</span><span class="desc"><span lang="es">429 tests: llaves, integridad, rangos, contratos y reglas de negocio.</span><span lang="en">429 tests: keys, integrity, ranges, contracts and business rules.</span></span></li>
+      <li><span class="cmd">coverage</span><span class="desc"><span lang="es">Verifica que cada CSV de un dashboard tenga su reporte gold.</span><span lang="en">Checks that every dashboard CSV has its gold report.</span></span></li>
+      <li><span class="cmd">merge</span><span class="desc"><span lang="es">Con CI en verde. Rama → PR → <code>main</code>.</span><span lang="en">With green CI. Branch → PR → <code>main</code>.</span></span></li>
+      <li><span class="cmd">dbt docs</span><span class="desc"><span lang="es">Tras cada push a <code>main</code> que toca <code>warehouse/</code>: catálogo y lineage como artifact.</span><span lang="en">After each push to <code>main</code> that touches <code>warehouse/</code>: catalog and lineage as an artifact.</span></span></li>
+    </ol>
+    <p class="note" style="margin-top:22px;"><span lang="es"><b>Tres alertas esperadas, a propósito.</b> <code>dbt test</code> termina sin errores pero con tres <code>warn</code>: son los mismos hallazgos que audita el dashboard 13, ahora vivos como tests. Son <code>severity: warn</code> y no <code>error</code> porque son un problema real y conocido de la fuente, no un bug del pipeline: no se bloquea un despliegue por una regla ya conocida, se le da seguimiento.</span><span lang="en"><b>Three expected warnings, on purpose.</b> <code>dbt test</code> finishes with no errors but three <code>warn</code>s: they're the same findings dashboard 13 audits, now alive as tests. They're <code>severity: warn</code>, not <code>error</code>, because they're a real, known problem in the source data, not a pipeline bug: you don't block a deploy over a rule you already know about — you track it.</span></p>
+    <div class="alerts" style="margin-top:0;">
+      <div class="alert"><div class="n">158</div><div class="t"><span lang="es">líneas de factura con un <code>cliente_id</code> que ya no existe en el catálogo</span><span lang="en">invoice lines with a <code>cliente_id</code> that no longer exists in the catalog</span></div></div>
+      <div class="alert"><div class="n">124</div><div class="t"><span lang="es">líneas de factura con un <code>sku</code> descontinuado</span><span lang="en">invoice lines with a discontinued <code>sku</code></span></div></div>
+      <div class="alert"><div class="n">424</div><div class="t"><span lang="es">líneas donde <code>total ≠ cantidad × precio_unitario</code></span><span lang="en">lines where <code>total ≠ cantidad × precio_unitario</code></span></div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="mapping">
+    <h2><span lang="es">Mapa completo: de las fuentes al dashboard, por proyecto</span><span lang="en">Full map: from sources to dashboard, per project</span></h2>
+    <p class="note"><span lang="es">Generado del DAG de dbt. La última columna compara cuántas fuentes declaraba el diseño en DDL con cuántas alcanza realmente el grafo: cuando difieren (<span style="color:var(--gld-ink);font-weight:800">en dorado</span>), el lineage que se había escrito a mano se había quedado corto — el caso típico son las dimensiones conformadas (cliente, producto, canal) que cada hecho arrastra.</span><span lang="en">Generated from the dbt DAG. The last column compares how many sources the DDL design declared with how many the graph actually reaches: where they differ (<span style="color:var(--gld-ink);font-weight:800">in gold</span>), the hand-written lineage had fallen short — typically the conformed dimensions (customer, product, channel) that every fact drags in.</span></p>
+    <div class="legend">
+      <span><i style="background:var(--mart)"></i> <span lang="es">marts — hechos clave</span><span lang="en">marts — key facts</span></span>
+      <span><i style="background:var(--gld)"></i> <span lang="es">gold — reporte con contrato</span><span lang="en">gold — report with a contract</span></span>
+    </div>
+    <div class="table-wrap">
+      <table class="map">
+        <thead><tr><th>#</th><th><span lang="es">Proyecto</span><span lang="en">Project</span></th><th><span lang="es">CSV que reproduce</span><span lang="en">CSV it reproduces</span></th><th><span lang="es">Modelos dbt</span><span lang="en">dbt models</span></th><th><span lang="es">Fuentes aguas arriba: diseño → DAG</span><span lang="en">Upstream sources: design → DAG</span></th></tr></thead>
+        <tbody>
+<tr><td class="num">01</td><td class="proj"><span lang="es">Ventas por equipo</span><span lang="en">Sales by team</span></td><td class="csv">ventas_diarias · metas_mensuales.csv</td><td><div class="tags"><span class="mart">fct_pedido</span><span class="mart">fct_meta_venta</span><span class="gld">rpt_ventas_diarias</span><span class="gld">rpt_metas_mensuales</span></div></td><td class="srcs"><span class="from">4</span> → <span class="to up">8</span></td></tr>
+<tr><td class="num">02</td><td class="proj"><span lang="es">Funnel de fuga</span><span lang="en">Funnel leak</span></td><td class="csv">funnel_semanal.csv</td><td><div class="tags"><span class="mart">fct_oportunidad_evento</span><span class="gld">rpt_funnel_semanal</span></div></td><td class="srcs"><span class="from">1</span> → <span class="to up">3</span></td></tr>
+<tr><td class="num">03</td><td class="proj"><span lang="es">Scorecard ejecutivo</span><span lang="en">Executive scorecard</span></td><td class="csv">kpi_historico · scorecard.csv</td><td><div class="tags"><span class="mart">fct_kpi_manual</span><span class="mart">fct_kpi_meta</span><span class="mart">fct_pedido…</span><span class="gld">rpt_kpi_historico</span><span class="gld">rpt_scorecard</span></div></td><td class="srcs"><span class="from">—</span> → <span class="to">13</span></td></tr>
+<tr><td class="num">04</td><td class="proj"><span lang="es">Predicción de churn</span><span lang="en">Churn prediction</span></td><td class="csv">clientes.csv</td><td><div class="tags"><span class="mart">fct_cliente_features_churn</span><span class="gld">rpt_clientes_churn</span></div></td><td class="srcs"><span class="from">5</span> → <span class="to">5</span></td></tr>
+<tr><td class="num">05</td><td class="proj"><span lang="es">Segmentación RFM</span><span lang="en">RFM segmentation</span></td><td class="csv">transacciones.csv</td><td><div class="tags"><span class="mart">fct_pedido</span><span class="gld">rpt_transacciones</span></div></td><td class="srcs"><span class="from">2</span> → <span class="to up">7</span></td></tr>
+<tr><td class="num">06</td><td class="proj"><span lang="es">Elasticidad de precios</span><span lang="en">Price elasticity</span></td><td class="csv">precio_demanda.csv</td><td><div class="tags"><span class="mart">fct_pedido</span><span class="gld">rpt_precio_demanda</span></div></td><td class="srcs"><span class="from">2</span> → <span class="to up">7</span></td></tr>
+<tr><td class="num">07</td><td class="proj"><span lang="es">Forecast de inventario</span><span lang="en">Inventory forecast</span></td><td class="csv">demanda_diaria · inventario_actual.csv</td><td><div class="tags"><span class="mart">fct_pedido</span><span class="mart">fct_inventario_snapshot</span><span class="gld">rpt_demanda_diaria</span><span class="gld">rpt_inventario_actual</span></div></td><td class="srcs"><span class="from">3</span> → <span class="to up">8</span></td></tr>
+<tr><td class="num">08</td><td class="proj"><span lang="es">Flujo de caja / cartera</span><span lang="en">Cash flow / receivables</span></td><td class="csv">facturas.csv</td><td><div class="tags"><span class="mart">fct_factura</span><span class="mart">fct_pago</span><span class="gld">rpt_facturas</span></div></td><td class="srcs"><span class="from">2</span> → <span class="to up">6</span></td></tr>
+<tr><td class="num">09</td><td class="proj"><span lang="es">ROI de marketing</span><span lang="en">Marketing ROI</span></td><td class="csv">marketing_canales.csv</td><td><div class="tags"><span class="mart">fct_marketing_gasto</span><span class="mart">fct_pedido</span><span class="mart">fct_cancelacion</span><span class="gld">rpt_marketing_canales</span></div></td><td class="srcs"><span class="from">4</span> → <span class="to up">8</span></td></tr>
+<tr><td class="num">10</td><td class="proj"><span lang="es">Reporte ejecutivo</span><span lang="en">Executive report</span></td><td class="csv">transacciones.csv</td><td><div class="tags"><span class="mart">fct_pedido</span><span class="gld">rpt_transacciones_ejecutivo</span></div></td><td class="srcs"><span class="from">3</span> → <span class="to up">7</span></td></tr>
+<tr><td class="num">11</td><td class="proj"><span lang="es">Fuente única</span><span lang="en">Single source of truth</span></td><td class="csv">fuente_unica · revision_manual_monto_faltante.csv</td><td><div class="tags"><span class="mart">fct_venta_sucursal</span><span class="mart">fct_venta_sucursal_pendiente_revision</span><span class="gld">rpt_fuente_unica</span><span class="gld">rpt_revision_manual_monto_faltante</span></div></td><td class="srcs"><span class="from">3</span> → <span class="to">3</span></td></tr>
+<tr><td class="num">12</td><td class="proj"><span lang="es">NPS y causa raíz</span><span lang="en">NPS & root cause</span></td><td class="csv">encuestas_nps.csv</td><td><div class="tags"><span class="mart">fct_encuesta_nps</span><span class="gld">rpt_encuestas_nps</span></div></td><td class="srcs"><span class="from">1</span> → <span class="to up">2</span></td></tr>
+<tr><td class="num">13</td><td class="proj"><span lang="es">Data health check</span><span lang="en">Data health check</span></td><td class="csv">scorecard_calidad_tablas · reglas_validacion · plan_remediacion.csv</td><td><div class="tags"><span class="mart">dq_regla</span><span class="mart">dq_resultado_regla</span><span class="mart">dq_scorecard_tabla</span><span class="gld">rpt_scorecard_calidad_tablas</span><span class="gld">rpt_reglas_validacion</span><span class="gld">rpt_plan_remediacion</span></div></td><td class="srcs"><span class="from">4</span> → <span class="to">4</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <div><span lang="es">Código: </span><span lang="en">Code: </span><a href="https://github.com/ddloyo/portfolio/tree/main/warehouse"><code>warehouse/</code></a> · <a href="https://github.com/ddloyo/portfolio/blob/main/warehouse/README.md"><span lang="es">cómo correrlo</span><span lang="en">how to run it</span></a> · <a href="https://github.com/ddloyo/portfolio/blob/main/database/LEGACY_TABLES.md"><span lang="es">inventario de la migración 1:1</span><span lang="en">1:1 migration inventory</span></a></div>
+    <div><span lang="es">El DDL original sigue en el historial de git: </span><span lang="en">The original DDL is still in git history: </span><code>git show 2e221a8:database/schema/02_silver.sql</code></div>
+    <div><span lang="es">Datos sintéticos. Sin datos de ningún cliente real.</span><span lang="en">Synthetic data. No real customer data.</span></div>
   </footer>
 
-</main>
+</div>
 
 <script>
-const rows = [
-  ["01","Ventas por equipo","ventas_diarias.csv · metas_mensuales.csv",
-    "pedido_linea, crm_equipo, crm_vendedor, crm_meta_venta",
-    "fact_pedido (agregado) + fact_meta_venta",
-    "rpt_01_ventas_diarias, rpt_01_metas_mensuales"],
-  ["02","Funnel de fuga","funnel_semanal.csv",
-    "crm_oportunidad_evento",
-    "fact_oportunidad_evento (agregado por semana)",
-    "rpt_02_funnel_semanal"],
-  ["03","Scorecard ejecutivo","kpi_historico.csv · scorecard.csv",
-    "kpi_captura_manual + hechos de cada KPI",
-    "fact_kpi_manual, fact_kpi_meta + KPIs calculados (ingresos, altas, NPS…)",
-    "rpt_03_kpi_historico, rpt_03_scorecard"],
-  ["04","Predicción de churn","clientes.csv",
-    "crm_cliente, suscripcion_cargo, ticket_soporte, evento_actividad, cancelacion",
-    "fact_cliente_features_churn → fact_cliente_churn_score",
-    "rpt_04_clientes"],
-  ["05","Segmentación RFM","transacciones.csv",
-    "pedido_linea, crm_cliente",
-    "fact_pedido (agregado) → fact_cliente_rfm_score",
-    "rpt_05_transacciones"],
-  ["06","Elasticidad de precios","precio_demanda.csv",
-    "pedido_linea, producto",
-    "fact_pedido (agregado) → fact_producto_elasticidad",
-    "rpt_06_precio_demanda"],
-  ["07","Forecast de inventario","demanda_diaria.csv · inventario_actual.csv",
-    "pedido_linea, producto, inventario_snapshot",
-    "fact_pedido (agregado), fact_inventario_snapshot → fact_producto_forecast",
-    "rpt_07_demanda_diaria, rpt_07_inventario_actual"],
-  ["08","Flujo de caja / cartera","facturas.csv",
-    "factura_linea, pago",
-    "fact_factura, fact_pago → fact_cliente_pago_segmento",
-    "rpt_08_facturas"],
-  ["09","ROI de marketing","marketing_canales.csv",
-    "marketing_gasto, crm_cliente.canal_adquisicion, pedido_linea, cancelacion",
-    "fact_marketing_gasto → fact_canal_roi",
-    "rpt_09_marketing_canales"],
-  ["10","Reporte ejecutivo","transacciones.csv",
-    "pedido_linea, crm_cliente, producto",
-    "fact_pedido (agregado) → fact_subcategoria_tendencia",
-    "rpt_10_transacciones"],
-  ["11","Fuente única","fuente_unica.csv · revision_manual_monto_faltante.csv",
-    "pedido_sucursal_cdmx / guadalajara / monterrey (bronze, sin cambios)",
-    "fact_venta_sucursal, venta_sucursal_pendiente_revision",
-    "rpt_11_fuente_unica, rpt_11_revision_manual_monto_faltante"],
-  ["12","NPS y causa raíz","encuestas_nps.csv",
-    "encuesta_nps",
-    "fact_encuesta_nps",
-    "rpt_12_encuestas_nps"],
-  ["13","Data health check","scorecard_calidad_tablas.csv · reglas_validacion.csv · plan_remediacion.csv",
-    "crm_cliente, producto, calendario, factura_linea (bronze, sin cambios)",
-    "— (el motor de calidad audita bronze directo)",
-    "rpt_13_scorecard_calidad_tablas, rpt_13_reglas_validacion, rpt_13_plan_remediacion"],
-];
-
-const tbody = document.getElementById("mapping-body");
-for (const [num, name, source, bronze, silver, gold] of rows) {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td class="num">${num}</td>
-    <td class="proj">${name}</td>
-    <td class="mono">${source}</td>
-    <td>
-      <div class="taglist">
-        <span class="tag bronze">${bronze}</span>
-        <span class="tag silver">${silver}</span>
-        <span class="tag gold">${gold}</span>
-      </div>
-    </td>`;
-  tbody.appendChild(tr);
-}
+  const UI = {
+    es: { toggle: "English", title: "XIA · De DDL a dbt: Arquitectura de datos", desc: "Cómo un diseño de warehouse escrito en DDL se volvió un proyecto dbt ejecutable: 87 modelos, 429 tests, contratos, lineage generado y CI." },
+    en: { toggle: "Español", title: "XIA · From DDL to dbt: Data Architecture", desc: "How a warehouse design written as DDL became an executable dbt project: 87 models, 429 tests, enforced contracts, generated lineage and CI." },
+  };
+  function getLang() {
+    try { var l = localStorage.getItem("xia-lang"); if (l === "es" || l === "en") return l; } catch (e) {}
+    return "en";
+  }
+  function setLang(lang) {
+    try { localStorage.setItem("xia-lang", lang); } catch (e) {}
+    apply(lang);
+  }
+  function apply(lang) {
+    document.documentElement.lang = lang;
+    document.title = UI[lang].title;
+    document.querySelector('meta[name="description"]').setAttribute("content", UI[lang].desc);
+    document.getElementById("langToggle").textContent = UI[lang].toggle;
+    document.querySelectorAll("svg[data-aria-" + lang + "]").forEach(function (svg) {
+      svg.setAttribute("aria-label", svg.getAttribute("data-aria-" + lang));
+    });
+  }
+  document.getElementById("langToggle").addEventListener("click", function () {
+    setLang(document.documentElement.lang === "es" ? "en" : "es");
+  });
+  apply(getLang());
 </script>
+</body>
+</html>

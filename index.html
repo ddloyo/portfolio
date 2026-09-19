@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>XIA Insights × Analytics — Portfolio</title>
-<meta name="description" content="13 demo projects: data, analysis, and interactive dashboards showing what an on-demand data team solves in weeks.">
+<meta name="description" content="14 demo projects: data, analysis, interactive dashboards, and the dbt warehouse behind them — what an on-demand data team solves in weeks.">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-3MS4PTZN8Q"></script>
 <script>
@@ -165,7 +165,7 @@
   </div>
 
   <header class="hero">
-    <div class="tag" id="heroTag">Portafolio de demostración &middot; 13 proyectos</div>
+    <div class="tag" id="heroTag">Portafolio de demostración &middot; 14 proyectos</div>
     <h1 id="heroH1">Preguntas un lunes. Respuesta el jueves. <em>El viernes ya decidiste sin ella.</em></h1>
     <p id="heroP">Datos sintéticos, código funcional real. Cada tarjeta es un caso de negocio completo — datos, análisis y un dashboard interactivo — listo para explorarse en el navegador, sin instalar nada.</p>
   </header>
@@ -225,6 +225,9 @@
 
 <script>
   // Add a new project by appending one object here — the grid renders itself.
+  // Dashboard projects use projects/<slug>/ (dashboard.html / dashboard.en.html + <img>).
+  // A project without a slug sets `href` (one bilingual page), `img` (a path from the site root)
+  // and, optionally, `cta` / `cta_en` for the link text.
   const PROJECTS = [
     { num: "01", slug: "01-sales-performance-dashboard", title: "Ventas por Equipo en Tiempo Real", title_en: "Real-Time Sales by Team", service: "office", category: "analysis", blurb: "Deja de esperar el cierre de mes para saber qué equipo va bien y cuál no.", blurb_en: "Stop waiting for month-end close to know which team is on track and which isn't.", img: "assets/dashboard_preview.png" },
     { num: "02", slug: "02-funnel-fuga-ventas", title: "Funnel de Ventas con Alertas de Fuga", title_en: "Sales Funnel with Leak Alerts", service: "office", category: "analysis", blurb: "Detecta una fuga de conversión con semanas de anticipación, no al cierre.", blurb_en: "Catch a conversion leak weeks in advance, not at close.", img: "assets/dashboard_preview.png" },
@@ -239,6 +242,7 @@
     { num: "11", slug: "11-consolidacion-fuente-verdad", title: "Consolidación de Datos Dispersos", title_en: "Consolidating Scattered Data", service: "office", category: "foundation", blurb: "Tres Excels de tres sucursales, un solo número correcto.", blurb_en: "Three spreadsheets from three branches, one correct number.", img: "assets/dashboard_preview.png" },
     { num: "12", slug: "12-nps-causa-raiz", title: "NPS y Análisis de Causa Raíz", title_en: "NPS & Root Cause Analysis", service: "express", category: "analysis", blurb: "De “el NPS bajó” a “sabemos exactamente qué corregir”.", blurb_en: "From “NPS dropped” to “we know exactly what to fix”.", img: "assets/dashboard_preview.png" },
     { num: "13", slug: "13-data-health-check", title: "Data Health Check: Auditoría de Calidad de Datos", title_en: "Data Health Check: Data Quality Audit", service: "office", category: "foundation", blurb: "Un score de calidad por tabla y el plan de qué corregir primero — y por qué.", blurb_en: "A quality score per table and the plan for what to fix first — and why.", img: "assets/dashboard_preview.png" },
+    { num: "14", title: "Arquitectura de Datos: del DDL a un Warehouse dbt", title_en: "Data Architecture: From DDL to a dbt Warehouse", service: "office", category: "foundation", blurb: "El mismo diseño de warehouse, ahora con 87 modelos, 429 tests y lineage generado — no dibujado.", blurb_en: "The same warehouse design, now with 87 models, 429 tests, and lineage that's generated — not drawn.", href: "database/architecture.html", img: "assets/architecture_preview.png", cta: "Ver arquitectura →", cta_en: "View architecture →" },
   ];
 
   const SERVICE_LABEL = { express: "Data Storytelling Express", office: "Micro Data Office" };
@@ -247,7 +251,7 @@
   const I18N = {
     es: {
       metaTitle: "XIA Insights × Analytics — Portafolio",
-      metaDescription: "13 proyectos de demostración: datos, análisis y dashboards interactivos que muestran lo que un equipo de datos a demanda resuelve en semanas.",
+      metaDescription: "14 proyectos de demostración: datos, análisis, dashboards interactivos y el warehouse dbt que los respalda — lo que un equipo de datos a demanda resuelve en semanas.",
       heroTag: n => `Portafolio de demostración · ${n} proyectos`,
       heroH1: `Preguntas un lunes. Respuesta el jueves. <em>El viernes ya decidiste sin ella.</em>`,
       heroP: `Datos sintéticos, código funcional real. Cada tarjeta es un caso de negocio completo — datos, análisis y un dashboard interactivo — listo para explorarse en el navegador, sin instalar nada.`,
@@ -267,7 +271,7 @@
     },
     en: {
       metaTitle: "XIA Insights × Analytics — Portfolio",
-      metaDescription: "13 demo projects: data, analysis, and interactive dashboards showing what an on-demand data team solves in weeks.",
+      metaDescription: "14 demo projects: data, analysis, interactive dashboards, and the dbt warehouse behind them — what an on-demand data team solves in weeks.",
       heroTag: n => `Demo portfolio · ${n} projects`,
       heroH1: `Ask a question Monday. Get the answer Thursday. <em>By Friday you'd already decided without it.</em>`,
       heroP: `Synthetic data, real working code. Each card is a full business case — data, analysis, and an interactive dashboard — ready to explore in the browser, no install needed.`,
@@ -328,16 +332,18 @@
       const a = document.createElement("a");
       a.className = "card";
       const dashboardFile = currentLang === "en" ? "dashboard.en.html" : "dashboard.html";
-      a.href = `projects/${p.slug}/${dashboardFile}`;
+      a.href = p.href || `projects/${p.slug}/${dashboardFile}`;
+      const imgSrc = p.slug ? `projects/${p.slug}/${p.img}` : p.img;
+      const cta = (currentLang === "en" ? p.cta_en : p.cta) || t.cta;
       a.innerHTML = `
         <div class="thumb">
-          <img src="projects/${p.slug}/${p.img}" alt="${t.previewAlt(title)}" loading="lazy">
+          <img src="${imgSrc}" alt="${t.previewAlt(title)}" loading="lazy">
         </div>
         <div class="body">
           <span class="chip ${p.service}">${SERVICE_LABEL[p.service]}</span>
           <h2>${title}</h2>
           <p class="blurb">${blurb}</p>
-          <span class="cta">${t.cta}</span>
+          <span class="cta">${cta}</span>
         </div>`;
       grid.appendChild(a);
     });
