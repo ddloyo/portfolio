@@ -6,7 +6,7 @@ select
     df.semana_iso as semana,
     round(avg(fp.precio_unitario), 2) as precio_mxn,
     sum(fp.cantidad) as unidades_vendidas
-from {{ ref('fct_pedidos') }} fp
+from {{ ref('fct_pedido') }} fp
 join {{ ref('dim_producto') }} dp on dp.sku = fp.sku
 join {{ ref('dim_fecha') }} df on df.date_key = fp.date_key
 group by dp.nombre_producto, df.semana_iso

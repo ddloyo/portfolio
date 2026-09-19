@@ -1,34 +1,262 @@
 version: 2
-
 models:
-  - name: dim_fecha
-    description: Calendario canónico del warehouse (1 fila/día), generado por date_spine.
-    columns:
-      - name: date_key
-        data_tests:
-          - unique
-          - not_null
-
-  - name: dim_cliente
-    description: "{{ doc('dim_cliente_dedupe') }}"
-    columns:
-      - name: cliente_id
-        data_tests:
-          - unique
-          - not_null
-
-  - name: dim_producto
-    description: Un producto por SKU, ya deduplicado.
-    columns:
-      - name: sku
-        data_tests:
-          - unique
-          - not_null
-
-  - name: dim_vendedor
-    description: Vendedor y su equipo comercial.
-    columns:
-      - name: vendedor_id
-        data_tests:
-          - unique
-          - not_null
+- name: dim_fecha
+  description: Calendario canónico del warehouse (1 fila por día, 2024-01-01 a 2026-09-19), generado por date_spine.
+  columns:
+  - name: date_key
+    data_tests:
+    - unique
+    - not_null
+  - name: numero_semana_iso
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 1
+          max_value: 53
+  - name: es_feriado
+    description: 'Siempre false: la columna de origen (bronze.calendario.es_feriado) está 100% vacía.'
+    data_tests:
+    - not_null
+- name: dim_semana
+  description: Grano semanal (semana ISO). semana_key = año ISO * 100 + n° de semana. Las semanas de los extremos del rango pueden quedar incompletas.
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - anio
+        - numero_semana
+  columns:
+  - name: semana_key
+    data_tests:
+    - unique
+    - not_null
+  - name: fecha_inicio
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_fecha')
+          field: date_key
+  - name: fecha_fin
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_fecha')
+          field: date_key
+- name: dim_mes
+  description: Grano mensual. mes_key = año * 100 + mes (202608 = agosto de 2026).
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - anio
+        - mes
+  columns:
+  - name: mes_key
+    data_tests:
+    - unique
+    - not_null
+- name: dim_region
+  description: Territorio comercial asignado por el CRM a cada cliente.
+  columns:
+  - name: region_key
+    data_tests:
+    - unique
+    - not_null
+  - name: nombre_region
+    data_tests:
+    - unique
+    - not_null
+- name: dim_cliente
+  description: '{{ doc(''dim_cliente_dedupe'') }}'
+  columns:
+  - name: cliente_key
+    data_tests:
+    - unique
+    - not_null
+  - name: region_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_region')
+          field: region_key
+  - name: cliente_id
+    description: 'Llave natural del CRM (legacy: cliente_id_origen).'
+    data_tests:
+    - unique
+    - not_null
+  - name: ciudad
+    description: Normalizada al catálogo canónico (la fuente trae 'MONTERREY', ' León ', 'querétaro'...).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - Ciudad de México
+          - Toluca
+          - Puebla
+          - Querétaro
+          - Guadalajara
+          - León
+          - Monterrey
+          - Tijuana
+          - Mérida
+          - Cancún
+  - name: segmento
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - Básico
+          - Estándar
+          - Premium
+  - name: tipo_contrato
+    description: Vacío en clientes transaccionales sin plan de servicio.
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - Mensual
+          - Anual
+  - name: plan
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - Starter
+          - Pro
+          - Business
+  - name: canal_adquisicion
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - Referidos
+          - Google Ads
+          - Meta Ads
+          - Email
+          - Eventos
+          - Orgánico
+- name: dim_producto
+  description: 'Un producto por SKU, ya depurado (ver int_producto_depurado): duplicados resueltos, precios/costos no positivos anulados, categorías normalizadas.'
+  columns:
+  - name: producto_key
+    data_tests:
+    - unique
+    - not_null
+  - name: sku
+    data_tests:
+    - unique
+    - not_null
+  - name: categoria
+    description: Normalizada; si venía vacía se recupera de su subcategoría.
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - Alimentos
+          - Belleza
+          - Deportes
+          - Electrónica
+          - Hogar
+          - Juguetes
+          - Papelería
+          - Ropa
+  - name: subcategoria
+    data_tests:
+    - not_null
+  - name: precio_unitario
+    description: NULL si el precio de origen no era positivo.
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0.01
+- name: dim_sucursal
+  description: Catálogo único de sucursal, normalizado a partir de las variantes crudas de los 3 exports.
+  columns:
+  - name: sucursal_key
+    data_tests:
+    - unique
+    - not_null
+  - name: nombre_normalizado
+    data_tests:
+    - unique
+    - accepted_values:
+        arguments:
+          values:
+          - CDMX
+          - Guadalajara
+          - Monterrey
+  - name: nombre_origen_raw
+    description: Todas las grafías vistas en bronze, p.ej. ['GDL ', 'Guadalajara', 'guadalajara'].
+- name: dim_equipo
+  description: Equipo comercial.
+  columns:
+  - name: equipo_key
+    data_tests:
+    - unique
+    - not_null
+  - name: equipo_id
+    data_tests:
+    - unique
+    - not_null
+  - name: nombre_equipo
+    data_tests:
+    - unique
+    - not_null
+- name: dim_vendedor
+  description: Vendedor y su equipo. equipo_id y equipo van denormalizados para que los reportes no vuelvan a unir dim_equipo.
+  columns:
+  - name: vendedor_key
+    data_tests:
+    - unique
+    - not_null
+  - name: equipo_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_equipo')
+          field: equipo_key
+  - name: vendedor_id
+    data_tests:
+    - unique
+    - not_null
+  - name: codigo_vendedor
+    description: Código corto legible (p.ej. CEN-01), el que muestran los reportes.
+    data_tests:
+    - unique
+    - not_null
+- name: dim_canal
+  description: 'Catálogo único de canal: el canal por el que se vende (pedidos, facturas) y el de adquisición/inversión de marketing.'
+  columns:
+  - name: canal_key
+    data_tests:
+    - unique
+    - not_null
+  - name: nombre_canal
+    data_tests:
+    - unique
+    - not_null
+  - name: tipo_canal
+    description: venta | marketing | ambos.
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - venta
+          - marketing
+          - ambos
+- name: dim_kpi
+  description: 'Catálogo de indicadores del scorecard: los de captura manual (de bronze) y los derivables (declarados en el modelo).'
+  columns:
+  - name: kpi_key
+    data_tests:
+    - unique
+    - not_null
+  - name: nombre_kpi
+    data_tests:
+    - unique
+    - not_null
+  - name: menor_es_mejor
+    data_tests:
+    - not_null

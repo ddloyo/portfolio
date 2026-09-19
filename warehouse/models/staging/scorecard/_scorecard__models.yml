@@ -1,0 +1,14 @@
+version: 2
+models:
+- name: stg_scorecard__kpi_captura_manual
+  description: Resultados mensuales de KPIs de captura manual, tipados.
+  columns:
+  - name: kpi
+    data_tests:
+    - not_null
+- name: stg_scorecard__kpi_meta
+  description: Meta vigente por KPI, tipada.
+  columns:
+  - name: kpi
+    data_tests:
+    - not_null

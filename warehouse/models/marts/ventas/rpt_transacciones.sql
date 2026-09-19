@@ -4,5 +4,5 @@ select
     fp.cliente_id,
     fp.date_key as fecha,
     sum(fp.importe_neto) as monto_mxn
-from {{ ref('fct_pedidos') }} fp
+from {{ ref('fct_pedido') }} fp
 group by fp.cliente_id, fp.date_key

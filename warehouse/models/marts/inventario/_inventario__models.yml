@@ -1,0 +1,78 @@
+version: 2
+models:
+- name: fct_inventario_snapshot
+  description: Foto semanal de inventario por SKU.
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - producto_key
+        - fecha_snapshot
+  columns:
+  - name: producto_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_producto')
+          field: producto_key
+  - name: fecha_snapshot
+    data_tests:
+    - not_null
+  - name: stock_actual
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+  - name: lead_time_dias
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 1
+- name: fct_producto_forecast
+  description: Forecast de demanda a 28 días (tendencia + estacionalidad por día de la semana), punto de reorden, cobertura y riesgo de quiebre por SKU, con backtest (mae, mape).
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - producto_key
+        - fecha_forecast
+  columns:
+  - name: producto_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_producto')
+          field: producto_key
+  - name: fecha_forecast
+    data_tests:
+    - not_null
+  - name: segmento_demanda
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - alta
+          - media
+          - baja
+  - name: demanda_pronosticada_28d
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+  - name: reorder_point
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+  - name: dias_cobertura
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+          max_value: 999
+  - name: riesgo_quiebre
+    data_tests:
+    - not_null

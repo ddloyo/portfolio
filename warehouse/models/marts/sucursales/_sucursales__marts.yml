@@ -1,12 +1,57 @@
 version: 2
-
 models:
-  - name: rpt_fuente_unica
-    description: Ventas de las 3 sucursales, unidas y sin duplicados — el "único número correcto".
-    columns:
-      - name: monto_mxn
-        data_tests:
-          - not_null
-
-  - name: rpt_revision_manual_monto_faltante
-    description: Cola de revisión manual — filas de sucursal sin monto. Nunca se les inventa un valor.
+- name: fct_venta_sucursal
+  description: '"Fuente única" de las 3 sucursales: unidas, normalizadas y con los duplicados exactos marcados (no descartados). Sin detalle de línea/SKU.'
+  columns:
+  - name: venta_sucursal_key
+    data_tests:
+    - unique
+    - not_null
+  - name: date_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_fecha')
+          field: date_key
+  - name: sucursal_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_sucursal')
+          field: sucursal_key
+  - name: monto_mxn
+    data_tests:
+    - not_null
+  - name: es_duplicado_descartado
+    data_tests:
+    - not_null
+- name: fct_venta_sucursal_pendiente_revision
+  description: 'Cola de revisión manual: filas de sucursal sin monto. Nunca se les imputa un valor.'
+  columns:
+  - name: pendiente_key
+    data_tests:
+    - unique
+    - not_null
+  - name: date_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_fecha')
+          field: date_key
+  - name: sucursal_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_sucursal')
+          field: sucursal_key
+  - name: motivo
+    data_tests:
+    - not_null
+- name: rpt_fuente_unica
+  description: Ventas de las 3 sucursales, unidas y sin duplicados — el "único número correcto".
+  columns:
+  - name: monto_mxn
+    data_tests:
+    - not_null
+- name: rpt_revision_manual_monto_faltante
+  description: Cola de revisión manual — filas de sucursal sin monto. Nunca se les inventa un valor.

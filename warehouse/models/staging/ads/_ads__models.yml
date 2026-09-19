@@ -1,0 +1,8 @@
+version: 2
+models:
+- name: stg_ads__marketing_gasto
+  description: Gasto diario por canal, tipado.
+  columns:
+  - name: canal
+    data_tests:
+    - not_null

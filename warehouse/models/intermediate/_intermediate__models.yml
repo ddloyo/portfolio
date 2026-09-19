@@ -1,37 +1,46 @@
 version: 2
-
 models:
-  - name: int_ventas_sucursal_unificada
-    description: Las 3 sucursales unidas, con duplicados exactos marcados (no descartados todavía).
-    columns:
-      - name: es_duplicado_descartado
-        data_tests:
-          - not_null
-
-  - name: int_ventas_sucursal_pendiente
-    description: Filas de sucursal sin monto — cola de revisión manual.
-
-  - name: int_pedidos_enriquecidos
-    description: Línea de pedido + producto + importe neto calculado.
-    columns:
-      - name: linea_id
-        data_tests:
-          - unique
-          - not_null
-      - name: importe_neto
-        data_tests:
-          - not_null
-
-  - name: int_cliente_riesgo_churn
-    description: Feature set de churn + percentil de riesgo (heurística, no modelo entrenado).
-    columns:
-      - name: cliente_id
-        data_tests:
-          - unique
-          - not_null
-      - name: percentil_riesgo
-        data_tests:
-          - dbt_utils.accepted_range:
-              arguments:
-                min_value: 0
-                max_value: 100
+- name: int_ventas_sucursal_unificada
+  description: Las 3 sucursales unidas, con duplicados exactos marcados (no descartados todavía).
+  columns:
+  - name: es_duplicado_descartado
+    data_tests:
+    - not_null
+- name: int_ventas_sucursal_pendiente
+  description: Filas de sucursal sin monto — cola de revisión manual.
+- name: int_producto_depurado
+  description: Un SKU por fila, con precios/costos no positivos anulados y categorías normalizadas. Lo comparten dim_producto e int_pedidos_enriquecidos.
+  columns:
+  - name: sku
+    data_tests:
+    - unique
+    - not_null
+  - name: categoria
+    data_tests:
+    - not_null
+- name: int_pedidos_enriquecidos
+  description: Línea de pedido + producto + importe neto calculado.
+  columns:
+  - name: linea_id
+    data_tests:
+    - unique
+    - not_null
+  - name: importe_neto
+    data_tests:
+    - not_null
+- name: int_factura_linea_validada
+  description: Toda línea de factura de bronze con el motivo por el que NO puede entrar a silver (motivo_rechazo NULL = válida). Las rechazadas se conservan para auditarlas.
+  columns:
+  - name: motivo_rechazo
+    description: factura_id_nulo, factura_duplicada, fecha_invalida, cliente_inexistente, sku_inexistente, canal_invalido o cantidad_o_precio_invalido; la primera regla que aplique.
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - factura_id_nulo
+          - factura_duplicada
+          - fecha_invalida
+          - cliente_inexistente
+          - sku_inexistente
+          - canal_invalido
+          - cantidad_o_precio_invalido

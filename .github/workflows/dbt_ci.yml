@@ -46,9 +46,6 @@ jobs:
       - name: dbt seed
         run: dbt seed --target ci
 
-      - name: Verificar migración 1:1 de bronze (DDL legacy vs seeds)
-        run: python3 scripts/verify_bronze_migration.py ci_xia_warehouse.duckdb
-
       - name: dbt run
         run: dbt run --target ci
 

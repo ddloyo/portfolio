@@ -1,0 +1,8 @@
+version: 2
+models:
+- name: stg_wms__inventario_snapshot
+  description: Fotos de inventario por SKU, tipadas.
+  columns:
+  - name: sku
+    data_tests:
+    - not_null

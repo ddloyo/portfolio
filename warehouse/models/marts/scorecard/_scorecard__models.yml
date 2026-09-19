@@ -1,0 +1,42 @@
+version: 2
+models:
+- name: fct_kpi_manual
+  description: Resultado mensual de los KPIs que ningún hecho operativo permite derivar (captura manual).
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - kpi_key
+        - mes_key
+  columns:
+  - name: kpi_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_kpi')
+          field: kpi_key
+  - name: mes_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_mes')
+          field: mes_key
+  - name: resultado
+    data_tests:
+    - not_null
+- name: fct_kpi_meta
+  description: Meta vigente por KPI (insumo de planeación; sale del seed kpi_meta, que no existía en el DDL de bronze).
+  columns:
+  - name: kpi_key
+    data_tests:
+    - unique
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_kpi')
+          field: kpi_key
+  - name: meta
+    data_tests:
+    - not_null

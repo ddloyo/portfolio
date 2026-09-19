@@ -24,3 +24,13 @@ sources:
               - accepted_values:
                   arguments:
                     values: ['True', 'False']
+
+      - name: kpi_meta
+        description: >
+          Meta vigente por KPI (insumo de planeación, no un cálculo). NO
+          existe en el DDL de bronze: es un seed agregado para cerrar el
+          hueco de silver.fact_kpi_meta, que en el diseño original no tenía
+          tabla de origen. Valores ilustrativos.
+        columns:
+          - name: kpi
+            data_tests: [unique, not_null]

@@ -1,0 +1,8 @@
+version: 2
+models:
+- name: stg_helpdesk__ticket_soporte
+  description: Tickets de soporte, tipados.
+  columns:
+  - name: ticket_id
+    data_tests:
+    - not_null

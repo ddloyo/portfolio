@@ -6,5 +6,5 @@ select
     sum(fp.cantidad) as unidades_vendidas,
     sum(fp.importe_neto) as ingreso,
     sum(fp.costo_total) as costo_total
-from {{ ref('fct_pedidos') }} fp
+from {{ ref('fct_pedido') }} fp
 group by fp.sku, fp.date_key

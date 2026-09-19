@@ -1,21 +1,14 @@
 -- Enriquece cada línea de pedido con el producto (categoría, costo) y
 -- calcula el importe neto. No es incremental: esa decisión vive en el mart
--- (fct_pedidos) — intermediate solo describe la transformación de negocio.
+-- (fct_pedido) — intermediate solo describe la transformación de negocio.
 with pedidos as (
     select * from {{ ref('stg_pos__pedido_linea') }}
 ),
 
+-- int_producto_depurado ya trae un solo sku por fila; sin eso, el join de
+-- abajo multiplicaría cada línea por cada copia recapturada del SKU.
 productos as (
-    -- stg_erp__producto puede traer el mismo sku recapturado más de una
-    -- vez (con otro precio) — sin deduplicar aquí, el join de abajo
-    -- multiplicaría cada línea de pedido por cada copia del SKU.
-    select *
-    from {{ ref('stg_erp__producto') }}
-    where sku is not null
-    qualify row_number() over (
-        partition by sku
-        order by (precio_unitario is null), (costo_unitario is null)
-    ) = 1
+    select * from {{ ref('int_producto_depurado') }}
 )
 
 select

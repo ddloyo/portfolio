@@ -9,8 +9,8 @@ runner gratuito de GitHub Actions.
 **Este proyecto es la única fuente de verdad ejecutable.** Los `.sql` de
 `database/schema/` son el diseño original en DDL y se están migrando aquí capa
 por capa; el estado de cada tabla está en
-[`database/LEGACY_TABLES.md`](../database/LEGACY_TABLES.md). **Bronze ya está
-migrado 1:1 y verificado** (21/21 tablas); silver, meta y gold están en curso.
+[`database/LEGACY_TABLES.md`](../database/LEGACY_TABLES.md). **Bronze (21/21) y
+silver (35/35) ya están migrados 1:1, verificados y sus `.sql` legacy eliminados**; meta y gold están en curso.
 
 ## Bronze: 21 seeds, uno por tabla del DDL
 
@@ -44,9 +44,8 @@ De dónde sale cada dato:
   (semilla fija; cada tabla tiene su propio generador aleatorio, así que
   cambiar una no mueve las demás). Referencian los clientes, productos y
   vendedores reales de las tablas anteriores.
-- **Sin equivalente legacy** (1): `cliente/clientes_churn.csv` (de
-  `projects/04`), un feature set de churn ya calculado que alimenta el dominio
-  churn actual hasta que se migre silver.
+- **Sin equivalente legacy** (1): `scorecard/kpi_meta.csv`, las metas por KPI.
+  Cierra un hueco del diseño original: `silver.fact_kpi_meta` no tenía tabla de origen.
 
 ## Cómo correrlo
 
@@ -58,11 +57,10 @@ export DBT_PROFILES_DIR=profiles
 
 dbt deps          # instala dbt_utils
 dbt seed          # carga los 22 CSV a DuckDB (schema "raw")
-dbt run           # staging -> intermediate -> marts (27 modelos)
-dbt test          # 94 tests (sources, genéricos, custom y singulares)
+dbt run           # staging -> intermediate -> marts (69 modelos)
+dbt test          # 326 tests (sources, llaves, integridad, genéricos, custom y singulares)
 dbt docs generate && dbt docs serve   # catálogo + lineage DAG en localhost
 
-python3 scripts/verify_bronze_migration.py   # bronze 1:1 contra el DDL legacy
 ```
 
 **Importante: `dbt seed` va aparte de `dbt run`/`dbt test`, no dentro de un
@@ -86,18 +84,22 @@ python3 seeds/generators/generate_bronze.py
 warehouse/
 ├── seeds/              22 CSV por sistema fuente (crm/, erp/, pos/, sucursales/, wms/...)
 │   └── generators/      generate_bronze.py (+ generate_pedido_linea.py, que este invoca)
-├── models/
-│   ├── staging/         stg_<source>__<entidad> — 1:1 con cada fuente; los 10 sources
-│   │                    de bronze se declaran aquí (_*__sources.yml, con tests de llave e integridad)
-│   ├── intermediate/    joins + reglas de negocio (dedup de sucursales, features de churn)
-│   └── marts/
-│       ├── core/        dim_fecha, dim_cliente, dim_producto, dim_vendedor
-│       ├── ventas/      fct_pedidos (incremental) + 4 rpt_* que reproducen CSV del portafolio
-│       ├── sucursales/  rpt_fuente_unica + cola de revisión manual
-│       └── cliente/     rpt_clientes_churn
-├── macros/              7 macros Jinja reutilizables (ver abajo)
-├── tests/               2 tests singulares + 1 test genérico custom
-├── scripts/             verify_bronze_migration.py (temporal: se borra con los archivos legacy)
+├── models/              69 modelos
+│   ├── staging/         22 modelos stg_<source>__<entidad> — 1:1 con cada fuente; los 10
+│   │                    sources de bronze se declaran aquí (_*__sources.yml, con tests)
+│   ├── intermediate/    5 modelos: depuración y reglas de negocio (int_producto_depurado,
+│   │                    int_factura_linea_validada, dedup de sucursales, pedidos enriquecidos)
+│   └── marts/           silver (11 dims + 24 hechos) y reportes (7 rpt_*)
+│       ├── core/        11 dimensiones: dim_fecha, dim_cliente, dim_producto, dim_canal...
+│       ├── ventas/      fct_pedido (incremental), RFM, elasticidad, tendencia + 4 rpt_*
+│       ├── finanzas/    facturas, pagos, cargos de suscripción, segmento de pago
+│       ├── cliente/     soporte, actividad, cancelación, NPS, features y score de churn
+│       ├── marketing/   gasto de pauta y ROI por canal
+│       ├── inventario/  snapshot de inventario y forecast de demanda
+│       ├── scorecard/   KPIs manuales y metas
+│       └── sucursales/  ventas de sucursal, cola de revisión + 2 rpt_*
+├── macros/              9 macros Jinja reutilizables (ver abajo)
+├── tests/               5 tests singulares + 1 test genérico custom
 └── snapshots/, analyses/  (vacíos por ahora)
 ```
 
@@ -106,19 +108,19 @@ warehouse/
 | Pieza | Dónde |
 |---|---|
 | **sources** | `models/staging/*/_*__sources.yml` — 10 sistemas fuente, 21 tablas, cada una anclada a su tabla legacy con `meta.legacy_table`. Los sistemas limpios llevan tests de llave única, `accepted_values` e integridad referencial entre sources. |
-| **staging** | `stg_<source>__<entidad>.sql` — 11 modelos, materializados como view |
-| **intermediate** | `models/intermediate/` — dedup de sucursales (`ROW_NUMBER` + `QUALIFY`), enriquecimiento de pedidos, proxy de riesgo de churn (`PERCENT_RANK`) |
-| **marts** | `models/marts/core` (dimensiones) + `ventas`/`sucursales`/`cliente` (hechos y `rpt_*`) |
-| **incremental** | `fct_pedidos.sql` — watermark por fecha, `unique_key`, `delete+insert`. Verificado a mano: correr dos veces sin datos nuevos no reprocesa nada; agregar un día nuevo solo inserta esas filas. |
-| **tests** | 94: de sources (llaves, integridad referencial, valores aceptados), genéricos, 1 custom (`total_matches_lineas`, reproduce la regla de `projects/13`) y 2 singulares (reconciliación entre marts, fechas futuras) |
+| **staging** | `stg_<source>__<entidad>.sql` — 22 modelos, materializados como view |
+| **intermediate** | `models/intermediate/` — depuración de producto (`QUALIFY`, ventana para recuperar categorías), validación de facturas con motivo de rechazo, dedup de sucursales |
+| **marts** | `models/marts/core` (11 dimensiones) + hechos por dominio (24) + `rpt_*` (7). Los hechos "enriquecidos" (churn, RFM, elasticidad, forecast, ROI, tendencia) se calculan en SQL puro |
+| **incremental** | `fct_pedido.sql` — watermark por fecha, `unique_key`, `delete+insert`. Verificado a mano: correr dos veces sin datos nuevos no reprocesa nada; agregar un día nuevo solo inserta esas filas. |
+| **tests** | 326: PK (`unique`/`not_null`) y FK (`relationships`) de las 35 tablas de silver, valores aceptados y rangos, 1 genérico custom (`total_matches_lineas`) y 5 singulares (reconciliación entre marts, líneas que no se pierden, fechas futuras, regla del NPS) |
 | **schema.yml** | Uno por dominio, no un YAML monolítico |
 | **documentación** | Descripciones inline + 2 bloques `{% docs %}` largos (`dim_cliente_dedupe`, `un_hecho_seis_reportes`) |
 | **lineage/DAG** | `dbt docs generate` + `dbt docs serve` — el grafo interactivo real |
-| **macros** | `duckdb__create_csv_table` (todo seed aterriza como TEXT), `generate_schema_name`, `parse_messy_date` (fechas mixtas; la ambigüedad DD/MM vs MM/DD está documentada, no oculta), `cast_messy_amount`, `quadrant_segment` (un macro en vez de 4 `CASE WHEN`), `nombre_mes_es`/`nombre_dia_es` |
+| **macros** | `duckdb__create_csv_table` (todo seed aterriza como TEXT), `generate_schema_name`, `parse_messy_date` (fechas mixtas; la ambigüedad DD/MM vs MM/DD está documentada, no oculta), `cast_messy_amount`, `quadrant_segment` (un macro en vez de 4 `CASE WHEN`), `nombre_mes_es`/`nombre_dia_es`, `canonical_case` (normaliza catálogos), `mes_key` |
 | **Jinja** | `{% for %}` sobre la lista de formatos de fecha, `{% if is_incremental() %}`, `ref()`/`source()` en todo, `{{ var(...) }}` |
-| **SQL** | CTEs en cascada, `ROW_NUMBER()`/`QUALIFY`, `PERCENT_RANK()`, agregaciones con `FILTER` |
+| **SQL** | CTEs en cascada, `ROW_NUMBER()`/`QUALIFY`, `PERCENT_RANK()`, ventanas móviles, regresión nativa (`regr_slope`/`regr_r2`), agregaciones con `FILTER` |
 | **Git** | rama por feature → PR → CI en verde → merge a main |
-| **CI/CD** | `dbt_ci.yml`: seed → verificación 1:1 de bronze → run → test en cada PR, DuckDB efímero, sin credenciales. `dbt_docs.yml`: genera el sitio de docs como artifact en cada push a main |
+| **CI/CD** | `dbt_ci.yml`: seed → run → test en cada PR, DuckDB efímero, sin credenciales. `dbt_docs.yml`: genera el sitio de docs como artifact en cada push a main |
 
 ## Los 3 hallazgos reales que los tests atrapan (a propósito)
 
@@ -135,7 +137,8 @@ calidad ya conocida, se le da seguimiento.
 
 ## Qué sigue
 
-Bronze está migrado. Faltan, en este orden: **silver** (35 tablas; 3 migradas,
-7 parciales), **meta** (motor de calidad de datos) y **gold** (19 vistas; 6
-migradas). El detalle, con el modelo dbt correspondiente a cada objeto del
-diseño legacy, está en [`database/LEGACY_TABLES.md`](../database/LEGACY_TABLES.md).
+Bronze y silver están migrados. Faltan, en este orden: **meta** (motor de calidad de
+datos, 5 tablas) y **gold** (19 vistas; 7 migradas). Además, hay hallazgos abiertos que
+piden decisión (moneda de las facturas, 22% de facturas rechazadas, churn como proxy): están
+en [`database/LEGACY_TABLES.md`](../database/LEGACY_TABLES.md), junto con el modelo dbt
+correspondiente a cada objeto del diseño legacy.

@@ -3,5 +3,5 @@
 -- pasa, es una corrida vieja comparada contra un `today` real, no un bug de
 -- datos, así que se fija por variable en vez de usar current_date().
 select *
-from {{ ref('fct_pedidos') }}
+from {{ ref('fct_pedido') }}
 where date_key > cast('{{ var("fecha_referencia") }}' as date)

@@ -6,6 +6,6 @@ select
     dv.codigo_vendedor as vendedor,
     fp.categoria as linea_producto,
     sum(fp.importe_neto) as monto_mxn
-from {{ ref('fct_pedidos') }} fp
+from {{ ref('fct_pedido') }} fp
 join {{ ref('dim_vendedor') }} dv on dv.vendedor_id = fp.vendedor_id
 group by fp.date_key, dv.equipo, dv.codigo_vendedor, fp.categoria

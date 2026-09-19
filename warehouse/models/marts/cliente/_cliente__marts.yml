@@ -1,22 +1,176 @@
 version: 2
-
 models:
-  - name: rpt_clientes_churn
-    description: >
-      Feature set de churn + percentil de riesgo (heurística) + cuadrante
-      riesgo x valor. El percentil_riesgo es un proxy por reglas, no la
-      salida de un modelo entrenado — ver int_cliente_riesgo_churn.
-    columns:
-      - name: cliente_id
-        data_tests:
-          - unique
-          - not_null
-      - name: cuadrante_accion
-        data_tests:
-          - accepted_values:
-              arguments:
-                values:
-                  - 'Alto riesgo / alto valor'
-                  - 'Alto riesgo / bajo valor'
-                  - 'Bajo riesgo / alto valor'
-                  - 'Bajo riesgo / bajo valor'
+- name: fct_ticket_soporte
+  description: Tickets de soporte por cliente. fecha_cierre NULL = ticket abierto.
+  columns:
+  - name: ticket_key
+    data_tests:
+    - unique
+    - not_null
+  - name: cliente_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+  - name: ticket_id
+    data_tests:
+    - unique
+    - not_null
+- name: fct_evento_actividad
+  description: Log de actividad de producto/servicio por cliente.
+  columns:
+  - name: evento_key
+    data_tests:
+    - unique
+    - not_null
+  - name: cliente_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+  - name: date_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_fecha')
+          field: date_key
+  - name: evento_id
+    data_tests:
+    - unique
+    - not_null
+  - name: tipo_evento
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - login
+          - uso_feature
+          - descarga_reporte
+          - invitacion_usuario
+  - name: usage_points
+    data_tests:
+    - not_null
+- name: fct_cancelacion
+  description: Baja de contrato/plan por cliente (a lo más una).
+  columns:
+  - name: cliente_key
+    data_tests:
+    - unique
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+- name: fct_encuesta_nps
+  description: Respuesta de encuesta NPS. categoria se deriva de score (9-10 Promotor, 7-8 Pasivo, 0-6 Detractor).
+  columns:
+  - name: respuesta_key
+    data_tests:
+    - unique
+    - not_null
+  - name: cliente_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+  - name: date_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_fecha')
+          field: date_key
+  - name: respuesta_id
+    description: 'Llave natural (legacy: respuesta_id_origen).'
+    data_tests:
+    - unique
+    - not_null
+  - name: score
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+          max_value: 10
+  - name: categoria
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - Promotor
+          - Pasivo
+          - Detractor
+- name: fct_cliente_features_churn
+  description: Feature set de churn por cliente con plan de servicio, calculado desde cargos, tickets, actividad y cancelación, medido a la fecha de corte del cliente (su baja, o la fecha de referencia
+    si sigue activo).
+  columns:
+  - name: cliente_key
+    data_tests:
+    - unique
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+  - name: churn_historico
+    data_tests:
+    - not_null
+  - name: usage_score
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+          max_value: 100
+  - name: tickets_soporte_90d
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+  - name: dias_desde_ultima_actividad
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+- name: fct_cliente_churn_score
+  description: 'Riesgo de churn por cliente. PROXY por reglas (3 señales convertidas a percentil), no un modelo entrenado: sirve para ordenar, no para leerlo como probabilidad calibrada.'
+  columns:
+  - name: cliente_key
+    data_tests:
+    - unique
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+  - name: probabilidad_churn
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+          max_value: 1
+  - name: percentil_riesgo
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+          max_value: 100
+- name: rpt_clientes_churn
+  description: Feature set de churn + percentil de riesgo (proxy) + cuadrante riesgo x valor. Se calcula desde bronze (fct_cliente_features_churn + fct_cliente_churn_score).
+  columns:
+  - name: cliente_id
+    data_tests:
+    - unique
+    - not_null
+  - name: cuadrante_accion
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - Alto riesgo / alto valor
+          - Alto riesgo / bajo valor
+          - Bajo riesgo / alto valor
+          - Bajo riesgo / bajo valor

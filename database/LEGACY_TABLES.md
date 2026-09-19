@@ -13,10 +13,10 @@ dbt, y el estado de cada una se puede comprobar (ver [Verificación](#verificaci
 
 | Archivo | Objetos | Contraparte en dbt | Estado | Se borra cuando… |
 |---|---|---|---|---|
-| `schema/01_bronze.sql` | 21 tablas | `warehouse/seeds/` + `sources` (`models/staging/*/_*__sources.yml`) | **Migrado y verificado** | se apruebe esta fase (junto con `warehouse/scripts/verify_bronze_migration.py`, que depende de él) |
-| `schema/02_silver.sql` | 35 tablas | `staging/` → `intermediate/` → `marts/core` | En curso (3 migradas, 7 parciales, 25 pendientes) | las 35 estén migradas |
+| `schema/01_bronze.sql` | 21 tablas | `warehouse/seeds/` + `sources` (`models/staging/*/_*__sources.yml`) | **Migrado, verificado y eliminado** | — (recuperable: `git show 2e221a8:database/schema/01_bronze.sql`) |
+| `schema/02_silver.sql` | 35 tablas | `marts/core` (dimensiones) y `marts/<dominio>` (hechos) | **Migrado, verificado y eliminado** | — (recuperable: `git show 2e221a8:database/schema/02_silver.sql`) |
 | `schema/03_meta_dq.sql` | 5 tablas | tests de dbt + `store_failures` / modelo sobre `run_results.json` | Pendiente | el motor de calidad exista en dbt |
-| `schema/04_gold.sql` | 19 vistas | `marts/*/rpt_*` | En curso (6 migradas, 1 parcial, 12 pendientes) | las 19 estén migradas |
+| `schema/04_gold.sql` | 19 vistas | `marts/*/rpt_*` | En curso (7 migradas, 12 pendientes) | las 19 estén migradas |
 
 Otros documentos que describen el diseño legacy y habrá que reescribir o retirar
 al final: `database/README.md`, `database/architecture.html` (y su artifact publicado).
@@ -24,9 +24,9 @@ al final: `database/README.md`, `database/architecture.html` (y su artifact publ
 | Capa | Migradas | Parciales | Pendientes | Total |
 |---|---|---|---|---|
 | Bronze | 21 | 0 | 0 | 21 |
-| Silver | 3 | 7 | 25 | 35 |
+| Silver | 35 | 0 | 0 | 35 |
 | Meta | 0 | 0 | 5 | 5 |
-| Gold | 6 | 1 | 12 | 19 |
+| Gold | 7 | 0 | 12 | 19 |
 
 ---
 
@@ -84,8 +84,8 @@ original no tenía; *generada*: dato sintético nuevo, reproducible
 
 ### Divergencias deliberadas respecto al DDL
 
-Todo lo que no es 1:1 está aquí; el script de verificación las tiene
-codificadas y falla si aparece cualquier otra.
+Todo lo que no es 1:1 está aquí (el script de verificación, ya eliminado, las
+tenía codificadas y fallaba con cualquier otra).
 
 1. **Columnas de linaje** (`_source_system`, `_batch_id`, `_loaded_at`) no son
    columnas de los seeds. El linaje lo da dbt: el DAG, el `source` y
@@ -112,55 +112,128 @@ codificadas y falla si aparece cualquier otra.
 
 ### Seeds de dbt sin tabla legacy
 
-| Seed | Por qué existe | Cuándo se retira |
-|---|---|---|
+| Seed | Por qué existe |
+|---|---|
+| `scorecard/kpi_meta.csv` | Meta vigente por KPI (insumo de planeación). **Cierra un hueco del diseño legacy**: `silver.fact_kpi_meta` no tenía tabla bronze de origen (`kpi_captura_manual` solo trae el resultado, no la meta). Valores ilustrativos. |
+
+Se retiró `cliente/clientes_churn.csv` (de `projects/04`), que era un feature set de
+churn ya calculado y no un sistema fuente: las features ahora se calculan desde
+bronze en `fct_cliente_features_churn` (ver Silver).
+
+---|---|---|
 | `cliente/clientes_churn.csv` (de `projects/04`) | Es un dataset de features de churn ya calculado (gold), no un sistema fuente. Alimenta el dominio churn actual. | Al migrar `fact_cliente_features_churn`: las features se calcularán desde `suscripcion_cargo`, `ticket_soporte`, `evento_actividad`, `cancelacion` y `crm_cliente`, que ya están en bronze. |
 
 ---
 
-## Silver — 3 migradas · 7 parciales · 25 pendientes
+## Silver — 35/35 migradas
 
-Estado contra los modelos dbt actuales. **Migrada** = existe con la misma
-lógica; **parcial** = existe pero con menos columnas/lógica que el DDL;
-**pendiente** = no existe todavía.
+Cada tabla `silver.<t>` es ahora un modelo dbt: dimensiones en `marts/core`,
+hechos en `marts/<dominio>` (regla de nombre: `fact_X` → `fct_X`). Se verifica
+contra el DDL con un script que ya se eliminó (ver [Verificación](#verificación)).
 
-| Tabla legacy | Modelo dbt | Estado | Nota |
-|---|---|---|---|
-| `silver.dim_fecha` | `marts.dim_fecha` | Parcial | Se genera por `date_spine`, no desde `bronze.calendario` (solo cubre 2024–2025); sin `es_feriado` |
-| `silver.dim_semana` | — | Pendiente | Hoy `semana_iso` es una columna de `dim_fecha` |
-| `silver.dim_mes` | — | Pendiente | |
-| `silver.dim_region` | — | Pendiente | `region` ya está en bronze (`crm_cliente`) |
-| `silver.dim_cliente` | `marts.dim_cliente` | Parcial | Dedup hecha; aún sin region, tipo_contrato, plan, canal_adquisicion |
-| `silver.dim_producto` | `marts.dim_producto` | Parcial | Aún sin subcategoria |
-| `silver.dim_sucursal` | — | Pendiente | Hoy la sucursal es texto normalizado en staging |
-| `silver.dim_equipo` | `marts.dim_vendedor` | Parcial | Aplanada dentro de `dim_vendedor` |
-| `silver.dim_vendedor` | `marts.dim_vendedor` | Parcial | Sin llave subrogada |
-| `silver.dim_canal` | — | Pendiente | |
-| `silver.dim_kpi` | — | Pendiente | |
-| `silver.fact_pedido` | `marts.fct_pedidos` | Migrada | Renombrada; incremental; llaves naturales + surrogate propia |
-| `silver.fact_venta_sucursal` | `intermediate.int_ventas_sucursal_unificada` | Migrada | |
-| `silver.venta_sucursal_pendiente_revision` | `intermediate.int_ventas_sucursal_pendiente` | Migrada | |
-| `silver.fact_meta_venta` | — | Pendiente | Bronze migrado (`crm_meta_venta`) |
-| `silver.fact_oportunidad_evento` | — | Pendiente | Bronze migrado |
-| `silver.fact_factura` | — | Pendiente | Bronze migrado (`factura_linea`) |
-| `silver.fact_pago` | — | Pendiente | Bronze migrado |
-| `silver.fact_suscripcion_cargo` | — | Pendiente | Bronze migrado |
-| `silver.fact_ticket_soporte` | — | Pendiente | Bronze migrado |
-| `silver.fact_evento_actividad` | — | Pendiente | Bronze migrado |
-| `silver.fact_cancelacion` | — | Pendiente | Bronze migrado |
-| `silver.fact_marketing_gasto` | — | Pendiente | Bronze migrado |
-| `silver.fact_encuesta_nps` | — | Pendiente | Bronze migrado; `categoria` se deriva de `score` |
-| `silver.fact_kpi_manual` | — | Pendiente | Bronze migrado |
-| `silver.fact_kpi_meta` | — | Pendiente | **Sin tabla bronze de origen en el diseño legacy** (`kpi_captura_manual` solo trae el resultado, no la meta). Hay que decidir de dónde sale la meta por KPI. |
-| `silver.fact_inventario_snapshot` | — | Pendiente | Bronze migrado |
-| `silver.fact_cliente_features_churn` | seed `clientes_churn` + `int_cliente_riesgo_churn` | Parcial | Temporal: hoy no se calcula desde bronze (ver seeds sin tabla legacy) |
-| `silver.fact_cliente_churn_score` | `intermediate.int_cliente_riesgo_churn` | Parcial | Heurística por reglas, no modelo entrenado |
-| `silver.fact_cliente_rfm_score` | — | Pendiente | |
-| `silver.fact_producto_elasticidad` | — | Pendiente | |
-| `silver.fact_producto_forecast` | — | Pendiente | |
-| `silver.fact_cliente_pago_segmento` | — | Pendiente | |
-| `silver.fact_canal_roi` | — | Pendiente | |
-| `silver.fact_subcategoria_tendencia` | — | Pendiente | |
+| Tabla legacy | Modelo dbt | Nota |
+|---|---|---|
+| `silver.dim_fecha` | `marts/core/dim_fecha` | Por `date_spine` (2024-01-01 a 2026-09-19), no desde `bronze.calendario` (solo cubre 2024–2025). `es_feriado` siempre `false`: la columna de origen está 100% vacía. |
+| `silver.dim_semana` | `marts/core/dim_semana` | `semana_key` = año ISO × 100 + semana |
+| `silver.dim_mes` | `marts/core/dim_mes` | `mes_key` = año × 100 + mes |
+| `silver.dim_region` | `marts/core/dim_region` | |
+| `silver.dim_cliente` | `marts/core/dim_cliente` | Dedup + normalización de ciudad y segmento |
+| `silver.dim_producto` | `marts/core/dim_producto` | Sobre `int_producto_depurado` (ver divergencias) |
+| `silver.dim_sucursal` | `marts/core/dim_sucursal` | `nombre_origen_raw` guarda las grafías crudas |
+| `silver.dim_equipo` | `marts/core/dim_equipo` | |
+| `silver.dim_vendedor` | `marts/core/dim_vendedor` | Con `equipo_id` y `equipo` denormalizados |
+| `silver.dim_canal` | `marts/core/dim_canal` | Une canal de venta y de marketing |
+| `silver.dim_kpi` | `marts/core/dim_kpi` | Manuales desde bronze + 3 derivables declarados en el modelo |
+| `silver.fact_pedido` | `marts/ventas/fct_pedido` | Incremental. Renombrada desde `fct_pedidos`. |
+| `silver.fact_venta_sucursal` | `marts/sucursales/fct_venta_sucursal` | |
+| `silver.venta_sucursal_pendiente_revision` | `marts/sucursales/fct_venta_sucursal_pendiente_revision` | |
+| `silver.fact_meta_venta` | `marts/ventas/fct_meta_venta` | |
+| `silver.fact_oportunidad_evento` | `marts/ventas/fct_oportunidad_evento` | |
+| `silver.fact_factura` | `marts/finanzas/fct_factura` | Solo líneas válidas (ver hallazgos) |
+| `silver.fact_pago` | `marts/finanzas/fct_pago` | Solo pagos de facturas válidas |
+| `silver.fact_suscripcion_cargo` | `marts/finanzas/fct_suscripcion_cargo` | |
+| `silver.fact_ticket_soporte` | `marts/cliente/fct_ticket_soporte` | |
+| `silver.fact_evento_actividad` | `marts/cliente/fct_evento_actividad` | |
+| `silver.fact_cancelacion` | `marts/cliente/fct_cancelacion` | |
+| `silver.fact_marketing_gasto` | `marts/marketing/fct_marketing_gasto` | |
+| `silver.fact_encuesta_nps` | `marts/cliente/fct_encuesta_nps` | `categoria` derivada de `score` |
+| `silver.fact_kpi_manual` | `marts/scorecard/fct_kpi_manual` | |
+| `silver.fact_kpi_meta` | `marts/scorecard/fct_kpi_meta` | Sale del seed nuevo `kpi_meta` |
+| `silver.fact_inventario_snapshot` | `marts/inventario/fct_inventario_snapshot` | |
+| `silver.fact_cliente_features_churn` | `marts/cliente/fct_cliente_features_churn` | Calculada desde bronze; sustituye al seed `clientes_churn` |
+| `silver.fact_cliente_churn_score` | `marts/cliente/fct_cliente_churn_score` | **Proxy por reglas, no un modelo entrenado** (ver hallazgos) |
+| `silver.fact_cliente_rfm_score` | `marts/ventas/fct_cliente_rfm_score` | |
+| `silver.fact_producto_elasticidad` | `marts/ventas/fct_producto_elasticidad` | Regresión log-log real en SQL (`regr_slope`, `regr_r2`) |
+| `silver.fact_producto_forecast` | `marts/inventario/fct_producto_forecast` | Tendencia + estacionalidad por día de la semana, con backtest |
+| `silver.fact_cliente_pago_segmento` | `marts/finanzas/fct_cliente_pago_segmento` | |
+| `silver.fact_canal_roi` | `marts/marketing/fct_canal_roi` | Solo 25 filas: ver hallazgos |
+| `silver.fact_subcategoria_tendencia` | `marts/ventas/fct_subcategoria_tendencia` | |
+
+### Divergencias deliberadas respecto al DDL (silver)
+
+El verificador (ya eliminado) las tenía codificadas y fallaba con cualquier otra.
+
+1. **Nombres:** `fact_X` → `fct_X`; `venta_sucursal_pendiente_revision` →
+   `fct_venta_sucursal_pendiente_revision`. Columnas: `cliente_id_origen` →
+   `cliente_id`, `factura_id_origen` → `factura_id`, `respuesta_id_origen` →
+   `respuesta_id` (el sufijo `_origen` era de cuando el diseño conformaba varios
+   sistemas fuente; con uno solo es ruido).
+2. **Llaves subrogadas:** hash determinista (`dbt_utils.generate_surrogate_key`,
+   `varchar`) en vez de `SERIAL`. Con una secuencia, la llave de un cliente cambia
+   cuando entran clientes nuevos y los hechos incrementales quedarían apuntando
+   a llaves viejas. Excepción: `dim_mes` y `dim_semana` usan enteros legibles
+   (`202608`, `202611`), que son igual de estables.
+3. **Columnas extra permitidas** sobre el DDL (llaves naturales y denormalizaciones que
+   usan los reportes): p.ej. `fct_pedido` (`linea_id`, `cliente_id`, `sku`,
+   `categoria`, `costo_total`...), `dim_vendedor` (`vendedor_id`, `equipo`...),
+   `dim_fecha` (`semana_iso`...). El verificador solo falla si **falta** una del DDL.
+4. **Constraints → tests:** `PRIMARY KEY`, `REFERENCES`, `NOT NULL`, `CHECK` y
+   valores válidos del DDL son tests de dbt (`unique`, `relationships`, `not_null`,
+   `accepted_range`, `accepted_values`). El verificador comprueba además, directo
+   en los datos, que las PK sean únicas y que no haya huérfanos.
+5. **Dos modelos intermedios nuevos** que el DDL no tenía y que hacen la limpieza:
+   `int_producto_depurado` (un SKU por fila, precios/costos no positivos anulados,
+   categorías normalizadas y recuperadas desde la subcategoría en los 6 productos que
+   la traían vacía) e `int_factura_linea_validada` (motivo de rechazo por línea).
+6. **Normalización de catálogos** en silver: ciudad, segmento y categoría dejan de
+   venir como `'MONTERREY'`, `' León '`, `'BELLEZA'`. Efecto en reportes existentes:
+   `rpt_ventas_diarias` pasa de 11,144 a 10,766 filas y `rpt_precio_demanda` de
+   7,443 a 7,365 (etiquetas que se fusionan), **con los mismos totales**
+   (24,824,410.46 y 44,895 unidades).
+7. **`dim_fecha` arranca en 2024** (antes 2025), porque las facturas son de 2024.
+8. **`dim_kpi`:** los KPIs derivables (Ingresos mensuales, Nuevos clientes, NPS) no
+   tienen fuente para su metadata; se declaran en el modelo, con responsables ilustrativos.
+9. **`fecha_referencia`** (variable de dbt, `2026-09-18`) es la "fecha de hoy" de los
+   hechos enriquecidos, para que las corridas sean reproducibles.
+
+### Hallazgos y decisiones (a tener presente)
+
+- **El modelo de churn anterior tenía la orientación invertida.** La heurística que
+  se mergeó en el PR de bronze (`int_cliente_riesgo_churn`) daba *menor* riesgo a
+  quienes cancelaron (riesgo medio 30.8 vs. 45.7 sobre los datos de `projects/04`).
+  `fct_cliente_churn_score` corrige la orientación (59.6 vs. 43.4 sobre esos mismos
+  datos; 80.7 vs. 45.2 sobre el bronze nuevo). Cualquier salida previa de
+  `rpt_clientes_churn` (`percentil_riesgo`, `cuadrante_accion`) estaba al revés.
+- **`fct_cliente_churn_score` es un proxy**, no la regresión logística del diseño
+  original: ordena bien (ver arriba) pero `probabilidad_churn` no es una probabilidad calibrada.
+- **22% de las líneas de factura no entran a silver** (791 de 3,595), con motivo
+  consultable en `int_factura_linea_validada`: `cliente_inexistente` 266,
+  `fecha_invalida` 258, `sku_inexistente` 97, `factura_duplicada` 95,
+  `cantidad_o_precio_invalido` 75. Es el hallazgo de calidad de `projects/13`, ahora
+  aplicado. ¿Hay que recuperar alguno (p.ej. reparar fechas) en vez de rechazarlo?
+- **Moneda — decisión: no se harán conversiones de tipo de cambio.** 421 líneas de
+  factura (12%; 338 de ellas válidas) vienen marcadas USD y no hay tipo de cambio.
+  Silver no modela moneda (igual que el DDL original) y usa los montos tal como están
+  capturados; los totales de facturación y cartera mezclan, por tanto, líneas marcadas
+  MXN y USD sin convertir. Se acordó dejarlo así: se puede resolver más adelante y no es
+  prioridad del proyecto. Cuando se aborde, el punto de partida es
+  `int_factura_linea_validada` (que conserva `moneda` vía `stg_erp__factura_linea`).
+- **Elasticidad ≈ 0 con R² ≈ 0.** No es un error: en los datos sintéticos el precio
+  varía al azar, sin relación con la demanda, así que no hay elasticidad que encontrar.
+  El cálculo (regresión log-log real) sí es correcto.
+- **`fct_canal_roi` tiene 25 filas** (2025-01 a 2025-07): el ROI necesita clientes
+  nuevos en el mes y las altas de `projects/13` terminan en 2025-07-20. Además, 27
+  clientes vienen sin `fecha_alta`.
 
 ## Meta — 0 migradas · 5 pendientes
 
@@ -175,7 +248,7 @@ Hoy los tests de dbt hacen la validación (y son el equivalente de
 | `meta.dq_scorecard_tabla` | — | Pendiente |
 | `meta.dq_plan_remediacion` | — | Pendiente |
 
-## Gold — 6 migradas · 1 parcial · 12 pendientes
+## Gold — 7 migradas · 12 pendientes
 
 | Vista legacy | Modelo dbt | Estado | Nota |
 |---|---|---|---|
@@ -184,7 +257,7 @@ Hoy los tests de dbt hacen la validación (y son el equivalente de
 | `gold.rpt_02_funnel_semanal` | — | Pendiente | |
 | `gold.rpt_03_kpi_historico` | — | Pendiente | |
 | `gold.rpt_03_scorecard` | — | Pendiente | |
-| `gold.rpt_04_clientes` | `marts.rpt_clientes_churn` | Parcial | Hoy sobre el seed `clientes_churn`, no calculado desde bronze |
+| `gold.rpt_04_clientes` | `marts.rpt_clientes_churn` | Migrada | Ahora calculada desde bronze; 200 clientes con plan (antes 1,200 del seed) |
 | `gold.rpt_05_transacciones` | `marts.rpt_transacciones` | Migrada | |
 | `gold.rpt_06_precio_demanda` | `marts.rpt_precio_demanda` | Migrada | |
 | `gold.rpt_07_demanda_diaria` | `marts.rpt_demanda_diaria` | Migrada | |
@@ -203,21 +276,27 @@ Hoy los tests de dbt hacen la validación (y son el equivalente de
 
 ## Verificación
 
-Bronze se verifica automáticamente contra el DDL legacy:
+Bronze y silver se verificaron automáticamente contra su DDL legacy **antes de
+eliminarlo**, con dos scripts temporales (`verify_bronze_migration.py`,
+`verify_silver_migration.py`) que se eliminaron junto con los `.sql` que leían.
+Quedan en el commit `91e1f91` de la rama `feat/silver`, visible en su PR aunque el
+merge sea *squash* (los `.sql` legacy, en cambio, siguen en `main`: commit `2e221a8`).
 
-```bash
-cd warehouse && source .venv/bin/activate && export DBT_PROFILES_DIR=profiles
-dbt seed
-python3 scripts/verify_bronze_migration.py
-```
+**Bronze** (21 tablas, 21/21): que existiera el seed, que las columnas coincidieran con
+el DDL (menos linaje y las exclusiones documentadas), que estuviera declarada como
+`source` con `meta.legacy_table`, que hubiera cargado en DuckDB con las mismas columnas
+y filas, y que los datos de `projects/` estuvieran intactos.
 
-Por cada una de las 21 tablas comprueba: que exista el seed, que las columnas
-coincidan con el DDL (menos linaje y las exclusiones documentadas arriba),
-que esté declarada como `source` con `meta.legacy_table`, que haya cargado en
-DuckDB con las mismas columnas y filas, que los datos de `projects/` estén
-intactos (idénticos o conservados en las tablas aumentadas) y que aparezca en
-este documento. Además falla si hay un seed sin tabla legacy que no esté
-documentado en la sección de seeds sin tabla legacy.
+**Silver** (35 tablas, 35/35): que existiera el modelo con todas las columnas del DDL
+(con los renombres documentados) y filas; que su PK tuviera test `unique`/`not_null` **y**
+fuera única en los datos; que cada FK tuviera su test `relationships` **y** no tuviera
+huérfanos en los datos.
 
-Además, los marts existentes se compararon antes y después de migrar bronze
-(conteos, sumas y checksums de 14 consultas): idénticos.
+Ambos se probaron en negativo (corrompiendo datos, quitando columnas, creando huérfanos
+y PK duplicadas) y fallaron como debían. Los marts que ya existían se compararon antes y
+después de cada fase: en bronze, 14 consultas idénticas; en silver, solo las diferencias
+de "Divergencias deliberadas" (6 y 7) y el reemplazo de `rpt_clientes_churn`.
+
+**Hacia adelante**, la integridad la protegen los propios tests de dbt (llaves, integridad
+referencial y valores aceptados de bronze y silver), que corren en CI en cada PR.
+`03_meta_dq.sql` y `04_gold.sql` siguen como referencia y se borrarán al migrar sus capas.

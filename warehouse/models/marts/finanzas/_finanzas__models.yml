@@ -1,0 +1,131 @@
+version: 2
+models:
+- name: fct_factura
+  description: 'Línea de facturación ya limpia: solo las que pasan int_factura_linea_validada (integridad referencial y fechas resueltas), con total recalculado = cantidad * precio_unitario. No se modela moneda ni se convierte tipo de cambio: ~12% de las líneas de origen vienen marcadas USD y sus montos se usan tal cual (decisión de alcance; ver database/LEGACY_TABLES.md).'
+  columns:
+  - name: factura_key
+    data_tests:
+    - unique
+    - not_null
+  - name: date_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_fecha')
+          field: date_key
+  - name: cliente_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+  - name: producto_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_producto')
+          field: producto_key
+  - name: canal_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_canal')
+          field: canal_key
+  - name: factura_id
+    description: 'Llave natural de la factura (legacy: factura_id_origen).'
+    data_tests:
+    - unique
+    - not_null
+  - name: cantidad
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 1
+  - name: fecha_vencimiento
+    data_tests:
+    - not_null
+  - name: total
+    description: Recalculado; el capturado en origen se conserva en int_factura_linea_validada.total_capturado.
+    data_tests:
+    - not_null
+    - total_matches_lineas:
+        arguments:
+          cantidad_column: cantidad
+          precio_column: precio_unitario
+- name: fct_pago
+  description: Pagos aplicados a una factura (solo de facturas que pasaron la validación). El estatus se deriva de lo pagado vs. el total, no es una columna.
+  columns:
+  - name: pago_key
+    data_tests:
+    - unique
+    - not_null
+  - name: factura_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('fct_factura')
+          field: factura_key
+  - name: pago_id
+    data_tests:
+    - unique
+    - not_null
+  - name: monto_pagado
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0.01
+- name: fct_suscripcion_cargo
+  description: Cargo recurrente mensual por cliente con plan de servicio.
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - cliente_key
+        - mes_key
+  columns:
+  - name: cliente_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+  - name: mes_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_mes')
+          field: mes_key
+  - name: gasto_mensual_mxn
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0.01
+- name: fct_cliente_pago_segmento
+  description: 'Días promedio de pago (DSO) por cliente y su segmento de cobranza: hasta 20 días Puntual, hasta 70 Lento, más Moroso.'
+  columns:
+  - name: cliente_key
+    data_tests:
+    - unique
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+  - name: segmento_pago
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - Puntual
+          - Lento
+          - Moroso
+  - name: dso_promedio_dias
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0

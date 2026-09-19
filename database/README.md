@@ -19,12 +19,12 @@ patrón *medallion* (Databricks/dbt):
 ```
 
 Por ahora **solo se define estructura** (DDL) — sin `INSERT`, sin scripts de carga.
-Los `.sql` están en [`schema/`](schema/), en orden de dependencia:
+Los `.sql` están en [`schema/`](schema/), en orden de dependencia. **`01_bronze.sql` y
+`02_silver.sql` ya se migraron a dbt y se eliminaron** (siguen en el historial de git;
+ver [`LEGACY_TABLES.md`](LEGACY_TABLES.md)). Quedan:
 
 | Archivo | Contenido |
 |---|---|
-| [`01_bronze.sql`](schema/01_bronze.sql) | 21 tablas raw, una por sistema fuente (CRM, ventas, catálogo, facturación, soporte, marketing, encuestas, calendario) |
-| [`02_silver.sql`](schema/02_silver.sql) | Dimensiones conformadas + hechos operativos + features/salidas de modelo |
 | [`03_meta_dq.sql`](schema/03_meta_dq.sql) | Motor de reglas de calidad de datos, corre contra el maestro real de bronze |
 | [`04_gold.sql`](schema/04_gold.sql) | 19 vistas — los 13 datasets del portafolio, como consulta sobre silver |
 
@@ -50,7 +50,7 @@ No es derivable del código — es una decisión de diseño necesaria para que l
 encajen en un solo negocio: una PyME que vende producto físico por equipos comerciales,
 sucursales y e-commerce (proyectos 01, 05, 06, 07, 09, 10, 11), y que además tiene una
 cartera de clientes con plan de servicio recurrente mensual/anual con soporte y uso
-medible (proyecto 04, churn). Documentado en la cabecera de `01_bronze.sql`.
+medible (proyecto 04, churn). Antes documentado en la cabecera de `01_bronze.sql`, ya eliminado.
 
 ## Por qué bronze sigue siendo casi todo TEXT
 

@@ -6,6 +6,7 @@ cleaned as (
     select
         factura_id,
         {{ parse_messy_date('fecha', ['%Y-%m-%d', '%d/%m/%Y']) }} as fecha,
+        try_cast(nullif(trim(fecha_vencimiento), '') as date) as fecha_vencimiento,
         nullif(trim(cliente_id), '') as cliente_id,   -- puede no existir en stg_crm__cliente
         nullif(trim(sku), '') as sku,                 -- puede no existir en stg_erp__producto
         try_cast(cantidad as int) as cantidad,

@@ -10,6 +10,10 @@ cleaned as (
         nullif(trim(telefono), '') as telefono,
         trim(ciudad) as ciudad,
         trim(segmento) as segmento,
+        nullif(trim(region), '') as region,
+        nullif(trim(tipo_contrato), '') as tipo_contrato,
+        nullif(trim(plan), '') as plan,
+        nullif(trim(canal_adquisicion), '') as canal_adquisicion,
         -- fuente real: ISO y DD/MM/AAAA *y* MM/DD/AAAA mezclados en la misma
         -- columna (confirmado: hay filas con día > 12 en la 1a posición y
         -- filas donde solo puede ser mes en la 1a posición). Es una

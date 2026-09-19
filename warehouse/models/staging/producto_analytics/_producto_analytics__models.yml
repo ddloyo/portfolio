@@ -1,0 +1,8 @@
+version: 2
+models:
+- name: stg_producto_analytics__evento_actividad
+  description: Eventos de actividad, tipados.
+  columns:
+  - name: evento_id
+    data_tests:
+    - not_null
