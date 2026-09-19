@@ -1,0 +1,31 @@
+version: 2
+models:
+- name: rpt_funnel_semanal
+  description: Eventos del pipeline por semana y etapa (semanas completas; semana = índice consecutivo). Base del dashboard 02. Contrato = columnas y tipos de projects/02-funnel-fuga-ventas/data/funnel_semanal.csv.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: semana
+    data_type: bigint
+    data_tests:
+    - unique
+    - not_null
+  - name: leads
+    data_type: bigint
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+  - name: contactados
+    data_type: bigint
+  - name: calificados
+    data_type: bigint
+  - name: propuestas
+    data_type: bigint
+  - name: cierres
+    data_type: bigint
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0

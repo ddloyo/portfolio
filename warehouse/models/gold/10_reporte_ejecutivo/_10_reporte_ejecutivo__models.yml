@@ -1,0 +1,34 @@
+version: 2
+models:
+- name: rpt_transacciones_ejecutivo
+  description: Ingreso por mes x región x cliente x perfil x categoría x subcategoría (meses completos). Base del dashboard 10. Contrato = columnas y tipos de projects/10-reporte-ejecutivo-mensual/data/transacciones.csv.
+  config:
+    contract:
+      enforced: true
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - mes
+        - region
+        - cliente_id
+        - perfil
+        - categoria
+        - subcategoria
+  columns:
+  - name: mes
+    data_type: varchar
+  - name: region
+    data_type: varchar
+  - name: cliente_id
+    data_type: varchar
+  - name: perfil
+    data_type: varchar
+  - name: categoria
+    data_type: varchar
+  - name: subcategoria
+    data_type: varchar
+  - name: ingreso_mxn
+    data_type: double
+    data_tests:
+    - not_null

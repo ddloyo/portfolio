@@ -2,8 +2,9 @@
 
 **Decisión:** la única fuente de verdad ejecutable del warehouse es el proyecto
 dbt de [`warehouse/`](../warehouse/). Los archivos de `database/schema/*.sql`
-son el **diseño original en DDL**: quedan como referencia mientras se migra y
-se **borran cuando cada capa esté migrada y verificada** — no antes.
+son el **diseño original en DDL**: se conservaron como referencia mientras se migraba
+y se **borraron capa por capa, una vez migrada y verificada** — no antes. Ya no queda
+ninguno; siguen en el historial de git (ver la tabla).
 
 Este documento identifica qué es legacy, a qué se migró cada objeto y qué
 falta. La migración es **1:1**: cada tabla del DDL tiene su contraparte en
@@ -15,18 +16,18 @@ dbt, y el estado de cada una se puede comprobar (ver [Verificación](#verificaci
 |---|---|---|---|---|
 | `schema/01_bronze.sql` | 21 tablas | `warehouse/seeds/` + `sources` (`models/staging/*/_*__sources.yml`) | **Migrado, verificado y eliminado** | — (recuperable: `git show 2e221a8:database/schema/01_bronze.sql`) |
 | `schema/02_silver.sql` | 35 tablas | `marts/core` (dimensiones) y `marts/<dominio>` (hechos) | **Migrado, verificado y eliminado** | — (recuperable: `git show 2e221a8:database/schema/02_silver.sql`) |
-| `schema/03_meta_dq.sql` | 5 tablas | tests de dbt + `store_failures` / modelo sobre `run_results.json` | Pendiente | el motor de calidad exista en dbt |
-| `schema/04_gold.sql` | 19 vistas | `marts/*/rpt_*` | En curso (7 migradas, 12 pendientes) | las 19 estén migradas |
+| `schema/03_meta_dq.sql` | 5 tablas | `warehouse/models/meta/` | **Migrado, verificado y eliminado** | — (recuperable: `git show c712ad8:database/schema/03_meta_dq.sql`) |
+| `schema/04_gold.sql` | 19 vistas | `warehouse/models/gold/` | **Migrado, verificado y eliminado** | — (recuperable: `git show c712ad8:database/schema/04_gold.sql`) |
 
-Otros documentos que describen el diseño legacy y habrá que reescribir o retirar
-al final: `database/README.md`, `database/architecture.html` (y su artifact publicado).
+Con esto termina la migración. Otros documentos que describen el diseño legacy y
+habrá que reescribir o retirar: `database/README.md`, `database/architecture.html` (y su artifact publicado).
 
 | Capa | Migradas | Parciales | Pendientes | Total |
 |---|---|---|---|---|
 | Bronze | 21 | 0 | 0 | 21 |
 | Silver | 35 | 0 | 0 | 35 |
-| Meta | 0 | 0 | 5 | 5 |
-| Gold | 7 | 0 | 12 | 19 |
+| Meta | 5 | 0 | 0 | 5 |
+| Gold | 19 | 0 | 0 | 19 |
 
 ---
 
@@ -89,8 +90,8 @@ tenía codificadas y fallaba con cualquier otra).
 
 1. **Columnas de linaje** (`_source_system`, `_batch_id`, `_loaded_at`) no son
    columnas de los seeds. El linaje lo da dbt: el DAG, el `source` y
-   `meta.legacy_table`. `_batch_id` / `meta.batch_ingesta` se resuelve con la
-   capa meta (pendiente).
+   `meta.legacy_table`. `meta.batch_ingesta` se resuelve en la capa meta
+   (el `batch_id` es el `invocation_id` de dbt).
 2. **`pedido_linea.sucursal` no se migra.** El DDL la describía como "venta
    atendida por un vendedor/equipo", pero las sucursales son justamente el
    canal *no integrado* al sistema de ventas gestionado (`pedido_sucursal_*`),
@@ -235,42 +236,124 @@ El verificador (ya eliminado) las tenía codificadas y fallaba con cualquier otr
   nuevos en el mes y las altas de `projects/13` terminan en 2025-07-20. Además, 27
   clientes vienen sin `fecha_alta`.
 
-## Meta — 0 migradas · 5 pendientes
+## Meta — 5/5 migradas
 
-Hoy los tests de dbt hacen la validación (y son el equivalente de
-`dq_regla`), pero no se persisten resultados, scorecard ni plan de remediación.
+El motor de calidad del DDL corre ahora como modelos dbt. Cada `dbt run` es un
+batch (`batch_id` = `invocation_id` de dbt); las 33 reglas se declaran una sola vez
+en el macro `dq_reglas` y de él salen tanto el catálogo (`dq_regla`) como su
+evaluación (`dq_resultado_regla`), así que no pueden desalinearse.
 
-| Tabla legacy | Modelo dbt | Estado |
-|---|---|---|
-| `meta.batch_ingesta` | — | Pendiente (candidato: `invocation_id` de dbt) |
-| `meta.dq_regla` | — | Pendiente |
-| `meta.dq_resultado_regla` | — | Pendiente (candidato: `store_failures` / `run_results.json`) |
-| `meta.dq_scorecard_tabla` | — | Pendiente |
-| `meta.dq_plan_remediacion` | — | Pendiente |
-
-## Gold — 7 migradas · 12 pendientes
-
-| Vista legacy | Modelo dbt | Estado | Nota |
+| Tabla legacy | Modelo dbt | Materialización | Estado |
 |---|---|---|---|
-| `gold.rpt_01_ventas_diarias` | `marts.rpt_ventas_diarias` | Migrada | |
-| `gold.rpt_01_metas_mensuales` | — | Pendiente | |
-| `gold.rpt_02_funnel_semanal` | — | Pendiente | |
-| `gold.rpt_03_kpi_historico` | — | Pendiente | |
-| `gold.rpt_03_scorecard` | — | Pendiente | |
-| `gold.rpt_04_clientes` | `marts.rpt_clientes_churn` | Migrada | Ahora calculada desde bronze; 200 clientes con plan (antes 1,200 del seed) |
-| `gold.rpt_05_transacciones` | `marts.rpt_transacciones` | Migrada | |
-| `gold.rpt_06_precio_demanda` | `marts.rpt_precio_demanda` | Migrada | |
-| `gold.rpt_07_demanda_diaria` | `marts.rpt_demanda_diaria` | Migrada | |
-| `gold.rpt_07_inventario_actual` | — | Pendiente | |
-| `gold.rpt_08_facturas` | — | Pendiente | |
-| `gold.rpt_09_marketing_canales` | — | Pendiente | |
-| `gold.rpt_10_transacciones` | — | Pendiente | |
-| `gold.rpt_11_fuente_unica` | `marts.rpt_fuente_unica` | Migrada | |
-| `gold.rpt_11_revision_manual_monto_faltante` | `marts.rpt_revision_manual_monto_faltante` | Migrada | |
-| `gold.rpt_12_encuestas_nps` | — | Pendiente | |
-| `gold.rpt_13_plan_remediacion` | — | Pendiente | Depende de la capa meta |
-| `gold.rpt_13_reglas_validacion` | — | Pendiente | Depende de la capa meta |
-| `gold.rpt_13_scorecard_calidad_tablas` | — | Pendiente | Depende de la capa meta |
+| `meta.batch_ingesta` | `meta.batch_ingesta` | incremental (append) + hook `on-run-end` (`cerrar_batch`) que cierra el batch | Migrada |
+| `meta.dq_regla` | `meta.dq_regla` | tabla | Migrada |
+| `meta.dq_resultado_regla` | `meta.dq_resultado_regla` | incremental (append) | Migrada |
+| `meta.dq_scorecard_tabla` | `meta.dq_scorecard_tabla` | tabla | Migrada |
+| `meta.dq_plan_remediacion` | `meta.dq_plan_remediacion` | tabla | Migrada |
+
+### Divergencias deliberadas respecto al DDL (meta)
+
+1. **Llaves:** `batch_id` es el `invocation_id` de dbt (texto, no `UUID` generado por
+   la base); `regla_key` es un hash md5 de (tabla, campo, tipo, descripción), estable
+   entre corridas, en vez de `SERIAL`; el resto de las llaves son hashes deterministas.
+2. **Códigos en inglés** (`completeness`, `critical`/`high`/`medium`/`low`/`info`,
+   `good`/`warning`/`serious`/`critical`), como los usa `projects/13`, en vez de los
+   `completitud`/`critica`/`sano`/... del comentario del DDL. Las etiquetas (`*_label`)
+   sí están en español. Los umbrales de estado son los del proyecto: ≥90 `good`,
+   ≥75 `warning`, ≥60 `serious`, el resto `critical`.
+3. **Columna extra** en `dq_regla`: `tabla_reporte`, el nombre con el que `projects/13`
+   conoce cada tabla (`clientes`, `productos`, `calendario`, `facturas`).
+4. **Todas las reglas apuntan a bronze** (`schema_tabla = 'bronze'`): las 4 tablas que
+   audita el proyecto 13 son bronze; el DDL preveía también reglas sobre silver, pero no
+   hay ninguna definida.
+5. **`resuelto` nace en `false`**: el plan se regenera en cada batch; no hay flujo que lo marque.
+6. **Historia:** `batch_ingesta` y `dq_resultado_regla` acumulan una fila por corrida.
+   `dq_scorecard_tabla` y `dq_plan_remediacion` son tablas que se reconstruyen en cada
+   corrida solo con el batch actual: no guardan historia (el DDL sí la preveía). Por eso
+   se deben correr junto con `dq_resultado_regla` (un `dbt run` completo lo hace); si se corren
+   solos en una corrida nueva salen vacías. En un ambiente nuevo (CI) hay un solo batch.
+7. **`store_failures` / `run_results.json` no se usaron**: las reglas se evalúan con SQL
+   propio sobre bronze (varchar), que es exactamente lo que hace `projects/13`.
+
+**Verificación contra `projects/13`** (mismos datos crudos): las 33 reglas dan
+resultados idénticos (`n_filas`, `n_fallas`, `pct_fallas`, `impacto_pts`); los 4
+scorecards coinciden (calendario 98.1, clientes 69.2, facturas 68.1, productos 83.2);
+el plan tiene 33 filas idénticas, texto incluido. Lo único que difirió fue el redondeo
+(`round_even` = banker's rounding, el de Python, en vez del *half-up* de SQL).
+
+## Gold — 19/19 migradas
+
+**Criterio:** el reporte gold reproduce el CSV que lee el dashboard — mismas columnas,
+mismo orden, mismo tipo — no la vista legacy, que solo prometía reproducirlo "en
+estructura" y en al menos 3 casos no lo hacía (ver divergencia 2). Cada modelo lleva un contrato
+de dbt (`contract: enforced`) copiado del CSV.
+
+| Dashboard | Vista legacy | Modelo dbt (`gold.*`) | Nota |
+|---|---|---|---|
+| 01 | `rpt_01_ventas_diarias` | `rpt_ventas_diarias` | |
+| 01 | `rpt_01_metas_mensuales` | `rpt_metas_mensuales` | |
+| 02 | `rpt_02_funnel_semanal` | `rpt_funnel_semanal` | `semana` es un índice consecutivo; el legacy traía `anio` + `semana` |
+| 03 | `rpt_03_kpi_historico` | `rpt_kpi_historico` | KPIs derivados (ingresos, nuevos clientes, NPS) + captura manual |
+| 03 | `rpt_03_scorecard` | `rpt_scorecard` | Último mes completo de cada KPI contra su meta |
+| 04 | `rpt_04_clientes` | `rpt_clientes_churn` | 9 columnas, 200 clientes con plan (antes 1,200 del seed) |
+| 05 | `rpt_05_transacciones` | `rpt_transacciones` | |
+| 06 | `rpt_06_precio_demanda` | `rpt_precio_demanda` | `semana` es un índice consecutivo; solo semanas completas |
+| 07 | `rpt_07_demanda_diaria` | `rpt_demanda_diaria` | Serie continua por SKU, con ceros |
+| 07 | `rpt_07_inventario_actual` | `rpt_inventario_actual` | |
+| 08 | `rpt_08_facturas` | `rpt_facturas` | Solo `Pagada`/`Pendiente` (ver divergencia 2) |
+| 09 | `rpt_09_marketing_canales` | `rpt_marketing_canales` | Sobre `int_canal_mes_metricas` |
+| 10 | `rpt_10_transacciones` | `rpt_transacciones_ejecutivo` | Renombrado: chocaba con `rpt_05_transacciones` sin el prefijo numérico |
+| 11 | `rpt_11_fuente_unica` | `rpt_fuente_unica` | |
+| 11 | `rpt_11_revision_manual_monto_faltante` | `rpt_revision_manual_monto_faltante` | `monto_mxn` siempre `NULL` (la cola es de filas sin monto) |
+| 12 | `rpt_12_encuestas_nps` | `rpt_encuestas_nps` | |
+| 13 | `rpt_13_scorecard_calidad_tablas` | `rpt_scorecard_calidad_tablas` | Batch más reciente de `meta` |
+| 13 | `rpt_13_reglas_validacion` | `rpt_reglas_validacion` | Batch más reciente de `meta` |
+| 13 | `rpt_13_plan_remediacion` | `rpt_plan_remediacion` | Batch más reciente de `meta` |
+
+Los modelos viven en `models/gold/<NN_dashboard>/`, un directorio por dashboard.
+
+### Divergencias deliberadas respecto al DDL (gold)
+
+1. **Nombres:** sin el número de dashboard (`rpt_01_ventas_diarias` → `rpt_ventas_diarias`),
+   que ahora es el directorio; `rpt_10_transacciones` → `rpt_transacciones_ejecutivo`.
+2. **El legacy no coincidía con el CSV en al menos 3 vistas y gold sigue al CSV** (no se pudieron comparar las vistas con CTE): `rpt_02`
+   y `rpt_06` traían `anio` + `semana` (el CSV, un índice `semana`); `rpt_08` calculaba un
+   tercer estatus `Vencida` que el CSV no tiene y que el dashboard no entiende (lo que
+   está vencido lo deduce él con `fecha_vencimiento`). *Este último es un defecto que
+   la prueba de extremo a extremo detectó en la primera versión de gold.*
+3. **Solo periodos completos** en los reportes que comparan semana con semana o mes
+   con mes (02, 03, 06, 09, 10, 12): un periodo a medias parecería una caída. El corte
+   es `fecha_referencia`.
+4. **`rpt_transacciones_ejecutivo.perfil` es el segmento comercial** del cliente
+   (Básico / Estándar / Premium). En el proyecto 10 era un perfil de comportamiento de
+   compra que este warehouse no calcula.
+5. **`rpt_demanda_diaria` completa los días sin venta con 0** (65,625 filas; antes 16,818
+   solo con días con venta), como espera el forecast.
+6. **`rpt_clientes_churn` se reduce a las 9 columnas del CSV** (`rpt_04_clientes`); el score
+   y el cuadrante siguen en `fct_cliente_churn_score`.
+7. **`rpt_facturas`:** 177 de 2,804 facturas tienen pagos por menos de su total
+   recalculado (el total capturado traía un descuento manual) y salen `Pendiente`.
+8. **Cambios en reportes que ya existían**, el resto quedó idéntico (mismas filas y
+   totales): `rpt_precio_demanda` 7,365 → 7,287 filas (solo semanas completas),
+   `rpt_demanda_diaria` 16,818 → 65,625 (ceros), `rpt_clientes_churn` pierde columnas.
+   `fct_canal_roi` se refactorizó sobre `int_canal_mes_metricas` y da exactamente las
+   mismas 25 filas (diferencia de conjuntos vacía en ambos sentidos).
+
+### Cobertura de dashboards
+
+`warehouse/scripts/verify_dashboard_coverage.py` comprueba, por cada CSV de
+`projects/*/data/` que alimenta o produce un dashboard, que existe su reporte gold con
+las mismas columnas, orden y tipo, con filas y con el contrato forzado. Corre en CI.
+Resultado: **13 dashboards, 19 datasets, 0 fallas**. Con `--e2e` además construye cada
+dashboard con los datos de gold en un directorio temporal:
+
+- Se construyen: 01, 02, 03, 04, 05, 06, 09 y 12.
+- 11 y 13: su CSV es la *salida* del análisis (la entrada son exports crudos), solo se compara la forma.
+- **No se construyen: 07, 08 y 10**, por supuestos fijos de su `run_analysis.py`, no por el
+  reporte: 07 tiene una paleta para exactamente 5 categorías (el catálogo tiene 8); 08 fija
+  `TODAY = 2026-08-31` y narra 8 clientes (las facturas del warehouse terminan en 2025-12);
+  10 fija cuatro categorías (`Línea Premium`...) que el catálogo no usa. Arreglarlo es
+  cambiar esos scripts o alinear el catálogo: decisión pendiente.
 
 ---
 
@@ -297,6 +380,17 @@ y PK duplicadas) y fallaron como debían. Los marts que ya existían se comparar
 después de cada fase: en bronze, 14 consultas idénticas; en silver, solo las diferencias
 de "Divergencias deliberadas" (6 y 7) y el reemplazo de `rpt_clientes_churn`.
 
+**Meta** (5 tablas, 5/5): mismas columnas y orden que el DDL (más `tabla_reporte`);
+PK con `unique`/`not_null`, FK (`batch_id`, `regla_key`) con `relationships`, valores
+aceptados y rangos como tests; y salidas idénticas a `projects/13` (arriba).
+
+**Gold** (19 vistas, 19/19): el script de cobertura (arriba), probado en negativo
+(columna renombrada, tipo cambiado, tabla ausente: falló las tres veces), más la
+comparación de `fct_canal_roi` antes y después de su refactor y de los totales de
+los reportes que ya existían.
+
 **Hacia adelante**, la integridad la protegen los propios tests de dbt (llaves, integridad
 referencial y valores aceptados de bronze y silver), que corren en CI en cada PR.
-`03_meta_dq.sql` y `04_gold.sql` siguen como referencia y se borrarán al migrar sus capas.
+Meta y gold se verificaron con la comparación descrita arriba (no hay script que
+conservar: la de meta fue un chequeo puntual de columnas y tests; la de gold es
+`warehouse/scripts/verify_dashboard_coverage.py`, que se queda y corre en CI).

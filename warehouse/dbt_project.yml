@@ -37,3 +37,15 @@ models:
     marts:
       +materialized: table
       +schema: marts
+    # Motor de calidad de datos: cada corrida agrega un batch (modelos incrementales)
+    meta:
+      +materialized: table
+      +schema: meta
+    # Un reporte por dashboard, con contrato enforced = las columnas y tipos que
+    # espera el run_analysis.py del proyecto correspondiente
+    gold:
+      +materialized: table
+      +schema: gold
+
+on-run-end:
+  - "{{ cerrar_batch(results) }}"

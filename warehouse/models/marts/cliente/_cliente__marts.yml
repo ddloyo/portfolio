@@ -158,19 +158,3 @@ models:
         arguments:
           min_value: 0
           max_value: 100
-- name: rpt_clientes_churn
-  description: Feature set de churn + percentil de riesgo (proxy) + cuadrante riesgo x valor. Se calcula desde bronze (fct_cliente_features_churn + fct_cliente_churn_score).
-  columns:
-  - name: cliente_id
-    data_tests:
-    - unique
-    - not_null
-  - name: cuadrante_accion
-    data_tests:
-    - accepted_values:
-        arguments:
-          values:
-          - Alto riesgo / alto valor
-          - Alto riesgo / bajo valor
-          - Bajo riesgo / alto valor
-          - Bajo riesgo / bajo valor

@@ -1,0 +1,150 @@
+version: 2
+
+models:
+  - name: batch_ingesta
+    description: >
+      Una fila por corrida de dbt (batch_id = invocation_id). El hook on-run-end
+      completa finalizado_en y estatus. Incremental: conserva el historial de corridas.
+    columns:
+      - name: batch_id
+        data_tests: [unique, not_null]
+      - name: iniciado_en
+        data_tests: [not_null]
+      - name: estatus
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['en_progreso', 'ok', 'fallido']
+
+  - name: dq_regla
+    description: >
+      Catálogo de las 33 reglas de calidad de datos (las de projects/13), evaluadas sobre
+      bronze. Sale del mismo macro (dq_reglas) que calcula sus resultados. tabla_reporte
+      es el nombre que projects/13 usa para cada tabla (clientes, productos, calendario, facturas).
+    columns:
+      - name: regla_key
+        data_tests: [unique, not_null]
+      - name: schema_tabla
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['bronze', 'silver']
+      - name: tabla
+        data_tests: [not_null]
+      - name: campo
+        data_tests: [not_null]
+      - name: tipo
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['completeness', 'uniqueness', 'validity', 'integrity', 'consistency', 'orphan_field']
+      - name: severidad
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['critical', 'high', 'medium', 'low', 'info']
+      - name: peso_max_pts
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 65
+
+  - name: dq_resultado_regla
+    description: >
+      Resultado de aplicar cada regla en cada corrida (batch). Incremental: serie histórica.
+      pct_fallas = n_fallas / n_filas * 100; impacto_pts = peso de la severidad * n_fallas / n_filas.
+    columns:
+      - name: resultado_key
+        data_tests: [unique, not_null]
+      - name: regla_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dq_regla')
+                field: regla_key
+      - name: batch_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('batch_ingesta')
+                field: batch_id
+      - name: n_fallas
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: pct_fallas
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: impacto_pts
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 65
+
+  - name: dq_scorecard_tabla
+    description: >
+      Score 0-100 por tabla auditada y por corrida (100 - suma del impacto de sus reglas).
+      status: >= 90 Sano, >= 75 Atención, >= 60 En riesgo, resto Crítico.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [batch_id, schema_tabla, tabla]
+    columns:
+      - name: scorecard_key
+        data_tests: [unique, not_null]
+      - name: batch_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('batch_ingesta')
+                field: batch_id
+      - name: score
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['good', 'warning', 'serious', 'critical']
+
+  - name: dq_plan_remediacion
+    description: >
+      Plan de remediación por corrida: hallazgos reales por impacto descendente y, al final,
+      los campos huérfanos (limpieza de esquema). resuelto nace en false.
+    columns:
+      - name: plan_key
+        data_tests: [unique, not_null]
+      - name: batch_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('batch_ingesta')
+                field: batch_id
+      - name: regla_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dq_regla')
+                field: regla_key
+      - name: prioridad
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+      - name: resuelto
+        data_tests: [not_null]

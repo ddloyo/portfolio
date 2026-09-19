@@ -47,11 +47,3 @@ models:
   - name: motivo
     data_tests:
     - not_null
-- name: rpt_fuente_unica
-  description: Ventas de las 3 sucursales, unidas y sin duplicados — el "único número correcto".
-  columns:
-  - name: monto_mxn
-    data_tests:
-    - not_null
-- name: rpt_revision_manual_monto_faltante
-  description: Cola de revisión manual — filas de sucursal sin monto. Nunca se les inventa un valor.
