@@ -1,0 +1,8 @@
+version: 2
+models:
+- name: stg_encuestas__encuesta_nps
+  description: Respuestas NPS, tipadas.
+  columns:
+  - name: respuesta_id
+    data_tests:
+    - not_null

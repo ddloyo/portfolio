@@ -1,0 +1,79 @@
+version: 2
+models:
+- name: fct_marketing_gasto
+  description: Gasto diario de pauta por canal con inversión.
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - canal_key
+        - date_key
+  columns:
+  - name: canal_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_canal')
+          field: canal_key
+  - name: date_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_fecha')
+          field: date_key
+  - name: gasto_mxn
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+- name: fct_canal_roi
+  description: CAC, LTV y ROI por canal x mes. Solo hay fila cuando el canal tuvo gasto y clientes nuevos en el mes (sin altas el CAC no está definido).
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - canal_key
+        - mes_key
+  columns:
+  - name: canal_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_canal')
+          field: canal_key
+  - name: mes_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_mes')
+          field: mes_key
+  - name: cac
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+  - name: ltv
+    data_tests:
+    - not_null
+  - name: ratio_ltv_cac
+    data_tests:
+    - not_null
+  - name: payback_meses
+    data_tests:
+    - not_null
+  - name: cuadrante
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - 'Estrella: mantener'
+          - Replantear
+          - Escalar
+          - Monitorear

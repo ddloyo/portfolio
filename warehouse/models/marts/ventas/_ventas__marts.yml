@@ -1,35 +1,207 @@
 version: 2
-
 models:
-  - name: fct_pedidos
-    description: >
-      Hecho central del warehouse — 1 fila por SKU vendido en el canal
-      gestionado. Incremental por fecha. Seis marts distintos (de los cuales
-      4 viven en este proyecto) se agregan sobre esta misma tabla.
-    columns:
-      - name: pedido_linea_key
-        data_tests:
-          - unique
-          - not_null
-      - name: linea_id
-        data_tests:
-          - unique
-          - not_null
-      - name: importe_neto
-        data_tests:
-          - not_null
-          - dbt_utils.accepted_range:
-              arguments:
-                min_value: 0
-
-  - name: rpt_ventas_diarias
-    description: "{{ doc('un_hecho_seis_reportes') }}"
-
-  - name: rpt_transacciones
-    description: fct_pedidos agregado por cliente x día — reproduce projects/05.
-
-  - name: rpt_precio_demanda
-    description: fct_pedidos agregado por producto x semana — reproduce projects/06.
-
-  - name: rpt_demanda_diaria
-    description: fct_pedidos agregado por SKU x día — reproduce projects/07.
+- name: fct_pedido
+  description: 'Hecho central del warehouse: 1 fila por SKU vendido en el canal gestionado. Incremental por fecha. Varios marts (4 en este proyecto) se agregan sobre esta misma tabla.'
+  columns:
+  - name: linea_key
+    data_tests:
+    - unique
+    - not_null
+  - name: date_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_fecha')
+          field: date_key
+  - name: cliente_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+  - name: producto_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_producto')
+          field: producto_key
+  - name: vendedor_key
+    description: NULL en autoservicio (e-commerce, marketplace).
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_vendedor')
+          field: vendedor_key
+  - name: canal_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_canal')
+          field: canal_key
+  - name: linea_id
+    description: Llave natural de la línea.
+    data_tests:
+    - unique
+    - not_null
+  - name: cantidad
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 1
+  - name: importe_neto
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+- name: fct_meta_venta
+  description: Meta mensual vigente por equipo (insumo de planeación).
+  columns:
+  - name: equipo_key
+    data_tests:
+    - unique
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_equipo')
+          field: equipo_key
+  - name: meta_mensual_mxn
+    data_tests:
+    - not_null
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0.01
+- name: fct_oportunidad_evento
+  description: 'Bitácora del pipeline comercial: 1 fila por cambio de etapa de una oportunidad.'
+  columns:
+  - name: evento_key
+    data_tests:
+    - unique
+    - not_null
+  - name: date_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_fecha')
+          field: date_key
+  - name: vendedor_key
+    data_tests:
+    - relationships:
+        arguments:
+          to: ref('dim_vendedor')
+          field: vendedor_key
+  - name: etapa
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - lead
+          - contactado
+          - calificado
+          - propuesta
+          - cierre
+- name: fct_cliente_rfm_score
+  description: Recencia, frecuencia y monto de los últimos 12 meses por cliente y su segmento (cuadrante recencia x valor, medianas). Solo clientes con pedidos en la ventana.
+  columns:
+  - name: cliente_key
+    data_tests:
+    - unique
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_cliente')
+          field: cliente_key
+  - name: recencia_dias
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+  - name: frecuencia
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 1
+  - name: percentil_valor
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+          max_value: 100
+  - name: segmento_rfm
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - Campeones
+          - En riesgo
+          - Nuevos
+          - Hibernando
+- name: fct_producto_elasticidad
+  description: Elasticidad precio-demanda por producto (regresión log-log semanal, mínimo 10 semanas) e impacto proyectado de +10% de precio.
+  columns:
+  - name: producto_key
+    data_tests:
+    - unique
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_producto')
+          field: producto_key
+  - name: r2
+    data_tests:
+    - dbt_utils.accepted_range:
+        arguments:
+          min_value: 0
+          max_value: 1
+  - name: accion_recomendada
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - Evitar subir precio
+          - Validar antes de mover precio
+          - Subir precio
+          - Recolectar más datos
+- name: fct_subcategoria_tendencia
+  description: Tendencia y anomalías del ingreso por categoría x subcategoría x mes (excluye el mes en curso). segmento es NULL con menos de 4 meses de historia.
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - categoria
+        - subcategoria
+        - mes_key
+  columns:
+  - name: categoria
+    data_tests:
+    - not_null
+  - name: subcategoria
+    data_tests:
+    - not_null
+  - name: mes_key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_mes')
+          field: mes_key
+  - name: segmento
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - Motor de crecimiento
+          - En riesgo
+          - Alerta puntual
+          - Estable
+- name: rpt_ventas_diarias
+  description: '{{ doc(''un_hecho_seis_reportes'') }}'
+- name: rpt_transacciones
+  description: fct_pedido agregado por cliente x día — reproduce projects/05.
+- name: rpt_precio_demanda
+  description: fct_pedido agregado por producto x semana — reproduce projects/06.
+- name: rpt_demanda_diaria
+  description: fct_pedido agregado por SKU x día — reproduce projects/07.

@@ -6,7 +6,8 @@ cleaned as (
     select
         sku,
         trim(nombre_producto) as nombre_producto,
-        trim(categoria) as categoria,
+        nullif(trim(categoria), '') as categoria,
+        nullif(trim(subcategoria), '') as subcategoria,
         {{ cast_messy_amount('precio_unitario') }} as precio_unitario,
         {{ cast_messy_amount('costo_unitario') }} as costo_unitario,
         trim(unidad_medida) as unidad_medida,

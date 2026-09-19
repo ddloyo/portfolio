@@ -28,5 +28,6 @@ select
     sucursal,
     monto_mxn,
     fuente,
+    rn,
     (rn > 1) as es_duplicado_descartado
 from marcado

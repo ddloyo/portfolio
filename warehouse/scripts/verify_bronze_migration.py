@@ -48,7 +48,7 @@ FIDELIDAD = {
     "producto": (P13 / "productos.csv", "AUMENTADA"),
     "factura_linea": (P13 / "facturas.csv", "AUMENTADA"),
 }
-EXTRAS_PERMITIDOS = {"clientes_churn"}  # seed de dbt sin tabla legacy (ver LEGACY_TABLES.md)
+EXTRAS_PERMITIDOS = {"kpi_meta"}  # seed de dbt sin tabla legacy (ver LEGACY_TABLES.md)
 
 
 def tablas_legacy():

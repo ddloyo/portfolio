@@ -13,6 +13,7 @@ cleaned as (
             -- DuckDB no trae initcap(); Store siempre es una sola palabra
             else upper(substr(trim(Store), 1, 1)) || lower(substr(trim(Store), 2))
         end as sucursal,
+        Store as sucursal_raw,
         {{ cast_messy_amount('Amount_MXN') }} as monto_mxn,
         'pedido_sucursal_guadalajara.csv' as fuente
     from source

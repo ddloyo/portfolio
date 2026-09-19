@@ -11,6 +11,9 @@ Migración 1:1 de database/schema/01_bronze.sql (21 tablas). De esas:
     suscripción, soporte, actividad, cancelaciones, marketing, NPS, KPIs
     manuales, inventario, pedido_linea).
 
+Además genera scorecard/kpi_meta.csv, que NO está en el DDL de bronze (ver
+database/LEGACY_TABLES.md).
+
 Reproducible: cada tabla tiene su propio generador aleatorio derivado de un
 texto fijo (no de un único stream compartido), así que cambiar una tabla no
 mueve los datos de las demás. Solo usa la librería estándar.
@@ -413,6 +416,14 @@ def gen_kpi_manual():
               ["kpi", "area", "responsable", "mes", "resultado", "unidad", "menor_es_mejor"], rows)
 
 
+def gen_kpi_meta():
+    """Metas de planeación por KPI (insumo, no cálculo). No existía en el DDL de
+    bronze: cierra el hueco de silver.fact_kpi_meta. Valores ilustrativos."""
+    metas = [("Ingresos mensuales", "2000000"), ("Nuevos clientes", "10"), ("NPS", "40"),
+             ("Satisfacción del equipo (eNPS)", "35"), ("SLA de soporte", "95"), ("Rotación de personal", "2.0")]
+    write_csv(SEEDS / "scorecard" / "kpi_meta.csv", ["kpi", "meta"], [{"kpi": k, "meta": m} for k, m in metas])
+
+
 def gen_inventario_snapshot(productos_rows):
     skus = [s for s in OrderedDict.fromkeys(r["sku"] for r in productos_rows) if s]
     fechas = [FECHA_FIN - timedelta(days=7 * i) for i in (3, 2, 1, 0)]
@@ -441,6 +452,7 @@ def main():
     gen_marketing_gasto()
     gen_encuesta_nps(clientes)
     gen_kpi_manual()
+    gen_kpi_meta()
     gen_inventario_snapshot(productos)
     print("Bronze: pedido_linea")
     from generate_pedido_linea import generar
