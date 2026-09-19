@@ -1,6 +1,7 @@
 """Genera los seeds de bronze que no existen tal cual en projects/*/data/.
 
-Migración 1:1 de database/schema/01_bronze.sql (21 tablas). De esas:
+Migración 1:1 del DDL original de bronze (21 tablas; el archivo ya se eliminó,
+ver database/LEGACY_TABLES.md). De esas:
   - 4 se reusan sin tocar de projects/11 y projects/13 (calendario y las 3
     sucursales): ya están en seeds/, movidas y renombradas.
   - 3 se AUMENTAN a partir de projects/13 (crm_cliente, producto,

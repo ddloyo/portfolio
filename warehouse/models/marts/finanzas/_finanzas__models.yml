@@ -1,7 +1,7 @@
 version: 2
 models:
 - name: fct_factura
-  description: 'Línea de facturación ya limpia: solo las que pasan int_factura_linea_validada (integridad referencial y fechas resueltas), con total recalculado = cantidad * precio_unitario.'
+  description: 'Línea de facturación ya limpia: solo las que pasan int_factura_linea_validada (integridad referencial y fechas resueltas), con total recalculado = cantidad * precio_unitario. No se modela moneda ni se convierte tipo de cambio: ~12% de las líneas de origen vienen marcadas USD y sus montos se usan tal cual (decisión de alcance; ver database/LEGACY_TABLES.md).'
   columns:
   - name: factura_key
     data_tests:

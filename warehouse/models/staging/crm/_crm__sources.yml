@@ -6,7 +6,7 @@ sources:
     description: >
       CRM — gestión de clientes, equipo comercial, metas, oportunidades y
       cancelaciones. Migración 1:1 de las tablas `bronze.crm_*` y
-      `bronze.cancelacion` de `database/schema/01_bronze.sql`
+      `bronze.cancelacion` del DDL original de bronze (ya eliminado, ver `database/LEGACY_TABLES.md`)
       (`_source_system` original: `crm`).
     tables:
       - name: crm_cliente

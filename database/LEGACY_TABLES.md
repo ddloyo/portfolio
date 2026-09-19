@@ -13,8 +13,8 @@ dbt, y el estado de cada una se puede comprobar (ver [Verificación](#verificaci
 
 | Archivo | Objetos | Contraparte en dbt | Estado | Se borra cuando… |
 |---|---|---|---|---|
-| `schema/01_bronze.sql` | 21 tablas | `warehouse/seeds/` + `sources` (`models/staging/*/_*__sources.yml`) | **Migrado y verificado** | se apruebe esta fase (junto con `warehouse/scripts/verify_bronze_migration.py`, que depende de él) |
-| `schema/02_silver.sql` | 35 tablas | `marts/core` (dimensiones) y `marts/<dominio>` (hechos) | **Migrado y verificado** | se apruebe esta fase (junto con `warehouse/scripts/verify_silver_migration.py`, que depende de él) |
+| `schema/01_bronze.sql` | 21 tablas | `warehouse/seeds/` + `sources` (`models/staging/*/_*__sources.yml`) | **Migrado, verificado y eliminado** | — (recuperable: `git show 2e221a8:database/schema/01_bronze.sql`) |
+| `schema/02_silver.sql` | 35 tablas | `marts/core` (dimensiones) y `marts/<dominio>` (hechos) | **Migrado, verificado y eliminado** | — (recuperable: `git show 2e221a8:database/schema/02_silver.sql`) |
 | `schema/03_meta_dq.sql` | 5 tablas | tests de dbt + `store_failures` / modelo sobre `run_results.json` | Pendiente | el motor de calidad exista en dbt |
 | `schema/04_gold.sql` | 19 vistas | `marts/*/rpt_*` | En curso (7 migradas, 12 pendientes) | las 19 estén migradas |
 
@@ -84,8 +84,8 @@ original no tenía; *generada*: dato sintético nuevo, reproducible
 
 ### Divergencias deliberadas respecto al DDL
 
-Todo lo que no es 1:1 está aquí; el script de verificación las tiene
-codificadas y falla si aparece cualquier otra.
+Todo lo que no es 1:1 está aquí (el script de verificación, ya eliminado, las
+tenía codificadas y fallaba con cualquier otra).
 
 1. **Columnas de linaje** (`_source_system`, `_batch_id`, `_loaded_at`) no son
    columnas de los seeds. El linaje lo da dbt: el DAG, el `source` y
@@ -129,8 +129,7 @@ bronze en `fct_cliente_features_churn` (ver Silver).
 
 Cada tabla `silver.<t>` es ahora un modelo dbt: dimensiones en `marts/core`,
 hechos en `marts/<dominio>` (regla de nombre: `fact_X` → `fct_X`). Se verifica
-contra el DDL con `warehouse/scripts/verify_silver_migration.py` (ver
-[Verificación](#verificación)).
+contra el DDL con un script que ya se eliminó (ver [Verificación](#verificación)).
 
 | Tabla legacy | Modelo dbt | Nota |
 |---|---|---|
@@ -172,7 +171,7 @@ contra el DDL con `warehouse/scripts/verify_silver_migration.py` (ver
 
 ### Divergencias deliberadas respecto al DDL (silver)
 
-El verificador las tiene codificadas; cualquier otra falla.
+El verificador (ya eliminado) las tenía codificadas y fallaba con cualquier otra.
 
 1. **Nombres:** `fact_X` → `fct_X`; `venta_sucursal_pendiente_revision` →
    `fct_venta_sucursal_pendiente_revision`. Columnas: `cliente_id_origen` →
@@ -207,7 +206,7 @@ El verificador las tiene codificadas; cualquier otra falla.
 9. **`fecha_referencia`** (variable de dbt, `2026-09-18`) es la "fecha de hoy" de los
    hechos enriquecidos, para que las corridas sean reproducibles.
 
-### Hallazgos abiertos (requieren decisión o tener presente)
+### Hallazgos y decisiones (a tener presente)
 
 - **El modelo de churn anterior tenía la orientación invertida.** La heurística que
   se mergeó en el PR de bronze (`int_cliente_riesgo_churn`) daba *menor* riesgo a
@@ -222,9 +221,13 @@ El verificador las tiene codificadas; cualquier otra falla.
   `fecha_invalida` 258, `sku_inexistente` 97, `factura_duplicada` 95,
   `cantidad_o_precio_invalido` 75. Es el hallazgo de calidad de `projects/13`, ahora
   aplicado. ¿Hay que recuperar alguno (p.ej. reparar fechas) en vez de rechazarlo?
-- **Moneda:** 421 líneas (12%) vienen marcadas USD, 338 de ellas válidas, y no hay tipo
-  de cambio. Silver no modela moneda (igual que el DDL) y usa los montos tal como
-  están capturados. **Decisión pendiente:** convertir, excluir o ignorar.
+- **Moneda — decisión: no se harán conversiones de tipo de cambio.** 421 líneas de
+  factura (12%; 338 de ellas válidas) vienen marcadas USD y no hay tipo de cambio.
+  Silver no modela moneda (igual que el DDL original) y usa los montos tal como están
+  capturados; los totales de facturación y cartera mezclan, por tanto, líneas marcadas
+  MXN y USD sin convertir. Se acordó dejarlo así: se puede resolver más adelante y no es
+  prioridad del proyecto. Cuando se aborde, el punto de partida es
+  `int_factura_linea_validada` (que conserva `moneda` vía `stg_erp__factura_linea`).
 - **Elasticidad ≈ 0 con R² ≈ 0.** No es un error: en los datos sintéticos el precio
   varía al azar, sin relación con la demanda, así que no hay elasticidad que encontrar.
   El cálculo (regresión log-log real) sí es correcto.
@@ -273,31 +276,27 @@ Hoy los tests de dbt hacen la validación (y son el equivalente de
 
 ## Verificación
 
-Bronze y silver se verifican automáticamente contra el DDL legacy:
+Bronze y silver se verificaron automáticamente contra su DDL legacy **antes de
+eliminarlo**, con dos scripts temporales (`verify_bronze_migration.py`,
+`verify_silver_migration.py`) que se eliminaron junto con los `.sql` que leían.
+Quedan en el commit `91e1f91` de la rama `feat/silver`, visible en su PR aunque el
+merge sea *squash* (los `.sql` legacy, en cambio, siguen en `main`: commit `2e221a8`).
 
-```bash
-cd warehouse && source .venv/bin/activate && export DBT_PROFILES_DIR=profiles
-dbt seed
-python3 scripts/verify_bronze_migration.py     # 21 tablas
-dbt run && dbt test                             # genera target/manifest.json
-python3 scripts/verify_silver_migration.py     # 35 tablas
-```
+**Bronze** (21 tablas, 21/21): que existiera el seed, que las columnas coincidieran con
+el DDL (menos linaje y las exclusiones documentadas), que estuviera declarada como
+`source` con `meta.legacy_table`, que hubiera cargado en DuckDB con las mismas columnas
+y filas, y que los datos de `projects/` estuvieran intactos.
 
-**Bronze** (por cada una de las 21 tablas): que exista el seed, que las columnas
-coincidan con el DDL (menos linaje y las exclusiones documentadas), que esté
-declarada como `source` con `meta.legacy_table`, que haya cargado en DuckDB con las
-mismas columnas y filas, que los datos de `projects/` estén intactos y que aparezca
-en este documento. Falla también si hay un seed sin tabla legacy no documentado.
+**Silver** (35 tablas, 35/35): que existiera el modelo con todas las columnas del DDL
+(con los renombres documentados) y filas; que su PK tuviera test `unique`/`not_null` **y**
+fuera única en los datos; que cada FK tuviera su test `relationships` **y** no tuviera
+huérfanos en los datos.
 
-**Silver** (por cada una de las 35 tablas): que exista el modelo y tenga todas las
-columnas del DDL (con los renombres documentados) y filas; que su PK tenga test
-`unique`/`not_null` **y** sea única en los datos; que cada FK tenga su test
-`relationships` **y** no tenga huérfanos en los datos; y que aparezca en este documento.
+Ambos se probaron en negativo (corrompiendo datos, quitando columnas, creando huérfanos
+y PK duplicadas) y fallaron como debían. Los marts que ya existían se compararon antes y
+después de cada fase: en bronze, 14 consultas idénticas; en silver, solo las diferencias
+de "Divergencias deliberadas" (6 y 7) y el reemplazo de `rpt_clientes_churn`.
 
-Ambos scripts se probaron en negativo (corrompiendo datos, quitando columnas,
-creando huérfanos y PK duplicadas) y fallan como deben. Los dos corren en CI en
-cada PR.
-
-Los marts que ya existían se compararon antes y después de cada fase. Bronze: 14
-consultas idénticas. Silver: las diferencias son solo las de "Divergencias
-deliberadas" (6 y 7) y el reemplazo de `rpt_clientes_churn`.
+**Hacia adelante**, la integridad la protegen los propios tests de dbt (llaves, integridad
+referencial y valores aceptados de bronze y silver), que corren en CI en cada PR.
+`03_meta_dq.sql` y `04_gold.sql` siguen como referencia y se borrarán al migrar sus capas.

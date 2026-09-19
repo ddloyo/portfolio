@@ -1,5 +1,5 @@
 {#
-  Bronze aterriza TODO como TEXT (así lo definía 01_bronze.sql): la zona de
+  Bronze aterriza TODO como TEXT (así lo definía el DDL original de bronze): la zona de
   aterrizaje no debe fallar ni interpretar nada, sin importar qué tan sucia
   venga la fuente. Por defecto dbt infiere el tipo de cada columna del seed
   y DuckDB truena si una fila tardía no calza con lo que infirió de las

@@ -9,9 +9,11 @@
 --
 -- El total NO es motivo de rechazo: se recalcula (cantidad * precio_unitario)
 -- y se conserva el capturado en total_capturado para poder auditarlo. Tampoco
--- lo es la moneda: silver no la modela (una sola moneda en el diseño legacy) y
--- ~12% de las líneas vienen marcadas USD sin tipo de cambio — se usan los
--- montos tal como están capturados. Ver database/LEGACY_TABLES.md.
+-- lo es la moneda: ~12% de las líneas vienen marcadas USD y NO se hace conversión
+-- de tipo de cambio (decisión de alcance: se puede resolver después, no es
+-- prioridad del proyecto). Silver no modela moneda y usa los montos tal como están
+-- capturados, así que los totales mezclan líneas MXN y USD. Ver
+-- database/LEGACY_TABLES.md.
 --
 -- Valida contra staging/intermediate y no contra las dimensiones, para que
 -- intermediate no dependa de marts.

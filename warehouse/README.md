@@ -10,7 +10,7 @@ runner gratuito de GitHub Actions.
 `database/schema/` son el diseño original en DDL y se están migrando aquí capa
 por capa; el estado de cada tabla está en
 [`database/LEGACY_TABLES.md`](../database/LEGACY_TABLES.md). **Bronze (21/21) y
-silver (35/35) ya están migrados 1:1 y verificados**; meta y gold están en curso.
+silver (35/35) ya están migrados 1:1, verificados y sus `.sql` legacy eliminados**; meta y gold están en curso.
 
 ## Bronze: 21 seeds, uno por tabla del DDL
 
@@ -61,8 +61,6 @@ dbt run           # staging -> intermediate -> marts (69 modelos)
 dbt test          # 326 tests (sources, llaves, integridad, genéricos, custom y singulares)
 dbt docs generate && dbt docs serve   # catálogo + lineage DAG en localhost
 
-python3 scripts/verify_bronze_migration.py   # bronze 1:1 contra el DDL legacy (21 tablas)
-python3 scripts/verify_silver_migration.py   # silver 1:1 contra el DDL legacy (35 tablas); requiere `dbt test` antes
 ```
 
 **Importante: `dbt seed` va aparte de `dbt run`/`dbt test`, no dentro de un
@@ -102,7 +100,6 @@ warehouse/
 │       └── sucursales/  ventas de sucursal, cola de revisión + 2 rpt_*
 ├── macros/              9 macros Jinja reutilizables (ver abajo)
 ├── tests/               5 tests singulares + 1 test genérico custom
-├── scripts/             verify_{bronze,silver}_migration.py (temporales: se borran con los archivos legacy)
 └── snapshots/, analyses/  (vacíos por ahora)
 ```
 
@@ -123,7 +120,7 @@ warehouse/
 | **Jinja** | `{% for %}` sobre la lista de formatos de fecha, `{% if is_incremental() %}`, `ref()`/`source()` en todo, `{{ var(...) }}` |
 | **SQL** | CTEs en cascada, `ROW_NUMBER()`/`QUALIFY`, `PERCENT_RANK()`, ventanas móviles, regresión nativa (`regr_slope`/`regr_r2`), agregaciones con `FILTER` |
 | **Git** | rama por feature → PR → CI en verde → merge a main |
-| **CI/CD** | `dbt_ci.yml`: seed → verificación 1:1 de bronze → run → test → verificación 1:1 de silver en cada PR, DuckDB efímero, sin credenciales. `dbt_docs.yml`: genera el sitio de docs como artifact en cada push a main |
+| **CI/CD** | `dbt_ci.yml`: seed → run → test en cada PR, DuckDB efímero, sin credenciales. `dbt_docs.yml`: genera el sitio de docs como artifact en cada push a main |
 
 ## Los 3 hallazgos reales que los tests atrapan (a propósito)
 
