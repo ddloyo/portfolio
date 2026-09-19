@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: stg_pos__pedido_linea
+    description: Línea de pedido del canal gestionado, tipada.
+    columns:
+      - name: linea_id
+        data_tests:
+          - unique
+          - not_null
+      - name: cliente_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_crm__cliente')
+                field: cliente_id
+      - name: sku
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_erp__producto')
+                field: sku
+      - name: vendedor_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_crm__vendedor')
+                field: vendedor_id
+      - name: cantidad
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1

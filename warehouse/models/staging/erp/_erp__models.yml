@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: stg_erp__producto
+    description: Producto/SKU limpio y tipado (precio ya casteado desde texto).
+    columns:
+      - name: sku
+        data_tests:
+          - not_null:
+              config: {severity: warn}
+
+  - name: stg_erp__calendario
+    description: Calendario limpio, deduplicado por fecha. No cubre 2026 — usar dim_fecha (date_spine) para joins de fct_pedidos.
+    columns:
+      - name: fecha
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_erp__factura_linea
+    description: >
+      Línea de facturación limpia y tipada. cliente_id y sku pueden apuntar a
+      catálogos que ya no existen (integridad referencial rota a propósito) —
+      los tests de relationships de abajo lo confirman en warn, no en error,
+      porque es un hallazgo esperado de esta fuente, no un bug del pipeline.
+    columns:
+      - name: factura_id
+        data_tests:
+          - not_null
+      - name: cliente_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_crm__cliente')
+                field: cliente_id
+              config: {severity: warn}
+      - name: sku
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_erp__producto')
+                field: sku
+              config: {severity: warn}
+      - name: total
+        data_tests:
+          - total_matches_lineas:
+              arguments:
+                cantidad_column: cantidad
+                precio_column: precio_unitario
+              config: {severity: warn}

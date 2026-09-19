@@ -1,0 +1,61 @@
+kpi,area,responsable,mes,resultado,unidad,menor_es_mejor
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-01,31.6,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-02,34.7,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-03,31.8,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-04,36.7,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-05,35.0,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-06,33.7,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-07,34.5,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-08,30.8,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-09,28.7,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-10,32.9,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-11,27.9,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2025-12,25.8,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2026-01,32.8,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2026-02,35.8,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2026-03,29.9,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2026-04,34.8,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2026-05,34.0,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2026-06,35.4,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2026-07,31.9,puntos,False
+Satisfacción del equipo (eNPS),Recursos Humanos,Dir. RH,2026-08,34.8,puntos,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-01,90.7,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-02,93.1,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-03,92.4,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-04,91.0,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-05,91.7,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-06,92.9,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-07,90.0,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-08,90.9,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-09,90.1,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-10,91.6,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-11,93.6,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2025-12,89.9,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2026-01,94.6,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2026-02,90.2,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2026-03,92.4,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2026-04,92.1,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2026-05,92.1,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2026-06,92.1,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2026-07,92.8,%,False
+SLA de soporte,Operaciones,Dir. Operaciones,2026-08,93.9,%,False
+Rotación de personal,Recursos Humanos,Dir. RH,2025-01,2.1,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-02,2.6,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-03,2.7,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-04,2.3,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-05,2.2,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-06,2.7,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-07,2.1,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-08,2.7,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-09,2.4,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-10,2.3,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-11,2.9,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2025-12,2.1,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2026-01,2.1,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2026-02,2.5,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2026-03,2.0,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2026-04,2.7,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2026-05,2.2,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2026-06,2.1,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2026-07,2.7,%,True
+Rotación de personal,Recursos Humanos,Dir. RH,2026-08,2.7,%,True

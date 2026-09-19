@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: stg_sucursales__cdmx
+    description: Ventas de la sucursal CDMX, normalizadas a fecha/sucursal/monto_mxn/fuente.
+    columns:
+      - name: sucursal
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['CDMX']
+
+  - name: stg_sucursales__guadalajara
+    description: Ventas de Guadalajara; sucursal ya normalizada desde 3 grafías distintas del archivo origen.
+    columns:
+      - name: sucursal
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Guadalajara']
+
+  - name: stg_sucursales__monterrey
+    description: Ventas de Monterrey; monto_mxn NULL en las filas sin importe capturado (a propósito).
+    columns:
+      - name: sucursal
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Monterrey']

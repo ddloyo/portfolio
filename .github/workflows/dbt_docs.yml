@@ -1,0 +1,48 @@
+name: dbt docs
+
+# Genera el sitio de dbt docs (catálogo + DAG de lineage) en cada push a
+# main y lo deja como artifact descargable de la corrida — sin tocar la
+# configuración de GitHub Pages que ya sirve los 13 dashboards desde main.
+# Si más adelante se quiere una URL pública para esto, es un cambio de
+# Pages a "Deploy from GitHub Actions" con actions/deploy-pages.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'warehouse/**'
+  workflow_dispatch:
+
+jobs:
+  dbt-docs:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: warehouse
+    env:
+      DBT_PROFILES_DIR: profiles
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: warehouse/requirements.txt
+
+      - name: Instalar dbt-duckdb
+        run: pip install -r requirements.txt
+
+      - name: Regenerar los seeds sintéticos
+        run: python3 seeds/generators/generate_bronze.py
+
+      - run: dbt deps
+      - run: dbt seed --target ci
+      - run: dbt run --target ci
+      - run: dbt docs generate --target ci
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dbt-docs-site
+          path: warehouse/target/
+          retention-days: 30

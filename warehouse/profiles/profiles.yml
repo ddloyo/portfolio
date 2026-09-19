@@ -1,0 +1,20 @@
+# Perfil versionado en el repo a propósito: no hay credenciales que proteger
+# porque no hay servidor. `dev` escribe un archivo .duckdb local (gitignored,
+# se reconstruye desde los seeds); `ci` corre en memoria para no dejar estado
+# entre corridas del pipeline.
+xia_warehouse:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'xia_warehouse.duckdb'
+      threads: 4
+    ci:
+      type: duckdb
+      # ':memory:' NO sirve aquí: dbt-duckdb abre una conexión nueva por
+      # fase (seed/run/test) y cada conexión a ':memory:' es una base
+      # DuckDB independiente — un modelo no vería los seeds cargados en
+      # otra conexión. Un archivo temporal en el runner logra lo mismo que
+      # ':memory:' (nada persiste entre corridas de CI) sin ese problema.
+      path: 'ci_xia_warehouse.duckdb'
+      threads: 4

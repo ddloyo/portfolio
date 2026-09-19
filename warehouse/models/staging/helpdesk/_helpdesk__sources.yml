@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: helpdesk
+    schema: raw
+    description: >
+      Helpdesk de soporte. Migración 1:1 de `bronze.ticket_soporte`
+      (`_source_system` original: `helpdesk`). Aún sin modelos de staging.
+    tables:
+      - name: ticket_soporte
+        description: Tickets de soporte de los clientes con plan de servicio. fecha_cierre vacía = ticket abierto.
+        meta: {legacy_table: bronze.ticket_soporte}
+        columns:
+          - name: ticket_id
+            data_tests: [unique, not_null]
+          - name: cliente_id
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('crm', 'crm_cliente')
+                    field: cliente_id

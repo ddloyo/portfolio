@@ -1,0 +1,96 @@
+version: 2
+
+sources:
+  - name: crm
+    schema: raw
+    description: >
+      CRM — gestión de clientes, equipo comercial, metas, oportunidades y
+      cancelaciones. Migración 1:1 de las tablas `bronze.crm_*` y
+      `bronze.cancelacion` de `database/schema/01_bronze.sql`
+      (`_source_system` original: `crm`).
+    tables:
+      - name: crm_cliente
+        description: >
+          Maestro de clientes. Parte de `projects/13-data-health-check`
+          (nulos, duplicados, mayúsculas inconsistentes, fechas en formato
+          mixto — se conservan intactos) más las columnas region,
+          tipo_contrato, plan y canal_adquisicion que define el DDL de bronze.
+        meta: {legacy_table: bronze.crm_cliente}
+        columns:
+          - name: cliente_id
+            description: No garantizado único en la fuente cruda.
+          - name: fecha_alta
+            description: ISO, DD/MM/AAAA y MM/DD/AAAA mezclados en la misma columna.
+          - name: region
+            description: Territorio comercial asignado por el CRM; vacío si la ciudad viene vacía o no reconocida.
+          - name: tipo_contrato
+            description: Mensual / Anual; vacío en clientes transaccionales sin plan de servicio.
+          - name: plan
+            description: Starter / Pro / Business; vacío en clientes transaccionales.
+          - name: canal_adquisicion
+            description: Referidos, Google Ads, Meta Ads, Email, Eventos u Orgánico.
+
+      - name: crm_equipo
+        description: Catálogo de equipos comerciales.
+        meta: {legacy_table: bronze.crm_equipo}
+        columns:
+          - name: equipo_id
+            data_tests: [unique, not_null]
+
+      - name: crm_vendedor
+        description: Catálogo de vendedores, cada uno asignado a un equipo.
+        meta: {legacy_table: bronze.crm_vendedor}
+        columns:
+          - name: vendedor_id
+            data_tests: [unique, not_null]
+          - name: codigo_vendedor
+            description: Código corto legible (p.ej. CEN-01); es el que usan los reportes.
+            data_tests: [unique, not_null]
+          - name: equipo_id
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: source('crm', 'crm_equipo')
+                    field: equipo_id
+
+      - name: crm_meta_venta
+        description: Meta mensual vigente por equipo. Insumo de planeación, no un cálculo.
+        meta: {legacy_table: bronze.crm_meta_venta}
+        columns:
+          - name: equipo_id
+            data_tests:
+              - unique
+              - relationships:
+                  arguments:
+                    to: source('crm', 'crm_equipo')
+                    field: equipo_id
+
+      - name: crm_oportunidad_evento
+        description: Bitácora del pipeline comercial — 1 fila por cambio de etapa de una oportunidad.
+        meta: {legacy_table: bronze.crm_oportunidad_evento}
+        columns:
+          - name: evento_id
+            data_tests: [unique, not_null]
+          - name: etapa
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ['lead', 'contactado', 'calificado', 'propuesta', 'cierre']
+          - name: vendedor_id
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: source('crm', 'crm_vendedor')
+                    field: vendedor_id
+
+      - name: cancelacion
+        description: Baja de contrato/plan. Un cliente cancela como máximo una vez.
+        meta: {legacy_table: bronze.cancelacion}
+        columns:
+          - name: cliente_id
+            data_tests:
+              - unique
+              - relationships:
+                  arguments:
+                    to: source('crm', 'crm_cliente')
+                    field: cliente_id

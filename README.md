@@ -57,6 +57,20 @@ Cada carpeta de proyecto incluye:
 - `run_analysis.py` — el análisis completo: procesamiento, métricas de negocio, gráfico estático (`assets/chart_overview.png`) y el dashboard interactivo (`dashboard.html`).
 - `README.md` — el caso de negocio: el problema, qué resuelve el entregable, cómo correrlo, y cómo se adapta a datos reales de un cliente.
 
+## El warehouse detrás de los 13 datasets
+
+[`warehouse/`](warehouse/) es una segunda capa del portafolio: un proyecto
+**dbt + DuckDB** que demuestra Analytics Engineering — sources, staging,
+intermediate, marts, un modelo incremental, tests (genéricos, custom y
+singulares), documentación con lineage/DAG, macros en Jinja y CI/CD en
+GitHub Actions — sin pagar un servidor. La mayoría de los 13 CSV de
+`projects/*/data/` son en realidad un reporte *gold*; `warehouse/` simula
+el operativo real (CRM, pedidos, facturación...) del que esos reportes se
+calcularían, reusando los datasets ya sucios de los proyectos 04, 11 y 13
+como fuente en vez de inventar datos desde cero. El diseño completo está en
+[`database/README.md`](database/README.md); cómo correrlo, en
+[`warehouse/README.md`](warehouse/README.md).
+
 ## Cómo explorar el portafolio
 
 ```bash
