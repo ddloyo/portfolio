@@ -3,6 +3,12 @@ version: 2
 sources:
   - name: ads
     schema: raw
+    # Frescura: Plataformas de pauta; toleran rezago por la ventana de atribución.
+    config:
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after: {count: 48, period: hour}
+        error_after: {count: 96, period: hour}
     description: >
       Plataformas de pauta y canales de marketing. Migración 1:1 de
       `bronze.marketing_gasto` (`_source_system` original:

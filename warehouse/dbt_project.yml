@@ -20,11 +20,42 @@ vars:
   # contra hoy — fija para que las corridas sean reproducibles en CI.
   fecha_referencia: '2026-09-18'
 
+  # Escenario demo de frescura: hace cuántas horas "cargó por última vez" cada
+  # fuente al momento de correr `dbt seed`. Lo lee el macro stamp_loaded_at
+  # (busca `<fuente>.<tabla>` y, si no hay, `<fuente>`). Lo que sella `_loaded_at`
+  # en producción es la herramienta de EL, no dbt; los umbrales contra los que se
+  # juzga están en los `_*__sources.yml` (bloque `freshness`), no aquí.
+  freshness_demo_lag_hours:
+    pos: 2.5                # pass  (warn 6h)
+    producto_analytics: 1.2 # pass  (warn 3h)
+    crm: 9                  # pass  (warn 12h)
+    helpdesk: 5             # pass  (warn 12h)
+    erp: 20                 # pass  (warn 26h)
+    wms: 31                 # warn  (warn 26h): falló el batch de anoche
+    sucursales: 5           # pass  (warn 36h): llegó el Excel de hoy
+    sucursales.pedido_sucursal_guadalajara: 70  # warn  (warn 36h): el viernes fue lo último; aún no llega el de hoy
+    sucursales.pedido_sucursal_monterrey: 79    # error (error 72h): Excel que no llegó
+    ads: 101                # error (error 96h): reproceso de atribución retrasado
+    encuestas: 144          # pass  (warn 8d)
+    scorecard.kpi_captura_manual: 912  # warn  (warn 35d): captura mensual atrasada
+    scorecard.kpi_meta: 1488           # pass  (warn 100d): revisión trimestral
+
 seeds:
   # Todo seed aterriza como TEXT (ver macros/duckdb__create_csv_table.sql):
   # bronze no interpreta nada, tipar es trabajo de staging.
   xia_warehouse:
     +schema: raw
+    # Estampa `_loaded_at` (el timestamp que en producción escribe el EL) para
+    # que `dbt source freshness` tenga de dónde leer. Ver macros/stamp_loaded_at.sql.
+    # `transaction: false`: DuckDB no deja hacer ALTER TABLE dentro de la misma
+    # transacción que cargó las filas del seed (falla el commit).
+    # `full_refresh: true`: cada `dbt seed` recrea la tabla. Sin eso, la segunda
+    # corrida truncaría una tabla que ya tiene `_loaded_at` y DuckDB rechazaría el
+    # COPY del CSV (que trae una columna menos que la tabla).
+    +full_refresh: true
+    +post-hook:
+      - sql: "{{ stamp_loaded_at(this, model) }}"
+        transaction: false
 
 models:
   xia_warehouse:

@@ -366,6 +366,14 @@ def _heatmap_js(chart):
     branch) for intensity-only data (e.g. raw counts). `value_format="int"`
     renders whole numbers (with a +/- sign for diverging data) instead of
     the 2-decimal correlation format.
+
+    Optional `bands` (any color_mode) colors each cell by STATUS band instead
+    of by intensity — for data with a meaning, like SLA compliance where 100
+    is good and 40 is not: a list of {"min": value, "status": key} sorted
+    from the highest floor down (e.g. [{"min": 95, "status": "good"},
+    {"min": 70, "status": "warning"}, {"min": 0, "status": "critical"}]).
+    A cell takes the first band whose `min` it reaches. The number stays in
+    the cell, so the status is never color-only.
     """
     cid = chart["id"]
     row_labels = chart.get("row_labels", chart.get("labels", []))
@@ -375,10 +383,15 @@ def _heatmap_js(chart):
     matrix = json.dumps(chart["matrix"])
     diverging = "true" if chart.get("color_mode", "diverging") == "diverging" else "false"
     int_format = "true" if chart.get("value_format") == "int" else "false"
+    bands_js = json.dumps([
+        {"min": b["min"], "light": STATUS[b["status"]][0], "dark": STATUS[b["status"]][1]}
+        for b in chart["bands"]
+    ]) if chart.get("bands") else "null"
     return f"""
     (function() {{
       const canvas = document.getElementById('{cid}');
       const wrap = canvas.parentElement;
+      const bands = {bands_js};
       const rowLabels = {row_labels_js};
       const colLabels = {col_labels_js};
       const matrix = {matrix};
@@ -390,6 +403,12 @@ def _heatmap_js(chart):
       maxAbs = maxAbs || 1;
 
       function cellColor(v) {{
+        if (bands) {{
+          const b = bands.find(x => v >= x.min) || bands[bands.length - 1];
+          const hex = isDark() ? b.dark : b.light;
+          const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), bl = parseInt(hex.slice(5, 7), 16);
+          return `rgba(${{r}},${{g}},${{bl}},0.5)`;
+        }}
         const alpha = Math.min(Math.abs(v) / maxAbs, 1);
         const teal = isDark() ? [143, 194, 188] : [113, 168, 163];
         const gold = isDark() ? [212, 169, 79] : [184, 132, 44];

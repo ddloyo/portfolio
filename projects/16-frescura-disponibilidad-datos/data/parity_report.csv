@@ -1,0 +1,155 @@
+escenario,source,table,age_objetivo_h,age_dbt_h,warn_after,error_after,status_dbt,status_simulacion,status_esperado,coincide
+foto_real,ads,marketing_gasto,,101.001,48 hour,96 hour,error,error,,True
+foto_real,crm,cancelacion,,9.001,12 hour,24 hour,pass,pass,,True
+foto_real,crm,crm_cliente,,9.001,12 hour,24 hour,pass,pass,,True
+foto_real,crm,crm_equipo,,9.001,12 hour,24 hour,pass,pass,,True
+foto_real,crm,crm_meta_venta,,9.001,12 hour,24 hour,pass,pass,,True
+foto_real,crm,crm_oportunidad_evento,,9.001,12 hour,24 hour,pass,pass,,True
+foto_real,crm,crm_vendedor,,9.001,12 hour,24 hour,pass,pass,,True
+foto_real,encuestas,encuesta_nps,,144.001,8 day,14 day,pass,pass,,True
+foto_real,erp,calendario,,20.001,26 hour,48 hour,pass,pass,,True
+foto_real,erp,factura_linea,,20.001,26 hour,48 hour,pass,pass,,True
+foto_real,erp,pago,,20.001,26 hour,48 hour,pass,pass,,True
+foto_real,erp,producto,,20.001,26 hour,48 hour,pass,pass,,True
+foto_real,erp,suscripcion_cargo,,20.001,26 hour,48 hour,pass,pass,,True
+foto_real,helpdesk,ticket_soporte,,5.001,12 hour,36 hour,pass,pass,,True
+foto_real,pos,pedido_linea,,2.501,6 hour,12 hour,pass,pass,,True
+foto_real,producto_analytics,evento_actividad,,1.201,3 hour,12 hour,pass,pass,,True
+foto_real,scorecard,kpi_captura_manual,,912.001,35 day,45 day,warn,warn,,True
+foto_real,scorecard,kpi_meta,,1488.001,100 day,130 day,pass,pass,,True
+foto_real,sucursales,pedido_sucursal_cdmx,,5.001,36 hour,72 hour,pass,pass,,True
+foto_real,sucursales,pedido_sucursal_guadalajara,,70.001,36 hour,72 hour,warn,warn,,True
+foto_real,sucursales,pedido_sucursal_monterrey,,79.001,36 hour,72 hour,error,error,,True
+foto_real,wms,inventario_snapshot,,31.001,26 hour,48 hour,warn,warn,,True
+0.50x warn,crm,cancelacion,6.0,6.001,12 hour,24 hour,pass,pass,pass,True
+0.50x warn,ads,marketing_gasto,24.0,24.001,48 hour,96 hour,pass,pass,pass,True
+0.50x warn,crm,crm_cliente,6.0,6.001,12 hour,24 hour,pass,pass,pass,True
+0.50x warn,crm,crm_equipo,6.0,6.001,12 hour,24 hour,pass,pass,pass,True
+0.50x warn,crm,crm_oportunidad_evento,6.0,6.001,12 hour,24 hour,pass,pass,pass,True
+0.50x warn,crm,crm_meta_venta,6.0,6.001,12 hour,24 hour,pass,pass,pass,True
+0.50x warn,crm,crm_vendedor,6.0,6.001,12 hour,24 hour,pass,pass,pass,True
+0.50x warn,encuestas,encuesta_nps,96.0,96.001,8 day,14 day,pass,pass,pass,True
+0.50x warn,erp,calendario,13.0,13.001,26 hour,48 hour,pass,pass,pass,True
+0.50x warn,erp,pago,13.0,13.001,26 hour,48 hour,pass,pass,pass,True
+0.50x warn,erp,factura_linea,13.0,13.001,26 hour,48 hour,pass,pass,pass,True
+0.50x warn,erp,producto,13.0,13.001,26 hour,48 hour,pass,pass,pass,True
+0.50x warn,erp,suscripcion_cargo,13.0,13.001,26 hour,48 hour,pass,pass,pass,True
+0.50x warn,pos,pedido_linea,3.0,3.001,6 hour,12 hour,pass,pass,pass,True
+0.50x warn,helpdesk,ticket_soporte,6.0,6.001,12 hour,36 hour,pass,pass,pass,True
+0.50x warn,producto_analytics,evento_actividad,1.5,1.501,3 hour,12 hour,pass,pass,pass,True
+0.50x warn,scorecard,kpi_captura_manual,420.0,420.001,35 day,45 day,pass,pass,pass,True
+0.50x warn,scorecard,kpi_meta,1200.0,1200.001,100 day,130 day,pass,pass,pass,True
+0.50x warn,sucursales,pedido_sucursal_cdmx,18.0,18.001,36 hour,72 hour,pass,pass,pass,True
+0.50x warn,sucursales,pedido_sucursal_guadalajara,18.0,18.001,36 hour,72 hour,pass,pass,pass,True
+0.50x warn,sucursales,pedido_sucursal_monterrey,18.0,18.001,36 hour,72 hour,pass,pass,pass,True
+0.50x warn,wms,inventario_snapshot,13.0,13.001,26 hour,48 hour,pass,pass,pass,True
+0.98x warn,ads,marketing_gasto,47.04,47.04,48 hour,96 hour,pass,pass,pass,True
+0.98x warn,crm,crm_cliente,11.76,11.76,12 hour,24 hour,pass,pass,pass,True
+0.98x warn,crm,cancelacion,11.76,11.76,12 hour,24 hour,pass,pass,pass,True
+0.98x warn,crm,crm_equipo,11.76,11.76,12 hour,24 hour,pass,pass,pass,True
+0.98x warn,crm,crm_meta_venta,11.76,11.76,12 hour,24 hour,pass,pass,pass,True
+0.98x warn,crm,crm_oportunidad_evento,11.76,11.76,12 hour,24 hour,pass,pass,pass,True
+0.98x warn,crm,crm_vendedor,11.76,11.76,12 hour,24 hour,pass,pass,pass,True
+0.98x warn,encuestas,encuesta_nps,188.16,188.16,8 day,14 day,pass,pass,pass,True
+0.98x warn,erp,calendario,25.48,25.48,26 hour,48 hour,pass,pass,pass,True
+0.98x warn,erp,factura_linea,25.48,25.48,26 hour,48 hour,pass,pass,pass,True
+0.98x warn,erp,pago,25.48,25.48,26 hour,48 hour,pass,pass,pass,True
+0.98x warn,erp,producto,25.48,25.48,26 hour,48 hour,pass,pass,pass,True
+0.98x warn,erp,suscripcion_cargo,25.48,25.48,26 hour,48 hour,pass,pass,pass,True
+0.98x warn,helpdesk,ticket_soporte,11.76,11.76,12 hour,36 hour,pass,pass,pass,True
+0.98x warn,pos,pedido_linea,5.88,5.88,6 hour,12 hour,pass,pass,pass,True
+0.98x warn,producto_analytics,evento_actividad,2.94,2.94,3 hour,12 hour,pass,pass,pass,True
+0.98x warn,scorecard,kpi_captura_manual,823.2,823.2,35 day,45 day,pass,pass,pass,True
+0.98x warn,scorecard,kpi_meta,2352.0,2352.0,100 day,130 day,pass,pass,pass,True
+0.98x warn,sucursales,pedido_sucursal_guadalajara,35.28,35.281,36 hour,72 hour,pass,pass,pass,True
+0.98x warn,sucursales,pedido_sucursal_cdmx,35.28,35.281,36 hour,72 hour,pass,pass,pass,True
+0.98x warn,sucursales,pedido_sucursal_monterrey,35.28,35.281,36 hour,72 hour,pass,pass,pass,True
+0.98x warn,wms,inventario_snapshot,25.48,25.481,26 hour,48 hour,pass,pass,pass,True
+1.02x warn,ads,marketing_gasto,48.96,48.96,48 hour,96 hour,warn,warn,warn,True
+1.02x warn,crm,cancelacion,12.24,12.24,12 hour,24 hour,warn,warn,warn,True
+1.02x warn,crm,crm_cliente,12.24,12.24,12 hour,24 hour,warn,warn,warn,True
+1.02x warn,crm,crm_equipo,12.24,12.24,12 hour,24 hour,warn,warn,warn,True
+1.02x warn,crm,crm_meta_venta,12.24,12.241,12 hour,24 hour,warn,warn,warn,True
+1.02x warn,crm,crm_oportunidad_evento,12.24,12.241,12 hour,24 hour,warn,warn,warn,True
+1.02x warn,encuestas,encuesta_nps,195.84,195.841,8 day,14 day,warn,warn,warn,True
+1.02x warn,crm,crm_vendedor,12.24,12.241,12 hour,24 hour,warn,warn,warn,True
+1.02x warn,erp,calendario,26.52,26.521,26 hour,48 hour,warn,warn,warn,True
+1.02x warn,erp,factura_linea,26.52,26.521,26 hour,48 hour,warn,warn,warn,True
+1.02x warn,erp,pago,26.52,26.521,26 hour,48 hour,warn,warn,warn,True
+1.02x warn,erp,producto,26.52,26.521,26 hour,48 hour,warn,warn,warn,True
+1.02x warn,erp,suscripcion_cargo,26.52,26.521,26 hour,48 hour,warn,warn,warn,True
+1.02x warn,helpdesk,ticket_soporte,12.24,12.241,12 hour,36 hour,warn,warn,warn,True
+1.02x warn,producto_analytics,evento_actividad,3.06,3.061,3 hour,12 hour,warn,warn,warn,True
+1.02x warn,pos,pedido_linea,6.12,6.121,6 hour,12 hour,warn,warn,warn,True
+1.02x warn,scorecard,kpi_captura_manual,856.8,856.801,35 day,45 day,warn,warn,warn,True
+1.02x warn,scorecard,kpi_meta,2448.0,2448.001,100 day,130 day,warn,warn,warn,True
+1.02x warn,sucursales,pedido_sucursal_cdmx,36.72,36.721,36 hour,72 hour,warn,warn,warn,True
+1.02x warn,sucursales,pedido_sucursal_guadalajara,36.72,36.721,36 hour,72 hour,warn,warn,warn,True
+1.02x warn,sucursales,pedido_sucursal_monterrey,36.72,36.721,36 hour,72 hour,warn,warn,warn,True
+1.02x warn,wms,inventario_snapshot,26.52,26.521,26 hour,48 hour,warn,warn,warn,True
+0.98x error,ads,marketing_gasto,94.08,94.08,48 hour,96 hour,warn,warn,warn,True
+0.98x error,crm,cancelacion,23.52,23.52,12 hour,24 hour,warn,warn,warn,True
+0.98x error,crm,crm_cliente,23.52,23.52,12 hour,24 hour,warn,warn,warn,True
+0.98x error,crm,crm_equipo,23.52,23.52,12 hour,24 hour,warn,warn,warn,True
+0.98x error,crm,crm_meta_venta,23.52,23.52,12 hour,24 hour,warn,warn,warn,True
+0.98x error,crm,crm_oportunidad_evento,23.52,23.521,12 hour,24 hour,warn,warn,warn,True
+0.98x error,crm,crm_vendedor,23.52,23.521,12 hour,24 hour,warn,warn,warn,True
+0.98x error,encuestas,encuesta_nps,329.28,329.281,8 day,14 day,warn,warn,warn,True
+0.98x error,erp,pago,47.04,47.041,26 hour,48 hour,warn,warn,warn,True
+0.98x error,erp,calendario,47.04,47.041,26 hour,48 hour,warn,warn,warn,True
+0.98x error,erp,producto,47.04,47.041,26 hour,48 hour,warn,warn,warn,True
+0.98x error,erp,factura_linea,47.04,47.041,26 hour,48 hour,warn,warn,warn,True
+0.98x error,erp,suscripcion_cargo,47.04,47.041,26 hour,48 hour,warn,warn,warn,True
+0.98x error,helpdesk,ticket_soporte,35.28,35.281,12 hour,36 hour,warn,warn,warn,True
+0.98x error,pos,pedido_linea,11.76,11.761,6 hour,12 hour,warn,warn,warn,True
+0.98x error,producto_analytics,evento_actividad,11.76,11.761,3 hour,12 hour,warn,warn,warn,True
+0.98x error,scorecard,kpi_captura_manual,1058.4,1058.401,35 day,45 day,warn,warn,warn,True
+0.98x error,scorecard,kpi_meta,3057.6,3057.601,100 day,130 day,warn,warn,warn,True
+0.98x error,sucursales,pedido_sucursal_cdmx,70.56,70.561,36 hour,72 hour,warn,warn,warn,True
+0.98x error,sucursales,pedido_sucursal_guadalajara,70.56,70.561,36 hour,72 hour,warn,warn,warn,True
+0.98x error,sucursales,pedido_sucursal_monterrey,70.56,70.561,36 hour,72 hour,warn,warn,warn,True
+0.98x error,wms,inventario_snapshot,47.04,47.041,26 hour,48 hour,warn,warn,warn,True
+1.02x error,crm,cancelacion,24.48,24.48,12 hour,24 hour,error,error,error,True
+1.02x error,ads,marketing_gasto,97.92,97.92,48 hour,96 hour,error,error,error,True
+1.02x error,crm,crm_cliente,24.48,24.48,12 hour,24 hour,error,error,error,True
+1.02x error,crm,crm_equipo,24.48,24.48,12 hour,24 hour,error,error,error,True
+1.02x error,crm,crm_meta_venta,24.48,24.48,12 hour,24 hour,error,error,error,True
+1.02x error,crm,crm_oportunidad_evento,24.48,24.48,12 hour,24 hour,error,error,error,True
+1.02x error,crm,crm_vendedor,24.48,24.48,12 hour,24 hour,error,error,error,True
+1.02x error,encuestas,encuesta_nps,342.72,342.72,8 day,14 day,error,error,error,True
+1.02x error,erp,calendario,48.96,48.96,26 hour,48 hour,error,error,error,True
+1.02x error,erp,factura_linea,48.96,48.96,26 hour,48 hour,error,error,error,True
+1.02x error,erp,producto,48.96,48.96,26 hour,48 hour,error,error,error,True
+1.02x error,erp,pago,48.96,48.96,26 hour,48 hour,error,error,error,True
+1.02x error,helpdesk,ticket_soporte,36.72,36.72,12 hour,36 hour,error,error,error,True
+1.02x error,pos,pedido_linea,12.24,12.241,6 hour,12 hour,error,error,error,True
+1.02x error,erp,suscripcion_cargo,48.96,48.961,26 hour,48 hour,error,error,error,True
+1.02x error,producto_analytics,evento_actividad,12.24,12.241,3 hour,12 hour,error,error,error,True
+1.02x error,scorecard,kpi_captura_manual,1101.6,1101.601,35 day,45 day,error,error,error,True
+1.02x error,scorecard,kpi_meta,3182.4,3182.401,100 day,130 day,error,error,error,True
+1.02x error,sucursales,pedido_sucursal_cdmx,73.44,73.441,36 hour,72 hour,error,error,error,True
+1.02x error,sucursales,pedido_sucursal_guadalajara,73.44,73.441,36 hour,72 hour,error,error,error,True
+1.02x error,wms,inventario_snapshot,48.96,48.961,26 hour,48 hour,error,error,error,True
+1.02x error,sucursales,pedido_sucursal_monterrey,73.44,73.441,36 hour,72 hour,error,error,error,True
+3.00x error,ads,marketing_gasto,288.0,288.0,48 hour,96 hour,error,error,error,True
+3.00x error,crm,cancelacion,72.0,72.0,12 hour,24 hour,error,error,error,True
+3.00x error,crm,crm_cliente,72.0,72.0,12 hour,24 hour,error,error,error,True
+3.00x error,crm,crm_equipo,72.0,72.0,12 hour,24 hour,error,error,error,True
+3.00x error,crm,crm_meta_venta,72.0,72.0,12 hour,24 hour,error,error,error,True
+3.00x error,crm,crm_oportunidad_evento,72.0,72.0,12 hour,24 hour,error,error,error,True
+3.00x error,crm,crm_vendedor,72.0,72.0,12 hour,24 hour,error,error,error,True
+3.00x error,encuestas,encuesta_nps,1008.0,1008.0,8 day,14 day,error,error,error,True
+3.00x error,erp,calendario,144.0,144.0,26 hour,48 hour,error,error,error,True
+3.00x error,erp,factura_linea,144.0,144.0,26 hour,48 hour,error,error,error,True
+3.00x error,erp,pago,144.0,144.0,26 hour,48 hour,error,error,error,True
+3.00x error,erp,producto,144.0,144.0,26 hour,48 hour,error,error,error,True
+3.00x error,erp,suscripcion_cargo,144.0,144.0,26 hour,48 hour,error,error,error,True
+3.00x error,helpdesk,ticket_soporte,108.0,108.0,12 hour,36 hour,error,error,error,True
+3.00x error,pos,pedido_linea,36.0,36.0,6 hour,12 hour,error,error,error,True
+3.00x error,producto_analytics,evento_actividad,36.0,36.0,3 hour,12 hour,error,error,error,True
+3.00x error,scorecard,kpi_captura_manual,3240.0,3240.0,35 day,45 day,error,error,error,True
+3.00x error,scorecard,kpi_meta,9360.0,9360.0,100 day,130 day,error,error,error,True
+3.00x error,sucursales,pedido_sucursal_guadalajara,216.0,216.0,36 hour,72 hour,error,error,error,True
+3.00x error,sucursales,pedido_sucursal_cdmx,216.0,216.0,36 hour,72 hour,error,error,error,True
+3.00x error,sucursales,pedido_sucursal_monterrey,216.0,216.001,36 hour,72 hour,error,error,error,True
+3.00x error,wms,inventario_snapshot,144.0,144.001,26 hour,48 hour,error,error,error,True
