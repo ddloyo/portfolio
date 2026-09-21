@@ -3,6 +3,12 @@ version: 2
 sources:
   - name: helpdesk
     schema: raw
+    # Frescura: API de tickets, sync cada ~6 h.
+    config:
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after: {count: 12, period: hour}
+        error_after: {count: 36, period: hour}
     description: >
       Helpdesk de soporte. Migración 1:1 de `bronze.ticket_soporte`
       (`_source_system` original: `helpdesk`). Aún sin modelos de staging.

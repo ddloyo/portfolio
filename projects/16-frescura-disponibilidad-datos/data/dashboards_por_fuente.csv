@@ -1,0 +1,11 @@
+source,dashboards,n_dashboards
+ads,09,1
+crm,01|02|04|08|09|13,6
+encuestas,03|12,2
+erp,01|03|04|05|06|07|08|09|10|13,10
+helpdesk,04,1
+pos,01|03|05|06|07|09|10,7
+producto_analytics,04,1
+scorecard,03,1
+sucursales,03|11,2
+wms,07,1

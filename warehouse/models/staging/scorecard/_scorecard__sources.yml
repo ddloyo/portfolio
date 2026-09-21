@@ -3,6 +3,12 @@ version: 2
 sources:
   - name: scorecard
     schema: raw
+    # Frescura: Captura manual mensual (5 días de holgura en warn).
+    config:
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after: {count: 35, period: day}
+        error_after: {count: 45, period: day}
     description: >
       Scorecard directivo con captura manual. Migración 1:1 de
       `bronze.kpi_captura_manual` (`_source_system` original:
@@ -31,6 +37,12 @@ sources:
           existe en el DDL de bronze: es un seed agregado para cerrar el
           hueco de silver.fact_kpi_meta, que en el diseño original no tenía
           tabla de origen. Valores ilustrativos.
+        # Override por tabla: las metas se revisan por trimestre, no cada mes
+        # como la captura manual — mismo `loaded_at_field`, otro umbral.
+        config:
+          freshness:
+            warn_after: {count: 100, period: day}
+            error_after: {count: 130, period: day}
         columns:
           - name: kpi
             data_tests: [unique, not_null]

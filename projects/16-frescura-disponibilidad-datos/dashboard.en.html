@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XIA · Data Availability & Freshness (SLA)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --brand-ink: #163832;
+    --brand-cream: #F6EFE1;
+    --gold: #B8842C;
+    --surface: #FFFFFF;
+    --page: #F6EFE1;
+    --text-primary: #163832;
+    --text-secondary: #4A625D;
+    --text-muted: #7E948F;
+    --grid: rgba(22,56,50,0.15);
+    --border: rgba(22,56,50,0.12);
+    --accent: #71A8A3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface: #163832;
+      --page: #0E1F1B;
+      --text-primary: #F6EFE1;
+      --text-secondary: #C7D9D5;
+      --text-muted: #8FA8A3;
+      --grid: rgba(246,239,225,0.14);
+      --border: rgba(246,239,225,0.12);
+      --accent: #8FC2BC;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #163832;
+    --page: #0E1F1B;
+    --text-primary: #F6EFE1;
+    --text-secondary: #C7D9D5;
+    --text-muted: #8FA8A3;
+    --grid: rgba(246,239,225,0.14);
+    --border: rgba(246,239,225,0.12);
+    --accent: #8FC2BC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--text-primary);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    padding: 32px 20px 60px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brand .mark { width:28px; height:28px; border-radius:7px; background: var(--brand-ink);
+                  display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px;
+                  overflow: hidden; }
+  .brand .mark img { width:100%; height:100%; object-fit: cover; display:block; }
+  .brand span { color: var(--text-muted); font-size:13px; letter-spacing: .04em; text-transform: uppercase; }
+  header.page-head { margin-bottom: 28px; }
+  header.page-head .tag { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  header.page-head h1 { font-size: 26px; margin: 0 0 8px; }
+  header.page-head p.tagline { color: var(--text-secondary); font-size: 15px; max-width: 720px; margin: 0; line-height:1.5; }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .top-row { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 14px; margin-bottom: 28px; align-items: stretch; }
+  .hero-widget { background: var(--surface); border: 1px solid var(--gold); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; }
+  .hero-widget .hero-value { color: var(--gold); }
+  .hero-chart-wrap { position: relative; flex: 1; min-height: 130px; margin-top: 12px; }
+  .kpi-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 1fr; gap: 14px; }
+  .kpi-grid-5 .kpi-card { padding: 12px 14px; }
+  .kpi-grid-5 .kpi-label { font-size: 10.5px; }
+  .kpi-grid-5 .kpi-value { font-size: 18px; }
+  @media (max-width: 860px) {
+    .top-row { grid-template-columns: 1fr; }
+    .kpi-grid-5 { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .kpi-grid-5 { grid-template-columns: repeat(2, 1fr); }
+    .drilldown-grid { grid-template-columns: 1fr !important; }
+  }
+  .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; position: relative; }
+  .kpi-hero { border: 1px solid var(--gold); }
+  .kpi-hero .kpi-value { color: var(--gold); }
+  .kpi-label { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 600; }
+  .kpi-delta { font-size: 13px; margin-top: 4px; font-weight: 600; }
+  .delta-up { color: #2f6e57; }
+  .delta-down { color: #d03b3b; }
+  .kpi-badge { display:inline-block; margin-top:8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+                letter-spacing: .03em; padding: 3px 8px; border-radius: 999px; }
+  .kpi-good { background: rgba(62,143,114,0.16); color: #2f6e57; }
+  .kpi-warning { background: rgba(184,132,44,0.18); color: #8c6220; }
+  .kpi-serious { background: rgba(140,90,30,0.18); color: #6b4517; }
+  .kpi-critical { background: rgba(208,59,59,0.14); color: #d03b3b; }
+  .minto-banner { background: var(--surface); border: 1px solid var(--border); border-left: 5px solid var(--gold);
+                   border-radius: 10px; padding: 18px 22px; margin-bottom: 22px; }
+  .minto-banner .minto-label { margin: 0 0 6px; color: var(--gold); font-size: 12px; font-weight: 700;
+                                 text-transform: uppercase; letter-spacing: .06em; }
+  .minto-banner h2 { margin: 0 0 8px; font-size: 21px; line-height: 1.35; color: var(--text-primary); }
+  .minto-banner p.minto-sub { margin: 0; color: var(--text-secondary); font-size: 14px; line-height: 1.55; max-width: 780px; }
+  .checklist-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+                      padding: 18px 22px; margin-bottom: 22px; }
+  .checklist-card h3 { margin: 0 0 2px; font-size: 16px; }
+  .checklist-card p.checklist-sub { margin: 0 0 14px; color: var(--text-muted); font-size: 13px; }
+  .checklist-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .progress-bar { flex: 1; max-width: 320px; height: 8px; border-radius: 999px; background: var(--grid); overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .2s ease; }
+  .checklist-progress span { color: var(--text-secondary); font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .checklist-table-wrap { overflow-x: auto; }
+  table.checklist-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.checklist-table th, table.checklist-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  table.checklist-table th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  table.checklist-table td.check-col { width: 30px; }
+  table.checklist-table input.xia-check { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+  table.checklist-table tr.done td { color: var(--text-muted); text-decoration: line-through; opacity: .7; }
+  table.checklist-table tr.done td.check-col { text-decoration: none; }
+  .explorer-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+                     padding: 18px 22px; margin-bottom: 22px; }
+  .explorer-card h3 { margin: 0 0 2px; font-size: 16px; }
+  .explorer-card p.checklist-sub { margin: 0 0 14px; color: var(--text-muted); font-size: 13px; }
+  .explorer-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .explorer-controls label { color: var(--text-secondary); font-size: 13px; font-weight: 600; }
+  .explorer-select { background: var(--page); color: var(--text-primary); border: 1px solid var(--border);
+                       border-radius: 8px; padding: 7px 10px; font-size: 13.5px; font-family: inherit; cursor: pointer; }
+  .explorer-grid { display: grid; grid-template-columns: minmax(260px, 380px) 1fr; gap: 18px; align-items: start; }
+  .explorer-table-wrap { overflow-x: auto; }
+  table.explorer-table tr { cursor: pointer; }
+  table.explorer-table tr:hover td { color: var(--text-primary); }
+  table.explorer-table tr.selected td { color: var(--text-primary); font-weight: 600; }
+  table.explorer-table tr.selected { background: var(--page); }
+  table.explorer-table td.rank-col { color: var(--text-muted); width: 22px; }
+  .explorer-chart-card { background: var(--page); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .explorer-chart-card .chart-head h4 { margin: 0 0 2px; font-size: 14.5px; color: var(--text-primary); }
+  .explorer-chart-card .chart-head p { margin: 0 0 10px; color: var(--text-muted); font-size: 12px; }
+  @media (max-width: 760px) { .explorer-grid { grid-template-columns: 1fr; } }
+  .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 26px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; min-width: 0; }
+  .chart-card-wide { grid-column: 1 / -1; }
+  .chart-head h3 { margin: 0 0 2px; font-size: 15px; }
+  .chart-head p { margin: 0 0 12px; color: var(--text-muted); font-size: 12.5px; }
+  .chart-canvas-wrap { position: relative; height: 280px; overflow: hidden; }
+  .chart-canvas-wrap canvas { max-width: 100%; }
+  .section-label { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; }
+  .drilldown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 26px; }
+  .drilldown-grid .chart-card { padding: 14px 16px; }
+  .drilldown-grid .chart-head h3 { font-size: 13.5px; }
+  .drilldown-grid .chart-head p { margin: 0 0 8px; font-size: 11.5px; }
+  .drilldown-grid .chart-canvas-wrap { height: 190px; }
+  .insights-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 22px; }
+  .insights-card h3 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+  ul.insights { margin: 0; padding-left: 18px; color: var(--text-secondary); line-height: 1.65; font-size: 14.5px; }
+  ul.insights li::marker { color: var(--accent); }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 22px; overflow-x: auto; }
+  .table-wrap summary { cursor: pointer; color: var(--text-secondary); font-size: 13.5px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; min-width: 560px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); color: var(--text-secondary); }
+  th { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: .03em; }
+  footer { color: var(--text-muted); font-size: 12px; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 16px; }
+  footer a { color: var(--text-primary); text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="mark"><img src="../../assets/xia-logo.png" alt="XIA logo"></div><span>XIA Insights &times; Analytics &mdash; Portfolio Demo</span></div>
+  <header class="page-head">
+    <div class="tag">Project 16 · Portfolio Demonstration</div>
+    <h1>Data Availability & Freshness (SLA)</h1>
+    <p class="tagline">22 tables from 10 sources with different freshness thresholds, measured with the real <code>dbt source freshness</code> — and 30 days of history to see which source is always late.</p>
+  </header>
+
+  
+    <div class="minto-banner">
+      <p class="minto-label">Freshness status — 2026-09-21 19:04 UTC</p>
+      <h2>Today 6 of 10 sources are within their SLA: sucursales and ads are in error and wms and scorecard in warning.</h2>
+      <p class="minto-sub"><code>dbt source freshness</code> measured 22 tables against their thresholds. The sources in error feed, per dbt lineage, sucursales → 03 Executive Scorecard, 11 Consolidating Scattered Data; ads → 09 Marketing ROI: anyone opening those dashboards today is looking at data past its limit.</p>
+    </div>
+    
+
+  <div class="top-row">
+    
+    <div class="hero-widget">
+      <div class="kpi-label">Sources within SLA today · 6 of 10</div>
+      <div class="kpi-value hero-value">60%</div>
+      <span class="kpi-badge kpi-serious">At risk</span>
+      <div class="hero-chart-wrap">
+        <canvas id="chart_sla_trend"></canvas>
+      </div>
+    </div>
+    <div class="kpi-grid-5">
+      
+        <div class="kpi-card">
+          <div class="kpi-label">Tables within SLA today</div>
+          <div class="kpi-value">17 / 22</div>
+          
+          <span class="kpi-badge kpi-warning">Attention</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Sources in error today</div>
+          <div class="kpi-value">2</div>
+          
+          <span class="kpi-badge kpi-critical">Critical</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Most frequently late source</div>
+          <div class="kpi-value">sucursales</div>
+          
+          <span class="kpi-badge kpi-serious">19 of 30 days</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Average staleness today</div>
+          <div class="kpi-value">89% of threshold</div>
+          
+          
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Longest run outside SLA</div>
+          <div class="kpi-value">83 h</div>
+          
+          <span class="kpi-badge kpi-warning">sucursales</span>
+        </div>
+    </div>
+  </div>
+
+  
+    <div class="table-wrap table-wrap-open">
+      <p class="section-label">Freshness status now — the columns of <code>dbt source freshness</code></p>
+      <table>
+        <thead><tr><th>source</th><th>table</th><th>max_loaded_at (UTC)</th><th>snapshotted_at (UTC)</th><th>age</th><th>warn / error threshold</th><th>status</th></tr></thead>
+        <tbody><tr><td>sucursales</td><td>pedido_sucursal_monterrey</td><td>2026-09-18 12:04:53</td><td>2026-09-21 19:04:57</td><td>79.0&nbsp;h</td><td>36 h / 72 h</td><td><span class="kpi-badge kpi-critical">error</span></td></tr>
+<tr><td>ads</td><td>marketing_gasto</td><td>2026-09-17 14:04:53</td><td>2026-09-21 19:04:57</td><td>4.2&nbsp;d</td><td>48 h / 96 h</td><td><span class="kpi-badge kpi-critical">error</span></td></tr>
+<tr><td>sucursales</td><td>pedido_sucursal_guadalajara</td><td>2026-09-18 21:04:53</td><td>2026-09-21 19:04:57</td><td>70.0&nbsp;h</td><td>36 h / 72 h</td><td><span class="kpi-badge kpi-warning">warn</span></td></tr>
+<tr><td>wms</td><td>inventario_snapshot</td><td>2026-09-20 12:04:52</td><td>2026-09-21 19:04:57</td><td>31.0&nbsp;h</td><td>26 h / 48 h</td><td><span class="kpi-badge kpi-warning">warn</span></td></tr>
+<tr><td>scorecard</td><td>kpi_captura_manual</td><td>2026-08-14 19:04:52</td><td>2026-09-21 19:04:57</td><td>38.0&nbsp;d</td><td>35 d / 45 d</td><td><span class="kpi-badge kpi-warning">warn</span></td></tr>
+<tr><td>erp</td><td>calendario</td><td>2026-09-20 23:04:51</td><td>2026-09-21 19:04:57</td><td>20.0&nbsp;h</td><td>26 h / 48 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>erp</td><td>factura_linea</td><td>2026-09-20 23:04:52</td><td>2026-09-21 19:04:57</td><td>20.0&nbsp;h</td><td>26 h / 48 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>erp</td><td>pago</td><td>2026-09-20 23:04:53</td><td>2026-09-21 19:04:57</td><td>20.0&nbsp;h</td><td>26 h / 48 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>erp</td><td>producto</td><td>2026-09-20 23:04:53</td><td>2026-09-21 19:04:57</td><td>20.0&nbsp;h</td><td>26 h / 48 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>erp</td><td>suscripcion_cargo</td><td>2026-09-20 23:04:53</td><td>2026-09-21 19:04:57</td><td>20.0&nbsp;h</td><td>26 h / 48 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>crm</td><td>cancelacion</td><td>2026-09-21 10:04:51</td><td>2026-09-21 19:04:57</td><td>9.0&nbsp;h</td><td>12 h / 24 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>crm</td><td>crm_cliente</td><td>2026-09-21 10:04:51</td><td>2026-09-21 19:04:57</td><td>9.0&nbsp;h</td><td>12 h / 24 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>crm</td><td>crm_equipo</td><td>2026-09-21 10:04:51</td><td>2026-09-21 19:04:57</td><td>9.0&nbsp;h</td><td>12 h / 24 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>crm</td><td>crm_meta_venta</td><td>2026-09-21 10:04:52</td><td>2026-09-21 19:04:57</td><td>9.0&nbsp;h</td><td>12 h / 24 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>crm</td><td>crm_vendedor</td><td>2026-09-21 10:04:52</td><td>2026-09-21 19:04:57</td><td>9.0&nbsp;h</td><td>12 h / 24 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>crm</td><td>crm_oportunidad_evento</td><td>2026-09-21 10:04:52</td><td>2026-09-21 19:04:57</td><td>9.0&nbsp;h</td><td>12 h / 24 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>encuestas</td><td>encuesta_nps</td><td>2026-09-15 19:04:52</td><td>2026-09-21 19:04:57</td><td>6.0&nbsp;d</td><td>8 d / 14 d</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>scorecard</td><td>kpi_meta</td><td>2026-07-21 19:04:52</td><td>2026-09-21 19:04:57</td><td>62.0&nbsp;d</td><td>100 d / 130 d</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>pos</td><td>pedido_linea</td><td>2026-09-21 16:34:53</td><td>2026-09-21 19:04:57</td><td>2.5&nbsp;h</td><td>6 h / 12 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>helpdesk</td><td>ticket_soporte</td><td>2026-09-21 14:04:53</td><td>2026-09-21 19:04:57</td><td>5.0&nbsp;h</td><td>12 h / 36 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>producto_analytics</td><td>evento_actividad</td><td>2026-09-21 17:52:52</td><td>2026-09-21 19:04:57</td><td>1.2&nbsp;h</td><td>3 h / 12 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+<tr><td>sucursales</td><td>pedido_sucursal_cdmx</td><td>2026-09-21 14:04:53</td><td>2026-09-21 19:04:57</td><td>5.0&nbsp;h</td><td>36 h / 72 h</td><td><span class="kpi-badge kpi-good">pass</span></td></tr>
+</tbody>
+      </table>
+    </div>
+    
+
+  <div class="charts-grid">
+    
+    <div class="chart-card chart-card-wide">
+      <div class="chart-head">
+        <h3>SLA compliance by source and day</h3>
+        <p>% of hourly checks in pass · green ≥95, gold ≥80, red <80 · columns: days from 23 Aug to 21 Sep (UTC, the last is today, partial), labelled with the weekday initial</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_heatmap_sla"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>SLA compliance by source, 30 days</h3>
+        <p>% of checks in pass · worst to best</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_sla_fuente"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Sources by status at each day's close</h3>
+        <p>How many of the 10 sources were in pass, warn or error at the day's last check</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_estado_diario"></canvas>
+      </div>
+    </div>
+    
+  </div>
+
+  <div>
+    <p class="section-label">The 4 worst-performing sources: peak daily age vs. their thresholds</p>
+    <div class="drilldown-grid">
+      
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>sucursales</h3>
+        <p>Peak age of the day · warn 36 h, error 72 h · 53.9% within SLA</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_dd_sucursales"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>ads</h3>
+        <p>Peak age of the day · warn 48 h, error 96 h · 71.5% within SLA</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_dd_ads"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>wms</h3>
+        <p>Peak age of the day · warn 26 h, error 48 h · 86.7% within SLA</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_dd_wms"></canvas>
+      </div>
+    </div>
+    
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>erp</h3>
+        <p>Peak age of the day · warn 26 h, error 48 h · 90.4% within SLA</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart_dd_erp"></canvas>
+      </div>
+    </div>
+    
+    </div>
+  </div>
+
+  <div class="insights-card">
+    <h3>What the data shows</h3>
+    <ul class="insights"><li>Today <b>17 of 22 tables</b> (6 of 10 sources) are within their SLA. In error: <b>sucursales.pedido_sucursal_monterrey</b> has gone 79.0&nbsp;h without loading (error at 72 h); <b>ads.marketing_gasto</b> has gone 4.2&nbsp;d without loading (error at 96 h). In warning: <b>sucursales.pedido_sucursal_guadalajara</b> (70.0&nbsp;h), <b>wms.inventario_snapshot</b> (31.0&nbsp;h), <b>scorecard.kpi_captura_manual</b> (38.0&nbsp;d).</li>
+<li><b>sucursales</b> is the most frequently late source: outside SLA on <b>19 of 30 days</b> (53.9% of checks in pass). The pattern is weekly: Sunday and Monday meet 3% of checks and the rest of the week 79%. That process does not load on weekends, so the 36 h warn threshold breaks every week with nothing actually wrong. A threshold that fires every week teaches people to ignore the alert: fix the process or the threshold.</li>
+<li><b>ads</b> is the other chronic case: 12 days outside SLA across 5 episodes, even with a threshold far looser than pos's (warn 48 h / error 96 h, versus 6 h / 12 h). An ads feed tolerates lag because of the attribution window, but not 4.2&nbsp;d. It feeds the dashboard 09 Marketing ROI.</li>
+<li>5 of 10 sources meet ≥95% of checks (crm, producto_analytics, pos, encuestas, helpdesk); their failures are one-off incidents, not a pattern. The longest run outside SLA was <b>83 h</b> (sucursales). Today's average staleness is 89% of the warn threshold: tables in pass sit at 65% of their margin and the failing ones are already at 170%.</li>
+<li>How to read this dashboard: the thresholds and today's status are <b>real</b> (the <code>freshness</code> blocks in the warehouse's <code>_*__sources.yml</code> and dbt's <code>sources.json</code>). The 30-day history is <b>simulated</b>, but classified with the same rule: 154 comparisons against live <code>dbt source freshness</code> match (see <code>data/verify_dbt_parity.py</code>).</li></ul>
+  </div>
+
+  
+
+  
+    <div class="checklist-card">
+      <h3>Freshness action plan</h3>
+      <p class="checklist-sub">5 tables outside SLA today and 3 structural actions. Tick each action when done; progress is kept in your browser.</p>
+      <div class="checklist-progress">
+        <div class="progress-bar"><div class="progress-fill" id="plan_frescura-fill" style="width:0%"></div></div>
+        <span id="plan_frescura-count">0 / 8 closed</span>
+      </div>
+      <div class="checklist-table-wrap">
+        <table class="checklist-table">
+          <thead><tr><th></th><th>Source / table</th><th>Status</th><th>Since last load</th><th>Action</th><th>Suggested owner</th><th>Affected dashboards</th></tr></thead>
+          <tbody><tr data-row="sucursales_pedido_sucursal_monterrey"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_frescura" data-row="sucursales_pedido_sucursal_monterrey"></td><td><b>sucursales.pedido_sucursal_monterrey</b></td><td><span class="kpi-badge kpi-critical">error</span></td><td>79.0&nbsp;h</td><td>Request the pedido_sucursal_monterrey Excel (last received 79.0&nbsp;h ago) and name an owner for the daily send, weekends included.</td><td>Branch ops</td><td>03 Executive Scorecard, 11 Consolidating Scattered Data</td></tr><tr data-row="ads_marketing_gasto"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_frescura" data-row="ads_marketing_gasto"></td><td><b>ads.marketing_gasto</b></td><td><span class="kpi-badge kpi-critical">error</span></td><td>4.2&nbsp;d</td><td>Retry the ads API load and confirm the attribution reprocess isn't taking the daily window. If the lag is structural, agree a 72 h warn with the Marketing owner.</td><td>Marketing ops</td><td>09 Marketing ROI</td></tr><tr data-row="sucursales_pedido_sucursal_guadalajara"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_frescura" data-row="sucursales_pedido_sucursal_guadalajara"></td><td><b>sucursales.pedido_sucursal_guadalajara</b></td><td><span class="kpi-badge kpi-warning">warn</span></td><td>70.0&nbsp;h</td><td>Request the pedido_sucursal_guadalajara Excel (last received 70.0&nbsp;h ago) and name an owner for the daily send, weekends included.</td><td>Branch ops</td><td>03 Executive Scorecard, 11 Consolidating Scattered Data</td></tr><tr data-row="wms_inventario_snapshot"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_frescura" data-row="wms_inventario_snapshot"></td><td><b>wms.inventario_snapshot</b></td><td><span class="kpi-badge kpi-warning">warn</span></td><td>31.0&nbsp;h</td><td>Check the nightly inventory batch log (last load 31.0&nbsp;h ago, warn at 26 h) and re-run it.</td><td>IT / Almacén</td><td>07 Demand & Inventory Forecasting</td></tr><tr data-row="scorecard_kpi_captura_manual"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_frescura" data-row="scorecard_kpi_captura_manual"></td><td><b>scorecard.kpi_captura_manual</b></td><td><span class="kpi-badge kpi-warning">warn</span></td><td>38.0&nbsp;d</td><td>Nudge the monthly capture of kpi_captura_manual (last 38.0&nbsp;d ago, warn at 35 d).</td><td>KPI owner</td><td>03 Executive Scorecard</td></tr><tr data-row="umbral_finde"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_frescura" data-row="umbral_finde"></td><td><b>sucursales</b> (threshold)</td><td><span class="kpi-badge kpi-warning">warn</span></td><td>every week</td><td>Decide: ask for a weekend send or raise the sucursales warn to 72 h. Today it fires every week with no real failure.</td><td>Data owner</td><td>03 Executive Scorecard, 11 Consolidating Scattered Data</td></tr><tr data-row="orquestar"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_frescura" data-row="orquestar"></td><td><b>dbt source freshness</b></td><td><span class="kpi-badge kpi-neutral">—</span></td><td>—</td><td>Run it hourly in the orchestrator and send warn/error to an alerts channel, so you find out before the meeting.</td><td>Data owner</td><td>—</td></tr><tr data-row="banner_datos"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_frescura" data-row="banner_datos"></td><td><b>Dashboards</b></td><td><span class="kpi-badge kpi-neutral">—</span></td><td>—</td><td>Show each dashboard's last-data date ("data as of …") and turn it red when its source is in error.</td><td>Data owner</td><td>—</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    
+
+  
+
+  <footer>
+    Synthetic dataset generated for demonstration purposes. Actual service: Data Storytelling Express / Micro Data Office &middot;
+    <a href="mailto:xianalytics20@gmail.com">xianalytics20@gmail.com</a> &middot; WhatsApp +52 55 3566 6166
+  </footer>
+</div>
+
+<script>
+function isDark() {
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t === 'dark') return true;
+  if (t === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function withAlpha(hex, alpha) {
+  if (alpha >= 1) return hex;
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function seriesColor(i, light, dark, alpha) {
+  const hex = isDark() ? dark : light;
+  return withAlpha(hex, alpha);
+}
+function seriesColorHex(light, dark) { return isDark() ? dark : light; }
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function inkColor(role) {
+  return { primary: cssVar('--text-primary'), secondary: cssVar('--text-secondary'),
+            muted: cssVar('--text-muted'), grid: cssVar('--grid') }[role];
+}
+function surfaceColor() { return cssVar('--surface'); }
+
+
+    (function() {
+      const scopeId = "plan_frescura";
+      const total = 8;
+      const storageKey = 'xia_checklist_' + scopeId;
+      let state = {};
+      try { state = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (e) {}
+      const boxes = document.querySelectorAll(`input.xia-check[data-scope="${scopeId}"]`);
+      function updateProgress() {
+        const checked = document.querySelectorAll(`input.xia-check[data-scope="${scopeId}"]:checked`).length;
+        const fill = document.getElementById(scopeId + '-fill');
+        const count = document.getElementById(scopeId + '-count');
+        if (fill) fill.style.width = (total ? (checked / total * 100) : 0) + '%';
+        if (count) count.textContent = `${checked} / ${total} ${"closed"}`;
+      }
+      boxes.forEach((b) => {
+        const rowId = b.dataset.row;
+        if (state[rowId]) {
+          b.checked = true;
+          const tr = b.closest('tr');
+          if (tr) tr.classList.add('done');
+        }
+        b.addEventListener('change', () => {
+          state[rowId] = b.checked;
+          try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch (e) {}
+          const tr = b.closest('tr');
+          if (tr) tr.classList.toggle('done', b.checked);
+          updateProgress();
+        });
+      });
+      updateProgress();
+    })();
+    
+
+    new Chart(document.getElementById('chart_sla_trend').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["23 Aug", "24 Aug", "25 Aug", "26 Aug", "27 Aug", "28 Aug", "29 Aug", "30 Aug", "31 Aug", "1 Sep", "2 Sep", "3 Sep", "4 Sep", "5 Sep", "6 Sep", "7 Sep", "8 Sep", "9 Sep", "10 Sep", "11 Sep", "12 Sep", "13 Sep", "14 Sep", "15 Sep", "16 Sep", "17 Sep", "18 Sep", "19 Sep", "20 Sep", "21 Sep"],
+        datasets: [{
+            label: "% of checks within SLA",
+            data: [90.0, 90.8, 100.0, 100.0, 94.2, 95.4, 100.0, 88.8, 80.0, 84.6, 86.2, 94.6, 96.7, 86.2, 75.4, 72.5, 83.3, 100.0, 97.9, 99.2, 91.2, 90.0, 90.0, 80.0, 94.2, 95.4, 92.9, 75.8, 65.0, 67.0],
+            valueLabels: null,
+            backgroundColor: seriesColor(0, "#71A8A3", "#8FC2BC", 0.12),
+            borderColor: seriesColor(0, "#71A8A3", "#8FC2BC", 1),
+            borderWidth: 2,
+            borderDash: [],
+            borderRadius: 0,
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}%` } }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted'), callback: (v) => v + '%' },
+            title: { display: false, text: "", color: inkColor('secondary') }, suggestedMax: 100, suggestedMin: 0
+          }
+        }
+      }
+    });
+    
+
+    (function() {
+      const canvas = document.getElementById('chart_heatmap_sla');
+      const wrap = canvas.parentElement;
+      const bands = [{"min": 95, "light": "#3E8F72", "dark": "#3E8F72"}, {"min": 80, "light": "#B8842C", "dark": "#B8842C"}, {"min": 0, "light": "#d03b3b", "dark": "#d03b3b"}];
+      const rowLabels = ["sucursales", "ads", "wms", "scorecard", "erp", "crm", "producto_analytics", "pos", "encuestas", "helpdesk"];
+      const colLabels = ["S", "M", "T", "W", "T", "F", "S", "S", "M", "T", "W", "T", "F", "S", "S", "M", "T", "W", "T", "F", "S", "S", "M", "T", "W", "T", "F", "S", "S", "M"];
+      const matrix = [[0.0, 8.3, 100.0, 100.0, 41.7, 54.2, 100.0, 8.3, 0.0, 91.7, 100.0, 100.0, 66.7, 100.0, 8.3, 0.0, 33.3, 100.0, 100.0, 100.0, 12.5, 0.0, 0.0, 41.7, 100.0, 54.2, 87.5, 100.0, 0.0, 0.0], [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 79.2, 0.0, 0.0, 0.0, 100.0, 100.0, 0.0, 0.0, 16.7, 100.0, 100.0, 100.0, 91.7, 100.0, 100.0, 100.0, 100.0, 87.5, 100.0, 100.0, 58.3, 0.0, 0.0], [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 62.5, 45.8, 100.0, 62.5, 45.8, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 62.5, 0.0, 50.0, 70.0], [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 79.2, 0.0, 0.0, 0.0], [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 8.3, 0.0, 100.0, 91.7, 100.0, 100.0, 100.0, 100.0, 12.5, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0], [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 45.8, 54.2, 100.0, 100.0, 100.0, 100.0, 100.0], [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 54.2, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0], [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 87.5, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0], [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0], [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]];
+      const nRows = rowLabels.length, nCols = colLabels.length;
+      const diverging = false;
+      const intFormat = true;
+      let maxAbs = 0;
+      matrix.forEach(row => row.forEach(v => { maxAbs = Math.max(maxAbs, Math.abs(v)); }));
+      maxAbs = maxAbs || 1;
+
+      function cellColor(v) {
+        if (bands) {
+          const b = bands.find(x => v >= x.min) || bands[bands.length - 1];
+          const hex = isDark() ? b.dark : b.light;
+          const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), bl = parseInt(hex.slice(5, 7), 16);
+          return `rgba(${r},${g},${bl},0.5)`;
+        }
+        const alpha = Math.min(Math.abs(v) / maxAbs, 1);
+        const teal = isDark() ? [143, 194, 188] : [113, 168, 163];
+        const gold = isDark() ? [212, 169, 79] : [184, 132, 44];
+        const [r, g, b] = (diverging && v < 0) ? gold : teal;
+        return `rgba(${r},${g},${b},${(0.10 + alpha * 0.80).toFixed(2)})`;
+      }
+
+      function fmt(v) {
+        if (intFormat) {
+          const sign = diverging && v >= 0 ? '+' : '';
+          return sign + Math.round(v).toLocaleString('en-US');
+        }
+        return v.toFixed(2);
+      }
+
+      function draw() {
+        const dpr = window.devicePixelRatio || 1;
+        const w = wrap.clientWidth, h = wrap.clientHeight;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+
+        const padLeft = Math.min(150, w * 0.28);
+        const padTop = 8;
+        const padBottom = 30;
+        const gridW = w - padLeft - 12;
+        const gridH = h - padTop - padBottom;
+        const cellW = gridW / nCols;
+        const cellH = gridH / nRows;
+        const gap = 3;
+
+        for (let i = 0; i < nRows; i++) {
+          for (let j = 0; j < nCols; j++) {
+            const x = padLeft + j * cellW, y = padTop + i * cellH;
+            ctx.fillStyle = cellColor(matrix[i][j]);
+            ctx.fillRect(x, y, cellW - gap, cellH - gap);
+            ctx.fillStyle = inkColor('primary');
+            ctx.font = '600 11px -apple-system, sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(fmt(matrix[i][j]), x + (cellW - gap) / 2, y + (cellH - gap) / 2);
+          }
+        }
+
+        ctx.fillStyle = inkColor('secondary');
+        ctx.font = '600 11px -apple-system, sans-serif';
+        for (let i = 0; i < nRows; i++) {
+          ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+          ctx.fillText(rowLabels[i], padLeft - 10, padTop + i * cellH + (cellH - gap) / 2);
+        }
+        for (let j = 0; j < nCols; j++) {
+          ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+          ctx.fillText(colLabels[j], padLeft + j * cellW + (cellW - gap) / 2, padTop + nRows * cellH + 6);
+        }
+      }
+
+      draw();
+      window.addEventListener('resize', draw);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+      new ResizeObserver(draw).observe(wrap);
+    })();
+    
+
+    (function() {
+      const canvas = document.getElementById('chart_sla_fuente');
+      const wrap = canvas.parentElement;
+      const labels = ["sucursales", "ads", "wms", "scorecard", "erp", "crm", "producto_analytics", "pos", "encuestas", "helpdesk"];
+      const values = [53.9, 71.5, 86.7, 89.8, 90.4, 96.6, 98.5, 99.6, 100.0, 100.0];
+      const maxVal = 100;
+      const colors = ["#d03b3b", "#d03b3b", "#B8842C", "#B8842C", "#B8842C", "#3E8F72", "#3E8F72", "#3E8F72", "#3E8F72", "#3E8F72"];
+      const valueSuffix = "%";
+      const defaultColor = { light: "#71A8A3", dark: "#8FC2BC" };
+
+      function roundRect(ctx, x, y, w, h, r) {
+        const rr = Math.max(Math.min(r, h / 2, Math.max(w, 0) / 2), 0);
+        ctx.beginPath();
+        ctx.moveTo(x + rr, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rr);
+        ctx.arcTo(x + w, y + h, x, y + h, rr);
+        ctx.arcTo(x, y + h, x, y, rr);
+        ctx.arcTo(x, y, x + w, y, rr);
+        ctx.closePath();
+      }
+
+      function draw() {
+        const dpr = window.devicePixelRatio || 1;
+        const w = wrap.clientWidth, h = wrap.clientHeight;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+
+        const n = labels.length;
+        const padLeft = Math.min(190, w * 0.34);
+        const padRight = 54;
+        const barAreaW = Math.max(w - padLeft - padRight, 20);
+        const rowH = h / n;
+        const barH = Math.max(Math.min(16, rowH * 0.42), 6);
+
+        for (let i = 0; i < n; i++) {
+          const cy = i * rowH + rowH / 2;
+          const barY = cy - barH / 2;
+          const val = values[i];
+          const pct = Math.max(0, Math.min(val / maxVal, 1));
+          const color = (colors && colors[i]) ? colors[i] : (isDark() ? defaultColor.dark : defaultColor.light);
+
+          ctx.fillStyle = inkColor('primary');
+          ctx.font = '600 12px -apple-system, sans-serif';
+          ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+          ctx.fillText(labels[i], 0, cy);
+
+          ctx.fillStyle = withAlpha(inkColor('muted'), 0.22);
+          roundRect(ctx, padLeft, barY, barAreaW, barH, barH / 2);
+          ctx.fill();
+
+          if (pct > 0) {
+            ctx.fillStyle = color;
+            roundRect(ctx, padLeft, barY, barAreaW * pct, barH, barH / 2);
+            ctx.fill();
+          }
+
+          ctx.fillStyle = inkColor('secondary');
+          ctx.font = '700 12px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(`${val.toFixed(1)}${valueSuffix}`, padLeft + barAreaW + 8, cy);
+        }
+      }
+
+      draw();
+      window.addEventListener('resize', draw);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+      new ResizeObserver(draw).observe(wrap);
+    })();
+    
+
+    new Chart(document.getElementById('chart_estado_diario').getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: ["23 Aug", "24 Aug", "25 Aug", "26 Aug", "27 Aug", "28 Aug", "29 Aug", "30 Aug", "31 Aug", "1 Sep", "2 Sep", "3 Sep", "4 Sep", "5 Sep", "6 Sep", "7 Sep", "8 Sep", "9 Sep", "10 Sep", "11 Sep", "12 Sep", "13 Sep", "14 Sep", "15 Sep", "16 Sep", "17 Sep", "18 Sep", "19 Sep", "20 Sep", "21 Sep"],
+        datasets: [{
+            label: "pass (within SLA)",
+            data: [9, 10, 10, 10, 9, 10, 10, 8, 8, 9, 8, 10, 10, 8, 8, 8, 9, 10, 10, 10, 9, 9, 9, 8, 10, 9, 8, 7, 7, 6],
+            valueLabels: null,
+            backgroundColor: "#3E8F72",
+            borderColor: "#3E8F72",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "warn (warning)",
+            data: [0, 0, 0, 0, 1, 0, 0, 2, 2, 0, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 2, 2, 3, 2],
+            valueLabels: null,
+            backgroundColor: "#B8842C",
+            borderColor: "#B8842C",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "error",
+            data: [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 2],
+            valueLabels: null,
+            backgroundColor: "#d03b3b",
+            borderColor: "#d03b3b",
+            borderWidth: 1,
+            borderDash: [],
+            borderRadius: 4,
+            fill: false,
+            tension: 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: true,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted') },
+            title: { display: true, text: "Sources", color: inkColor('secondary') }, suggestedMax: 10
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_dd_sucursales').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["23 Aug", "24 Aug", "25 Aug", "26 Aug", "27 Aug", "28 Aug", "29 Aug", "30 Aug", "31 Aug", "1 Sep", "2 Sep", "3 Sep", "4 Sep", "5 Sep", "6 Sep", "7 Sep", "8 Sep", "9 Sep", "10 Sep", "11 Sep", "12 Sep", "13 Sep", "14 Sep", "15 Sep", "16 Sep", "17 Sep", "18 Sep", "19 Sep", "20 Sep", "21 Sep"],
+        datasets: [{
+            label: "Peak age (% of warn threshold)",
+            data: [222, 263, 68, 72, 136, 167, 94, 161, 205, 201, 76, 82, 121, 92, 159, 226, 248, 67, 71, 92, 158, 225, 292, 330, 77, 129, 137, 97, 164, 219],
+            valueLabels: null,
+            backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
+            borderColor: seriesColor(1, "#B8842C", "#D4A94F", 1),
+            borderWidth: 3,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 4,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Warn threshold",
+            data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+            valueLabels: null,
+            backgroundColor: withAlpha(inkColor('muted'), 0.12),
+            borderColor: withAlpha(inkColor('muted'), 0.75),
+            borderWidth: 1.5,
+            borderDash: [3, 3],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Error threshold",
+            data: [200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200],
+            valueLabels: null,
+            backgroundColor: withAlpha(inkColor('muted'), 0.12),
+            borderColor: withAlpha(inkColor('muted'), 0.75),
+            borderWidth: 1.5,
+            borderDash: [3, 3],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}%` } }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted'), callback: (v) => v + '%' },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_dd_ads').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["23 Aug", "24 Aug", "25 Aug", "26 Aug", "27 Aug", "28 Aug", "29 Aug", "30 Aug", "31 Aug", "1 Sep", "2 Sep", "3 Sep", "4 Sep", "5 Sep", "6 Sep", "7 Sep", "8 Sep", "9 Sep", "10 Sep", "11 Sep", "12 Sep", "13 Sep", "14 Sep", "15 Sep", "16 Sep", "17 Sep", "18 Sep", "19 Sep", "20 Sep", "21 Sep"],
+        datasets: [{
+            label: "Peak age (% of warn threshold)",
+            data: [95, 61, 84, 69, 41, 54, 60, 110, 160, 210, 260, 50, 100, 150, 200, 241, 56, 98, 58, 104, 51, 52, 92, 60, 106, 33, 69, 119, 169, 210],
+            valueLabels: null,
+            backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
+            borderColor: seriesColor(1, "#B8842C", "#D4A94F", 1),
+            borderWidth: 3,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 4,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Warn threshold",
+            data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+            valueLabels: null,
+            backgroundColor: withAlpha(inkColor('muted'), 0.12),
+            borderColor: withAlpha(inkColor('muted'), 0.75),
+            borderWidth: 1.5,
+            borderDash: [3, 3],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Error threshold",
+            data: [200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200],
+            valueLabels: null,
+            backgroundColor: withAlpha(inkColor('muted'), 0.12),
+            borderColor: withAlpha(inkColor('muted'), 0.75),
+            borderWidth: 1.5,
+            borderDash: [3, 3],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}%` } }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted'), callback: (v) => v + '%' },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_dd_wms').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["23 Aug", "24 Aug", "25 Aug", "26 Aug", "27 Aug", "28 Aug", "29 Aug", "30 Aug", "31 Aug", "1 Sep", "2 Sep", "3 Sep", "4 Sep", "5 Sep", "6 Sep", "7 Sep", "8 Sep", "9 Sep", "10 Sep", "11 Sep", "12 Sep", "13 Sep", "14 Sep", "15 Sep", "16 Sep", "17 Sep", "18 Sep", "19 Sep", "20 Sep", "21 Sep"],
+        datasets: [{
+            label: "Peak age (% of warn threshold)",
+            data: [91, 91, 91, 89, 92, 91, 89, 89, 91, 91, 133, 183, 90, 133, 183, 92, 91, 91, 91, 90, 90, 91, 91, 92, 91, 90, 134, 226, 272, 119],
+            valueLabels: null,
+            backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
+            borderColor: seriesColor(1, "#B8842C", "#D4A94F", 1),
+            borderWidth: 3,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 4,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Warn threshold",
+            data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+            valueLabels: null,
+            backgroundColor: withAlpha(inkColor('muted'), 0.12),
+            borderColor: withAlpha(inkColor('muted'), 0.75),
+            borderWidth: 1.5,
+            borderDash: [3, 3],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Error threshold",
+            data: [185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185],
+            valueLabels: null,
+            backgroundColor: withAlpha(inkColor('muted'), 0.12),
+            borderColor: withAlpha(inkColor('muted'), 0.75),
+            borderWidth: 1.5,
+            borderDash: [3, 3],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}%` } }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted'), callback: (v) => v + '%' },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+
+    new Chart(document.getElementById('chart_dd_erp').getContext('2d'), {
+      type: "line",
+      data: {
+        labels: ["23 Aug", "24 Aug", "25 Aug", "26 Aug", "27 Aug", "28 Aug", "29 Aug", "30 Aug", "31 Aug", "1 Sep", "2 Sep", "3 Sep", "4 Sep", "5 Sep", "6 Sep", "7 Sep", "8 Sep", "9 Sep", "10 Sep", "11 Sep", "12 Sep", "13 Sep", "14 Sep", "15 Sep", "16 Sep", "17 Sep", "18 Sep", "19 Sep", "20 Sep", "21 Sep"],
+        datasets: [{
+            label: "Peak age (% of warn threshold)",
+            data: [91, 90, 91, 90, 88, 90, 91, 95, 89, 91, 90, 90, 90, 89, 90, 183, 275, 91, 106, 86, 91, 90, 94, 178, 91, 95, 91, 91, 85, 77],
+            valueLabels: null,
+            backgroundColor: seriesColor(1, "#B8842C", "#D4A94F", 0.12),
+            borderColor: seriesColor(1, "#B8842C", "#D4A94F", 1),
+            borderWidth: 3,
+            borderDash: [],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 4,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Warn threshold",
+            data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+            valueLabels: null,
+            backgroundColor: withAlpha(inkColor('muted'), 0.12),
+            borderColor: withAlpha(inkColor('muted'), 0.75),
+            borderWidth: 1.5,
+            borderDash: [3, 3],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        },
+{
+            label: "Error threshold",
+            data: [185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185],
+            valueLabels: null,
+            backgroundColor: withAlpha(inkColor('muted'), 0.12),
+            borderColor: withAlpha(inkColor('muted'), 0.75),
+            borderWidth: 1.5,
+            borderDash: [3, 3],
+            borderRadius: 0,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'start',
+                     labels: { color: inkColor('secondary'), boxWidth: 12, usePointStyle: true } },
+          tooltip: { backgroundColor: surfaceColor(), titleColor: inkColor('primary'), bodyColor: inkColor('secondary'),
+                      borderColor: inkColor('grid'), borderWidth: 1, padding: 10,
+                      callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}%` } }
+        },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { color: inkColor('muted') } },
+          y: {
+            stacked: false,
+            grid: { color: inkColor('grid') },
+            ticks: { color: inkColor('muted'), callback: (v) => v + '%' },
+            title: { display: false, text: "", color: inkColor('secondary') }
+          }
+        }
+      }
+    });
+    
+</script>
+</body>
+</html>

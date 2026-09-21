@@ -58,6 +58,7 @@ dbt deps          # instala dbt_utils
 dbt seed          # carga los 22 CSV a DuckDB (schema "raw")
 dbt run           # staging -> intermediate -> marts -> meta -> gold (87 modelos)
 dbt test          # 429 tests (sources, llaves, integridad, contratos, genéricos, custom y singulares)
+dbt source freshness   # frescura de las 22 tablas de bronze contra su SLA -> target/sources.json
 dbt docs generate && dbt docs serve   # catálogo + lineage DAG en localhost
 
 ```
@@ -100,7 +101,7 @@ warehouse/
 │       └── sucursales/  ventas de sucursal y cola de revisión
 │   ├── meta/            5 modelos: motor de calidad de datos (batch, reglas, resultados, scorecard, plan)
 │   └── gold/            19 rpt_*, en una carpeta por dashboard (01_ventas_por_equipo ... 13_data_health)
-├── macros/              11 macros Jinja reutilizables (ver abajo)
+├── macros/              12 macros Jinja reutilizables (ver abajo)
 ├── scripts/             verify_dashboard_coverage.py: cada dashboard tiene su reporte gold
 ├── tests/               6 tests singulares + 1 test genérico custom
 └── snapshots/, analyses/  (vacíos por ahora)
@@ -110,7 +111,8 @@ warehouse/
 
 | Pieza | Dónde |
 |---|---|
-| **sources** | `models/staging/*/_*__sources.yml` — 10 sistemas fuente, 21 tablas, cada una anclada a su tabla legacy con `meta.legacy_table`. Los sistemas limpios llevan tests de llave única, `accepted_values` e integridad referencial entre sources. |
+| **sources** | `models/staging/*/_*__sources.yml` — 10 sistemas fuente, 22 tablas (21 ancladas a su tabla legacy con `meta.legacy_table`, más `kpi_meta`). Los sistemas limpios llevan tests de llave única, `accepted_values` e integridad referencial entre sources. |
+| **freshness** | Los 10 sources llevan `loaded_at_field: _loaded_at` y un bloque `freshness` (`warn_after`/`error_after`) con umbrales distintos por tipo de sistema: de 3 h/12 h en `producto_analytics` a 35 d/45 d en la captura manual de `scorecard`, con un override por tabla en `kpi_meta`. `dbt source freshness` mide las 22 tablas. Ver «Frescura de las fuentes» abajo. |
 | **staging** | `stg_<source>__<entidad>.sql` — 22 modelos, materializados como view |
 | **intermediate** | `models/intermediate/` — depuración de producto (`QUALIFY`, ventana para recuperar categorías), validación de facturas con motivo de rechazo, dedup de sucursales |
 | **marts** | `models/marts/core` (11 dimensiones) + hechos por dominio (24). Los hechos "enriquecidos" (churn, RFM, elasticidad, forecast, ROI, tendencia) se calculan en SQL puro |
@@ -121,11 +123,29 @@ warehouse/
 | **schema.yml** | Uno por dominio, no un YAML monolítico |
 | **documentación** | Descripciones inline + bloques `{% docs %}` largos (`dim_cliente_dedupe`) |
 | **lineage/DAG** | `dbt docs generate` + `dbt docs serve` — el grafo interactivo real |
-| **macros** | `duckdb__create_csv_table` (todo seed aterriza como TEXT), `generate_schema_name`, `parse_messy_date` (fechas mixtas; la ambigüedad DD/MM vs MM/DD está documentada, no oculta), `cast_messy_amount`, `quadrant_segment` (un macro en vez de 4 `CASE WHEN`), `nombre_mes_es`/`nombre_dia_es`, `canonical_case` (normaliza catálogos), `mes_key`, `dq_reglas` (las 33 reglas de calidad como datos, no como 33 tests sueltos) y `cerrar_batch` (hook `on-run-end`) |
+| **macros** | `duckdb__create_csv_table` (todo seed aterriza como TEXT), `generate_schema_name`, `parse_messy_date` (fechas mixtas; la ambigüedad DD/MM vs MM/DD está documentada, no oculta), `cast_messy_amount`, `quadrant_segment` (un macro en vez de 4 `CASE WHEN`), `nombre_mes_es`/`nombre_dia_es`, `canonical_case` (normaliza catálogos), `mes_key`, `dq_reglas` (las 33 reglas de calidad como datos, no como 33 tests sueltos), `cerrar_batch` (hook `on-run-end`) y `stamp_loaded_at` (post-hook de los seeds que sella `_loaded_at`, ver «Frescura») |
 | **Jinja** | `{% for %}` sobre la lista de formatos de fecha, `{% if is_incremental() %}`, `ref()`/`source()` en todo, `{{ var(...) }}` |
 | **SQL** | CTEs en cascada, `ROW_NUMBER()`/`QUALIFY`, `PERCENT_RANK()`, ventanas móviles, regresión nativa (`regr_slope`/`regr_r2`), agregaciones con `FILTER` |
 | **Git** | rama por feature → PR → CI en verde → merge a main |
 | **CI/CD** | `dbt_ci.yml`: seed → run → test → cobertura de dashboards en cada PR, DuckDB efímero, sin credenciales. `dbt_docs.yml`: genera el sitio de docs como artifact en cada push a main |
+
+## Frescura de las fuentes
+
+Cada source declara desde dónde se lee su última carga y qué tan vieja puede ser antes de alertar. Ejemplo (`_sucursales__sources.yml`; los 10 sistemas llevan el suyo):
+
+```yaml
+    config:
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after: {count: 36, period: hour}
+        error_after: {count: 72, period: hour}
+```
+
+`dbt source freshness` compara `max(_loaded_at)` contra el reloj y escribe `target/sources.json` (pass / warn / error por tabla). Con el escenario demo actual hay **17 tablas en pass, 3 en warn y 2 en error** (`ads.marketing_gasto` y `sucursales.pedido_sucursal_monterrey`); el comando termina con código distinto de cero por esos `error`, que son esperados, por lo que **no está en `dbt_ci.yml`**.
+
+Los seeds son CSV estáticos y no traen columna de carga: la escribe el post-hook `stamp_loaded_at` (macro en `macros/stamp_loaded_at.sql`), que agrega `_loaded_at` y la fija a `now() - <rezago>`, con el rezago por fuente en la var `freshness_demo_lag_hours` de `dbt_project.yml`. Así el resultado es el mismo el día que se corra, y los CSV no cambian. En una fuente real esa columna la escribe la herramienta de EL (`_fivetran_synced`, `_airbyte_extracted_at`). No se usó `meta/batch_ingesta` porque registra cuándo *corrió dbt*, con un solo timestamp para todas las fuentes, no cuándo llegó el dato de cada una. Los seeds llevan `+full_refresh: true`: sin eso, la segunda corrida de `dbt seed` truncaría una tabla que ya tiene `_loaded_at` y DuckDB rechazaría el `COPY` del CSV.
+
+Historial de 30 días, tablero y prueba de que la clasificación coincide con la de dbt: [`projects/16-frescura-disponibilidad-datos`](../projects/16-frescura-disponibilidad-datos/README.md).
 
 ## Gold: un reporte por cada dataset de dashboard
 

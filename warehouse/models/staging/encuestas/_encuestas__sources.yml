@@ -3,6 +3,12 @@ version: 2
 sources:
   - name: encuestas
     schema: raw
+    # Frescura: Export semanal de NPS.
+    config:
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after: {count: 8, period: day}
+        error_after: {count: 14, period: day}
     description: >
       Herramienta de encuestas (voz del cliente). Migración 1:1 de
       `bronze.encuesta_nps` (`_source_system` original: `encuestas_voc`).

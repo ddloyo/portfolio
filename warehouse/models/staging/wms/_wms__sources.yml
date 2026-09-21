@@ -3,6 +3,12 @@ version: 2
 sources:
   - name: wms
     schema: raw
+    # Frescura: Snapshot de inventario nocturno.
+    config:
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after: {count: 26, period: hour}
+        error_after: {count: 48, period: hour}
     description: >
       Sistema de almacén. Migración 1:1 de `bronze.inventario_snapshot`
       (`_source_system` original: `wms`). Aún sin modelos de staging.

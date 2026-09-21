@@ -3,6 +3,12 @@ version: 2
 sources:
   - name: erp
     schema: raw
+    # Frescura: Batch nocturno (+ 2 h de holgura en warn).
+    config:
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after: {count: 26, period: hour}
+        error_after: {count: 48, period: hour}
     description: >
       ERP — catálogo de producto, calendario, facturación y cobranza.
       Migración 1:1 de `bronze.producto`, `bronze.calendario`,

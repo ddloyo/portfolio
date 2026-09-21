@@ -2,7 +2,7 @@
 
 **Preguntas un lunes. Respuesta el jueves. El viernes ya decidiste sin ella.**
 
-Este repositorio es un portafolio de 15 proyectos de demostración que muestran, con datos sintéticos pero con código funcional real, lo que un **equipo de datos a demanda** puede resolver en semanas — no en trimestres. Trece son casos de negocio completos: datos, análisis y un dashboard interactivo, listo para abrirse en el navegador. Los otros dos son la capa que los sostiene: el 14 es la arquitectura de datos (dbt) que los respalda y el 15 es el catálogo que documenta ese mismo warehouse y define, en lenguaje de negocio, qué significa cada métrica.
+Este repositorio es un portafolio de 16 proyectos de demostración que muestran, con datos sintéticos pero con código funcional real, lo que un **equipo de datos a demanda** puede resolver en semanas — no en trimestres. Catorce son casos de negocio completos: datos, análisis y un dashboard interactivo, listo para abrirse en el navegador. Los otros dos son la capa que los sostiene: el 14 es la arquitectura de datos (dbt) que los respalda y el 15 es el catálogo que documenta ese mismo warehouse y define, en lenguaje de negocio, qué significa cada métrica.
 
 No vendemos dashboards. Vendemos el momento en que la respuesta todavía importaba.
 
@@ -11,9 +11,9 @@ No vendemos dashboards. Vendemos el momento en que la respuesta todavía importa
 | Servicio | Qué es | Proyectos de ejemplo |
 |---|---|---|
 | **Data Storytelling Express** | Proyecto puntual · primera versión en días. Un reporte convertido en la decisión: diagnóstico, narrativa clara (qué pasa, por qué, qué hacer) y presentación ejecutiva. | 03, 05, 06, 09, 10, 12 |
-| **Micro Data Office** | Suscripción mensual, sin mínimos. El equipo de datos que no se justifica contratar todavía: dashboards siempre actualizados, limpieza de datos, iteración continua. | 01, 02, 04, 07, 08, 11, 13, 14, 15 |
+| **Micro Data Office** | Suscripción mensual, sin mínimos. El equipo de datos que no se justifica contratar todavía: dashboards siempre actualizados, limpieza de datos, iteración continua. | 01, 02, 04, 07, 08, 11, 13, 14, 15, 16 |
 
-## Los 15 proyectos, en tres pilares
+## Los 16 proyectos, en tres pilares
 
 El portafolio avanza en madurez: primero se asegura que los datos sean confiables (**Data Foundation**), luego responde qué está pasando y por qué (**Data Analysis**), y finalmente anticipa qué va a pasar y qué hacer al respecto (**Advanced Analytics**).
 
@@ -27,6 +27,7 @@ Calidad, consolidación y confiabilidad de los datos — la base antes de analiz
 | 13 | [Data Health Check: Auditoría de Calidad de Datos](projects/13-data-health-check) | Micro Data Office | Un score de calidad por tabla y el plan de qué corregir primero — y por qué. |
 | 14 | [Arquitectura de Datos: del DDL a un Warehouse dbt](database/architecture.html) | Micro Data Office | El mismo diseño de warehouse, ahora con 87 modelos, 429 tests y lineage generado — no dibujado. |
 | 15 | [Catálogo de Datos y Definición de Métricas](projects/15-catalogo-datos-metricas) | Micro Data Office | Qué datos hay, de dónde vienen y qué significa cada métrica — sobre un warehouse dbt real, con 46 definiciones en lenguaje de negocio. |
+| 16 | [Disponibilidad y Frescura de Datos (SLA)](projects/16-frescura-disponibilidad-datos) | Micro Data Office | ¿Los datos de hoy son de hoy? Qué fuente llegó tarde, hace cuánto y qué dashboards alimenta — con `dbt source freshness` de verdad. |
 
 ### Data Analysis
 
@@ -53,13 +54,15 @@ Modelos predictivos y de optimización — de qué pasó a qué va a pasar.
 | 06 | [Elasticidad de Precios y Price Intelligence](projects/06-elasticidad-precios) | Micro Data Office | Qué productos aguantan subir de precio sin perder ingreso. |
 | 07 | [Forecasting de Demanda e Inventario](projects/07-forecast-demanda-inventario) | Micro Data Office | Cuántos días de inventario quedan realmente, antes del quiebre de stock. |
 
-Cada carpeta de proyecto de negocio (01–13) incluye:
+Cada carpeta de proyecto de negocio (01–13 y 16) incluye:
 
 - `data/generate_data.py` — genera un dataset sintético pero realista (nunca datos de un cliente real).
 - `run_analysis.py` — el análisis completo: procesamiento, métricas de negocio, gráfico estático (`assets/chart_overview.png`) y el dashboard interactivo (`dashboard.html`).
 - `README.md` — el caso de negocio: el problema, qué resuelve el entregable, cómo correrlo, y cómo se adapta a datos reales de un cliente.
 
-El proyecto 15 es la excepción: no genera datos sintéticos, sino que extrae un snapshot de los artefactos de dbt del [`warehouse/`](warehouse/) real (`data/extract_catalog.py`) y construye el catálogo sobre él (`run_analysis.py`). Los proyectos 14 y 15 son la cara «infraestructura» del portafolio; los 13 anteriores, la cara «respuesta».
+El proyecto 15 es la excepción: no genera datos sintéticos, sino que extrae un snapshot de los artefactos de dbt del [`warehouse/`](warehouse/) real (`data/extract_catalog.py`) y construye el catálogo sobre él (`run_analysis.py`). Los proyectos 14 y 15 son la cara «infraestructura» del portafolio; los otros 14, la cara «respuesta».
+
+El 16 es un híbrido: su estado de hoy y sus umbrales salen del warehouse real (`freshness` en los `_*__sources.yml` + `dbt source freshness`), y solo el historial de 30 días se simula, con una prueba de que clasifica igual que dbt (`data/verify_dbt_parity.py`).
 
 ## El warehouse detrás de los 13 datasets
 
@@ -91,13 +94,13 @@ python3 run_analysis.py
 open dashboard.html   # o doble clic en el archivo
 ```
 
-El mismo patrón aplica a cualquiera de los proyectos 01–13. El 15 se construye con `python3 run_analysis.py` (solo librería estándar; ver su [README](projects/15-catalogo-datos-metricas/README.md) para regenerar el snapshot desde dbt).
+El mismo patrón aplica a cualquiera de los proyectos 01–13. El 16 se construye igual, pero parte de una foto de dbt ya sincronizada (ver su [README](projects/16-frescura-disponibilidad-datos/README.md) para regenerarla). El 15 se construye con `python3 run_analysis.py` (solo librería estándar; ver su [README](projects/15-catalogo-datos-metricas/README.md) para regenerar el snapshot desde dbt).
 
 ## Diseño y stack
 
 - **Python** (pandas, numpy, matplotlib, scikit-learn) para generación de datos sintéticos y análisis.
 - **HTML + Chart.js** para los dashboards interactivos — se abren en cualquier navegador, sin instalar nada del lado del cliente.
-- Los 13 dashboards comparten una sola librería de estilo (`_lib/`) con una paleta validada para accesibilidad (contraste y distinción para daltonismo), para que el portafolio se sienta como un solo producto, no como 13 experimentos sueltos. El catálogo (15) es una página a medida —un buscador con filas expandibles no cabe en el patrón KPI + gráficas— pero comparte los mismos tokens de color, tipografía y estructura de encabezado.
+- Los 14 dashboards de KPI + gráficas (01–13 y 16) comparten una sola librería de estilo (`_lib/`) con una paleta validada para accesibilidad (contraste y distinción para daltonismo), para que el portafolio se sienta como un solo producto, no como 14 experimentos sueltos. El catálogo (15) es una página a medida —un buscador con filas expandibles no cabe en el patrón KPI + gráficas— pero comparte los mismos tokens de color, tipografía y estructura de encabezado.
 - Todos los datasets son **100% sintéticos**, generados con semillas fijas para que cada proyecto sea reproducible.
 
 ## Sobre XIA
