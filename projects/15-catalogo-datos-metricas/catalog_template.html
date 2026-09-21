@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{PAGE_TITLE}}</title>
+<style>
+  /* Tokens idénticos a _lib/dashboard.py: mismo look que los otros 13 dashboards. */
+  :root {
+    color-scheme: light;
+    --brand-ink: #163832;
+    --brand-cream: #F6EFE1;
+    --gold: #B8842C;
+    --surface: #FFFFFF;
+    --page: #F6EFE1;
+    --text-primary: #163832;
+    --text-secondary: #4A625D;
+    --text-muted: #7E948F;
+    --grid: rgba(22,56,50,0.15);
+    --border: rgba(22,56,50,0.12);
+    --accent: #71A8A3;
+    --series-1: #71A8A3;
+    --series-2: #163832;
+    --good-bg: rgba(62,143,114,0.16); --good-fg: #2f6e57;
+    --warn-bg: rgba(184,132,44,0.18); --warn-fg: #8c6220;
+    --crit-bg: rgba(208,59,59,0.14);  --crit-fg: #d03b3b;
+    --chip-bg: rgba(113,168,163,0.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface: #163832; --page: #0E1F1B;
+      --text-primary: #F6EFE1; --text-secondary: #C7D9D5; --text-muted: #8FA8A3;
+      --grid: rgba(246,239,225,0.14); --border: rgba(246,239,225,0.12); --accent: #8FC2BC;
+      --series-1: #8FC2BC; --series-2: #DCEAE7;
+      --good-fg: #7fd0ac; --warn-fg: #E8C878; --crit-fg: #f08a8a;
+      --chip-bg: rgba(143,194,188,0.16);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--text-primary);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    padding: 32px 20px 60px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .mono, code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  code { font-size: .92em; background: var(--chip-bg); padding: 1px 5px; border-radius: 4px; }
+  a { color: var(--text-primary); }
+  .brand { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brand .mark { width:28px; height:28px; border-radius:7px; background: var(--brand-ink); display:flex; align-items:center; justify-content:center; color: var(--brand-cream); font-weight:700; font-size:13px; }
+  .brand span { color: var(--text-muted); font-size:13px; letter-spacing:.04em; text-transform:uppercase; }
+  .brand .lang { margin-left:auto; font-size:12px; font-weight:700; text-transform:none; letter-spacing:0; padding:5px 12px; border:1px solid var(--border); border-radius:999px; background:var(--surface); color:var(--text-secondary); text-decoration:none; }
+  .brand .lang:hover { color: var(--accent); border-color: var(--accent); }
+  header.page-head { margin-bottom: 28px; }
+  header.page-head .tag { color: var(--text-muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+  header.page-head h1 { font-size:26px; margin:0 0 8px; }
+  header.page-head p.tagline { color: var(--text-secondary); font-size:15px; max-width:760px; margin:0; line-height:1.5; }
+
+  .minto-banner { background: var(--surface); border:1px solid var(--border); border-left:5px solid var(--gold); border-radius:10px; padding:18px 22px; margin-bottom:22px; }
+  .minto-banner .minto-label { margin:0 0 6px; color: var(--gold); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+  .minto-banner h2 { margin:0 0 8px; font-size:21px; line-height:1.35; }
+  .minto-banner p.minto-sub { margin:0; color: var(--text-secondary); font-size:14px; line-height:1.55; max-width:800px; }
+
+  .kpi-row { display:grid; grid-template-columns: repeat(auto-fit, minmax(138px, 1fr)); gap:14px; margin-bottom:28px; }
+  .kpi-card { background: var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
+  .kpi-hero { border:1px solid var(--gold); }
+  .kpi-hero .kpi-value { color: var(--gold); }
+  .kpi-label { color: var(--text-muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+  .kpi-value { font-size:26px; font-weight:600; }
+  .kpi-sub { margin-top:4px; font-size:12.5px; color: var(--text-secondary); }
+  .kpi-badge { display:inline-block; margin-top:8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; padding:3px 8px; border-radius:999px; }
+  .b-good { background: var(--good-bg); color: var(--good-fg); }
+  .b-warn { background: var(--warn-bg); color: var(--warn-fg); }
+  .b-crit { background: var(--crit-bg); color: var(--crit-fg); }
+  .b-muted { background: var(--chip-bg); color: var(--text-secondary); }
+
+  .charts-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:18px; margin-bottom:26px; }
+  .chart-card { background: var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; min-width:0; }
+  .chart-head h3 { margin:0 0 2px; font-size:15px; }
+  .chart-head p { margin:0 0 14px; color: var(--text-muted); font-size:12.5px; }
+  .bars { display:grid; gap:12px; }
+  .bar-row { display:grid; grid-template-columns: 120px 1fr; gap:10px; align-items:center; font-size:13px; }
+  .bar-row .lbl { font-weight:600; }
+  .bar-track { position:relative; height:12px; border-radius:999px; background: var(--grid); overflow:hidden; }
+  .bar-fill { position:absolute; inset:0 auto 0 0; border-radius:999px; background: var(--series-1); }
+  .bar-fill.s2 { background: var(--series-2); }
+  .bar-val { font-size:12px; color: var(--text-secondary); font-weight:700; white-space:nowrap; }
+  .bar-pair { display:grid; gap:4px; }
+  .bar-line { display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
+  .legend { display:flex; gap:16px; margin-bottom:12px; font-size:12px; color: var(--text-secondary); }
+  .legend i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
+
+  .insights-card { background: var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 22px; margin-bottom:26px; }
+  .insights-card h3 { margin:0 0 10px; font-size:14px; text-transform:uppercase; letter-spacing:.04em; color: var(--text-muted); }
+  ul.insights { margin:0; padding-left:18px; color: var(--text-secondary); line-height:1.65; font-size:14.5px; }
+  ul.insights li::marker { color: var(--accent); }
+
+  /* ------------------------------------------------------------------ tabs */
+  .tabs { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; border-bottom:1px solid var(--border); }
+  .tab { font:inherit; font-size:14px; font-weight:700; cursor:pointer; padding:10px 16px; border:0; border-bottom:3px solid transparent; background:none; color: var(--text-secondary); margin-bottom:-1px; }
+  .tab .n { font-weight:600; color: var(--text-muted); margin-left:6px; }
+  .tab[aria-selected="true"] { color: var(--text-primary); border-bottom-color: var(--gold); }
+  .tab:hover { color: var(--accent); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+  .toolbar { background: var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:16px; display:grid; gap:12px; }
+  .search { width:100%; font:inherit; font-size:14.5px; padding:10px 12px 10px 36px; border:1px solid var(--border); border-radius:8px; background: var(--page) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237E948F' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E") 11px center no-repeat; color: var(--text-primary); }
+  .filter-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .filter-row .fl { font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color: var(--text-muted); font-weight:700; min-width:64px; }
+  .chip-btn { font:inherit; font-size:12.5px; font-weight:600; cursor:pointer; padding:5px 12px; border-radius:999px; border:1px solid var(--border); background: var(--surface); color: var(--text-secondary); }
+  .chip-btn .c { color: var(--text-muted); font-weight:600; margin-left:4px; }
+  .chip-btn[aria-pressed="true"] { background: var(--brand-ink); border-color: var(--brand-ink); color: var(--brand-cream); }
+  .chip-btn[aria-pressed="true"] .c { color: var(--brand-cream); opacity:.75; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color:#0E1F1B; } :root:not([data-theme="light"]) .chip-btn[aria-pressed="true"] .c { color:#0E1F1B; } }
+  .toggle { display:inline-flex; gap:6px; align-items:center; font-size:13px; color: var(--text-secondary); cursor:pointer; }
+  .toggle input { accent-color: var(--accent); width:15px; height:15px; }
+  .result-count { color: var(--text-muted); font-size:13px; margin: 0 0 12px 2px; }
+
+  .layer-block { margin-bottom:26px; }
+  .layer-block > h3 { font-size:15px; margin:0 0 4px; display:flex; gap:8px; align-items:baseline; }
+  .layer-block > h3 .n { color: var(--text-muted); font-size:12.5px; font-weight:600; }
+  .layer-block > p { margin:0 0 10px; color: var(--text-muted); font-size:12.5px; }
+  .domain-h { margin:14px 0 6px 2px; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color: var(--text-muted); font-weight:700; }
+
+  details.row { background: var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:8px; }
+  details.row[open] { border-color: var(--accent); }
+  details.row.flash { animation: flash 1.6s ease-out; }
+  @keyframes flash { 0% { box-shadow: 0 0 0 3px var(--gold); } 100% { box-shadow: 0 0 0 3px transparent; } }
+  @media (prefers-reduced-motion: reduce) { details.row.flash { animation:none; outline:2px solid var(--gold); } }
+  details.row > summary { list-style:none; cursor:pointer; padding:11px 14px; display:grid; grid-template-columns: minmax(0,1.15fr) minmax(0,2fr) auto; gap:6px 14px; align-items:center; }
+  details.row > summary::-webkit-details-marker { display:none; }
+  .nm { font-weight:700; font-size:13.5px; overflow-wrap:anywhere; }
+  .nm::before { content:"▸ "; color: var(--text-muted); display:inline-block; transition: transform .12s; }
+  details[open] > summary .nm::before { content:"▾ "; }
+  .snip { color: var(--text-secondary); font-size:13px; line-height:1.4; min-width:0; }
+  .snip.gap { color: var(--warn-fg); font-weight:600; }
+  .badges { display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; }
+  .pill { display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; letter-spacing:.02em; white-space:nowrap; }
+  .row-body { padding:4px 16px 16px; border-top:1px solid var(--border); display:grid; gap:14px; }
+  .row-body h4 { margin:14px 0 6px; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color: var(--text-muted); }
+  .row-body p { margin:0 0 8px; color: var(--text-secondary); font-size:14px; line-height:1.55; max-width:840px; }
+  dl.facts { display:grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap:10px 18px; margin:0; }
+  dl.facts dt { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color: var(--text-muted); }
+  dl.facts dd { margin:2px 0 0; font-size:13px; color: var(--text-primary); overflow-wrap:anywhere; }
+  .lineage { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font:inherit; font-size:12px; padding:3px 10px; border-radius:999px; background: var(--chip-bg); color: var(--text-primary); border:1px solid transparent; cursor:pointer; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  button.chip:hover { border-color: var(--accent); }
+  .chip.plain { cursor:default; }
+  a.chip { text-decoration:none; font-family:inherit; font-weight:600; }
+  a.chip:hover { border-color: var(--accent); }
+  .empty { color: var(--text-muted); font-size:13px; }
+  table.mini { width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.mini th, table.mini td { text-align:left; padding:6px 10px; border-bottom:1px solid var(--grid); color: var(--text-secondary); vertical-align:top; }
+  table.mini th { color: var(--text-muted); text-transform:uppercase; font-size:10.5px; letter-spacing:.03em; }
+  .tbl-wrap { overflow-x:auto; }
+  td.dim { color: var(--text-muted); }
+  .no-results { background: var(--surface); border:1px dashed var(--border); border-radius:10px; padding:26px; text-align:center; color: var(--text-muted); }
+
+  /* --------------------------------------------------------------- métricas */
+  .scope-card { background: var(--surface); border:1px solid var(--border); border-left:5px solid var(--gold); border-radius:12px; padding:16px 20px; margin-bottom:18px; }
+  .scope-card summary { cursor:pointer; font-weight:700; font-size:15px; }
+  .scope-card p { color: var(--text-secondary); font-size:13.5px; line-height:1.55; margin:8px 0 6px; max-width:820px; }
+  .scope-card table { margin-top:8px; }
+  .metric-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap:14px; }
+  .metric { background: var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; gap:8px; min-width:0; }
+  .metric.flash { animation: flash 1.6s ease-out; }
+  .metric h3 { margin:0; font-size:16px; line-height:1.3; }
+  .metric .top { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  .metric .lab { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color: var(--text-muted); font-weight:700; margin-top:4px; }
+  .metric p { margin:0; font-size:14px; line-height:1.55; color: var(--text-secondary); }
+  .metric p.def { color: var(--text-primary); }
+  .caveat { border-left:3px solid var(--gold); background: var(--warn-bg); padding:8px 12px; border-radius:0 8px 8px 0; font-size:13px; color: var(--text-primary); line-height:1.5; }
+  .caveat b { color: var(--warn-fg); }
+  .metric .kv { display:flex; flex-wrap:wrap; gap:4px 16px; font-size:12.5px; color: var(--text-secondary); }
+  .metric .kv b { color: var(--text-muted); font-weight:700; text-transform:uppercase; font-size:10.5px; letter-spacing:.04em; margin-right:4px; }
+
+  footer { color: var(--text-muted); font-size:12px; margin-top:30px; border-top:1px solid var(--border); padding-top:16px; line-height:1.6; }
+  footer a { color: var(--text-primary); text-decoration:underline; }
+
+  @media (max-width: 760px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .lineage { grid-template-columns: 1fr; }
+    .metric-grid { grid-template-columns: 1fr; }
+    details.row > summary { grid-template-columns: 1fr; }
+    .badges { justify-content:flex-start; }
+    .bar-row { grid-template-columns: 96px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+{{TOP}}
+
+  <div class="tabs" role="tablist" id="tabs">
+    <button class="tab" role="tab" id="tab-inv" aria-controls="panel-inv" aria-selected="true"></button>
+    <button class="tab" role="tab" id="tab-met" aria-controls="panel-met" aria-selected="false"></button>
+  </div>
+
+  <section id="panel-inv" role="tabpanel" aria-labelledby="tab-inv">
+    <div class="toolbar">
+      <input class="search" id="q" type="search" autocomplete="off">
+      <div class="filter-row" id="f-layer"></div>
+      <div class="filter-row" id="f-domain"></div>
+      <div class="filter-row">
+        <label class="toggle"><input type="checkbox" id="t-warn"><span id="t-warn-l"></span></label>
+        <label class="toggle"><input type="checkbox" id="t-nodesc"><span id="t-nodesc-l"></span></label>
+        <label class="toggle"><input type="checkbox" id="t-notest"><span id="t-notest-l"></span></label>
+      </div>
+    </div>
+    <p class="result-count" id="inv-count" aria-live="polite"></p>
+    <div id="inv-list"></div>
+  </section>
+
+  <section id="panel-met" role="tabpanel" aria-labelledby="tab-met" hidden>
+    <div id="scope"></div>
+    <div class="toolbar">
+      <input class="search" id="mq" type="search" autocomplete="off">
+      <div class="filter-row" id="f-area"></div>
+      <div class="filter-row" id="f-computed"></div>
+    </div>
+    <p class="result-count" id="met-count" aria-live="polite"></p>
+    <div class="metric-grid" id="met-list"></div>
+  </section>
+
+{{FOOTER}}
+</div>
+
+<script>
+const D = {{DATA_JSON}};
+const T = D.T;
+const tpl = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k]);
+const $ = (s, r = document) => r.querySelector(s);
+const h = (tag, attrs, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k === 'class') el.className = v; else if (k === 'text') el.textContent = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v); else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const kid of kids.flat()) if (kid !== null && kid !== undefined && kid !== false) el.append(kid);
+  return el;
+};
+// `codigo` y **negritas** de las descripciones de dbt -> nodos DOM (sin innerHTML).
+function fmt(text) {
+  const frag = document.createDocumentFragment();
+  text.split(/(`[^`]+`|\*\*[^*]+\*\*)/).forEach(part => {
+    if (!part) return;
+    if (part.startsWith('`')) frag.append(h('code', { text: part.slice(1, -1) }));
+    else if (part.startsWith('**')) frag.append(h('b', { text: part.slice(2, -2) }));
+    else frag.append(part);
+  });
+  return frag;
+}
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const byId = Object.fromEntries(D.nodes.map(n => [n.id, n]));
+const metricsById = Object.fromEntries(D.metrics.map(m => [m.id, m]));
+
+D.nodes.forEach(n => { n._hay = norm([n.name, n.id, n.desc, n.domainLabel, n.layerLabel, n.group || '', n.relation, n.cols.map(c => c[0]).join(' ')].join(' ')); });
+D.metrics.forEach(m => { m._hay = norm([m.name, m.definition, m.calc, m.unit, m.areaLabel, m.models.join(' '), m.reports.join(' '), m.caveat || '', (m.kpi ? m.kpi.owner : '')].join(' ')); });
+
+const S = { tab: 'inv', q: '', layer: 'all', domain: 'all', warn: false, nodesc: false, notest: false, mq: '', area: 'all', computed: 'all' };
+
+// ------------------------------------------------------------------ helpers UI
+function statusPill(status) {
+  const map = { pass: ['b-good', T.st_pass], warn: ['b-warn', T.st_warn], fail: ['b-crit', T.st_fail], error: ['b-crit', T.st_fail] };
+  const [cls, label] = map[status] || ['b-muted', status];
+  return h('span', { class: 'pill ' + cls, text: label });
+}
+function testBadges(n) {
+  const out = [];
+  const cnt = { pass: 0, warn: 0, fail: 0 };
+  n.tests.forEach(t => { cnt[t.status === 'error' ? 'fail' : t.status] = (cnt[t.status === 'error' ? 'fail' : t.status] || 0) + 1; });
+  if (!n.tests.length) out.push(h('span', { class: 'pill ' + (n.kind === 'model' ? 'b-warn' : 'b-muted'), text: T.no_tests }));
+  else out.push(h('span', { class: 'pill b-muted', text: n.tests.length + ' ' + (n.tests.length === 1 ? T.test_one : T.test_many) }));
+  if (cnt.warn) out.push(h('span', { class: 'pill b-warn', text: cnt.warn + ' ' + (cnt.warn === 1 ? T.alert_one : T.alert_many) }));
+  if (cnt.fail) out.push(h('span', { class: 'pill b-crit', text: cnt.fail + ' ' + T.st_fail }));
+  return out;
+}
+function firstSentence(text) {
+  const flat = text.replace(/[`]|\*\*/g, '').replace(/\s+/g, ' ').trim();
+  const m = flat.match(/^(.{40,190}?[.!?])(\s|$)/);
+  const s = m ? m[1] : flat;
+  return s.length > 200 ? s.slice(0, 197) + '…' : s;
+}
+function dashLink(d) {
+  return h('a', { class: 'chip', href: d.href, title: d.title, text: '#' + String(d.num).padStart(2, '0') + ' ' + d.short });
+}
+function nodeChip(id) {
+  const n = byId[id];
+  return h('button', { class: 'chip', type: 'button', title: n ? n.layerLabel : '', text: id, onclick: () => openNode(id) });
+}
+
+// ------------------------------------------------------------------ inventario
+function nodeMatches(n, ignoreDomain) {
+  if (S.layer !== 'all' && n.layer !== S.layer) return false;
+  if (!ignoreDomain && S.domain !== 'all' && n.domain !== S.domain) return false;
+  if (S.warn && !n.tests.some(t => t.status !== 'pass')) return false;
+  if (S.nodesc && n.desc) return false;
+  if (S.notest && n.tests.length) return false;
+  if (S.q) { const toks = norm(S.q).split(/\s+/).filter(Boolean); if (!toks.every(t => n._hay.includes(t))) return false; }
+  return true;
+}
+
+function buildBody(n) {
+  const body = h('div', { class: 'row-body' });
+  body.append(h('h4', { text: T.h_desc }));
+  if (n.desc) n.desc.split(/\n\s*\n/).forEach(p => body.append(h('p', {}, fmt(p.replace(/\s*\n\s*/g, ' ')))));
+  else body.append(h('p', { class: 'snip gap', text: T.no_desc_long }));
+
+  const facts = h('dl', { class: 'facts' });
+  [[T.f_relation, h('span', { class: 'mono', text: n.relation })], [T.f_path, n.path ? h('span', { class: 'mono', text: n.path }) : '—'],
+   [T.f_layer, n.layerLabel], [T.f_domain, n.domainLabel], [T.f_mat, n.matLabel],
+   [T.f_contract, n.kind === 'model' ? (n.contract ? T.yes : T.no) : '—']].forEach(([k, v]) => facts.append(h('div', {}, h('dt', { text: k }), h('dd', {}, v))));
+  body.append(facts);
+
+  if (n.dashboards.length) {
+    body.append(h('h4', { text: T.h_dash }), h('div', { class: 'chips' }, n.dashboards.map(num => dashLink(D.dashboards[num]))));
+  }
+  if (n.systems.length && n.kind === 'model') {
+    body.append(h('h4', { text: T.h_systems }), h('div', { class: 'chips' }, n.systems.map(s => h('span', { class: 'chip plain', text: s }))));
+  }
+  const used = D.metrics.filter(m => m.models.includes(n.id) || m.reports.includes(n.id));
+  if (used.length) {
+    body.append(h('h4', { text: T.h_metrics }), h('div', { class: 'chips' }, used.map(m => h('button', { class: 'chip', type: 'button', style: 'font-family:inherit;font-weight:600', text: m.name, onclick: () => openMetric(m.id) }))));
+  }
+
+  body.append(h('div', { class: 'lineage' },
+    h('div', {}, h('h4', { text: T.h_up + ' (' + n.up.length + ')' }), n.up.length ? h('div', { class: 'chips' }, n.up.map(nodeChip)) : h('span', { class: 'empty', text: T.none_up })),
+    h('div', {}, h('h4', { text: T.h_down + ' (' + n.down.length + ')' }), n.down.length ? h('div', { class: 'chips' }, n.down.map(nodeChip)) : h('span', { class: 'empty', text: T.none_down }))));
+
+  if (n.cols.length) {
+    const documented = n.cols.filter(c => c[2]).length;
+    body.append(h('h4', { text: T.h_cols + ' (' + n.cols.length + ' · ' + documented + ' ' + T.documented + ')' }),
+      h('div', { class: 'tbl-wrap' }, h('table', { class: 'mini' },
+        h('thead', {}, h('tr', {}, h('th', { text: T.c_name }), h('th', { text: T.c_type }), h('th', { text: T.c_desc }))),
+        h('tbody', {}, n.cols.map(c => h('tr', {}, h('td', { class: 'mono', text: c[0] }), h('td', { class: 'mono dim', text: c[1] }), c[2] ? h('td', {}, fmt(c[2])) : h('td', { class: 'dim', text: '—' })))))));
+  }
+  if (n.tests.length) {
+    body.append(h('h4', { text: T.h_tests + ' (' + n.tests.length + ')' }),
+      h('div', { class: 'tbl-wrap' }, h('table', { class: 'mini' },
+        h('thead', {}, h('tr', {}, h('th', { text: T.t_status }), h('th', { text: T.t_kind }), h('th', { text: T.t_detail }), h('th', { text: T.t_sev }), h('th', { text: T.t_fail }))),
+        h('tbody', {}, n.tests.map(t => h('tr', {}, h('td', {}, statusPill(t.status)), h('td', { class: 'mono', text: t.kind }), h('td', { text: t.detail }), h('td', { class: 'dim', text: t.severity }), h('td', { class: 'dim', text: t.failures ? t.failures.toLocaleString(D.locale) : '0' })))))));
+  }
+  return body;
+}
+
+function nodeRow(n) {
+  const d = h('details', { class: 'row', id: 'n-' + n.id });
+  d.dataset.id = n.id;
+  d.append(h('summary', {},
+    h('span', { class: 'nm mono', text: n.name === n.id ? n.name : n.id }),
+    n.desc ? h('span', { class: 'snip', text: firstSentence(n.desc) }) : h('span', { class: 'snip gap', text: T.no_desc }),
+    h('span', { class: 'badges' }, h('span', { class: 'pill b-muted', text: n.matLabel }), n.contract ? h('span', { class: 'pill b-good', text: T.contract }) : null, testBadges(n))));
+  d.addEventListener('toggle', () => { if (d.open && !d.dataset.built) { d.append(buildBody(n)); d.dataset.built = '1'; } });
+  return d;
+}
+
+function renderChips(container, items, key, allLabel) {
+  container.replaceChildren();
+  items.forEach(([val, label, count]) => container.append(h('button', {
+    class: 'chip-btn', type: 'button', 'aria-pressed': String(S[key] === val),
+    onclick: () => { S[key] = val; if (key === 'layer') S.domain = 'all'; renderAll(); }
+  }, label, count !== undefined ? h('span', { class: 'c', text: count }) : null)));
+}
+
+function renderInventory() {
+  const inLayer = D.nodes.filter(n => nodeMatches(n, true));
+  const layerCounts = {};
+  D.nodes.filter(n => { const keep = S.layer; S.layer = 'all'; const r = nodeMatches(n, true); S.layer = keep; return r; }).forEach(n => { layerCounts[n.layer] = (layerCounts[n.layer] || 0) + 1; });
+  const totalAll = Object.values(layerCounts).reduce((a, b) => a + b, 0);
+  const lf = $('#f-layer'); lf.replaceChildren(h('span', { class: 'fl', text: T.f_layer }));
+  const layerChips = h('span', { style: 'display:contents' });
+  lf.append(layerChips);
+  renderChips(layerChips, [['all', T.all, totalAll], ...D.layers.filter(l => layerCounts[l.key]).map(l => [l.key, l.label, layerCounts[l.key]])], 'layer');
+
+  const domCounts = {};
+  inLayer.forEach(n => { domCounts[n.domain] = (domCounts[n.domain] || 0) + 1; });
+  if (S.domain !== 'all' && !domCounts[S.domain]) S.domain = 'all';
+  const df = $('#f-domain'); df.replaceChildren(h('span', { class: 'fl', text: T.f_domain }));
+  const domChips = h('span', { style: 'display:contents' }); df.append(domChips);
+  renderChips(domChips, [['all', T.all, inLayer.length], ...D.domains.filter(d => domCounts[d.key]).map(d => [d.key, d.label, domCounts[d.key]])], 'domain');
+
+  const list = D.nodes.filter(n => nodeMatches(n));
+  $('#inv-count').textContent = tpl(T.showing, { n: list.length, total: D.nodes.length });
+  const out = $('#inv-list'); out.replaceChildren();
+  if (!list.length) { out.append(h('div', { class: 'no-results', text: T.no_results })); return; }
+  D.layers.forEach(l => {
+    const items = list.filter(n => n.layer === l.key);
+    if (!items.length) return;
+    const block = h('section', { class: 'layer-block' }, h('h3', {}, l.label, h('span', { class: 'n', text: items.length })), h('p', { text: l.blurb }));
+    D.domains.forEach(dm => {
+      const sub = items.filter(n => n.domain === dm.key);
+      if (!sub.length) return;
+      const distinct = new Set(items.map(n => n.domain)).size > 1;
+      if (distinct) block.append(h('div', { class: 'domain-h', text: dm.label + ' · ' + sub.length }));
+      sub.forEach(n => block.append(nodeRow(n)));
+    });
+    out.append(block);
+  });
+}
+
+function openNode(id) {
+  showTab('inv');
+  if (!byId[id]) return;
+  let el = document.getElementById('n-' + id);
+  if (!el) { Object.assign(S, { q: '', layer: 'all', domain: 'all', warn: false, nodesc: false, notest: false }); syncControls(); renderAll(); el = document.getElementById('n-' + id); }
+  if (!el) return;
+  el.open = true;
+  el.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+
+// --------------------------------------------------------------------- métricas
+function metricMatches(m) {
+  if (S.area !== 'all' && m.area !== S.area) return false;
+  if (S.computed !== 'all' && m.computed !== S.computed) return false;
+  if (S.mq) { const toks = norm(S.mq).split(/\s+/).filter(Boolean); if (!toks.every(t => m._hay.includes(t))) return false; }
+  return true;
+}
+function metricCard(m) {
+  const card = h('article', { class: 'metric', id: 'm-' + m.id });
+  card.append(h('div', { class: 'top' },
+    h('span', { class: 'pill b-muted', text: m.areaLabel }),
+    h('span', { class: 'pill ' + (m.computed === 'manual' ? 'b-warn' : 'b-good'), title: m.computedLong, text: m.computedLabel }),
+    m.unit ? h('span', { class: 'pill b-muted', text: m.unit }) : null,
+    m.direction ? h('span', { class: 'pill b-muted', text: m.direction }) : null));
+  card.append(h('h3', { text: m.name }), h('p', { class: 'def', text: m.definition }));
+  card.append(h('div', { class: 'lab', text: T.m_calc }), h('p', { text: m.calc }));
+  if (m.kpi) card.append(h('div', { class: 'kv' },
+    h('span', {}, h('b', { text: T.m_owner }), m.kpi.owner), h('span', {}, h('b', { text: T.m_area }), m.kpi.area),
+    h('span', {}, h('b', { text: T.m_target }), m.kpi.target), h('span', {}, h('b', { text: T.m_origin }), m.kpi.origin)));
+  if (m.caveat) card.append(h('div', { class: 'caveat' }, h('b', { text: T.m_caveat + ' ' }), m.caveat));
+  card.append(h('div', { class: 'lab', text: T.m_models }), h('div', { class: 'chips' }, m.models.map(nodeChip)));
+  card.append(h('div', { class: 'lab', text: T.m_reports }), h('div', { class: 'chips' }, m.reports.map(nodeChip)));
+  if (m.columns.length) card.append(h('div', { class: 'lab', text: T.m_columns }), h('div', { class: 'chips' }, m.columns.map(c => h('span', { class: 'chip plain', text: c }))));
+  card.append(h('div', { class: 'lab', text: T.m_dash }), h('div', { class: 'chips' }, m.dashboards.map(num => dashLink(D.dashboards[num]))));
+  return card;
+}
+function renderMetrics() {
+  const areaCounts = {}; D.metrics.filter(m => { const k = S.area; S.area = 'all'; const r = metricMatches(m); S.area = k; return r; }).forEach(m => { areaCounts[m.area] = (areaCounts[m.area] || 0) + 1; });
+  const af = $('#f-area'); af.replaceChildren(h('span', { class: 'fl', text: T.f_area }));
+  const ac = h('span', { style: 'display:contents' }); af.append(ac);
+  renderChips(ac, [['all', T.all, Object.values(areaCounts).reduce((a, b) => a + b, 0)], ...D.domains.filter(d => areaCounts[d.key]).map(d => [d.key, d.label, areaCounts[d.key]])], 'area');
+  const compCounts = {}; D.metrics.filter(m => { const k = S.computed; S.computed = 'all'; const r = metricMatches(m); S.computed = k; return r; }).forEach(m => { compCounts[m.computed] = (compCounts[m.computed] || 0) + 1; });
+  const cf = $('#f-computed'); cf.replaceChildren(h('span', { class: 'fl', text: T.f_computed }));
+  const cc = h('span', { style: 'display:contents' }); cf.append(cc);
+  renderChips(cc, [['all', T.all, Object.values(compCounts).reduce((a, b) => a + b, 0)], ...D.computedKinds.filter(k => compCounts[k.key]).map(k => [k.key, k.label, compCounts[k.key]])], 'computed');
+  const list = D.metrics.filter(metricMatches);
+  $('#met-count').textContent = tpl(T.showing_m, { n: list.length, total: D.metrics.length });
+  const out = $('#met-list'); out.replaceChildren();
+  if (!list.length) { out.append(h('div', { class: 'no-results', style: 'grid-column:1/-1', text: T.no_results })); return; }
+  list.forEach(m => out.append(metricCard(m)));
+}
+function renderScope() {
+  const s = D.scope;
+  $('#scope').replaceChildren(h('details', { class: 'scope-card', open: true },
+    h('summary', { text: s.title }), h('p', { text: s.intro }),
+    h('div', { class: 'tbl-wrap' }, h('table', { class: 'mini' },
+      h('thead', {}, h('tr', {}, s.headers.map(x => h('th', { text: x })))),
+      h('tbody', {}, s.rows.map(r => h('tr', {}, h('td', {}, h('button', { class: 'chip', type: 'button', style: 'font-family:inherit;font-weight:600', text: r.name, onclick: () => openMetric(r.id) })), r.cells.map(c => h('td', { text: c }))))))),
+    h('p', { text: s.outro })));
+}
+function openMetric(id) {
+  showTab('met');
+  Object.assign(S, { mq: '', area: 'all', computed: 'all' }); syncControls(); renderMetrics();
+  const el = document.getElementById('m-' + id);
+  if (!el) return;
+  el.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+
+// ------------------------------------------------------------------------ shell
+function showTab(tab) {
+  S.tab = tab;
+  $('#tab-inv').setAttribute('aria-selected', String(tab === 'inv'));
+  $('#tab-met').setAttribute('aria-selected', String(tab === 'met'));
+  $('#panel-inv').hidden = tab !== 'inv';
+  $('#panel-met').hidden = tab !== 'met';
+  try { history.replaceState(null, '', tab === 'met' ? '#metricas' : '#inventario'); } catch (e) {}
+}
+function syncControls() {
+  $('#q').value = S.q; $('#mq').value = S.mq;
+  $('#t-warn').checked = S.warn; $('#t-nodesc').checked = S.nodesc; $('#t-notest').checked = S.notest;
+}
+function renderAll() { renderInventory(); renderMetrics(); }
+
+$('#tab-inv').innerHTML = ''; $('#tab-inv').append(T.tab_inv, h('span', { class: 'n', text: D.nodes.length }));
+$('#tab-met').innerHTML = ''; $('#tab-met').append(T.tab_met, h('span', { class: 'n', text: D.metrics.length }));
+$('#tab-inv').onclick = () => showTab('inv'); $('#tab-met').onclick = () => showTab('met');
+$('#q').placeholder = T.search_inv; $('#q').setAttribute('aria-label', T.search_inv);
+$('#mq').placeholder = T.search_met; $('#mq').setAttribute('aria-label', T.search_met);
+$('#t-warn-l').textContent = T.only_warn; $('#t-nodesc-l').textContent = T.only_nodesc; $('#t-notest-l').textContent = T.only_notest;
+$('#q').addEventListener('input', e => { S.q = e.target.value; renderInventory(); });
+$('#mq').addEventListener('input', e => { S.mq = e.target.value; renderMetrics(); });
+[['t-warn', 'warn'], ['t-nodesc', 'nodesc'], ['t-notest', 'notest']].forEach(([id, k]) => $('#' + id).addEventListener('change', e => { S[k] = e.target.checked; renderInventory(); }));
+renderScope(); renderAll();
+if (location.hash === '#metricas') showTab('met');
+</script>
+</body>
+</html>
