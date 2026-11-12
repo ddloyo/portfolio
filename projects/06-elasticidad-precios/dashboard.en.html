@@ -145,13 +145,13 @@
   <header class="page-head">
     <div class="tag">Project 06 · Portfolio Demonstration</div>
     <h1>Price Elasticity and Price Intelligence</h1>
-    <p class="tagline">Not every product reacts the same way to a price change — the matrix shows which ones to raise now, which need a pilot test first, and which to leave alone.</p>
+    <p class="tagline">Not every product reacts the same way to a price change. The matrix shows which ones to raise now, which need a pilot test first and which to leave alone.</p>
   </header>
 
 
     <div class="minto-banner">
       <p class="minto-label">Upcoming price list update</p>
-      <h2>1 of 8 products is ready for a price increase now (+$234,648 MXN/year) — 3 more point in the same direction but need a pilot test first.</h2>
+      <h2>1 of 8 products is ready for a price increase now (+$234,648 MXN/year). Another 3 point in the same direction but need a pilot test first.</h2>
       <p class="minto-sub">The evidence is solid for 3 products that should NOT get a price increase: doing so would destroy $2,173,463 MXN/year in revenue. 1 product doesn't yet have enough signal (low R²) to decide either way.</p>
     </div>
 
@@ -199,10 +199,10 @@
       <p class="section-label">Summary by action quadrant</p>
       <table>
         <thead><tr><th>Quadrant</th><th>Products</th><th>Average elasticity</th><th>Average R²</th><th>Annual impact</th><th>Recommended action</th></tr></thead>
-        <tbody><tr><td>Raise price — execute now</td><td>1</td><td>-0.6</td><td>0.56</td><td>$234,648</td><td>Apply the increase in the next price list update — demand is inelastic and the model explains unit variation well: low risk of surprise.</td></tr>
-<tr><td>Raise price — test before scaling</td><td>3</td><td>-0.3</td><td>0.07</td><td>$1,325,642</td><td>The direction points toward raising price, but R² is low — validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr>
-<tr><td>Do not raise price — solid evidence</td><td>3</td><td>-2.0</td><td>0.75</td><td>-$2,173,463</td><td>Do not raise price — demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr>
-<tr><td>Collect more data</td><td>1</td><td>-0.95</td><td>0.39</td><td>-$36,551</td><td>Neither the direction nor the magnitude is reliable yet (low R²) — don't make a pricing decision on this data; extend the historical record or run a controlled test first.</td></tr>
+        <tbody><tr><td>Raise price — execute now</td><td>1</td><td>-0.6</td><td>0.56</td><td>$234,648</td><td>Apply the increase in the next price list update. Demand is inelastic and the model explains unit variation well: low risk of surprise.</td></tr>
+<tr><td>Raise price — test before scaling</td><td>3</td><td>-0.3</td><td>0.07</td><td>$1,325,642</td><td>The direction points toward raising price, but R² is low. Validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr>
+<tr><td>Do not raise price — solid evidence</td><td>3</td><td>-2.0</td><td>0.75</td><td>-$2,173,463</td><td>Do not raise price. Demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr>
+<tr><td>Collect more data</td><td>1</td><td>-0.95</td><td>0.39</td><td>-$36,551</td><td>Neither the direction nor the magnitude is reliable yet (low R²). Don't make a pricing decision on this data; extend the historical record or run a controlled test first.</td></tr>
 </tbody>
       </table>
     </div>
@@ -213,7 +213,7 @@
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
         <h3>Elasticity x confidence matrix: which price action fits each product</h3>
-        <p>8 products — estimated elasticity vs. model R², split at the median of each axis</p>
+        <p>8 products: estimated elasticity vs. model R², split at the median of each axis</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_matriz"></canvas>
@@ -224,7 +224,7 @@
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
         <h3>Projected annual impact by product (+10% price)</h3>
-        <p>MXN/year — positive where a price increase pays off, negative where it destroys revenue</p>
+        <p>MXN/year: positive where a price increase pays off, negative where it destroys revenue</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_impacto"></canvas>
@@ -237,10 +237,10 @@
 
   <div class="insights-card">
     <h3>What the data shows</h3>
-    <ul class="insights"><li><b>Specialized Part X</b> is the only product with enough evidence (R²=0.56, elasticity -0.6) to raise its price in the next list without needing a pilot test — estimated impact +$234,648 MXN/year.</li>
-<li><b>3 products</b> (Specialized Part Y, Installation Service, Critical Spare Part) point toward a price increase (+$1,325,642 MXN/year combined) but with R² below 0.48 — before applying it across the full catalog, a pilot test in one region or customer segment is advisable.</li>
-<li><b>3 products</b> (Component A, Standard Accessory, Component B) have solid evidence (R² 0.56–0.92) of being highly elastic — raising their price would destroy $2,173,463 MXN/year; they should not be touched this round.</li>
-<li>Statistical confidence (R²) matters as much as the direction of elasticity: two products with the same estimated elasticity may warrant different actions if one has far more signal than noise than the other — that's why the matrix crosses both axes instead of ranking by elasticity alone.</li></ul>
+    <ul class="insights"><li><b>Specialized Part X</b> is the only product with enough evidence (R²=0.56, elasticity -0.6) to raise its price in the next list without a pilot test. Estimated impact: +$234,648 MXN/year.</li>
+<li><b>3 products</b> (Specialized Part Y, Installation Service, Critical Spare Part) point toward a price increase (+$1,325,642 MXN/year combined) but with R² below 0.48. Run a pilot test in one region or customer segment before applying it across the full catalog.</li>
+<li><b>3 products</b> (Component A, Standard Accessory, Component B) have solid evidence (R² 0.56–0.92) of being highly elastic. Raising their price would destroy $2,173,463 MXN/year; they should not be touched this round.</li>
+<li>Statistical confidence (R²) matters as much as the direction of elasticity: two products with the same estimated elasticity may warrant different actions if one has far more signal than noise than the other. That's why the matrix crosses both axes instead of ranking by elasticity alone.</li></ul>
   </div>
 
 
@@ -248,7 +248,7 @@
 
     <div class="checklist-card">
       <h3>Repricing plan — next price list update</h3>
-      <p class="checklist-sub">The 8 products ordered by action priority. Check each one off as you apply it (or confirm it stays the same) in the ERP — progress is saved in this browser.</p>
+      <p class="checklist-sub">The 8 products ordered by action priority. Check each one off as you apply it (or confirm it stays the same) in the ERP. Progress is saved in this browser.</p>
       <div class="checklist-progress">
         <div class="progress-bar"><div class="progress-fill" id="plan_repricing-fill" style="width:0%"></div></div>
         <span id="plan_repricing-count">0 / 8 reviewed</span>
@@ -256,7 +256,7 @@
       <div class="checklist-table-wrap">
         <table class="checklist-table">
           <thead><tr><th></th><th>Product</th><th>Elasticity</th><th>Confidence</th><th>Estimated annual impact</th><th>Action</th></tr></thead>
-          <tbody><tr data-row="Specialized Part X"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Specialized Part X"></td><td>Specialized Part X</td><td>-0.6</td><td>High (R²=0.56)</td><td>$234,648</td><td>Apply the increase in the next price list update — demand is inelastic and the model explains unit variation well: low risk of surprise.</td></tr><tr data-row="Specialized Part Y"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Specialized Part Y"></td><td>Specialized Part Y</td><td>-0.48</td><td>Low (R²=0.13)</td><td>$333,864</td><td>The direction points toward raising price, but R² is low — validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr><tr data-row="Installation Service"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Installation Service"></td><td>Installation Service</td><td>-0.27</td><td>Low (R²=0.04)</td><td>$502,760</td><td>The direction points toward raising price, but R² is low — validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr><tr data-row="Critical Spare Part (no substitute)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Critical Spare Part (no substitute)"></td><td>Critical Spare Part (no substitute)</td><td>-0.15</td><td>Low (R²=0.04)</td><td>$489,018</td><td>The direction points toward raising price, but R² is low — validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr><tr data-row="Component A (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Component A (commodity)"></td><td>Component A (commodity)</td><td>-2.18</td><td>High (R²=0.92)</td><td>-$770,804</td><td>Do not raise price — demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr><tr data-row="Standard Accessory"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Standard Accessory"></td><td>Standard Accessory</td><td>-1.96</td><td>High (R²=0.56)</td><td>-$743,260</td><td>Do not raise price — demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr><tr data-row="Component B (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Component B (commodity)"></td><td>Component B (commodity)</td><td>-1.85</td><td>High (R²=0.78)</td><td>-$659,399</td><td>Do not raise price — demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr><tr data-row="Maintenance Kit"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Maintenance Kit"></td><td>Maintenance Kit</td><td>-0.95</td><td>Low (R²=0.39)</td><td>-$36,551</td><td>Neither the direction nor the magnitude is reliable yet (low R²) — don't make a pricing decision on this data; extend the historical record or run a controlled test first.</td></tr></tbody>
+          <tbody><tr data-row="Specialized Part X"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Specialized Part X"></td><td>Specialized Part X</td><td>-0.6</td><td>High (R²=0.56)</td><td>$234,648</td><td>Apply the increase in the next price list update. Demand is inelastic and the model explains unit variation well: low risk of surprise.</td></tr><tr data-row="Specialized Part Y"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Specialized Part Y"></td><td>Specialized Part Y</td><td>-0.48</td><td>Low (R²=0.13)</td><td>$333,864</td><td>The direction points toward raising price, but R² is low. Validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr><tr data-row="Installation Service"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Installation Service"></td><td>Installation Service</td><td>-0.27</td><td>Low (R²=0.04)</td><td>$502,760</td><td>The direction points toward raising price, but R² is low. Validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr><tr data-row="Critical Spare Part (no substitute)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Critical Spare Part (no substitute)"></td><td>Critical Spare Part (no substitute)</td><td>-0.15</td><td>Low (R²=0.04)</td><td>$489,018</td><td>The direction points toward raising price, but R² is low. Validate with a pilot test (one region or customer segment) before applying it across the full catalog.</td></tr><tr data-row="Component A (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Component A (commodity)"></td><td>Component A (commodity)</td><td>-2.18</td><td>High (R²=0.92)</td><td>-$770,804</td><td>Do not raise price. Demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr><tr data-row="Standard Accessory"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Standard Accessory"></td><td>Standard Accessory</td><td>-1.96</td><td>High (R²=0.56)</td><td>-$743,260</td><td>Do not raise price. Demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr><tr data-row="Component B (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Component B (commodity)"></td><td>Component B (commodity)</td><td>-1.85</td><td>High (R²=0.78)</td><td>-$659,399</td><td>Do not raise price. Demand is elastic and the model explains it with high confidence; an increase here would hit revenue in a predictable way.</td></tr><tr data-row="Maintenance Kit"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Maintenance Kit"></td><td>Maintenance Kit</td><td>-0.95</td><td>Low (R²=0.39)</td><td>-$36,551</td><td>Neither the direction nor the magnitude is reliable yet (low R²). Don't make a pricing decision on this data; extend the historical record or run a controlled test first.</td></tr></tbody>
         </table>
       </div>
     </div>

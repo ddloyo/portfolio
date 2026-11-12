@@ -118,10 +118,10 @@ El test tiene dientes: cambiar en `freshness_rules.py` la comparación `>` por `
 
 ## Entregables
 
-1. **`dashboard.html` / `dashboard.en.html`** — KPIs, estado actual por tabla (las columnas de `dbt source freshness`), heatmap de 30 días, cumplimiento por fuente, estado diario, las 4 fuentes con peor cumplimiento, hallazgos y checklist de acciones.
-2. **`data/dbt_sources_freshness.json`** — el `sources.json` real de dbt (la foto del instante).
-3. **`data/sla_thresholds.csv`, `sla_diario_fuente.csv`, `sla_diario_tabla.csv`, `resumen_fuentes.csv`, `frescura_actual.csv`, `cargas_simuladas.csv`, `dashboards_por_fuente.csv`** — la salida del harness, lista para reusar.
-4. **`data/parity_report.csv`** — la evidencia de paridad con dbt, fila por fila.
+1. **`dashboard.html` / `dashboard.en.html`**: KPIs, estado actual por tabla (las columnas de `dbt source freshness`), heatmap de 30 días, cumplimiento por fuente, estado diario, las 4 fuentes con peor cumplimiento, hallazgos y checklist de acciones.
+2. **`data/dbt_sources_freshness.json`**: el `sources.json` real de dbt (la foto del instante).
+3. **`data/sla_thresholds.csv`, `sla_diario_fuente.csv`, `sla_diario_tabla.csv`, `resumen_fuentes.csv`, `frescura_actual.csv`, `cargas_simuladas.csv`, `dashboards_por_fuente.csv`**: la salida del harness, lista para reusar.
+4. **`data/parity_report.csv`**: la evidencia de paridad con dbt, fila por fila.
 
 ## Stack
 

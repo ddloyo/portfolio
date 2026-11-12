@@ -123,7 +123,7 @@ charts = [
     {
         "id": "chart_dispersion", "type": "scatter",
         "title": "Cumplimiento vs. volatilidad",
-        "subtitle": "Cada punto es un indicador — arriba a la izquierda es el mayor riesgo",
+        "subtitle": "Cada punto es un indicador; arriba a la izquierda está el mayor riesgo",
         "points": scatter_points,
         "x_label": "% cumplimiento actual", "y_label": "Volatilidad histórica (desv. estándar, pts)",
         "x_unit": "%", "y_unit": " pts",
@@ -154,7 +154,7 @@ drilldown_charts = [
 insights = [
     f"El score consolidado de la organización es <b>{overall}%</b>: {en_meta} de {len(df)} indicadores están en meta, {en_riesgo} en riesgo.",
     f"<b>{worst['kpi']}</b> ({worst['area']}, responsable: {worst['responsable']}) es el que más arrastra el consolidado, en {worst['cumplimiento_pct']}%.",
-    f"<b>{most_volatile_kpi}</b> es el indicador más volátil de los últimos {len(months)} meses (desv. estándar de {most_volatile_val:.1f} pts) — antes de mover la meta, vale la pena revisar el proceso.",
+    f"<b>{most_volatile_kpi}</b> es el indicador más volátil de los últimos {len(months)} meses (desv. estándar de {most_volatile_val:.1f} pts). Antes de mover la meta, conviene revisar el proceso.",
     f"<b>{area_most_improved}</b> es el área que más mejoró en el periodo ({area_change[area_most_improved]:+.1f} pts vs. el primer mes), mientras <b>{area_most_declined}</b> es la que más retrocedió ({area_change[area_most_declined]:+.1f} pts).",
 ]
 
@@ -170,7 +170,7 @@ dash.render(
     ROOT / "dashboard.html",
     project_no=3,
     title="Scorecard Ejecutivo: Metas vs. Resultados",
-    tagline="El estatus, la tendencia y el detalle de los 10 indicadores que le importan a dirección — en una sola pantalla.",
+    tagline="El estatus, la tendencia y el detalle de los 10 indicadores que le importan a dirección, en una sola pantalla.",
     kpis=kpis,
     charts=charts,
     insights=insights,

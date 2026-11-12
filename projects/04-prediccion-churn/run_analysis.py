@@ -139,7 +139,7 @@ kpis = [
 checklist = {
     "id": "rescate_semana",
     "title": "Plan de llamadas de esta semana",
-    "subtitle": f"{len(esta_semana)} clientes de Rescate Prioritario repartidos en {len(DIAS)} días ({CAPACIDAD_POR_DIA}/día). Marca cada uno al contactarlo — el progreso se guarda en este navegador.",
+    "subtitle": f"{len(esta_semana)} clientes de Rescate Prioritario repartidos en {len(DIAS)} días ({CAPACIDAD_POR_DIA}/día). Marca cada uno al contactarlo; el progreso se guarda en este navegador.",
     "progress_noun": "contactados",
     "headers": ["Día", "Cliente", "Gasto mensual", "Riesgo", "Días sin actividad", "Contrato"],
     "rows": [
@@ -160,7 +160,7 @@ charts = [
     {
         "id": "chart_matriz", "type": "scatter", "full_width": True,
         "title": "Matriz riesgo x valor: qué acción corresponde a cada cliente",
-        "subtitle": f"{len(df):,} clientes activos — riesgo relativo de churn vs. gasto mensual, divididos en la mediana de cada eje",
+        "subtitle": f"{len(df):,} clientes activos: riesgo relativo de churn vs. gasto mensual, divididos en la mediana de cada eje",
         "points": scatter_points,
         "x_label": "Riesgo relativo de churn (percentil)", "y_label": "Gasto mensual (MXN)",
         "x_unit": " pct", "y_unit": " MXN",
@@ -268,7 +268,7 @@ histogram_charts = [
     {
         "id": "chart_hist_gasto", "type": "bar", "stacked": True,
         "title": "Gasto mensual (MXN)",
-        "subtitle": "El riesgo aparece en todos los niveles de gasto — por eso importa cruzarlo con valor",
+        "subtitle": "El riesgo aparece en todos los niveles de gasto, por eso conviene cruzarlo con el valor del cliente",
         "labels": gasto_labels, "datasets": stacked_by_cuadrante("gasto_bin"), "y_label": "Clientes",
     },
     {
@@ -294,16 +294,16 @@ histogram_charts = [
 
 insights = [
     f"El plan prioriza gasto mensual dentro de Rescate Prioritario: llamar primero a los {CAPACIDAD_POR_DIA} clientes de mayor valor cada día protege el ingreso más grande con el mismo esfuerzo de llamada, en vez de ordenar solo por score de riesgo.",
-    f"\"Riesgo menor\" ({int(riesgo_menor.clientes)} clientes, {riesgo_menor.pct}%, alto riesgo pero bajo gasto) no entra al plan de llamadas — una campaña automatizada de email/WhatsApp cuesta lo mismo para 1 cliente que para {int(riesgo_menor.clientes)}, así que ahí se gana eficiencia sin ocupar tiempo del equipo comercial.",
-    f"\"Clientes ancla\" y \"Base estable\" (bajo riesgo, {int(ancla.clientes + base_estable.clientes)} clientes) no requieren acción esta semana — se revisan en la cadencia mensual. Ancla (${ancla.ingreso_mensual:,.0f} MXN/mes) es la cartera más valiosa y candidata a upsell o plan anual en esa revisión, no solo \"sin riesgo\".",
-    "Los días sin actividad y los tickets de soporte recientes son las señales más fuertes del modelo — más que la antigüedad del cliente. Si el backlog de la próxima semana sigue creciendo semana a semana, vale la pena revisar la capacidad del equipo antes de mover el corte de \"alto riesgo\".",
+    f"\"Riesgo menor\" ({int(riesgo_menor.clientes)} clientes, {riesgo_menor.pct}%, alto riesgo pero bajo gasto) no entra al plan de llamadas. Una campaña automatizada de email/WhatsApp cuesta lo mismo para 1 cliente que para {int(riesgo_menor.clientes)}, así que ahí se gana eficiencia sin ocupar tiempo del equipo comercial.",
+    f"\"Clientes ancla\" y \"Base estable\" (bajo riesgo, {int(ancla.clientes + base_estable.clientes)} clientes) no requieren acción esta semana; se revisan en la cadencia mensual. Ancla (${ancla.ingreso_mensual:,.0f} MXN/mes) es la cartera más valiosa y candidata a upsell o plan anual en esa revisión.",
+    "Los días sin actividad y los tickets de soporte recientes son las señales más fuertes del modelo, por encima de la antigüedad del cliente. Si el backlog de la próxima semana sigue creciendo semana a semana, vale la pena revisar la capacidad del equipo antes de mover el corte de \"alto riesgo\".",
 ]
 
 dash.render(
     ROOT / "dashboard.html",
     project_no=4,
     title="Predicción de Riesgo de Churn",
-    tagline="De 'sabemos que algo bajó' a 'aquí está el plan de llamadas de esta semana, en orden' — planeación semanal y seguimiento diario, no solo un score.",
+    tagline="De 'sabemos que algo bajó' a 'aquí está el plan de llamadas de esta semana, en orden', con planeación semanal y seguimiento diario además del score.",
     banner=banner,
     kpis=kpis,
     checklist=checklist,

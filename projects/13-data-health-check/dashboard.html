@@ -165,7 +165,7 @@
   <header class="page-head">
     <div class="tag">Proyecto 13 · Portafolio de demostración</div>
     <h1>Data Health Check: Auditoría de Calidad de Datos</h1>
-    <p class="tagline">4 tablas de un mini-ERP de ventas, 33 reglas de validación documentadas, un score de calidad por tabla y el plan de qué corregir primero -- y por qué.</p>
+    <p class="tagline">4 tablas de un mini-ERP de ventas, 33 reglas de validación documentadas, un score de calidad por tabla y un plan que dice qué corregir primero y por qué.</p>
   </header>
 
   
@@ -233,7 +233,7 @@
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
         <h3>Top 10 issues por impacto en el score</h3>
-        <p>Severidad x % de filas afectadas -- lo que más está bajando el score, primero</p>
+        <p>Severidad x % de filas afectadas. Primero, lo que más baja el score</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_top_issues"></canvas>
@@ -295,10 +295,10 @@
   <div class="insights-card">
     <h3>Lo que dice el dato</h3>
     <ul class="insights"><li>El health score global de la base es <b>73.1/100</b> (en riesgo): <b>facturas</b> es la tabla que más lo arrastra, con un score de <b>68.1</b>.</li>
-<li>El issue de mayor impacto es <b>fecha</b> en <b>facturas</b> (fecha debe capturarse en formato estándar iso (yyyy-mm-dd), no mezclado con dd/mm/yyyy o mm/dd/yyyy.) -- 1024 filas (28.48%) no cumplen la regla, con 11.39 puntos de impacto en el score.</li>
-<li>Se detectaron <b>289 filas duplicadas</b> entre las 4 tablas y <b>282 referencias rotas</b> (cliente_id/sku que ya no existen en su catálogo) en facturas -- ambos inflan cualquier reporte que sume filas o cruce tablas sin deduplicar/filtrar primero.</li>
-<li>El caso más difícil de detectar a simple vista: <b>332 facturas</b> (9.5%) donde <code>total</code> no cuadra con <code>cantidad × precio_unitario</code> -- un override manual sin recalcular que ningún filtro de nulos o duplicados detecta.</li>
-<li>Se identificaron <b>3 columnas huérfanas</b> (100% vacías, sin uso) en el esquema -- no penalizan el score porque no son un defecto del dato capturado, pero son limpieza de esquema pendiente.</li></ul>
+<li>El issue de mayor impacto es <b>fecha</b> en <b>facturas</b> (fecha debe capturarse en formato estándar iso (yyyy-mm-dd), no mezclado con dd/mm/yyyy o mm/dd/yyyy.): 1024 filas (28.48%) no cumplen la regla, con 11.39 puntos de impacto en el score.</li>
+<li>Se detectaron <b>289 filas duplicadas</b> entre las 4 tablas y <b>282 referencias rotas</b> (cliente_id/sku que ya no existen en su catálogo) en facturas. Ambos inflan cualquier reporte que sume filas o cruce tablas sin deduplicar/filtrar primero.</li>
+<li>El caso más difícil de detectar a simple vista: <b>332 facturas</b> (9.5%) donde <code>total</code> no cuadra con <code>cantidad × precio_unitario</code>. Es un override manual sin recalcular que ningún filtro de nulos o duplicados detecta.</li>
+<li>Se identificaron <b>3 columnas huérfanas</b> (100% vacías, sin uso) en el esquema. No penalizan el score porque no son un defecto del dato capturado, pero son limpieza de esquema pendiente.</li></ul>
   </div>
 
   

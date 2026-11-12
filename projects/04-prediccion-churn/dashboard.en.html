@@ -145,7 +145,7 @@
   <header class="page-head">
     <div class="tag">Project 04 · Portfolio demo</div>
     <h1>Churn Risk Prediction</h1>
-    <p class="tagline">From 'we know something dropped' to 'here's this week's call list, in order' — weekly planning and daily follow-up, not just a score.</p>
+    <p class="tagline">From 'we know something dropped' to 'here's this week's call list, in order', with weekly planning and daily follow-up on top of the score.</p>
   </header>
 
   
@@ -192,7 +192,7 @@
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
         <h3>Risk x value matrix: which action fits each customer</h3>
-        <p>1,200 active customers — relative churn risk vs. monthly spend, split at the median of each axis</p>
+        <p>1,200 active customers: relative churn risk vs. monthly spend, split at the median of each axis</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_matriz"></canvas>
@@ -252,7 +252,7 @@
     <div class="chart-card">
       <div class="chart-head">
         <h3>Monthly spend (MXN)</h3>
-        <p>Risk shows up at every spend level — which is why crossing it with value matters</p>
+        <p>Risk shows up at every spend level, which is why it has to be crossed with customer value</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_hist_gasto"></canvas>
@@ -298,9 +298,9 @@
   <div class="insights-card">
     <h3>What the data says</h3>
     <ul class="insights"><li>The plan prioritizes monthly spend within Priority Rescue: calling the 20 highest-value customers first each day protects the largest revenue for the same calling effort, instead of ordering by risk score alone.</li>
-<li>"Lower Risk" (306 customers, 25.5%, high risk but low spend) is left out of the calling plan — an automated email/WhatsApp campaign costs the same for 1 customer as for 306, so that's where efficiency is gained without using the sales team's time.</li>
-<li>"Anchor Customers" and "Stable Base" (low risk, 599 customers) don't require action this week — they're reviewed on the monthly cadence. Anchor ($379,436 MXN/month) is the most valuable segment and a candidate for upsell or an annual plan at that review, not just "no risk".</li>
-<li>Days since last activity and recent support tickets are the model's strongest signals — stronger than customer tenure. If next week's backlog keeps growing week over week, it's worth reviewing team capacity before moving the "high risk" cutoff.</li></ul>
+<li>"Lower Risk" (306 customers, 25.5%, high risk but low spend) is left out of the calling plan. An automated email/WhatsApp campaign costs the same for 1 customer as for 306, so that's where efficiency is gained without using the sales team's time.</li>
+<li>"Anchor Customers" and "Stable Base" (low risk, 599 customers) don't require action this week; they're reviewed on the monthly cadence. Anchor ($379,436 MXN/month) is the most valuable segment and a candidate for upsell or an annual plan at that review.</li>
+<li>Days since last activity and recent support tickets are the model's strongest signals, stronger than customer tenure. If next week's backlog keeps growing week over week, it's worth reviewing team capacity before moving the "high risk" cutoff.</li></ul>
   </div>
 
   
@@ -308,7 +308,7 @@
   
     <div class="checklist-card">
       <h3>This week's calling plan</h3>
-      <p class="checklist-sub">100 Priority Rescue customers spread across 5 days (20/day). Check each one off as you contact them — progress is saved in this browser.</p>
+      <p class="checklist-sub">100 Priority Rescue customers spread across 5 days (20/day). Check each one off as you contact them. Progress is saved in this browser.</p>
       <div class="checklist-progress">
         <div class="progress-bar"><div class="progress-fill" id="rescate_semana-fill" style="width:0%"></div></div>
         <span id="rescate_semana-count">0 / 100 contacted</span>

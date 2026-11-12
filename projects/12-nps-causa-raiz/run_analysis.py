@@ -105,11 +105,11 @@ segundo_motivo, tercer_motivo = motivos_ordenados[1], motivos_ordenados[2]
 causa_share_mensual = (motivo_month[causa_principal] / motivo_month.sum(axis=1) * 100).reindex(months)
 
 ACCIONES = {
-    "Tiempo de respuesta": "Revisar SLA y dotación del equipo de soporte de los últimos 2 meses — es la causa que se disparó.",
+    "Tiempo de respuesta": "Revisar SLA y dotación del equipo de soporte de los últimos 2 meses; es la causa que se disparó.",
     "Calidad del producto": "Dar seguimiento a control de calidad; su participación bajó frente al histórico pero sigue presente.",
     "Atención al cliente": "Monitorear capacitación del equipo de atención; participación estable, sin acción urgente.",
-    "Precio": "Sin acción inmediata — su participación cayó frente al histórico.",
-    "Facilidad de uso": "Sin acción inmediata — participación estable y baja.",
+    "Precio": "Sin acción inmediata: su participación cayó frente al histórico.",
+    "Facilidad de uso": "Sin acción inmediata: participación estable y baja.",
 }
 DEFAULT_ACCION = "Monitorear el mes próximo; sin señal de deterioro todavía."
 
@@ -129,19 +129,19 @@ tabla_segmentos["delta_pp"] = (tabla_segmentos["recent_pct"] - tabla_segmentos["
 # ============================================================================
 insights = [
     # Q1 -- ¿la caída es una señal real o ruido de muestreo normal?
-    f"<b>Q1 · La caída no es ruido, es una anomalía estadística confirmada</b>: el NPS de {last_month} está a {abs(z_actual):.1f} desviaciones estándar de su promedio histórico ({nps_baseline}) — muy por encima del umbral de 3σ que separa una anomalía real de la variación normal mes a mes.",
+    f"<b>Q1 · La caída es una anomalía estadística confirmada</b>: el NPS de {last_month} está a {abs(z_actual):.1f} desviaciones estándar de su promedio histórico ({nps_baseline}), muy por encima del umbral de 3σ que separa una anomalía real de la variación normal mes a mes.",
     # Q2 -- ¿qué tan grave es la caída en términos de negocio?
-    f"<b>Q2 · La caída equivale a {abs(caida_pts):.1f} puntos de NPS</b> ({nps_baseline} → {nps_actual}), con la tasa de detractores casi duplicándose ({detractor_rate_baseline:.1f}% → {detractor_rate_actual:.1f}%) y los promotores cayendo de {promoter_rate_baseline:.1f}% a {promoter_rate_actual:.1f}% — un riesgo real de renovación en la base recién insatisfecha.",
+    f"<b>Q2 · La caída equivale a {abs(caida_pts):.1f} puntos de NPS</b> ({nps_baseline} → {nps_actual}), con la tasa de detractores casi duplicándose ({detractor_rate_baseline:.1f}% → {detractor_rate_actual:.1f}%) y los promotores cayendo de {promoter_rate_baseline:.1f}% a {promoter_rate_actual:.1f}%. Eso pone en riesgo la renovación de los clientes que acaban de quedar insatisfechos.",
     # Q3 -- ¿es un problema generalizado o una causa puntual y accionable?
-    f"<b>Q3 · No es un deterioro generalizado, es una causa concentrada</b>: <b>{causa_principal}</b> pasó de {causa_principal_prior_pct:.1f}% de los motivos declarados por detractores a {pct_causa_principal:.1f}% en los últimos 2 meses — la corrección debe dirigirse al proceso de soporte, no a un plan genérico de 'mejorar experiencia del cliente'.",
+    f"<b>Q3 · La causa está concentrada</b>: <b>{causa_principal}</b> pasó de {causa_principal_prior_pct:.1f}% de los motivos declarados por detractores a {pct_causa_principal:.1f}% en los últimos 2 meses. La corrección tiene que ir al proceso de soporte, no a un plan genérico de 'mejorar la experiencia del cliente'.",
     # Q4 -- ¿desde cuándo se rompió el patrón y qué tan rápido fue?
-    f"<b>Q4 · El quiebre es abrupto, no gradual</b>: los primeros {len(baseline_months)} meses oscilan sin tendencia clara (z entre {z_scores[baseline_months].min():.1f} y {z_scores[baseline_months].max():.1f}) y la caída ocurre de golpe en {recent_months[0]} — apunta a un cambio operativo puntual en soporte (dotación, herramienta, SLA), no a un desgaste lento.",
+    f"<b>Q4 · El quiebre es abrupto</b>: los primeros {len(baseline_months)} meses oscilan sin tendencia clara (z entre {z_scores[baseline_months].min():.1f} y {z_scores[baseline_months].max():.1f}) y la caída ocurre de golpe en {recent_months[0]}. Eso apunta a un cambio operativo puntual en soporte (dotación, herramienta, SLA) y no a un desgaste lento.",
     # Q5 -- ¿es un artefacto de reclasificación de categoría o una caída real?
-    f"<b>Q5 · La caída es real, no un artefacto de categorización</b>: el score promedio también bajó de {score_baseline:.2f} a {score_actual:.2f} en {last_month} — consistente con una experiencia peor, no solo respuestas que cruzaron el límite entre 'pasivo' y 'detractor'.",
+    f"<b>Q5 · La caída es real</b>: el score promedio también bajó de {score_baseline:.2f} a {score_actual:.2f} en {last_month}. La experiencia empeoró de verdad; no se trata solo de respuestas que cruzaron el límite entre 'pasivo' y 'detractor'.",
     # Q6 -- ¿el volumen de respuestas respalda la confianza en la señal?
-    f"<b>Q6 · El volumen de respuestas respalda la señal</b>: se mantuvo estable todo el periodo ({int(volumen_mensual.min())}-{int(volumen_mensual.max())} respuestas/mes, {int(volumen_mensual[recent_months].sum())} en los últimos 2 meses) — la caída no es producto de una muestra más chica o sesgada.",
+    f"<b>Q6 · El volumen de respuestas respalda la señal</b>: se mantuvo estable todo el periodo ({int(volumen_mensual.min())}-{int(volumen_mensual.max())} respuestas/mes, {int(volumen_mensual[recent_months].sum())} en los últimos 2 meses), así que la caída no viene de una muestra más chica o sesgada.",
     # Q7 -- ¿qué otras causas conviene vigilar aunque no dominen hoy?
-    f"<b>Q7 · Vigilar causas secundarias aunque no dominen hoy</b>: {segundo_motivo} ({recent_pct[segundo_motivo]:.1f}%) y {tercer_motivo} ({recent_pct[tercer_motivo]:.1f}%) siguen presentes entre los detractores recientes — concentrar el esfuerzo en soporte no debe significar dejar de dar seguimiento mensual a las demás.",
+    f"<b>Q7 · Vigilar causas secundarias aunque no dominen hoy</b>: {segundo_motivo} ({recent_pct[segundo_motivo]:.1f}%) y {tercer_motivo} ({recent_pct[tercer_motivo]:.1f}%) siguen presentes entre los detractores recientes. Concentrar el esfuerzo en soporte no debe significar dejar de dar seguimiento mensual a las demás.",
     # Q8 -- ¿qué acción específica y con qué urgencia, y qué define éxito?
     f"<b>Q8 · Acción recomendada: escalar esta semana, no en el próximo corte mensual</b>: con la anomalía confirmada, la causa concentrada en {pct_causa_principal:.1f}% y un volumen de muestra sólido, revisar SLA y dotación de soporte de los últimos 2 meses y fijar una meta de recuperación (NPS ≥ {target_nps}) en 2 meses, con seguimiento quincenal mientras dure la corrección.",
 ]
@@ -155,8 +155,8 @@ insights = [
 banner = {
     "label": "La respuesta primero",
     "headline": (
-        f"El NPS de {last_month} cayó a {nps_actual} ({abs(caida_pts):.1f} pts bajo su promedio histórico) — "
-        f"una anomalía estadística real (z = {z_actual:.1f}), no ruido de muestra, concentrada en un solo motivo: "
+        f"El NPS de {last_month} cayó a {nps_actual} ({abs(caida_pts):.1f} pts bajo su promedio histórico). "
+        f"Es una anomalía estadística real (z = {z_actual:.1f}) y se concentra en un solo motivo: "
         f"<b>{causa_principal}</b> explica el {pct_causa_principal:.1f}% de los detractores recientes."
     ),
     "subtext": (
@@ -218,7 +218,7 @@ drilldown_charts = [
     },
     {
         "id": "chart_score", "type": "line",
-        "title": "El score promedio también cayó — no es solo un cambio de categoría",
+        "title": "El score promedio también cayó, así que hay algo más que un cambio de categoría",
         "subtitle": f"Promedio mensual del score 0-10 (línea punteada: promedio histórico {score_baseline:.2f})",
         "labels": months,
         "datasets": [{"label": "Score promedio", "data": [round(v, 2) for v in score_mensual.values], "color_index": 0}],
@@ -237,7 +237,7 @@ drilldown_charts = [
     },
     {
         "id": "chart_volumen", "type": "bar",
-        "title": "El volumen de respuestas se mantuvo estable — la caída no es ruido de muestra",
+        "title": "El volumen de respuestas se mantuvo estable, así que la caída no viene de la muestra",
         "subtitle": "Respuestas de encuesta NPS por mes",
         "labels": months,
         "datasets": [{"label": "Respuestas", "data": [int(v) for v in volumen_mensual.values], "color_index": 0}],
@@ -261,7 +261,7 @@ dash.render(
     ROOT / "dashboard.html",
     project_no=12,
     title="NPS y Análisis de Causa Raíz",
-    tagline="De 'el NPS bajó' a 'sabemos exactamente qué corregir' — 8 preguntas de negocio respondidas con la causa raíz declarada por los propios detractores.",
+    tagline="De 'el NPS bajó' a 'sabemos exactamente qué corregir', con 8 preguntas de negocio respondidas con la causa raíz declarada por los propios detractores.",
     banner=banner,
     kpis=kpis,
     charts=charts,

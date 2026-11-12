@@ -11,15 +11,15 @@ El equipo comercial y de marketing invierte el mismo esfuerzo (y presupuesto) en
 
 - Calcula Recencia y Valor histórico (RFM simplificado) por cliente a partir del historial de transacciones.
 - Cruza ambas variables en una **matriz de 4 cuadrantes** (scatter interactivo) en vez de una tabla de segmentos que hay que interpretar caso por caso.
-- Asigna una acción comercial específica por cuadrante — la segmentación solo sirve si cambia lo que se hace con cada grupo.
+- Asigna una acción comercial específica por cuadrante, porque la segmentación solo sirve si cambia lo que se hace con cada grupo.
 - Arma un plan de llamadas de la semana para el cuadrante "En riesgo", priorizado por valor histórico, con checklist de seguimiento.
 
 ## Métricas
 
 Por cada cliente se calculan dos variables a partir de su historial de transacciones, que forman los dos ejes de la matriz:
 
-- **Recencia:** días transcurridos desde la última compra. Eje X del scatter — a la izquierda, clientes recientes; a la derecha, clientes inactivos.
-- **Valor histórico:** suma del monto gastado en los últimos 12 meses. Eje Y del scatter, expresado como percentil dentro de la cartera (el monto crudo tiene cola larga y aplasta el gráfico) — el monto real en MXN se muestra en el tooltip y la tabla.
+- **Recencia:** días transcurridos desde la última compra. Eje X del scatter: a la izquierda los clientes recientes y a la derecha los inactivos.
+- **Valor histórico:** suma del monto gastado en los últimos 12 meses. Eje Y del scatter, expresado como percentil dentro de la cartera (el monto crudo tiene cola larga y aplasta el gráfico). El monto real en MXN aparece en el tooltip y en la tabla.
 
 Cada eje se corta en su mediana, lo que arma 4 cuadrantes balanceados y cada uno recibe una acción comercial distinta:
 
@@ -34,7 +34,7 @@ Cada eje se corta en su mediana, lo que arma 4 cuadrantes balanceados y cada uno
 
 ![Dashboard de segmentación RFM y priorización comercial](assets/dashboard_preview.png)
 
-Captura del dashboard completo — resumen por cuadrante, matriz recencia x valor, scatters R x F y F x valor, e insights. Abre `dashboard.html` en el navegador para la versión interactiva (con tooltips y el plan de llamadas completo).
+Captura del dashboard completo: resumen por cuadrante, matriz recencia x valor, scatters R x F y F x valor, e insights. Abre `dashboard.html` en el navegador para la versión interactiva (con tooltips y el plan de llamadas completo).
 
 ## Datos
 
@@ -42,7 +42,7 @@ Captura del dashboard completo — resumen por cuadrante, matriz recencia x valo
 
 ## Stack
 
-Python (pandas, numpy) para el cálculo de RFM y cuadrantes · HTML + Chart.js para el dashboard interactivo — sin instalar nada del lado del cliente, se abre en cualquier navegador. La captura en `assets/dashboard_preview.png` es manual (screenshot del propio `dashboard.html`, con la tabla de llamadas cortada a 5 filas), para tener una vista previa en el README sin depender de JS.
+Python (pandas, numpy) para el cálculo de RFM y cuadrantes · HTML + Chart.js para el dashboard interactivo, que se abre en cualquier navegador sin instalar nada. La captura en `assets/dashboard_preview.png` es manual (screenshot del propio `dashboard.html`, con la tabla de llamadas cortada a 5 filas), para tener una vista previa en el README sin depender de JS.
 
 ## Cómo correrlo
 
@@ -55,4 +55,4 @@ open dashboard.html
 
 ## De demo a real
 
-Con el historial de ventas real del cliente (POS, e-commerce o CRM) el mismo cálculo corre directo — RFM no necesita modelos complejos, solo una fuente de transacciones limpia, que es justo lo que un engagement de Micro Data Office deja resuelto de fondo.
+Con el historial de ventas real del cliente (POS, e-commerce o CRM) el mismo cálculo corre directo. RFM no necesita modelos complejos, solo una fuente de transacciones limpia, que es justo lo que un engagement de Micro Data Office deja resuelto de fondo.

@@ -91,10 +91,10 @@ res[["cuadrante_status", "cuadrante"]] = res.apply(quadrant_of, axis=1, result_t
 res["confianza"] = res["r2"].apply(lambda v: f"{'Alta' if v >= mediana_r2 else 'Baja'} (R²={v:.2f})")
 
 ACCIONES = {
-    "Subir precio — ejecutar ya": "Aplicar el incremento en la próxima actualización de lista — demanda inelástica y el modelo explica bien la variación de unidades: bajo riesgo de sorpresa.",
-    "Subir precio — probar antes de escalar": "La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.",
-    "No subir precio — evidencia sólida": "No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.",
-    "Recolectar más datos": "Ni la dirección ni la magnitud son confiables todavía (R² bajo) — no tomar una decisión de precio con este dato; ampliar el histórico o correr una prueba controlada primero.",
+    "Subir precio — ejecutar ya": "Aplicar el incremento en la próxima actualización de lista. La demanda es inelástica y el modelo explica bien la variación de unidades: bajo riesgo de sorpresa.",
+    "Subir precio — probar antes de escalar": "La dirección apunta a subir precio, pero el R² es bajo. Validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.",
+    "No subir precio — evidencia sólida": "No subir precio: la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.",
+    "Recolectar más datos": "Ni la dirección ni la magnitud son confiables todavía (R² bajo). No tomar una decisión de precio con este dato; ampliar el histórico o correr una prueba controlada primero.",
 }
 res["accion_recomendada"] = res["cuadrante"].map(ACCIONES)
 
@@ -130,7 +130,7 @@ banner = {
     "label": "Próxima actualización de lista de precios",
     "headline": (
         f"{len(ejecutar)} de {total_productos} productos listo para subir precio ya "
-        f"(+${impacto_ejecutar:,.0f} MXN/año) — {len(probar)} más apuntan en la misma dirección "
+        f"(+${impacto_ejecutar:,.0f} MXN/año). Otros {len(probar)} apuntan en la misma dirección, "
         f"pero necesitan una prueba piloto primero."
     ),
     "subtext": (
@@ -161,7 +161,7 @@ charts = [
     {
         "id": "chart_matriz", "type": "scatter", "full_width": True,
         "title": "Matriz elasticidad x confianza: qué acción de precio corresponde a cada producto",
-        "subtitle": f"{total_productos} productos — elasticidad estimada vs. R² del modelo, divididos en la mediana de cada eje",
+        "subtitle": f"{total_productos} productos: elasticidad estimada vs. R² del modelo, divididos en la mediana de cada eje",
         "points": scatter_points,
         "x_label": "Elasticidad-precio (más negativo = más sensible al precio)", "y_label": "Confianza del modelo (R²)",
         "x_unit": "", "y_unit": " R²",
@@ -181,7 +181,7 @@ charts = [
     {
         "id": "chart_impacto", "type": "bar", "horizontal": True, "full_width": True,
         "title": "Impacto anual proyectado por producto (+10% de precio)",
-        "subtitle": "MXN/año — positivo donde subir precio conviene, negativo donde destruye ingreso",
+        "subtitle": "MXN/año: positivo donde subir precio conviene, negativo donde destruye ingreso",
         "labels": list(res["producto"]),
         "datasets": [{
             "label": "Impacto anual",
@@ -194,10 +194,10 @@ charts = [
 ]
 
 insights = [
-    f"<b>{ejecutar.iloc[0]['producto']}</b> es el único producto con evidencia suficiente (R²={ejecutar.iloc[0]['r2']:.2f}, elasticidad {ejecutar.iloc[0]['elasticidad']}) para subir precio en la próxima lista sin necesidad de prueba piloto — impacto estimado +${impacto_ejecutar:,.0f} MXN/año.",
-    f"<b>{len(probar)} productos</b> ({', '.join(p.split(' (')[0] for p in probar['producto'])}) apuntan a subir precio (+${impacto_probar:,.0f} MXN/año combinado) pero con R² por debajo de {mediana_r2:.2f} — antes de aplicarlo a todo el catálogo conviene una prueba piloto en una región o segmento de clientes.",
-    f"<b>{len(proteger)} productos</b> ({', '.join(p.split(' (')[0] for p in proteger['producto'])}) tienen evidencia sólida (R² {proteger['r2'].min():.2f}–{proteger['r2'].max():.2f}) de ser altamente elásticos — subir su precio destruiría ${impacto_protegido:,.0f} MXN/año; no deben tocarse en esta ronda.",
-    "La confianza estadística (R²) importa tanto como la dirección de la elasticidad: dos productos con la misma elasticidad estimada pueden merecer una acción distinta si uno tiene mucha más señal que ruido que el otro — por eso la matriz cruza ambos ejes en vez de ordenar solo por elasticidad.",
+    f"<b>{ejecutar.iloc[0]['producto']}</b> es el único producto con evidencia suficiente (R²={ejecutar.iloc[0]['r2']:.2f}, elasticidad {ejecutar.iloc[0]['elasticidad']}) para subir precio en la próxima lista sin necesidad de prueba piloto, con un impacto estimado de +${impacto_ejecutar:,.0f} MXN/año.",
+    f"<b>{len(probar)} productos</b> ({', '.join(p.split(' (')[0] for p in probar['producto'])}) apuntan a subir precio (+${impacto_probar:,.0f} MXN/año combinado) pero con R² por debajo de {mediana_r2:.2f}. Antes de aplicarlo a todo el catálogo conviene una prueba piloto en una región o segmento de clientes.",
+    f"<b>{len(proteger)} productos</b> ({', '.join(p.split(' (')[0] for p in proteger['producto'])}) tienen evidencia sólida (R² {proteger['r2'].min():.2f}–{proteger['r2'].max():.2f}) de ser altamente elásticos. Subir su precio destruiría ${impacto_protegido:,.0f} MXN/año; no deben tocarse en esta ronda.",
+    "La confianza estadística (R²) importa tanto como la dirección de la elasticidad: dos productos con la misma elasticidad estimada pueden merecer una acción distinta si uno tiene mucha más señal que ruido que el otro. Por eso la matriz cruza ambos ejes en vez de ordenar solo por elasticidad.",
 ]
 
 table = {
@@ -212,7 +212,7 @@ table = {
 checklist = {
     "id": "plan_repricing",
     "title": "Plan de repricing — próxima actualización de lista",
-    "subtitle": "Los 8 productos ordenados por prioridad de acción. Marca cada uno al aplicarlo (o al confirmar que se deja igual) en el ERP — el progreso se guarda en este navegador.",
+    "subtitle": "Los 8 productos ordenados por prioridad de acción. Marca cada uno al aplicarlo (o al confirmar que se deja igual) en el ERP. El progreso se guarda en este navegador.",
     "progress_noun": "revisados",
     "headers": ["Producto", "Elasticidad", "Confianza", "Impacto anual estimado", "Acción"],
     "rows": [
@@ -228,7 +228,7 @@ dash.render(
     ROOT / "dashboard.html",
     project_no=6,
     title="Elasticidad de Precios y Price Intelligence",
-    tagline="No todos los productos reaccionan igual a un cambio de precio — la matriz dice a cuáles subirles precio ya, a cuáles con prueba piloto primero, y a cuáles no tocar.",
+    tagline="No todos los productos reaccionan igual a un cambio de precio. La matriz dice a cuáles subirles el precio ya, cuáles necesitan antes una prueba piloto y cuáles conviene no tocar.",
     kpis=kpis,
     charts=charts,
     insights=insights,

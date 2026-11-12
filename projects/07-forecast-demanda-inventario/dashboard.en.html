@@ -170,7 +170,7 @@
   
     <div class="minto-banner">
       <p class="minto-label">The bottom line first</p>
-      <h2>$172.9M MXN in annual revenue currently sits in SKUs below their reorder point — and it isn't spread evenly: it's concentrated in the high-demand segment.</h2>
+      <h2>$172.9M MXN in annual revenue currently sits in SKUs below their reorder point, and most of it is concentrated in the high-demand segment.</h2>
       <p class="minto-sub">The "high" demand segment is only 20% of the catalog but generates 55% of revenue (index 276 vs. 100 = proportional), and it has the highest stockout-risk rate of any segment (31% of its SKUs, vs. 19% for the catalog overall). Reviewing the reorder point and service level for these SKUs first protects the most revenue for the same purchasing effort.</p>
     </div>
     
@@ -255,7 +255,7 @@
     <div class="chart-card">
       <div class="chart-head">
         <h3>% of SKUs at risk of stockout by category</h3>
-        <p>Reference line: 19% catalog average — label: # of SKUs and their inventory value at cost</p>
+        <p>Reference line: 19% catalog average. Label: # of SKUs and their inventory value at cost</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_riesgo_categoria"></canvas>
@@ -271,7 +271,7 @@
     <div class="chart-card">
       <div class="chart-head">
         <h3>The Thursday/Friday peak and Sunday trough are structural, not a single category's pattern</h3>
-        <p>% deviation vs. each category's (row) weekly average — not absolute volume</p>
+        <p>% deviation vs. each category's (row) weekly average, not absolute volume</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_heatmap_estacionalidad"></canvas>
@@ -305,11 +305,11 @@
 
   <div class="insights-card">
     <h3>What the data says</h3>
-    <ul class="insights"><li><b>Revenue at risk is not spread evenly</b>: $172.9M MXN/year (25% of the total) sits in SKUs below their reorder point, and the <b>high-demand</b> segment — only 20% of the catalog, 55% of revenue — has the highest risk rate (31%). That's where reviewing service level protects the most revenue.</li>
-<li><b>Electronics & Accessories</b> accounts for 45% of revenue with the lowest margin in the catalog (27.2%) and the longest lead time — it's the biggest leverage point for renegotiating supplier terms.</li>
-<li><b>Thursday/Friday</b> demand more than doubles Sunday's (18,992/21,550 vs. 9,478 units/day) — the reorder point already adjusts for this weekly pattern instead of using a flat average.</li>
-<li>Forecast error isn't just a statistical figure: in <b>Electronics & Accessories</b> it equals $27.9M MXN/year in mis-sized inventory — 56% of the value of its current inventory, churned every year purely by forecast error margin.</li>
-<li>The <b>sporadic and none</b> demand segments account for 80 SKUs (20% of the catalog) but generate only 0.8% of revenue — candidates for a quarterly discontinuation review to free up working capital.</li></ul>
+    <ul class="insights"><li><b>Revenue at risk is not spread evenly</b>: $172.9M MXN/year (25% of the total) sits in SKUs below their reorder point, and the <b>high-demand</b> segment (only 20% of the catalog but 55% of revenue) has the highest risk rate (31%). That's where reviewing service level protects the most revenue.</li>
+<li><b>Electronics & Accessories</b> accounts for 45% of revenue with the lowest margin in the catalog (27.2%) and the longest lead time, so it's where renegotiating supplier terms pays off most.</li>
+<li><b>Thursday/Friday</b> demand more than doubles Sunday's (18,992/21,550 vs. 9,478 units/day). The reorder point already adjusts for this weekly pattern instead of using a flat average.</li>
+<li>Forecast error has a price tag: in <b>Electronics & Accessories</b> it equals $27.9M MXN/year in mis-sized inventory, 56% of the value of its current inventory, churned every year purely by forecast error margin.</li>
+<li>The <b>sporadic and none</b> demand segments account for 80 SKUs (20% of the catalog) but generate only 0.8% of revenue. They're candidates for a quarterly discontinuation review to free up working capital.</li></ul>
   </div>
 
   
@@ -319,7 +319,7 @@
   
     <div class="explorer-card" id="sku_explorer">
       <h3>Explore by category and SKU</h3>
-      <p class="checklist-sub">Choose a category to see its top 15 SKUs by annual revenue — click one to see its historical demand and 28-day forecast.</p>
+      <p class="checklist-sub">Choose a category to see its top 15 SKUs by annual revenue, then click one to see its historical demand and 28-day forecast.</p>
       <div class="explorer-controls">
         <label for="sku_explorer-cat">Category</label>
         <select id="sku_explorer-cat" class="explorer-select"><option value="Electronics & Accessories">Electronics & Accessories</option><option value="Hardware & Tools">Hardware & Tools</option><option value="Personal Care">Personal Care</option><option value="Food & Beverage">Food & Beverage</option><option value="Home Cleaning">Home Cleaning</option></select>

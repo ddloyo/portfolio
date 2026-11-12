@@ -11,7 +11,7 @@ Tres sucursales, tres Excels, tres formatos. CDMX manda fechas en `DD/MM/YYYY` c
 
 - Ingiere los 3 exports con sus propios formatos y los estandariza a un esquema único.
 - Normaliza nombres de sucursal inconsistentes (mayúsculas, espacios, abreviaciones) a un catálogo único.
-- Elimina duplicados exactos entre fuentes — sin esto, el total de ventas queda inflado.
+- Elimina duplicados exactos entre fuentes, que de otro modo inflarían el total de ventas.
 - Separa (no inventa) los registros con datos faltantes en una cola de revisión manual explícita.
 - Entrega un único archivo limpio (`data/fuente_unica.csv`) del que parte cualquier reporte posterior.
 
@@ -19,9 +19,9 @@ Tres sucursales, tres Excels, tres formatos. CDMX manda fechas en `DD/MM/YYYY` c
 
 - **Fuentes consolidadas:** número de exports distintos (columnas, formato de fecha y catálogo de sucursal propios) que se unificaron en el archivo único.
 - **Filas crudas ingeridas:** total de registros de las 3 fuentes combinadas, antes de cualquier limpieza.
-- **Duplicados eliminados:** filas con misma fecha, sucursal y monto presentes más de una vez entre las fuentes — se cuentan una sola vez en la fuente única para no inflar el total de ventas.
+- **Duplicados eliminados:** filas con misma fecha, sucursal y monto presentes más de una vez entre las fuentes. Se cuentan una sola vez en la fuente única para no inflar el total de ventas.
 - **En cola de revisión manual:** filas sin monto que se separan a `revision_manual_monto_faltante.csv` en vez de imputarse con un valor inventado.
-- **Ventas consolidadas por sucursal:** suma de `monto_mxn` ya limpio, agrupada por sucursal normalizada — el número que cualquier reporte posterior debe usar como base.
+- **Ventas consolidadas por sucursal:** suma de `monto_mxn` ya limpio, agrupada por sucursal normalizada. Es el número que cualquier reporte posterior debe usar como base.
 
 ## Cómo se ve
 
@@ -35,7 +35,7 @@ Abre `dashboard.html` para la versión interactiva.
 
 ## Stack
 
-Python (pandas) para el pipeline de limpieza y estandarización + HTML/Chart.js para el dashboard. La lógica de mapeo de columnas y normalización de categorías es el mismo patrón que un modelo de `staging` en dbt — aquí resuelto en un script simple para que sea legible sin infraestructura adicional.
+Python (pandas) para el pipeline de limpieza y estandarización + HTML/Chart.js para el dashboard. La lógica de mapeo de columnas y normalización de categorías es el mismo patrón que un modelo de `staging` en dbt, aquí resuelto en un script simple para que sea legible sin infraestructura adicional.
 
 ## Cómo correrlo
 
@@ -46,7 +46,7 @@ python3 run_analysis.py
 open dashboard.html
 ```
 
-Revisa también `data/revision_manual_monto_faltante.csv` — la cola de registros que requieren revisión humana en vez de un dato inventado.
+Revisa también `data/revision_manual_monto_faltante.csv`, la cola de registros que requieren revisión humana en vez de un dato inventado.
 
 ## De demo a real
 

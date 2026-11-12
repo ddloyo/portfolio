@@ -217,7 +217,7 @@ _contexto_causante = (
 banner = {
     "label": f"Respuesta ejecutiva — {last_month}",
     "headline": (
-        f"El ingreso de {last_month} va {var_total_pct:+.1f}% vs. {same_month_ly} (mismo mes de {prior_year}) — "
+        f"El ingreso de {last_month} va {var_total_pct:+.1f}% vs. {same_month_ly} (mismo mes de {prior_year}). "
         f"{causante_sub} ({causante_cat}) cayó {cambio_causante_pct:+.1f}% en ese mismo comparativo, {_contexto_causante}. "
         f"El YTD {current_year} confirma el panorama: {ytd_growth_pct:+.1f}% vs. {prior_year}."
     ),
@@ -345,20 +345,20 @@ table = {
 }
 
 insights = [
-    (f"<b>Qué pasó:</b> el ingreso de {last_month} fue ${total_last:,.0f} MXN, {var_total_pct:+.1f}% vs. {same_month_ly} (mismo mes de {prior_year}) "
-     f"— la comparación que importa para medir qué tan grave es. Mes contra mes se ve peor ({var_total_pct_mom:+.1f}% vs. {prev_month}), pero es ruido de calendario: "
+    (f"<b>Qué pasó:</b> el ingreso de {last_month} fue ${total_last:,.0f} MXN, {var_total_pct:+.1f}% vs. {same_month_ly} (mismo mes de {prior_year}), "
+     f"que es la comparación que sirve para medir qué tan grave es. Mes contra mes se ve peor ({var_total_pct_mom:+.1f}% vs. {prev_month}), pero es ruido de calendario: "
      f"<b>{causante_sub}</b> ({causante_cat}) es quien realmente cayó en el comparativo interanual ({cambio_causante_pct:+.1f}%)."),
     (f"<b>Así vamos en el año:</b> el YTD {current_year} acumula ${ytd_current_total:,.0f} MXN ({ytd_growth_pct:+.1f}% vs. el mismo periodo {prior_year}). "
      f"<b>{motor_ytd}</b> aporta el mayor crecimiento (${ytd_delta_by_sub[motor_ytd]:,.0f} MXN más que en {prior_year}) y "
      f"<b>{freno_ytd}</b> es la subcategoría que más retrocede en el acumulado ({ytd_pct_by_sub[freno_ytd]:+.1f}%)."),
     (f"<b>Por qué (el mes):</b> el movimiento de {causante_sub} en {last_month} es una anomalía estadística "
-     f"({segmentos[causante_sub]['z_ultimo']:+.1f}&sigma; frente a su propio historial) — evidencia de evento aislado "
-     f"(p. ej. un cliente grande que pausó pedidos), no de una tendencia sostenida en {causante_cat}."),
+     f"({segmentos[causante_sub]['z_ultimo']:+.1f}&sigma; frente a su propio historial). Apunta a un evento aislado "
+     f"(p. ej. un cliente grande que pausó pedidos) más que a una tendencia sostenida en {causante_cat}."),
     (f"<b>Qué hacer:</b> antes de mover el forecast del trimestre, confirmar con ventas los {len(top_caida_clientes)} clientes de la lista al final "
-     f"de este reporte — son los que más explican la caída en {causante_sub}. En paralelo, {freno_ytd} necesita revisión de precio/portafolio: "
-     f"su rezago viene sosteniéndose desde inicios de año (tendencia {segmentos[freno_ytd]['tendencia_pct']:+.2f}%/mes), no es un mes suelto."),
+     f"de este reporte; son los que más explican la caída en {causante_sub}. En paralelo, {freno_ytd} necesita revisión de precio/portafolio: "
+     f"su rezago viene sosteniéndose desde inicios de año (tendencia {segmentos[freno_ytd]['tendencia_pct']:+.2f}%/mes), así que no es un mes suelto."),
     (f"{len(subcats_atencion)} de {len(subcategorias)} subcategorías están en un segmento que requiere seguimiento esta semana "
-     f"({', '.join(subcats_atencion)}) — las demás sostienen el crecimiento y solo necesitan protección de capacidad, no intervención."),
+     f"({', '.join(subcats_atencion)}). Las demás sostienen el crecimiento y solo necesitan protección de capacidad."),
 ]
 
 # Nivel 4 (el más granular): los clientes concretos de la subcategoría
@@ -390,7 +390,7 @@ dash.render(
     ROOT / "dashboard.html",
     project_no=10,
     title="Reporte Ejecutivo Mensual",
-    tagline="Tu reporte, convertido en la decisión — de la cifra general de la empresa al cliente concreto que hay que llamar, listo para la reunión de dirección.",
+    tagline="Tu reporte, convertido en la decisión: de la cifra general de la empresa al cliente concreto que hay que llamar, listo para la reunión de dirección.",
     kpis=kpis,
     charts=charts,
     insights=insights,

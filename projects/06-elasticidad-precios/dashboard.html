@@ -145,13 +145,13 @@
   <header class="page-head">
     <div class="tag">Proyecto 06 · Portafolio de demostración</div>
     <h1>Elasticidad de Precios y Price Intelligence</h1>
-    <p class="tagline">No todos los productos reaccionan igual a un cambio de precio — la matriz dice a cuáles subirles precio ya, a cuáles con prueba piloto primero, y a cuáles no tocar.</p>
+    <p class="tagline">No todos los productos reaccionan igual a un cambio de precio. La matriz dice a cuáles subirles el precio ya, cuáles necesitan antes una prueba piloto y cuáles conviene no tocar.</p>
   </header>
 
   
     <div class="minto-banner">
       <p class="minto-label">Próxima actualización de lista de precios</p>
-      <h2>1 de 8 productos listo para subir precio ya (+$234,648 MXN/año) — 3 más apuntan en la misma dirección pero necesitan una prueba piloto primero.</h2>
+      <h2>1 de 8 productos listo para subir precio ya (+$234,648 MXN/año). Otros 3 apuntan en la misma dirección, pero necesitan una prueba piloto primero.</h2>
       <p class="minto-sub">La evidencia es sólida en 3 productos para NO subir precio: hacerlo destruiría $2,173,463 MXN/año de ingreso. 1 producto no tiene suficiente señal (R² bajo) para decidir en ningún sentido todavía.</p>
     </div>
     
@@ -199,10 +199,10 @@
       <p class="section-label">Resumen por cuadrante de acción</p>
       <table>
         <thead><tr><th>Cuadrante</th><th>Productos</th><th>Elasticidad promedio</th><th>R² promedio</th><th>Impacto anual</th><th>Acción recomendada</th></tr></thead>
-        <tbody><tr><td>Subir precio — ejecutar ya</td><td>1</td><td>-0.6</td><td>0.56</td><td>$234,648</td><td>Aplicar el incremento en la próxima actualización de lista — demanda inelástica y el modelo explica bien la variación de unidades: bajo riesgo de sorpresa.</td></tr>
-<tr><td>Subir precio — probar antes de escalar</td><td>3</td><td>-0.3</td><td>0.07</td><td>$1,325,642</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr>
-<tr><td>No subir precio — evidencia sólida</td><td>3</td><td>-2.0</td><td>0.75</td><td>-$2,173,463</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr>
-<tr><td>Recolectar más datos</td><td>1</td><td>-0.95</td><td>0.39</td><td>-$36,551</td><td>Ni la dirección ni la magnitud son confiables todavía (R² bajo) — no tomar una decisión de precio con este dato; ampliar el histórico o correr una prueba controlada primero.</td></tr>
+        <tbody><tr><td>Subir precio — ejecutar ya</td><td>1</td><td>-0.6</td><td>0.56</td><td>$234,648</td><td>Aplicar el incremento en la próxima actualización de lista. La demanda es inelástica y el modelo explica bien la variación de unidades: bajo riesgo de sorpresa.</td></tr>
+<tr><td>Subir precio — probar antes de escalar</td><td>3</td><td>-0.3</td><td>0.07</td><td>$1,325,642</td><td>La dirección apunta a subir precio, pero el R² es bajo. Validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr>
+<tr><td>No subir precio — evidencia sólida</td><td>3</td><td>-2.0</td><td>0.75</td><td>-$2,173,463</td><td>No subir precio: la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr>
+<tr><td>Recolectar más datos</td><td>1</td><td>-0.95</td><td>0.39</td><td>-$36,551</td><td>Ni la dirección ni la magnitud son confiables todavía (R² bajo). No tomar una decisión de precio con este dato; ampliar el histórico o correr una prueba controlada primero.</td></tr>
 </tbody>
       </table>
     </div>
@@ -213,7 +213,7 @@
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
         <h3>Matriz elasticidad x confianza: qué acción de precio corresponde a cada producto</h3>
-        <p>8 productos — elasticidad estimada vs. R² del modelo, divididos en la mediana de cada eje</p>
+        <p>8 productos: elasticidad estimada vs. R² del modelo, divididos en la mediana de cada eje</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_matriz"></canvas>
@@ -224,7 +224,7 @@
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
         <h3>Impacto anual proyectado por producto (+10% de precio)</h3>
-        <p>MXN/año — positivo donde subir precio conviene, negativo donde destruye ingreso</p>
+        <p>MXN/año: positivo donde subir precio conviene, negativo donde destruye ingreso</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_impacto"></canvas>
@@ -237,10 +237,10 @@
 
   <div class="insights-card">
     <h3>Lo que dice el dato</h3>
-    <ul class="insights"><li><b>Repuesto especializado X</b> es el único producto con evidencia suficiente (R²=0.56, elasticidad -0.6) para subir precio en la próxima lista sin necesidad de prueba piloto — impacto estimado +$234,648 MXN/año.</li>
-<li><b>3 productos</b> (Repuesto especializado Y, Servicio de instalación, Refacción crítica) apuntan a subir precio (+$1,325,642 MXN/año combinado) pero con R² por debajo de 0.48 — antes de aplicarlo a todo el catálogo conviene una prueba piloto en una región o segmento de clientes.</li>
-<li><b>3 productos</b> (Componente A, Accesorio estándar, Componente B) tienen evidencia sólida (R² 0.56–0.92) de ser altamente elásticos — subir su precio destruiría $2,173,463 MXN/año; no deben tocarse en esta ronda.</li>
-<li>La confianza estadística (R²) importa tanto como la dirección de la elasticidad: dos productos con la misma elasticidad estimada pueden merecer una acción distinta si uno tiene mucha más señal que ruido que el otro — por eso la matriz cruza ambos ejes en vez de ordenar solo por elasticidad.</li></ul>
+    <ul class="insights"><li><b>Repuesto especializado X</b> es el único producto con evidencia suficiente (R²=0.56, elasticidad -0.6) para subir precio en la próxima lista sin necesidad de prueba piloto, con un impacto estimado de +$234,648 MXN/año.</li>
+<li><b>3 productos</b> (Repuesto especializado Y, Servicio de instalación, Refacción crítica) apuntan a subir precio (+$1,325,642 MXN/año combinado) pero con R² por debajo de 0.48. Antes de aplicarlo a todo el catálogo conviene una prueba piloto en una región o segmento de clientes.</li>
+<li><b>3 productos</b> (Componente A, Accesorio estándar, Componente B) tienen evidencia sólida (R² 0.56–0.92) de ser altamente elásticos. Subir su precio destruiría $2,173,463 MXN/año; no deben tocarse en esta ronda.</li>
+<li>La confianza estadística (R²) importa tanto como la dirección de la elasticidad: dos productos con la misma elasticidad estimada pueden merecer una acción distinta si uno tiene mucha más señal que ruido que el otro. Por eso la matriz cruza ambos ejes en vez de ordenar solo por elasticidad.</li></ul>
   </div>
 
   
@@ -248,7 +248,7 @@
   
     <div class="checklist-card">
       <h3>Plan de repricing — próxima actualización de lista</h3>
-      <p class="checklist-sub">Los 8 productos ordenados por prioridad de acción. Marca cada uno al aplicarlo (o al confirmar que se deja igual) en el ERP — el progreso se guarda en este navegador.</p>
+      <p class="checklist-sub">Los 8 productos ordenados por prioridad de acción. Marca cada uno al aplicarlo (o al confirmar que se deja igual) en el ERP. El progreso se guarda en este navegador.</p>
       <div class="checklist-progress">
         <div class="progress-bar"><div class="progress-fill" id="plan_repricing-fill" style="width:0%"></div></div>
         <span id="plan_repricing-count">0 / 8 revisados</span>
@@ -256,7 +256,7 @@
       <div class="checklist-table-wrap">
         <table class="checklist-table">
           <thead><tr><th></th><th>Producto</th><th>Elasticidad</th><th>Confianza</th><th>Impacto anual estimado</th><th>Acción</th></tr></thead>
-          <tbody><tr data-row="Repuesto especializado X"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Repuesto especializado X"></td><td>Repuesto especializado X</td><td>-0.6</td><td>Alta (R²=0.56)</td><td>$234,648</td><td>Aplicar el incremento en la próxima actualización de lista — demanda inelástica y el modelo explica bien la variación de unidades: bajo riesgo de sorpresa.</td></tr><tr data-row="Repuesto especializado Y"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Repuesto especializado Y"></td><td>Repuesto especializado Y</td><td>-0.48</td><td>Baja (R²=0.13)</td><td>$333,864</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Servicio de instalación"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Servicio de instalación"></td><td>Servicio de instalación</td><td>-0.27</td><td>Baja (R²=0.04)</td><td>$502,760</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Refacción crítica (sin sustituto)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Refacción crítica (sin sustituto)"></td><td>Refacción crítica (sin sustituto)</td><td>-0.15</td><td>Baja (R²=0.04)</td><td>$489,018</td><td>La dirección apunta a subir precio, pero el R² es bajo — validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Componente A (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Componente A (commodity)"></td><td>Componente A (commodity)</td><td>-2.18</td><td>Alta (R²=0.92)</td><td>-$770,804</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Accesorio estándar"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Accesorio estándar"></td><td>Accesorio estándar</td><td>-1.96</td><td>Alta (R²=0.56)</td><td>-$743,260</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Componente B (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Componente B (commodity)"></td><td>Componente B (commodity)</td><td>-1.85</td><td>Alta (R²=0.78)</td><td>-$659,399</td><td>No subir precio — la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Kit de mantenimiento"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Kit de mantenimiento"></td><td>Kit de mantenimiento</td><td>-0.95</td><td>Baja (R²=0.39)</td><td>-$36,551</td><td>Ni la dirección ni la magnitud son confiables todavía (R² bajo) — no tomar una decisión de precio con este dato; ampliar el histórico o correr una prueba controlada primero.</td></tr></tbody>
+          <tbody><tr data-row="Repuesto especializado X"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Repuesto especializado X"></td><td>Repuesto especializado X</td><td>-0.6</td><td>Alta (R²=0.56)</td><td>$234,648</td><td>Aplicar el incremento en la próxima actualización de lista. La demanda es inelástica y el modelo explica bien la variación de unidades: bajo riesgo de sorpresa.</td></tr><tr data-row="Repuesto especializado Y"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Repuesto especializado Y"></td><td>Repuesto especializado Y</td><td>-0.48</td><td>Baja (R²=0.13)</td><td>$333,864</td><td>La dirección apunta a subir precio, pero el R² es bajo. Validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Servicio de instalación"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Servicio de instalación"></td><td>Servicio de instalación</td><td>-0.27</td><td>Baja (R²=0.04)</td><td>$502,760</td><td>La dirección apunta a subir precio, pero el R² es bajo. Validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Refacción crítica (sin sustituto)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Refacción crítica (sin sustituto)"></td><td>Refacción crítica (sin sustituto)</td><td>-0.15</td><td>Baja (R²=0.04)</td><td>$489,018</td><td>La dirección apunta a subir precio, pero el R² es bajo. Validar con una prueba piloto (una región o segmento de clientes) antes de aplicarlo a todo el catálogo.</td></tr><tr data-row="Componente A (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Componente A (commodity)"></td><td>Componente A (commodity)</td><td>-2.18</td><td>Alta (R²=0.92)</td><td>-$770,804</td><td>No subir precio: la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Accesorio estándar"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Accesorio estándar"></td><td>Accesorio estándar</td><td>-1.96</td><td>Alta (R²=0.56)</td><td>-$743,260</td><td>No subir precio: la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Componente B (commodity)"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Componente B (commodity)"></td><td>Componente B (commodity)</td><td>-1.85</td><td>Alta (R²=0.78)</td><td>-$659,399</td><td>No subir precio: la demanda es elástica y el modelo lo explica con alta confianza; un alza aquí golpea el ingreso de forma predecible.</td></tr><tr data-row="Kit de mantenimiento"><td class="check-col"><input type="checkbox" class="xia-check" data-scope="plan_repricing" data-row="Kit de mantenimiento"></td><td>Kit de mantenimiento</td><td>-0.95</td><td>Baja (R²=0.39)</td><td>-$36,551</td><td>Ni la dirección ni la magnitud son confiables todavía (R² bajo). No tomar una decisión de precio con este dato; ampliar el histórico o correr una prueba controlada primero.</td></tr></tbody>
         </table>
       </div>
     </div>

@@ -82,7 +82,7 @@ charts = [
 ]
 
 insights = [
-    f"Desde que arrancó la fuga en la semana {leak_start_week}, se perdieron <b>{lost_since_leak:,} propuestas</b> frente al ritmo histórico — esas son conversaciones de cierre que nunca se iniciaron.",
+    f"Desde que arrancó la fuga en la semana {leak_start_week}, se perdieron <b>{lost_since_leak:,} propuestas</b> frente al ritmo histórico. Son conversaciones de cierre que nunca empezaron.",
     f"La conversión Calificados → Propuesta cayó de ~{baseline:.0f}% a <b>{current['tasa_calif_a_propuesta']}%</b>, {weeks_in_alert} semanas por debajo del umbral de {ALERT_THRESHOLD}%.",
     "La fuga está aislada en la etapa de propuesta: el volumen de leads y la tasa de calificación se mantienen estables, así que no es un problema de generación de demanda.",
     f"Un reporte mensual detecta esto 4-6 semanas tarde; con la alerta activa desde la semana {leak_start_week}, ya van {weeks_in_alert} semanas de ventana para corregir antes del cierre de trimestre.",

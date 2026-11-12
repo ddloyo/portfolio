@@ -5,27 +5,27 @@
 
 ## El problema de negocio
 
-Cuando una empresa acumula CRM, ERP, punto de venta, hojas de cálculo y un par de dashboards, la información existe pero nadie sabe con certeza qué hay, de dónde viene, quién la usa ni qué significa. El síntoma es siempre el mismo: dos personas presentan «ventas» del mismo mes y los números no coinciden, y nadie puede decir cuál es el correcto, porque ambos lo son — miden cosas distintas con el mismo nombre. Mientras eso pase, cualquier dashboard nuevo hereda la discusión.
+Cuando una empresa acumula CRM, ERP, punto de venta, hojas de cálculo y un par de dashboards, la información existe pero nadie sabe con certeza qué hay, de dónde viene, quién la usa ni qué significa. El síntoma es siempre el mismo: dos personas presentan «ventas» del mismo mes y los números no coinciden, y nadie puede decir cuál es el correcto, porque ambos lo son: miden cosas distintas con el mismo nombre. Mientras eso pase, cualquier dashboard nuevo hereda la discusión.
 
 ## Qué resuelve este proyecto
 
 - Cataloga un **warehouse dbt real** (no una simulación): **87 modelos y 22 fuentes** agrupados por capa (bronze, staging, intermediate, marts, meta, gold) y por dominio (core, ventas, finanzas, cliente, marketing, inventario, scorecard, sucursales, calidad de datos), buscables por nombre, palabra clave, columna o descripción.
-- Por cada objeto muestra su **descripción, materialización, columnas y tipos, tests y su estado** (429 tests: 426 pasan, 3 en alerta), y su **linaje**: de qué depende, quién lo usa y, sobre todo, **qué dashboards se rompen si cambia** (análisis de impacto transitivo, no solo el vecino directo).
+- Por cada objeto muestra su **descripción, materialización, columnas y tipos, tests y su estado** (429 tests: 426 pasan, 3 en alerta), y su **linaje**: de qué depende, quién lo usa y, sobre todo, **qué dashboards se rompen si cambia** (análisis de impacto transitivo, que va más allá del vecino directo).
 - Incluye un **diccionario de 46 métricas de negocio** (los 6 KPIs de `dim_kpi` + 40 que consumen los 19 reportes gold) en lenguaje no técnico: qué significa, cómo se calcula a grandes rasgos, en qué unidad, dónde se calcula (warehouse, dashboard, captura manual) y qué dashboard la consume.
-- Deja al descubierto **dónde el mismo nombre esconde dos números**: seis cifras distintas se leen como «ventas» o «ingreso», y dos cosas distintas se llaman «DSO» — el diccionario las separa con un cuadro comparativo.
+- Deja al descubierto **dónde el mismo nombre esconde dos números**: seis cifras distintas se leen como «ventas» o «ingreso», y dos cosas distintas se llaman «DSO». El diccionario las separa con un cuadro comparativo.
 - Convierte los huecos en **trabajo priorizado**: qué documentar primero, ordenado por cuántos dashboards dependen de cada objeto.
 
 ## Cómo se ve
 
 ![Catálogo de datos: hallazgos, KPIs de cobertura, inventario buscable con linaje y tests](assets/dashboard_preview.png)
 
-Abre `dashboard.html` (ES) o `dashboard.en.html` (EN): banner con el hallazgo, KPIs y cobertura de documentación por capa, y dos pestañas — **Inventario de datos** (búsqueda, filtros por capa y dominio, filas expandibles con columnas, tests y linaje navegable) y **Diccionario de métricas de negocio** (búsqueda, filtros por área y por dónde se calcula, y enlaces cruzados al modelo y al dashboard de cada métrica).
+Abre `dashboard.html` (ES) o `dashboard.en.html` (EN): banner con el hallazgo, KPIs y cobertura de documentación por capa, y dos pestañas: **Inventario de datos** (búsqueda, filtros por capa y dominio, filas expandibles con columnas, tests y linaje navegable) y **Diccionario de métricas de negocio** (búsqueda, filtros por área y por dónde se calcula, y enlaces cruzados al modelo y al dashboard de cada métrica).
 
 Es una página a medida, no el patrón KPI + gráficas de `_lib/dashboard.py`: un catálogo se usa buscando y expandiendo, no leyendo un tablero. Comparte con los otros 13 los mismos tokens de color, tipografía del sistema, tag de proyecto, banner de «la respuesta primero», tarjetas de KPI y modo claro/oscuro.
 
 ## Los datos
 
-**No hay dataset sintético que generar**: la materia prima es el propio warehouse de [`warehouse/`](../../warehouse/README.md) (dbt + DuckDB), que corre de verdad — sus datos de origen son 100% sintéticos, así que nada de esto es cifra de un cliente real, pero la infraestructura que se audita es real.
+**No hay dataset sintético que generar**: la materia prima es el propio warehouse de [`warehouse/`](../../warehouse/README.md) (dbt + DuckDB), que corre de verdad. Sus datos de origen son 100% sintéticos, así que nada de esto es cifra de un cliente real, pero la infraestructura que se audita es real.
 
 `data/extract_catalog.py` lee los artefactos que dbt deja en `warehouse/target/`:
 
@@ -47,9 +47,9 @@ Tres detalles del extractor que evitan errores silenciosos:
 
 Lo que dbt **sí** sabe (extraído): qué existe, cómo se llama, qué depende de qué, qué tests hay y si pasan. Lo que dbt **no** sabe y alguien decide (curado, versionado en `data/`):
 
-- **`taxonomy.py` — dominios.** Los marts usan su carpeta; staging, intermediate y gold se asignan explícitamente (un modelo sin dominio hace fallar el build, para que uno nuevo no quede huérfano). Se agrega el dominio `calidad` para el motor de calidad de datos.
-- **`metrics.py` — definiciones de negocio.** Escritas a mano leyendo el SQL de cada modelo y la lógica de cada dashboard, porque los contratos `rpt_*` solo declaran nombre y tipo de columna. Cada métrica declara dónde se calcula (`warehouse`, `dashboard`, ambos, `manual` o `plan`) y, si aplica, una advertencia.
-- **`translations_en.py` — 140 descripciones de dbt en inglés**, para que `dashboard.en.html` quede completo. Un archivo `.lock` guarda el hash del texto en español traducido: si alguien cambia una descripción en dbt, el build avisa que la traducción quedó atrás.
+- **`taxonomy.py`: dominios.** Los marts usan su carpeta; staging, intermediate y gold se asignan explícitamente (un modelo sin dominio hace fallar el build, para que uno nuevo no quede huérfano). Se agrega el dominio `calidad` para el motor de calidad de datos.
+- **`metrics.py`: definiciones de negocio.** Escritas a mano leyendo el SQL de cada modelo y la lógica de cada dashboard, porque los contratos `rpt_*` solo declaran nombre y tipo de columna. Cada métrica declara dónde se calcula (`warehouse`, `dashboard`, ambos, `manual` o `plan`) y, si aplica, una advertencia.
+- **`translations_en.py`: 140 descripciones de dbt en inglés**, para que `dashboard.en.html` quede completo. Un archivo `.lock` guarda el hash del texto en español traducido: si alguien cambia una descripción en dbt, el build avisa que la traducción quedó atrás.
 
 **Todo lo curado se valida contra el warehouse en cada corrida**, así el diccionario no se desactualiza en silencio: los modelos, reportes y columnas que cita deben existir; los KPIs deben ser exactamente los de `dim_kpi`; y **los 19 reportes gold deben estar cubiertos por al menos una métrica** (19/19 hoy). El dashboard que consume cada métrica no se escribe a mano: se deriva de la carpeta de gold del reporte.
 
@@ -57,9 +57,9 @@ Lo que dbt **sí** sabe (extraído): qué existe, cómo se llama, qué depende d
 
 ## Los 3 entregables
 
-1. **`data/inventario_modelos.csv`** — un renglón por modelo o fuente: capa, dominio, materialización, contrato, documentación, columnas, tests por estado, linaje directo y transitivo, y dashboards que impacta.
-2. **`data/diccionario_metricas.csv`** — las 46 métricas: nombre, definición, cómo se calcula, unidad, dónde se calcula, modelos, reportes gold, dashboards y advertencia.
-3. **`data/brechas_documentacion.csv`** — qué documentar primero: objetos sin descripción, sin tests o con columnas sin describir, ordenados por número de dashboards que dependen de ellos.
+1. **`data/inventario_modelos.csv`**: un renglón por modelo o fuente: capa, dominio, materialización, contrato, documentación, columnas, tests por estado, linaje directo y transitivo, y dashboards que impacta.
+2. **`data/diccionario_metricas.csv`**: las 46 métricas: nombre, definición, cómo se calcula, unidad, dónde se calcula, modelos, reportes gold, dashboards y advertencia.
+3. **`data/brechas_documentacion.csv`**: qué documentar primero: objetos sin descripción, sin tests o con columnas sin describir, ordenados por número de dashboards que dependen de ellos.
 
 ## Lo que encuentra sobre el warehouse
 
@@ -100,4 +100,4 @@ Si cambias una descripción en dbt, actualiza su inglés en `data/translations_e
 
 ## De demo a real
 
-Este es el primer entregable de un engagement de Micro Data Office cuando la pregunta es «¿qué datos tenemos y qué significa cada número?». Con acceso de solo lectura al warehouse (o incluso solo al repo dbt) el catálogo se genera el mismo día, porque **el inventario, el linaje y el estado de los tests salen de los artefactos de dbt, no de entrevistas**. Lo que sí requiere a las personas es el diccionario: se hace en una o dos sesiones con los dueños de cada área, contrastando la definición que dice cada uno contra lo que el SQL realmente calcula — que es donde aparecen las cifras que se llaman igual y no lo son. Después se puede volver a correr tras cada cambio del warehouse: el build falla si una definición apunta a algo que ya no existe, y las brechas se cierran contra una lista priorizada.
+Este es el primer entregable de un engagement de Micro Data Office cuando la pregunta es «¿qué datos tenemos y qué significa cada número?». Con acceso de solo lectura al warehouse (o incluso solo al repo dbt) el catálogo se genera el mismo día, porque **el inventario, el linaje y el estado de los tests salen de los artefactos de dbt, no de entrevistas**. Lo que sí requiere a las personas es el diccionario: se hace en una o dos sesiones con los dueños de cada área, contrastando la definición que dice cada uno contra lo que el SQL realmente calcula, que es donde aparecen las cifras que se llaman igual y no lo son. Después se puede volver a correr tras cada cambio del warehouse: el build falla si una definición apunta a algo que ya no existe, y las brechas se cierran contra una lista priorizada.

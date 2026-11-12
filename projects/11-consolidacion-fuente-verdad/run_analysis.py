@@ -193,17 +193,17 @@ dia_valle = indice_estacional.idxmin()
 # ============================================================================
 insights = [
     # Q1 -- ¿Cuál es el número real y cuánto se habría inflado sin el pipeline?
-    f"<b>Q1 · La fuente única evita ${valor_dup_total:,.0f} MXN de ventas infladas</b> ({duplicados_removidos} filas duplicadas entre las 3 fuentes) frente al total consolidado de ${total_consolidado:,.0f} MXN — así se cierra la discusión de en la reunión sobre cuál número es el correcto.",
+    f"<b>Q1 · La fuente única evita ${valor_dup_total:,.0f} MXN de ventas infladas</b> ({duplicados_removidos} filas duplicadas entre las 3 fuentes) frente al total consolidado de ${total_consolidado:,.0f} MXN. Con esto se cierra la discusión en la reunión sobre cuál número es el correcto.",
     # Q2 -- ¿qué fuente concentra el mayor riesgo y de qué tipo?
-    f"<b>Q2 · {fuente_top_riesgo} concentra el mayor riesgo de calidad</b> ({fuente_top_riesgo_tipo.lower()}, {seg_df.loc[fuente_top_riesgo, 'problema_pct']:.1f}% de sus filas) y aporta {share_dup_top:.0f}% de todo el valor duplicado detectado — es la fuente a corregir primero en origen.",
+    f"<b>Q2 · {fuente_top_riesgo} concentra el mayor riesgo de calidad</b> ({fuente_top_riesgo_tipo.lower()}, {seg_df.loc[fuente_top_riesgo, 'problema_pct']:.1f}% de sus filas) y aporta {share_dup_top:.0f}% de todo el valor duplicado detectado. Es la fuente que hay que corregir primero, en origen.",
     # Q3 -- ¿cuánto valor sigue invisible en la cola de revisión?
-    f"<b>Q3 · ${valor_falt_total:,.0f} MXN (estimado) siguen sin reportarse</b> en la cola de revisión manual — {int(seg_df['falt_filas'].sum())} filas, 100% de Monterrey — porque la fuente única nunca inventa un monto faltante; alguien debe capturarlo.",
+    f"<b>Q3 · ${valor_falt_total:,.0f} MXN (estimado) siguen sin reportarse</b> en la cola de revisión manual ({int(seg_df['falt_filas'].sum())} filas, 100% de Monterrey) porque la fuente única nunca inventa un monto faltante; alguien debe capturarlo.",
     # Q4 -- ¿cómo se compara el desempeño mensual entre sucursales?
     f"<b>Q4 · Ninguna sucursal cae de forma sostenida en el trimestre</b>: CDMX bajó en julio y se recuperó en agosto, Monterrey hizo el patrón inverso, y Guadalajara creció los dos meses seguidos pese a ser la más pequeña.",
     # Q5 -- ¿el vaivén de una sucursal pone en riesgo el número consolidado?
-    f"<b>Q5 · El consolidado amortigua el vaivén de cada sucursal</b>: mientras CDMX y Monterrey oscilan ±19-28% mes a mes en direcciones opuestas, el total de la empresa se movió solo {mensual_total.pct_change().iloc[1]*100:+.1f}% y {mensual_total.pct_change().iloc[2]*100:+.1f}% — planear sobre una sola sucursal habría sido engañoso.",
+    f"<b>Q5 · El consolidado amortigua el vaivén de cada sucursal</b>: mientras CDMX y Monterrey oscilan ±19-28% mes a mes en direcciones opuestas, el total de la empresa se movió solo {mensual_total.pct_change().iloc[1]*100:+.1f}% y {mensual_total.pct_change().iloc[2]*100:+.1f}%. Planear con una sola sucursal habría llevado a conclusiones equivocadas.",
     # Q6 -- ¿hay un patrón semanal a considerar?
-    f"<b>Q6 · Existe un patrón semanal moderado</b>: {DOW_ES[dia_pico]} vende {indice_estacional[dia_pico]-100:.0f}% arriba del promedio diario y {DOW_ES[dia_valle]} {100-indice_estacional[dia_valle]:.0f}% abajo — hay que usar el índice estacional al fijar metas por día, no un promedio plano.",
+    f"<b>Q6 · Existe un patrón semanal moderado</b>: {DOW_ES[dia_pico]} vende {indice_estacional[dia_pico]-100:.0f}% arriba del promedio diario y {DOW_ES[dia_valle]} {100-indice_estacional[dia_valle]:.0f}% abajo, así que conviene usar el índice estacional al fijar metas por día en lugar de un promedio plano.",
     # Q7 -- ¿hay anomalías que ameriten investigación?
     f"<b>Q7 · No se detectaron anomalías</b> (&gt;3 desviaciones estándar de la mediana móvil de 7 días) en los {len(daily)} días del trimestre; la variabilidad diaria (CV {cv_consolidado:.0f}%) es ruido normal de venta, no un evento aislado.",
 ]
@@ -225,10 +225,10 @@ retencion_paso2 = len(limpio) / len(con_monto) * 100
 # ============================================================================
 banner = {
     "label": "La respuesta primero",
-    "headline": f"La fuente única evita ${valor_dup_total:,.0f} MXN de ventas infladas por duplicados — pero ${valor_falt_total:,.0f} MXN siguen atrapados en la cola de revisión de Monterrey.",
+    "headline": f"La fuente única evita ${valor_dup_total:,.0f} MXN de ventas infladas por duplicados, pero ${valor_falt_total:,.0f} MXN siguen atrapados en la cola de revisión de Monterrey.",
     "subtext": (
         f"Prioridad del trimestre: cerrar la cola de Monterrey con un dueño y un SLA de captura, y blindar la "
-        f"exportación de {fuente_top_riesgo} en origen — de ahí sale {share_dup_top:.0f}% de todo el valor duplicado "
+        f"exportación de {fuente_top_riesgo} en origen, de donde sale {share_dup_top:.0f}% de todo el valor duplicado "
         f"detectado este trimestre."
     ),
 }
@@ -289,7 +289,7 @@ charts = [
     {
         "id": "chart_calidad_fuente", "type": "progress_bars",
         "title": "Filas problemáticas por fuente (duplicadas o sin monto)",
-        "subtitle": "% de filas que se removieron o se enviaron a revisión manual — la severidad real, en dinero, está en la tabla de arriba",
+        "subtitle": "% de filas que se removieron o se enviaron a revisión manual. La severidad real, en dinero, está en la tabla de arriba",
         "labels": list(seg_df.index),
         "values": [round(v, 1) for v in seg_df["problema_pct"]],
         "max": max(10, round(seg_df["problema_pct"].max() * 1.4, 1)),
@@ -333,7 +333,7 @@ dash.render(
     ROOT / "dashboard.html",
     project_no=11,
     title="Consolidación de Datos Dispersos: Una Sola Fuente de Verdad",
-    tagline="Cada sucursal con su propio Excel, tres formatos distintos, nombres inconsistentes — un solo archivo limpio del que parte cualquier reporte, con la segmentación de riesgo y la tendencia que gerencia necesita para decidir.",
+    tagline="Cada sucursal con su propio Excel, tres formatos distintos y nombres inconsistentes. Aquí queda un solo archivo limpio del que parte cualquier reporte, con la segmentación de riesgo y la tendencia que gerencia necesita para decidir.",
     banner=banner,
     hero_kpi=hero_kpi,
     hero_chart=hero_chart,

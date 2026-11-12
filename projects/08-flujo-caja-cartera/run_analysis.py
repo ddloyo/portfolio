@@ -162,8 +162,8 @@ banner = {
     ),
     "subtext": (
         f"El DSO consolidado ({dso} días) esconde que el segmento Moroso tarda en promedio {dso_moroso:.0f} días en "
-        f"pagar — casi {dso_moroso/dso:.1f}x el promedio general. No es un problema de flujo futuro difuso: es "
-        f"concentración de riesgo en clientes identificables, con una acción distinta para cada uno esta semana."
+        f"pagar, casi {dso_moroso/dso:.1f}x el promedio general. El riesgo está concentrado en clientes con nombre y "
+        f"apellido, y cada uno necesita una acción distinta esta semana."
     ),
 }
 
@@ -232,7 +232,7 @@ charts = [
     {
         "id": "chart_mensual", "type": "line", "full_width": True,
         "title": "La cobranza mensual crece, pero la concentración de riesgo no cambió",
-        "subtitle": "Facturación vs. cobranza mensual — el último mes está incompleto (corte al día de hoy)",
+        "subtitle": "Facturación vs. cobranza mensual. El último mes está incompleto (corte al día de hoy)",
         "labels": [str(m) for m in meses],
         "datasets": [
             {"label": "Facturación", "data": [round(v, 0) for v in facturacion_mensual.values]},
@@ -244,7 +244,7 @@ charts = [
     {
         "id": "chart_forecast", "type": "bar", "stacked": True, "full_width": True,
         "title": "Cobranza proyectada (4 semanas): de quién depende cada semana",
-        "subtitle": "Puntual no aporta nada al pronóstico — ya no tiene cartera pendiente",
+        "subtitle": "Puntual no aporta nada al pronóstico porque ya no tiene cartera pendiente",
         "labels": [f"Semana {i+1}" for i in range(4)],
         "datasets": [
             {"label": s, "data": [round(v, 0) for v in proyeccion_por_segmento[s]],
@@ -271,13 +271,13 @@ checklist = {
 }
 
 insights = [
-    f"<b>${top2_monto:,.0f} MXN ({top2_pct}%)</b> de la cartera pendiente está en solo 2 clientes — Importadora Tres Ríos y Servicios Integrales Roble, ambos del segmento Moroso. El riesgo de cash flow no está diversificado: está concentrado, y se gestiona con seguimiento dedicado a esos 2 clientes, no con una campaña genérica de cobranza.",
-    f"El DSO consolidado (<b>{dso} días</b>) esconde que el segmento Moroso tarda en promedio <b>{dso_moroso:.0f} días</b> en pagar — casi 3 veces más. Reportar solo el DSO consolidado subestima el riesgo real; el DSO por segmento debería ser el número que se sigue mes a mes.",
-    "Los 3 clientes del segmento Puntual (Grupo Ferretero del Bajío, Distribuidora Maple, Grupo Industrial Norte) no tienen ni un peso pendiente hoy — el 100% de la cartera por cobrar está en los segmentos Lento y Moroso. El esfuerzo de cobranza debe concentrarse ahí, no repartirse parejo entre los 8 clientes.",
-    "La curva de cobranza por antigüedad proyecta que buena parte de la cartera Moroso se cobrará en las próximas 4 semanas — pero esa curva es genérica y no usa el historial real de esos clientes, que ha tardado 100+ días en pagar en el pasado. Para el segmento Moroso, esa proyección debe leerse como el escenario optimista, no el esperado.",
-    f"La cobranza mensual creció de ${cobranza_mensual.iloc[0]:,.0f} MXN en {meses[0]} a ${cobranza_mensual.iloc[-2]:,.0f} MXN en el último mes completo — una tendencia sana en apariencia, pero la concentración de riesgo en 2 clientes no cambió con esa tendencia. La cobranza agregada mejorando no significa que el riesgo de cartera bajó.",
-    f"De los {len(riesgo_cliente)} clientes con facturas vencidas hoy, los 2 del segmento Moroso concentran <b>{riesgo_cliente[riesgo_cliente['segmento']=='Moroso']['monto'].sum() / riesgo_cliente['monto'].sum() * 100:.0f}%</b> del monto vencido y requieren la acción más urgente (congelar crédito nuevo + plan de pago), no solo una llamada de cobranza — ver el checklist de esta semana.",
-    "Recomendación de política de crédito: exigir anticipo o reducir el límite de crédito a cualquier cliente que caiga en el perfil Moroso (más de 70 días promedio de pago histórico) antes de que acumule más cartera vencida — de lo contrario, la concentración de riesgo vuelve a crecer con cada nueva venta a crédito a esos clientes.",
+    f"<b>${top2_monto:,.0f} MXN ({top2_pct}%)</b> de la cartera pendiente está en solo 2 clientes: Importadora Tres Ríos y Servicios Integrales Roble, ambos del segmento Moroso. El riesgo de cash flow está concentrado y se gestiona con seguimiento dedicado a esos 2 clientes, no con una campaña genérica de cobranza.",
+    f"El DSO consolidado (<b>{dso} días</b>) esconde que el segmento Moroso tarda en promedio <b>{dso_moroso:.0f} días</b> en pagar, casi 3 veces más. Reportar solo el DSO consolidado subestima el riesgo real; el DSO por segmento debería ser el número que se sigue mes a mes.",
+    "Los 3 clientes del segmento Puntual (Grupo Ferretero del Bajío, Distribuidora Maple, Grupo Industrial Norte) no tienen ni un peso pendiente hoy. El 100% de la cartera por cobrar está en los segmentos Lento y Moroso. El esfuerzo de cobranza debe concentrarse ahí, no repartirse parejo entre los 8 clientes.",
+    "La curva de cobranza por antigüedad proyecta que buena parte de la cartera Moroso se cobrará en las próximas 4 semanas, pero esa curva es genérica y no usa el historial real de esos clientes, que ha tardado 100+ días en pagar en el pasado. Para el segmento Moroso, esa proyección debe leerse como el escenario optimista, no el esperado.",
+    f"La cobranza mensual creció de ${cobranza_mensual.iloc[0]:,.0f} MXN en {meses[0]} a ${cobranza_mensual.iloc[-2]:,.0f} MXN en el último mes completo. La tendencia se ve sana, pero la concentración de riesgo en 2 clientes sigue igual: que la cobranza agregada mejore no significa que el riesgo de cartera haya bajado.",
+    f"De los {len(riesgo_cliente)} clientes con facturas vencidas hoy, los 2 del segmento Moroso concentran <b>{riesgo_cliente[riesgo_cliente['segmento']=='Moroso']['monto'].sum() / riesgo_cliente['monto'].sum() * 100:.0f}%</b> del monto vencido y requieren la acción más urgente (congelar crédito nuevo + plan de pago), más allá de una llamada de cobranza. Ver el checklist de esta semana.",
+    "Recomendación de política de crédito: exigir anticipo o reducir el límite de crédito a cualquier cliente que caiga en el perfil Moroso (más de 70 días promedio de pago histórico) antes de que acumule más cartera vencida. De lo contrario, la concentración de riesgo vuelve a crecer con cada nueva venta a crédito a esos clientes.",
 ]
 
 dash.render(

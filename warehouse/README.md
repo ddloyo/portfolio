@@ -2,8 +2,8 @@
 
 Este es el warehouse propuesto en [`database/README.md`](../database/README.md),
 construido de verdad: **dbt + DuckDB**, sin servidor que pagar. DuckDB corre
-como un archivo local (o temporal en CI); todo el pipeline — seeds,
-staging, marts, tests, docs — se ejecuta igual en tu laptop que en un
+como un archivo local (o temporal en CI); todo el pipeline (seeds,
+staging, marts, tests, docs) se ejecuta igual en tu laptop que en un
 runner gratuito de GitHub Actions.
 
 **Este proyecto es la única fuente de verdad ejecutable.** El diseño original en DDL
@@ -34,7 +34,7 @@ trabajo de staging.
 De dónde sale cada dato:
 
 - **Idénticos a `projects/`** (4): `calendario` (de `projects/13`) y las 3
-  sucursales (de `projects/11`) — el CSV es byte a byte el original.
+  sucursales (de `projects/11`). El CSV es byte a byte el original.
 - **Aumentados** (3): `crm_cliente`, `producto` y `factura_linea` parten de
   `projects/13` y **conservan todas las filas y columnas originales, con su
   suciedad** (nulos, duplicados, fechas mixtas, precios negativos, referencias
@@ -65,11 +65,11 @@ dbt docs generate && dbt docs serve   # catálogo + lineage DAG en localhost
 
 **Importante: `dbt seed` va aparte de `dbt run`/`dbt test`, no dentro de un
 solo `dbt build`.** dbt no sabe que un seed llena la tabla que un modelo
-referencia vía `source()` — esa conexión existe en la vida real porque una
+referencia vía `source()`. En la vida real esa conexión existe porque una
 herramienta de EL (Fivetran, Airbyte...) carga la fuente por fuera de dbt,
 así que dbt tampoco la infiere aquí. En una base nueva, `dbt build` puede
-intentar correr un modelo antes de que su seed haya cargado. Dos comandos
-en orden lo resuelve siempre.
+intentar correr un modelo antes de que su seed haya cargado. Correr los dos
+comandos en orden lo resuelve siempre.
 
 Para regenerar los seeds sintéticos desde cero (no hace falta, ya están
 commiteados, pero es reproducible):
@@ -187,7 +187,7 @@ dataset autónomo del proyecto (paleta para 5 categorías, `TODAY` fijo, catálo
 
 ## Los 3 hallazgos reales que los tests atrapan (a propósito)
 
-`dbt test` termina sin errores pero con **3 warnings esperados** — el mismo
+`dbt test` termina sin errores pero con **3 warnings esperados**: el mismo
 hallazgo que audita `projects/13-data-health-check`, ahora vivo como test:
 
 - 158 líneas de `factura_linea` con `cliente_id` que ya no existe en el catálogo.

@@ -250,7 +250,7 @@ demand_explorer = {
 explorer = {
     "id": "sku_explorer",
     "title": "Explora por categoría y SKU",
-    "subtitle": "Elige una categoría para ver sus 15 SKUs de mayor ingreso anual — haz clic en uno para ver su demanda histórica y el pronóstico de 28 días.",
+    "subtitle": "Elige una categoría para ver sus 15 SKUs de mayor ingreso anual y haz clic en uno para ver su demanda histórica y el pronóstico de 28 días.",
     "categories": list(cat_summary["categoria"]),
     "table_headers": ["SKU", "Ingreso anual", "Días de stock", "Estatus"],
     "row_fields": ["sku", "ingreso_fmt", "dias_fmt", "estatus_label"],
@@ -263,7 +263,7 @@ explorer = {
 # ---- interactive dashboard --------------------------------------------------
 banner = {
     "label": "La conclusión primero",
-    "headline": f"${ingreso_anual_riesgo/1e6:.1f}M MXN de ingreso anual está hoy en SKUs por debajo de su punto de reorden — y no está disperso: se concentra en el segmento de alta demanda.",
+    "headline": f"${ingreso_anual_riesgo/1e6:.1f}M MXN de ingreso anual está hoy en SKUs por debajo de su punto de reorden, y se concentra en el segmento de alta demanda.",
     "subtext": (
         f"El segmento de demanda \"alta\" es solo el {alta['pct_sku']:.0f}% del catálogo pero genera el {alta['pct_ingreso']:.0f}% del ingreso "
         f"(índice {alta['index_ingreso']:.0f} vs. 100 = proporcional) y tiene la tasa de riesgo de quiebre más alta de todos los segmentos "
@@ -326,7 +326,7 @@ charts = [
     {
         "id": "chart_riesgo_categoria", "type": "bar",
         "title": "% de SKUs en riesgo de quiebre por categoría",
-        "subtitle": f"Línea de referencia: {riesgo_prom_catalogo:.0f}% promedio del catálogo — etiqueta: # de SKUs y su valor de inventario a costo",
+        "subtitle": f"Línea de referencia: {riesgo_prom_catalogo:.0f}% promedio del catálogo. Etiqueta: # de SKUs y su valor de inventario a costo",
         "labels": list(cat_summary["categoria"]),
         "datasets": [{
             "label": "% en riesgo",
@@ -344,7 +344,7 @@ drilldown_charts = [
     {
         "id": "chart_heatmap_estacionalidad", "type": "heatmap", "color_mode": "diverging", "value_format": "int",
         "title": "El pico de jueves/viernes y el valle de domingo son estructurales, no de una sola categoría",
-        "subtitle": "Desviación % vs. el promedio semanal de cada categoría (fila) — no volumen absoluto",
+        "subtitle": "Desviación % vs. el promedio semanal de cada categoría (fila), no volumen absoluto",
         "row_labels": list(cat_summary["categoria"]),
         "col_labels": DIAS_SEMANA,
         "matrix": [[round(v, 0) for v in cat_dow_idx.loc[c]] for c in cat_summary["categoria"]],
@@ -376,11 +376,11 @@ drilldown_charts = [
 top_impacto_cat = cat_summary.sort_values("costo_impacto_forecast_anual", ascending=False).iloc[0]
 
 insights = [
-    f"<b>El ingreso en riesgo no está disperso</b>: ${ingreso_anual_riesgo/1e6:.1f}M MXN/año ({pct_ingreso_en_riesgo:.0f}% del total) está en SKUs por debajo de su punto de reorden, y el segmento de <b>alta demanda</b> —solo {alta['pct_sku']:.0f}% del catálogo, {alta['pct_ingreso']:.0f}% del ingreso— tiene la tasa de riesgo más alta ({alta['pct_en_riesgo']:.0f}%). Ahí es donde revisar el nivel de servicio protege más ingreso.",
-    f"<b>{cat_summary.iloc[0]['categoria']}</b> concentra {cat_summary.iloc[0]['ingreso_anual']/ingreso_anual_total*100:.0f}% del ingreso con el margen más bajo del catálogo ({cat_summary.sort_values('margen_pct_prom').iloc[0]['margen_pct_prom']:.1f}%) y el lead time más largo — es el mayor punto de apalancamiento para renegociar condiciones de proveedor.",
-    f"La demanda de <b>jueves/viernes</b> más que duplica la de domingo ({dow_avg[3]:,.0f}/{dow_avg[4]:,.0f} vs. {dow_avg[6]:,.0f} unidades/día) — el punto de reorden ya ajusta por este patrón semanal en vez de usar un promedio plano.",
-    f"El error de pronóstico no es solo un número estadístico: en <b>{top_impacto_cat['categoria']}</b> equivale a ${top_impacto_cat['costo_impacto_forecast_anual']/1e6:.1f}M MXN/año en inventario mal calibrado — {top_impacto_cat['costo_impacto_forecast_anual']/top_impacto_cat['valor_inventario_actual']*100:.0f}% del valor de su inventario actual, movido cada año solo por el margen de error del pronóstico.",
-    f"Los segmentos <b>esporádica y nula</b> son {seg_summary.loc[['esporadica','nula'],'n_sku'].sum():.0f} SKUs ({seg_summary.loc[['esporadica','nula'],'pct_sku'].sum():.0f}% del catálogo) pero generan solo {seg_summary.loc[['esporadica','nula'],'pct_ingreso'].sum():.1f}% del ingreso — candidatos a revisión trimestral de descontinuación para liberar capital de trabajo.",
+    f"<b>El ingreso en riesgo no está disperso</b>: ${ingreso_anual_riesgo/1e6:.1f}M MXN/año ({pct_ingreso_en_riesgo:.0f}% del total) está en SKUs por debajo de su punto de reorden, y el segmento de <b>alta demanda</b> (solo {alta['pct_sku']:.0f}% del catálogo, pero {alta['pct_ingreso']:.0f}% del ingreso) tiene la tasa de riesgo más alta ({alta['pct_en_riesgo']:.0f}%). Ahí es donde revisar el nivel de servicio protege más ingreso.",
+    f"<b>{cat_summary.iloc[0]['categoria']}</b> concentra {cat_summary.iloc[0]['ingreso_anual']/ingreso_anual_total*100:.0f}% del ingreso con el margen más bajo del catálogo ({cat_summary.sort_values('margen_pct_prom').iloc[0]['margen_pct_prom']:.1f}%) y el lead time más largo. Es donde más se gana al renegociar condiciones de proveedor.",
+    f"La demanda de <b>jueves/viernes</b> más que duplica la de domingo ({dow_avg[3]:,.0f}/{dow_avg[4]:,.0f} vs. {dow_avg[6]:,.0f} unidades/día). El punto de reorden ya ajusta por este patrón semanal en vez de usar un promedio plano.",
+    f"El error de pronóstico también cuesta dinero: en <b>{top_impacto_cat['categoria']}</b> equivale a ${top_impacto_cat['costo_impacto_forecast_anual']/1e6:.1f}M MXN/año en inventario mal calibrado, {top_impacto_cat['costo_impacto_forecast_anual']/top_impacto_cat['valor_inventario_actual']*100:.0f}% del valor de su inventario actual, movido cada año solo por el margen de error del pronóstico.",
+    f"Los segmentos <b>esporádica y nula</b> son {seg_summary.loc[['esporadica','nula'],'n_sku'].sum():.0f} SKUs ({seg_summary.loc[['esporadica','nula'],'pct_sku'].sum():.0f}% del catálogo) pero generan solo {seg_summary.loc[['esporadica','nula'],'pct_ingreso'].sum():.1f}% del ingreso. Son candidatos a revisión trimestral de descontinuación para liberar capital de trabajo.",
 ]
 
 table = {

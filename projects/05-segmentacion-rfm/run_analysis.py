@@ -67,9 +67,9 @@ def quadrant_of(row):
 agg[["cuadrante_status", "cuadrante"]] = agg.apply(quadrant_of, axis=1, result_type="expand")
 
 ACCIONES = {
-    "Campeones": "Programa VIP / referidos — proteger y convertir en embajadores.",
-    "En riesgo": "Contacto proactivo esta semana — compraban bien y se están yendo.",
-    "Nuevos / Prometedores": "Onboarding y segunda compra — el momento crítico de retención.",
+    "Campeones": "Programa VIP / referidos: proteger y convertir en embajadores.",
+    "En riesgo": "Contacto proactivo esta semana: compraban bien y se están yendo.",
+    "Nuevos / Prometedores": "Onboarding y segunda compra: el momento crítico de retención.",
     "Hibernando": "Campaña de reactivación de bajo costo o descontinuar inversión de marketing.",
 }
 agg["accion_recomendada"] = agg["cuadrante"].map(ACCIONES)
@@ -126,7 +126,7 @@ kpis = [
 checklist = {
     "id": "riesgo_semana",
     "title": "Plan de llamadas de esta semana",
-    "subtitle": f"{len(esta_semana)} clientes de \"En riesgo\" repartidos en {len(DIAS)} días ({CAPACIDAD_POR_DIA}/día). Marca cada uno al contactarlo — el progreso se guarda en este navegador.",
+    "subtitle": f"{len(esta_semana)} clientes de \"En riesgo\" repartidos en {len(DIAS)} días ({CAPACIDAD_POR_DIA}/día). Marca cada uno al contactarlo; el progreso se guarda en este navegador.",
     "progress_noun": "contactados",
     "headers": ["Día", "Cliente", "Valor histórico", "Compras", "Última compra hace"],
     "rows": [
@@ -151,7 +151,7 @@ charts = [
     {
         "id": "chart_matriz", "type": "scatter", "full_width": True,
         "title": "Matriz recencia x valor: qué acción corresponde a cada cliente",
-        "subtitle": f"{total_clientes:,} clientes — días desde última compra vs. percentil de valor histórico, divididos en la mediana de cada eje",
+        "subtitle": f"{total_clientes:,} clientes: días desde última compra vs. percentil de valor histórico, divididos en la mediana de cada eje",
         "points": scatter_points,
         "x_label": "Días desde última compra (recencia)", "y_label": "Valor histórico (percentil de la cartera)",
         "x_unit": " días", "y_unit": " pct",
@@ -244,9 +244,9 @@ rfm_charts = [
 
 insights = [
     f"El plan prioriza valor histórico dentro de \"En riesgo\": llamar primero al cliente de mayor gasto cada día protege el valor más grande con el mismo esfuerzo de llamada, en vez de contactar en el orden en que aparecen.",
-    f"<b>En riesgo</b> ({int(en_riesgo.clientes)} clientes) concentra ${en_riesgo.valor_total:,.0f} MXN de valor histórico que se puede perder si no hay contacto proactivo — son clientes que ya demostraron que gastan, solo dejaron de comprar.",
-    f"<b>Hibernando</b> ({int(seg_summary.loc['Hibernando','clientes'])} clientes, bajo valor y sin actividad reciente) no debería recibir el mismo presupuesto de marketing que Campeones o Nuevos — la matriz evita gastar igual en todos.",
-    "Cada cuadrante tiene una sola acción comercial asociada (columna de la tabla) — la matriz solo vale si esa acción se ejecuta distinto por grupo, no si termina tratándose a todos igual.",
+    f"<b>En riesgo</b> ({int(en_riesgo.clientes)} clientes) concentra ${en_riesgo.valor_total:,.0f} MXN de valor histórico que se puede perder si no hay contacto proactivo. Son clientes que ya demostraron que gastan y dejaron de comprar.",
+    f"<b>Hibernando</b> ({int(seg_summary.loc['Hibernando','clientes'])} clientes, bajo valor y sin actividad reciente) no debería recibir el mismo presupuesto de marketing que Campeones o Nuevos; la matriz evita repartir el gasto por igual.",
+    "Cada cuadrante tiene una sola acción comercial asociada (columna de la tabla). La matriz solo sirve si cada grupo recibe un trato distinto.",
 ]
 
 table = {
@@ -262,7 +262,7 @@ dash.render(
     ROOT / "dashboard.html",
     project_no=5,
     title="Segmentación RFM y Priorización Comercial",
-    tagline="No todos los clientes valen el mismo esfuerzo — la matriz de 4 cuadrantes dice a quién llamar hoy y a quién dejar de perseguir.",
+    tagline="No todos los clientes valen el mismo esfuerzo. La matriz de 4 cuadrantes dice a quién llamar hoy y a quién dejar de perseguir.",
     kpis=kpis,
     charts=charts,
     insights=insights,
