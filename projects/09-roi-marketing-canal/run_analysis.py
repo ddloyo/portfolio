@@ -92,13 +92,13 @@ def punto_status(r):
 def recomendacion(r):
     if r["seg_ratio"] == "riesgo":
         if r["cli_change_pct"] > 20:
-            return "Optimizar y monitorear — mejorando, aún no cruza el benchmark"
-        return "Recorte prioritario — sin mejora y por debajo del benchmark"
+            return "Optimizar y monitorear: mejorando, aún no cruza el benchmark"
+        return "Recorte prioritario: sin mejora y por debajo del benchmark"
     if r["seg_gasto"] == "alto":
-        return "Mantener con vigilancia — retorno sano pero tendencia en enfriamiento"
+        return "Mantener con vigilancia: retorno sano pero tendencia en enfriamiento"
     if r["cli_change_pct"] < -5:
-        return "Escalar con cautela — señal de techo de capacidad"
-    return "Escalar agresivamente — mayor prioridad de inversión"
+        return "Escalar con cautela: señal de techo de capacidad"
+    return "Escalar agresivamente: mayor prioridad de inversión"
 
 
 agg["cuadrante"] = agg.apply(cuadrante, axis=1)
@@ -151,7 +151,7 @@ if not canales_optimizar.empty:
     )
 if canal_cautela is not None:
     recomendacion_partes.append(
-        f"escalar {canal_cautela['canal']} con cautela — ya muestra señales de techo de capacidad"
+        f"escalar {canal_cautela['canal']} con cautela, porque ya muestra señales de techo de capacidad"
     )
 banner_subtext = f"Recomendación para el próximo trimestre: {'; '.join(recomendacion_partes)}." if recomendacion_partes else ""
 
@@ -159,9 +159,9 @@ banner = {
     "label": "La respuesta primero",
     "headline": (
         f"{pct_gasto_riesgo:.0f}% del presupuesto de marketing ({lista_canales(riesgo_df['canal'])}) no cubre el "
-        f"benchmark de retorno {UMBRAL_SANO:.0f}:1 — mientras los canales más eficientes reciben apenas "
+        f"benchmark de retorno {UMBRAL_SANO:.0f}:1, mientras los canales más eficientes reciben apenas "
         f"{pct_gasto_saludable_bajo:.0f}% del gasto."
-    ) if not riesgo_df.empty else "Todos los canales cubren el benchmark de retorno — el foco es priorizar dónde escalar más.",
+    ) if not riesgo_df.empty else "Todos los canales cubren el benchmark de retorno; el foco es priorizar dónde escalar más.",
     "subtext": banner_subtext,
 }
 
@@ -220,7 +220,7 @@ charts = [
     {
         "id": "chart_cac", "type": "bar", "horizontal": True,
         "title": "Costo de adquisición (CAC) por canal",
-        "subtitle": f"MXN por cliente nuevo — total de {periodo}",
+        "subtitle": f"MXN por cliente nuevo, total de {periodo}",
         "labels": list(agg["canal"]),
         "datasets": [{"label": "CAC", "data": list(agg["cac"])}],
         "y_label": "MXN", "value_format": "currency",
@@ -236,7 +236,7 @@ charts = [
     {
         "id": "chart_tendencia_cac", "type": "line", "full_width": True,
         "title": f"Tendencia del CAC mensual ({periodo}) — ¿quién mejora y quién empeora?",
-        "subtitle": f"{canal_top['canal']} (mejor ratio) vs. {canal_mejora_riesgo['canal']} (en riesgo, vigilar mejora) — resaltados, resto atenuado",
+        "subtitle": f"{canal_top['canal']} (mejor ratio) vs. {canal_mejora_riesgo['canal']} (en riesgo, vigilar mejora) resaltados; el resto, atenuado",
         "labels": meses,
         "datasets": [
             {
@@ -272,26 +272,26 @@ if not saludable_bajo.empty:
 
 if top_change < -5:
     insights.append(
-        f"<b>¿{canal_top['canal']} puede escalar sin límite?</b> No — su CAC {canal_top['cac_change_pct']:+.1f}% y "
+        f"<b>¿{canal_top['canal']} puede escalar sin límite?</b> No. su CAC {canal_top['cac_change_pct']:+.1f}% y "
         f"sus clientes nuevos {top_change:+.1f}% en {periodo}: señal de techo de capacidad. Escalar con cautela, "
         f"priorizando el resto de los canales eficientes para el grueso del incremento de presupuesto."
     )
 else:
     insights.append(
-        f"<b>¿{canal_top['canal']} puede escalar más?</b> Sí — mejor ratio ({canal_top['ratio_ltv_cac']}:1) y sin "
+        f"<b>¿{canal_top['canal']} puede escalar más?</b> Sí. mejor ratio ({canal_top['ratio_ltv_cac']}:1) y sin "
         f"señales de deterioro en clientes nuevos ({top_change:+.1f}% en {periodo})."
     )
 
 for r in riesgo_df.itertuples():
     if r.cli_change_pct > 20:
         insights.append(
-            f"<b>¿Hay que abandonar {r.canal}?</b> No todavía — su CAC {r.cac_change_pct:+.1f}% y sus clientes "
+            f"<b>¿Hay que abandonar {r.canal}?</b> Todavía no. su CAC {r.cac_change_pct:+.1f}% y sus clientes "
             f"nuevos {r.cli_change_pct:+.1f}% en {periodo}: es un canal de riesgo que está mejorando. Vale la pena "
             f"seguir optimizando antes de recortar."
         )
     else:
         insights.append(
-            f"<b>¿{r.canal} merece la misma paciencia?</b> No — CAC {r.cac_change_pct:+.1f}% y clientes nuevos "
+            f"<b>¿{r.canal} merece la misma paciencia?</b> No. CAC {r.cac_change_pct:+.1f}% y clientes nuevos "
             f"{r.cli_change_pct:+.1f}% en {periodo}: sin mejora clara y por debajo del benchmark. Candidato "
             f"principal a recorte de presupuesto."
         )
@@ -306,14 +306,14 @@ for r in saludable_alto.itertuples():
     tendencia = "enfriándose" if r.cli_change_pct < 0 else "sin señales de deterioro"
     insights.append(
         f"<b>¿{r.canal}, con gasto alto, es seguro?</b> Su ratio es sano ({r.ratio_ltv_cac}:1) pero está {tendencia} "
-        f"(clientes nuevos {r.cli_change_pct:+.1f}% en {periodo}) — mantener el presupuesto, vigilar antes de "
+        f"(clientes nuevos {r.cli_change_pct:+.1f}% en {periodo}). Conviene mantener el presupuesto y vigilarlo antes de "
         f"escalarlo más."
     )
 
 insights.append(
-    f"<b>¿El problema se está resolviendo solo?</b> No — el % del gasto en canales de riesgo se mantuvo entre "
+    f"<b>¿El problema se está resolviendo solo?</b> No. el % del gasto en canales de riesgo se mantuvo entre "
     f"{riesgo_mensual.min():.1f}% y {riesgo_mensual.max():.1f}% durante los últimos {periodo}, sin tendencia clara "
-    f"de mejora: requiere una decisión activa de reasignación, no esperar a que se corrija solo."
+    f"de mejora: hace falta decidir una reasignación en lugar de esperar a que se corrija solo."
 )
 
 table = {
@@ -330,7 +330,7 @@ dash.render(
     ROOT / "dashboard.html",
     project_no=9,
     title="ROI de Marketing: CAC vs. LTV por Canal",
-    tagline="No todos los pesos de marketing valen lo mismo — saber qué canal escalar y cuál replantear.",
+    tagline="No todos los pesos de marketing rinden lo mismo. Aquí se ve qué canal escalar y cuál replantear.",
     banner=banner,
     hero_kpi=hero_kpi,
     hero_chart=hero_chart,

@@ -112,10 +112,10 @@ charts = [
 ]
 
 insights = [
-    f"<b>{lagging_team}</b> cayó {drop_pct:.0f}% en {months_since_peak} meses (de ${peak_value:,.0f} en {peak_month} a ${last_value:,.0f} en {last_month}) — no es ruido, es una caída sostenida.",
+    f"<b>{lagging_team}</b> cayó {drop_pct:.0f}% en {months_since_peak} meses (de ${peak_value:,.0f} en {peak_month} a ${last_value:,.0f} en {last_month}). La caída ya es sostenida.",
     f"El quiebre ya era visible en la tendencia mensual desde {peak_month}, semanas antes de que el reporte de cierre lo hubiera mostrado.",
     f"<b>{leading_team}</b> compensa parte del boquete (va en {attainment[leading_team]}% de su meta), pero no alcanza: el cumplimiento consolidado de la organización es <b>{total_attainment}%</b> (${total_current:,.0f} de ${total_goal:,.0f} MXN).",
-    f"Acción esta semana: revisar con el gerente de <b>{lagging_team}</b> qué cambió — antes de que sea un problema de cierre de trimestre, no después.",
+    f"Acción esta semana: revisar con el gerente de <b>{lagging_team}</b> qué cambió, antes de que se convierta en un problema de cierre de trimestre.",
 ]
 
 table = {
@@ -130,7 +130,7 @@ dash.render(
     ROOT / "dashboard.html",
     project_no=1,
     title="Ventas por Equipo en Tiempo Real",
-    tagline=f"{lagging_team} viene en {attainment[lagging_team]:.0f}% de su meta este mes — y la tendencia ya lo mostraba desde {peak_month}. Así se ve la alerta antes del cierre, no después.",
+    tagline=f"{lagging_team} viene en {attainment[lagging_team]:.0f}% de su meta este mes, y la tendencia lo venía mostrando desde {peak_month}. Con este tablero, la alerta llega antes del cierre.",
     kpis=kpis,
     charts=charts,
     insights=insights,

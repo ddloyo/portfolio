@@ -170,7 +170,7 @@
   
     <div class="minto-banner">
       <p class="minto-label">La conclusión primero</p>
-      <h2>$172.9M MXN de ingreso anual está hoy en SKUs por debajo de su punto de reorden — y no está disperso: se concentra en el segmento de alta demanda.</h2>
+      <h2>$172.9M MXN de ingreso anual está hoy en SKUs por debajo de su punto de reorden, y se concentra en el segmento de alta demanda.</h2>
       <p class="minto-sub">El segmento de demanda "alta" es solo el 20% del catálogo pero genera el 55% del ingreso (índice 276 vs. 100 = proporcional) y tiene la tasa de riesgo de quiebre más alta de todos los segmentos (31% de sus SKUs, vs. 19% del catálogo). Revisar primero el punto de reorden y el nivel de servicio de estos SKUs protege más ingreso con el mismo esfuerzo de compra.</p>
     </div>
     
@@ -255,7 +255,7 @@
     <div class="chart-card">
       <div class="chart-head">
         <h3>% de SKUs en riesgo de quiebre por categoría</h3>
-        <p>Línea de referencia: 19% promedio del catálogo — etiqueta: # de SKUs y su valor de inventario a costo</p>
+        <p>Línea de referencia: 19% promedio del catálogo. Etiqueta: # de SKUs y su valor de inventario a costo</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_riesgo_categoria"></canvas>
@@ -271,7 +271,7 @@
     <div class="chart-card">
       <div class="chart-head">
         <h3>El pico de jueves/viernes y el valle de domingo son estructurales, no de una sola categoría</h3>
-        <p>Desviación % vs. el promedio semanal de cada categoría (fila) — no volumen absoluto</p>
+        <p>Desviación % vs. el promedio semanal de cada categoría (fila), no volumen absoluto</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_heatmap_estacionalidad"></canvas>
@@ -305,11 +305,11 @@
 
   <div class="insights-card">
     <h3>Lo que dice el dato</h3>
-    <ul class="insights"><li><b>El ingreso en riesgo no está disperso</b>: $172.9M MXN/año (25% del total) está en SKUs por debajo de su punto de reorden, y el segmento de <b>alta demanda</b> —solo 20% del catálogo, 55% del ingreso— tiene la tasa de riesgo más alta (31%). Ahí es donde revisar el nivel de servicio protege más ingreso.</li>
-<li><b>Electrónica y Accesorios</b> concentra 45% del ingreso con el margen más bajo del catálogo (27.2%) y el lead time más largo — es el mayor punto de apalancamiento para renegociar condiciones de proveedor.</li>
-<li>La demanda de <b>jueves/viernes</b> más que duplica la de domingo (18,992/21,550 vs. 9,478 unidades/día) — el punto de reorden ya ajusta por este patrón semanal en vez de usar un promedio plano.</li>
-<li>El error de pronóstico no es solo un número estadístico: en <b>Electrónica y Accesorios</b> equivale a $27.9M MXN/año en inventario mal calibrado — 56% del valor de su inventario actual, movido cada año solo por el margen de error del pronóstico.</li>
-<li>Los segmentos <b>esporádica y nula</b> son 80 SKUs (20% del catálogo) pero generan solo 0.8% del ingreso — candidatos a revisión trimestral de descontinuación para liberar capital de trabajo.</li></ul>
+    <ul class="insights"><li><b>El ingreso en riesgo no está disperso</b>: $172.9M MXN/año (25% del total) está en SKUs por debajo de su punto de reorden, y el segmento de <b>alta demanda</b> (solo 20% del catálogo, pero 55% del ingreso) tiene la tasa de riesgo más alta (31%). Ahí es donde revisar el nivel de servicio protege más ingreso.</li>
+<li><b>Electrónica y Accesorios</b> concentra 45% del ingreso con el margen más bajo del catálogo (27.2%) y el lead time más largo. Es donde más se gana al renegociar condiciones de proveedor.</li>
+<li>La demanda de <b>jueves/viernes</b> más que duplica la de domingo (18,992/21,550 vs. 9,478 unidades/día). El punto de reorden ya ajusta por este patrón semanal en vez de usar un promedio plano.</li>
+<li>El error de pronóstico también cuesta dinero: en <b>Electrónica y Accesorios</b> equivale a $27.9M MXN/año en inventario mal calibrado, 56% del valor de su inventario actual, movido cada año solo por el margen de error del pronóstico.</li>
+<li>Los segmentos <b>esporádica y nula</b> son 80 SKUs (20% del catálogo) pero generan solo 0.8% del ingreso. Son candidatos a revisión trimestral de descontinuación para liberar capital de trabajo.</li></ul>
   </div>
 
   
@@ -319,7 +319,7 @@
   
     <div class="explorer-card" id="sku_explorer">
       <h3>Explora por categoría y SKU</h3>
-      <p class="checklist-sub">Elige una categoría para ver sus 15 SKUs de mayor ingreso anual — haz clic en uno para ver su demanda histórica y el pronóstico de 28 días.</p>
+      <p class="checklist-sub">Elige una categoría para ver sus 15 SKUs de mayor ingreso anual y haz clic en uno para ver su demanda histórica y el pronóstico de 28 días.</p>
       <div class="explorer-controls">
         <label for="sku_explorer-cat">Categoría</label>
         <select id="sku_explorer-cat" class="explorer-select"><option value="Electrónica y Accesorios">Electrónica y Accesorios</option><option value="Ferretería y Herramientas">Ferretería y Herramientas</option><option value="Cuidado Personal">Cuidado Personal</option><option value="Alimentos y Bebidas">Alimentos y Bebidas</option><option value="Limpieza del Hogar">Limpieza del Hogar</option></select>

@@ -1,7 +1,7 @@
 # 03 · Scorecard Ejecutivo: Metas vs. Resultados
 
 **Servicio:** Data Storytelling Express (entregable puntual, listo para la reunión de dirección)
-**Basado en el entregable típico de XIA:** *"Metas vs. resultados, sin vueltas — una pantalla, una conclusión, una acción."* y *"Un responsable claro por indicador."*
+**Basado en el entregable típico de XIA:** *"Metas vs. resultados, sin vueltas: una pantalla, una conclusión, una acción."* y *"Un responsable claro por indicador."*
 
 ## El problema de negocio
 
@@ -9,19 +9,19 @@ Dirección recibe un reporte distinto de cada área (ventas, marketing, operacio
 
 ## Qué resuelve este dashboard
 
-- Un widget único arriba a la izquierda con el score consolidado y su tendencia de 9 meses — el número que abre la reunión.
-- A su lado, un tile por cada uno de los 10 indicadores (grid de 5×2) con su valor actual, movimiento vs. el mes anterior y semáforo (verde/amarillo/rojo) — sin entrar a la tabla para saber cómo va cada quien.
+- Un widget único arriba a la izquierda con el score consolidado y su tendencia de 9 meses. Es el número con el que abre la reunión.
+- A su lado, un tile por cada uno de los 10 indicadores (grid de 5×2) con su valor actual, movimiento vs. el mes anterior y semáforo (verde/amarillo/rojo), así que no hace falta abrir la tabla para saber cómo va cada quien.
 - Normaliza indicadores de unidades distintas (MXN, %, leads, /5) a un solo eje comparable: % de cumplimiento vs. meta.
 - Tendencia de 9 meses del cumplimiento por área, para ver en qué parte del negocio mejora o se deteriora la organización.
 - Dispersión de cumplimiento vs. volatilidad histórica por indicador, para distinguir un mal mes puntual de un proceso inestable.
 - Drill-down: un mini-gráfico de tendencia vs. meta por cada uno de los 10 indicadores, para dar seguimiento sin salir del dashboard.
-- Responsable explícito por indicador — se sabe a quién preguntar sin tener que buscarlo.
+- Responsable explícito por indicador, para saber a quién preguntar sin tener que buscarlo.
 
 ## Cómo se ve
 
 ![Scorecard ejecutivo: metas vs. resultados](assets/dashboard_preview.png)
 
-Captura del dashboard completo — widget de score, tiles por indicador, tendencias, dispersión y el drill-down por indicador. Abre `dashboard.html` en el navegador para la versión interactiva (con tooltips y tabla de datos).
+Captura del dashboard completo: widget de score, tiles por indicador, tendencias, dispersión y el drill-down por indicador. Abre `dashboard.html` en el navegador para la versión interactiva (con tooltips y tabla de datos).
 
 ## Métricas
 
@@ -50,7 +50,7 @@ El **score consolidado** que se ve en la tendencia es el promedio simple del % d
 
 ## Stack
 
-Python (pandas, numpy) para el procesamiento · HTML + Chart.js para el dashboard interactivo — sin instalar nada del lado del cliente, se abre en cualquier navegador. La captura en `assets/dashboard_preview.png` es manual (screenshot del propio `dashboard.html`), para tener una vista previa en el README sin depender de JS.
+Python (pandas, numpy) para el procesamiento · HTML + Chart.js para el dashboard interactivo, que se abre en cualquier navegador sin instalar nada. La captura en `assets/dashboard_preview.png` es manual (screenshot del propio `dashboard.html`), para tener una vista previa en el README sin depender de JS.
 
 ## Cómo correrlo
 

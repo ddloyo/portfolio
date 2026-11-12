@@ -351,8 +351,8 @@ def build(lang):
     }
 
     tagline = L(
-        f"{len(act)} tablas de {n_src} fuentes con umbrales de frescura distintos, medidas con <code>dbt source freshness</code> de verdad — y {n_dias} días de historial para ver qué fuente llega tarde siempre.",
-        f"{len(act)} tables from {n_src} sources with different freshness thresholds, measured with the real <code>dbt source freshness</code> — and {n_dias} days of history to see which source is always late.")
+        f"{len(act)} tablas de {n_src} fuentes con umbrales de frescura distintos, medidas con <code>dbt source freshness</code> real, con {n_dias} días de historial para ver qué fuente llega tarde siempre.",
+        f"{len(act)} tables from {n_src} sources with different freshness thresholds, measured with the real <code>dbt source freshness</code>, plus {n_dias} days of history to see which source is always late.")
     return dict(
         title=L("Disponibilidad y Frescura de Datos (SLA)", "Data Availability & Freshness (SLA)"), tagline=tagline,
         kpis=kpis, charts=charts, insights=insights, table=table, banner=banner, checklist=checklist,

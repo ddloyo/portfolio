@@ -379,7 +379,7 @@ charts = [
     {
         "id": "chart_top_issues", "type": "bar", "horizontal": True, "full_width": True,
         "title": "Top 10 issues por impacto en el score",
-        "subtitle": "Severidad x % de filas afectadas -- lo que más está bajando el score, primero",
+        "subtitle": "Severidad x % de filas afectadas. Primero, lo que más baja el score",
         "labels": [f"{r.tabla} · {r.campo} ({r.tipo_label})" for r in issues.head(10).itertuples()],
         "datasets": [{"label": "Impacto (pts)", "data": [round(v, 1) for v in issues.head(10)["impacto_pts"]],
                       "colors": [STATUS[{"critical": "critical", "high": "serious", "medium": "warning", "low": "neutral"}[s]]
@@ -408,10 +408,10 @@ for tabla in tabla_order:
 top = issues.iloc[0]
 insights = [
     f"El health score global de la base es <b>{score_global}/100</b> ({label_global.lower()}): <b>{worst['tabla']}</b> es la tabla que más lo arrastra, con un score de <b>{worst['score']}</b>.",
-    f"El issue de mayor impacto es <b>{top.campo}</b> en <b>{top.tabla}</b> ({top.descripcion.lower()}) -- {top.n_fallas} filas ({top.pct_fallas}%) no cumplen la regla, con {top.impacto_pts} puntos de impacto en el score.",
-    f"Se detectaron <b>{n_dup_total:,} filas duplicadas</b> entre las 4 tablas y <b>{int(rules_df.loc[rules_df['tipo']=='integrity','n_fallas'].sum())} referencias rotas</b> (cliente_id/sku que ya no existen en su catálogo) en facturas -- ambos inflan cualquier reporte que sume filas o cruce tablas sin deduplicar/filtrar primero.",
-    f"El caso más difícil de detectar a simple vista: <b>{int(total_inconsistente.sum())} facturas</b> ({round(100*total_inconsistente.sum()/comparable.sum(),1)}%) donde <code>total</code> no cuadra con <code>cantidad × precio_unitario</code> -- un override manual sin recalcular que ningún filtro de nulos o duplicados detecta.",
-    f"Se identificaron <b>{n_orphan_fields} columnas huérfanas</b> (100% vacías, sin uso) en el esquema -- no penalizan el score porque no son un defecto del dato capturado, pero son limpieza de esquema pendiente.",
+    f"El issue de mayor impacto es <b>{top.campo}</b> en <b>{top.tabla}</b> ({top.descripcion.lower()}): {top.n_fallas} filas ({top.pct_fallas}%) no cumplen la regla, con {top.impacto_pts} puntos de impacto en el score.",
+    f"Se detectaron <b>{n_dup_total:,} filas duplicadas</b> entre las 4 tablas y <b>{int(rules_df.loc[rules_df['tipo']=='integrity','n_fallas'].sum())} referencias rotas</b> (cliente_id/sku que ya no existen en su catálogo) en facturas. Ambos inflan cualquier reporte que sume filas o cruce tablas sin deduplicar/filtrar primero.",
+    f"El caso más difícil de detectar a simple vista: <b>{int(total_inconsistente.sum())} facturas</b> ({round(100*total_inconsistente.sum()/comparable.sum(),1)}%) donde <code>total</code> no cuadra con <code>cantidad × precio_unitario</code>. Es un override manual sin recalcular que ningún filtro de nulos o duplicados detecta.",
+    f"Se identificaron <b>{n_orphan_fields} columnas huérfanas</b> (100% vacías, sin uso) en el esquema. No penalizan el score porque no son un defecto del dato capturado, pero son limpieza de esquema pendiente.",
 ]
 
 table = {
@@ -427,7 +427,7 @@ dash.render(
     ROOT / "dashboard.html",
     project_no=13,
     title="Data Health Check: Auditoría de Calidad de Datos",
-    tagline="4 tablas de un mini-ERP de ventas, 33 reglas de validación documentadas, un score de calidad por tabla y el plan de qué corregir primero -- y por qué.",
+    tagline="4 tablas de un mini-ERP de ventas, 33 reglas de validación documentadas, un score de calidad por tabla y un plan que dice qué corregir primero y por qué.",
     kpis=kpis,
     charts=charts,
     insights=insights,

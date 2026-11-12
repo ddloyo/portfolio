@@ -165,7 +165,7 @@
   <header class="page-head">
     <div class="tag">Project 13 · Portfolio Demonstration</div>
     <h1>Data Health Check: Data Quality Audit</h1>
-    <p class="tagline">4 tables from a mini sales ERP, 33 documented validation rules, a quality score per table, and the plan for what to fix first -- and why.</p>
+    <p class="tagline">4 tables from a mini sales ERP, 33 documented validation rules, a quality score per table, and a plan for what to fix first, with the reasoning behind it.</p>
   </header>
 
 
@@ -233,7 +233,7 @@
     <div class="chart-card chart-card-wide">
       <div class="chart-head">
         <h3>Top 10 issues by score impact</h3>
-        <p>Severity x % of rows affected -- what's dragging the score down most, first</p>
+        <p>Severity x % of rows affected, with the biggest drag on the score first</p>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="chart_top_issues"></canvas>
@@ -295,10 +295,10 @@
   <div class="insights-card">
     <h3>What the data shows</h3>
     <ul class="insights"><li>The database's overall health score is <b>73.1/100</b> (at risk): <b>Invoices</b> is the table dragging it down the most, with a score of <b>68.1</b>.</li>
-<li>The highest-impact issue is <b>fecha</b> in <b>Invoices</b> (fecha must be captured in standard ISO format (yyyy-mm-dd), not mixed with dd/mm/yyyy or mm/dd/yyyy.) -- 1024 rows (28.48%) fail the rule, with 11.39 points of score impact.</li>
-<li>We detected <b>289 duplicate rows</b> across the 4 tables and <b>282 broken references</b> (cliente_id/sku values that no longer exist in their catalog) in Invoices -- both inflate any report that sums rows or joins tables without deduplicating/filtering first.</li>
-<li>The hardest case to spot at a glance: <b>332 invoices</b> (9.5%) where <code>total</code> doesn't match <code>cantidad × precio_unitario</code> -- a manual override without recalculation that no null or duplicate filter catches.</li>
-<li>We identified <b>3 orphaned columns</b> (100% empty, unused) in the schema -- they don't penalize the score because they aren't a defect in captured data, but they are pending schema cleanup.</li></ul>
+<li>The highest-impact issue is <b>fecha</b> in <b>Invoices</b> (fecha must be captured in standard ISO format (yyyy-mm-dd), not mixed with dd/mm/yyyy or mm/dd/yyyy.): 1024 rows (28.48%) fail the rule, with 11.39 points of score impact.</li>
+<li>We detected <b>289 duplicate rows</b> across the 4 tables and <b>282 broken references</b> (cliente_id/sku values that no longer exist in their catalog) in Invoices. Both inflate any report that sums rows or joins tables without deduplicating/filtering first.</li>
+<li>The hardest case to spot at a glance: <b>332 invoices</b> (9.5%) where <code>total</code> doesn't match <code>cantidad × precio_unitario</code>. It's a manual override without recalculation that no null or duplicate filter catches.</li>
+<li>We identified <b>3 orphaned columns</b> (100% empty, unused) in the schema. They don't penalize the score because they aren't a defect in captured data, but they are pending schema cleanup.</li></ul>
   </div>
 
 
